@@ -17,7 +17,16 @@ export async function GET(
 ): Promise<Response> {
   const payload = await getPayload({ config: configPromise })
 
-  const { searchParams } = new URL(req.url)
+  // Validar que la URL de la request sea válida
+  let url: URL
+  try {
+    url = new URL(req.url)
+  } catch (_error) {
+    console.error('Error creating URL object from request URL:', req.url)
+    return new Response('Invalid request URL', { status: 400 })
+  }
+
+  const { searchParams } = url
 
   const path = searchParams.get('path')
   const collection = searchParams.get('collection') as CollectionSlug

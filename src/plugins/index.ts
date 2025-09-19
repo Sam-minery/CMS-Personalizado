@@ -80,6 +80,22 @@ export const plugins: Plugin[] = [
         })
       },
     },
+    formSubmissionOverrides: {
+      fields: ({ defaultFields }) => {
+        return defaultFields.map((field) => {
+          if ('name' in field && field.name === 'form') {
+            return {
+              ...field,
+              required: false, // Hace que el campo form no sea requerido
+            }
+          }
+          return field
+        })
+      },
+      hooks: {
+        afterChange: [], // Deshabilita todos los hooks después del cambio
+      },
+    },
   }),
   searchPlugin({
     collections: ['posts'],

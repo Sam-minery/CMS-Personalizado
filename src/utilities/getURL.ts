@@ -11,7 +11,14 @@ export const getServerSideURL = () => {
     url = 'http://localhost:3000'
   }
 
-  return url
+  // Asegurar que la URL sea válida
+  try {
+    new URL(url)
+    return url
+  } catch (_error) {
+    console.warn('Invalid URL in getServerSideURL, falling back to localhost:', url)
+    return 'http://localhost:3000'
+  }
 }
 
 export const getClientSideURL = () => {

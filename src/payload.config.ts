@@ -7,6 +7,8 @@ import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 
 import { Categories } from './collections/Categories'
+import { ContactSubmissions } from './collections/ContactSubmissions'
+import { FormCustom2Submissions } from './collections/FormCustom2Submissions'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
@@ -29,6 +31,8 @@ export default buildConfig({
       // The `BeforeDashboard` component renders the 'welcome' block that you see after logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below.
       beforeDashboard: ['@/components/BeforeDashboard'],
+      // Componente personalizado para CSS del admin panel
+      afterNavLinks: ['@/components/AdminCustomCSS'],
     },
     importMap: {
       baseDir: path.resolve(dirname),
@@ -62,10 +66,16 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
+      ssl: {
+        rejectUnauthorized: false,
+      },
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users],
-  cors: [getServerSideURL()].filter(Boolean),
+  collections: [Pages, Posts, Media, Categories, Users, ContactSubmissions, FormCustom2Submissions],
+  cors: (() => {
+    const serverURL = getServerSideURL()
+    return serverURL ? [serverURL] : []
+  })(),
   globals: [Header, Footer],
   plugins: [
     ...plugins,

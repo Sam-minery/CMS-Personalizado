@@ -1,5 +1,6 @@
 import tailwindcssAnimate from 'tailwindcss-animate'
 import typography from '@tailwindcss/typography'
+import relumeTailwind from '@relume_io/relume-tailwind'
 
 /** @type {import('tailwindcss').Config} */
 const config = {
@@ -8,7 +9,9 @@ const config = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
+    './node_modules/@relume_io/relume-ui/dist/**/*.{js,ts,jsx,tsx}',
   ],
+  presets: [relumeTailwind],
   darkMode: ['selector', '[data-theme="dark"]'],
   plugins: [tailwindcssAnimate, typography],
   prefix: '',
