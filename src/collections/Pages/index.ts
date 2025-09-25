@@ -3,8 +3,17 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Archive } from '../../blocks/ArchiveBlock/config'
+import { Banner1Block } from '../../blocks/Banner1/config'
 import { Banner4 } from '../../blocks/Banner_4/config'
 import { Banner9 } from '../../blocks/Banner_9/config'
+import { Contact1Block } from '../../blocks/Contact1/config'
+import { Contact5Block } from '../../blocks/Contact5/config'
+import { CTA1Block } from '../../blocks/CTA1/config'
+import { CTA5Block } from '../../blocks/CTA5/config'
+import { FAQ1Block } from '../../blocks/FAQ1/config'
+import { FAQ5Block } from '../../blocks/FAQ5/config'
+import { Footer1Block } from '../../blocks/Footer1/config'
+import { Footer5Block } from '../../blocks/Footer5/config'
 import { Blog1 } from '../../blocks/Blog_1/config'
 import { Blog5 } from '../../blocks/Blog_5/config'
 import { BlogPostHeader1 } from '../../blocks/Blog_Post_Header_1/config'
@@ -55,6 +64,15 @@ import { Links1 } from '../../blocks/Links_1/config'
 import { Links4 } from '../../blocks/Links_4/config'
 import { FAQ2 } from '../../blocks/FAQ_2/config'
 import { FAQ4 } from '../../blocks/FAQ_4/config'
+import { Navbar1Block } from '../../blocks/Navbar1/config'
+import { Pricing1Block } from '../../blocks/Pricing1/config'
+import { Testimonial1Block } from '../../blocks/Testimonial1/config'
+import { Testimonial5Block } from '../../blocks/Testimonial5/config'
+import { Navbar5Block } from '../../blocks/Navbar5/config'
+import { Layout1Block } from '../../blocks/Layout1/config'
+import { Layout5Block } from '../../blocks/Layout5/config'
+import { Header44Block } from '../../blocks/Header44/config'
+import { Header48Block } from '../../blocks/Header48/config'
 import { hero } from '@/heros/config'
 import { slugField } from '@/fields/slug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -123,7 +141,79 @@ export const Pages: CollectionConfig<'pages'> = {
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [Archive, Banner4, Banner9, Blog1, Blog5, BlogPostHeader1, BlogPostHeader5, CallToAction, CareerSection1, Career3Block, Career4Block, Comparison1, Comparison13, Content, CTA_custom_2, Event1, Event3, EventHeader1, EventHeader3, EventItemHeader1, EventItemHeader5, FAQ2, FAQ4, FormBlock, Form_custom_2, MultiForm2, MultiForm7, Gallery6, Gallery19, Gallery27, Links1, Links4, Logo1, Logo2, LongContent1, LongContent2, LongContent3, LongContent4, MediaBlock, Portfolio1, Portfolio5, PortfolioHeader1, PortfolioHeader2, Pricing5, Stats1, Stats3, Team1, Team2, Testimonial3Block, Testimonial6Block, Timeline1, Timeline3, Timeline7],
+              blocks: [
+                Archive,
+                Banner1Block,
+                Banner4,
+                Banner9,
+                Blog1,
+                Blog5,
+                BlogPostHeader1,
+                BlogPostHeader5,
+                CallToAction,
+                CareerSection1,
+                Career3Block,
+                Career4Block,
+                Comparison1,
+                Comparison13,
+                Contact1Block,
+                Contact5Block,
+                Content,
+                CTA1Block,
+                CTA5Block,
+                CTA_custom_2,
+                Event1,
+                Event3,
+                EventHeader1,
+                EventHeader3,
+                EventItemHeader1,
+                EventItemHeader5,
+                FAQ1Block,
+                FAQ2,
+                FAQ4,
+                FAQ5Block,
+                Footer1Block,
+                Footer5Block,
+                FormBlock,
+                Form_custom_2,
+                MultiForm2,
+                MultiForm7,
+                Gallery6,
+                Gallery19,
+                Gallery27,
+                Header44Block,
+                Header48Block,
+                Layout1Block,
+                Layout5Block,
+                Links1,
+                Links4,
+                Logo1,
+                Logo2,
+                LongContent1,
+                LongContent2,
+                LongContent3,
+                LongContent4,
+                MediaBlock,
+                Navbar1Block,
+                Navbar5Block,
+                Portfolio1,
+                Portfolio5,
+                PortfolioHeader1,
+                PortfolioHeader2,
+                Pricing1Block,
+                Pricing5,
+                Stats1,
+                Stats3,
+                Team1,
+                Team2,
+                Testimonial1Block,
+                Testimonial3Block,
+                Testimonial5Block,
+                Testimonial6Block,
+                Timeline1,
+                Timeline3,
+                Timeline7,
+              ],
               required: true,
               admin: {
                 initCollapsed: true,

@@ -3,8 +3,17 @@ import React, { Fragment } from 'react'
 import type { Page } from '@/payload-types'
 
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
+import { Banner1 } from '@/blocks/Banner1/Component'
 import { Banner4 } from '@/blocks/Banner_4/Component'
 import { Banner9 } from '@/blocks/Banner_9/Component'
+import { Contact1 } from '@/blocks/Contact1/Component'
+import { Contact5 } from '@/blocks/Contact5/Component'
+import { CTA1Block } from '@/blocks/CTA1/Component'
+import { CTA5Block } from '@/blocks/CTA5/Component'
+import { FAQ1 } from '@/blocks/FAQ1/Component'
+import { FAQ5 } from '@/blocks/FAQ5/Component'
+import { Footer1 } from '@/blocks/Footer1/Component'
+import { Footer5 } from '@/blocks/Footer5/Component'
 import { Blog1Block } from '@/blocks/Blog_1/Component'
 import { Blog5Block } from '@/blocks/Blog_5/Component'
 import { BlogPostHeader1Block } from '@/blocks/Blog_Post_Header_1/Component'
@@ -55,11 +64,29 @@ import { Comparison1 as Comparison1Block } from '@/blocks/Comparison_1/Component
 import { Comparison13 as Comparison13Block } from '@/blocks/Comparison_13/Component'
 import { Links1 as Links1Block } from '@/blocks/Links_1/Component'
 import { Links4 as Links4Block } from '@/blocks/Links_4/Component'
+import { Navbar1 } from '@/blocks/Navbar1/Component'
+import { Pricing1 } from '@/blocks/Pricing1/Component'
+import { Testimonial1 } from '@/blocks/Testimonial1/Component'
+import { Testimonial5 } from '@/blocks/Testimonial5/Component'
+import { Navbar5 } from '@/blocks/Navbar5/Component'
+import { Layout1Block } from '@/blocks/Layout1/Component'
+import { Layout5Block } from '@/blocks/Layout5/Component'
+import { Header44Block } from '@/blocks/Header44/Component'
+import { Header48Block } from '@/blocks/Header48/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
+  banner1: Banner1,
   banner4: Banner4,
   banner9: Banner9,
+  contact1: Contact1,
+  contact5: Contact5,
+  cta1: CTA1Block,
+  cta5: CTA5Block,
+  faq1: FAQ1,
+  faq5: FAQ5,
+  footer1: Footer1,
+  footer5: Footer5,
   blog1: Blog1Block,
   blog5: Blog5Block,
   blogPostHeader1: BlogPostHeader1Block,
@@ -110,6 +137,15 @@ const blockComponents = {
   comparison13: Comparison13Block,
   links1: Links1Block,
   links4: Links4Block,
+  navbar1: Navbar1,
+  navbar5: Navbar5,
+  pricing1: Pricing1,
+  testimonial1: Testimonial1,
+  testimonial5: Testimonial5,
+  layout1: Layout1Block,
+  layout5: Layout5Block,
+  header44: Header44Block,
+  header48: Header48Block,
 }
 
 export const RenderBlocks: React.FC<{
@@ -131,8 +167,8 @@ export const RenderBlocks: React.FC<{
             if (Block) {
               return (
                 <div className="my-16" key={index}>
-                  {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                  <Block {...block} disableInnerContainer />
+                  {/* @ts-expect-error - Block components have different prop types */}
+                  <Block {...block} />
                 </div>
               )
             }

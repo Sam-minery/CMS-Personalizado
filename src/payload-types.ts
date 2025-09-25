@@ -153,7 +153,7 @@ export interface Page {
   id: number;
   title: string;
   hero: {
-    type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact' | 'custom2';
+    type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact' | 'custom2' | 'header1' | 'header5';
     richText?: {
       root: {
         type: string;
@@ -197,6 +197,7 @@ export interface Page {
   };
   layout: (
     | ArchiveBlock
+    | Banner1Block
     | Banner4Block
     | Banner9Block
     | Blog1BlockType
@@ -263,7 +264,11 @@ export interface Page {
       }
     | Comparison1Block
     | Comparison13Block
+    | Contact1Block
+    | Contact5Block
     | ContentBlock
+    | CTA1Block
+    | CTA5Block
     | CTACustom_2Block
     | Event1Block
     | Event3Block
@@ -271,8 +276,12 @@ export interface Page {
     | EventHeader3Block
     | EventItemHeader1Block
     | EventItemHeader5Block
+    | FAQ1Block
     | FAQ2Block
     | FAQ4Block
+    | FAQ5Block
+    | Footer1Block
+    | Footer5Block
     | FormBlock
     | FormCustom_2Block
     | MultiForm2Block
@@ -280,6 +289,10 @@ export interface Page {
     | Gallery6Block
     | Gallery19Block
     | Gallery27Block
+    | Header44Block
+    | Header48Block
+    | Layout1Block
+    | Layout5Block
     | Links1Block
     | Links4Block
     | Logo1Block
@@ -289,10 +302,13 @@ export interface Page {
     | LongContent3Block
     | LongContent4Block
     | MediaBlock
+    | Navbar1Block
+    | Navbar5Block
     | Portfolio1Block
     | Portfolio5Block
     | PortfolioHeader1Block
     | PortfolioHeader2Block
+    | Pricing1Block
     | Pricing5Block
     | Stats1Block
     | Stats3Block
@@ -362,7 +378,9 @@ export interface Page {
         blockName?: string | null;
         blockType: 'team2';
       }
+    | Testimonial1Block
     | Testimonial3Block
+    | Testimonial5Block
     | Testimonial6Block
     | Timeline1Block
     | Timeline3Block
@@ -601,6 +619,28 @@ export interface ArchiveBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'archive';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Banner1Block".
+ */
+export interface Banner1Block {
+  heading: string;
+  description: string;
+  logo: {
+    url?: string | null;
+    src: string;
+    alt?: string | null;
+  };
+  inputPlaceholder: string;
+  button: {
+    title: string;
+    size?: ('sm' | 'md' | 'lg') | null;
+    variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'banner1';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -953,6 +993,111 @@ export interface Comparison13Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Contact1Block".
+ */
+export interface Contact1Block {
+  /**
+   * Add tagline, heading (H6) and description text as needed
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  button: {
+    title: string;
+    variant?: ('primary' | 'secondary' | 'link') | null;
+    size?: ('default' | 'sm' | 'lg' | 'link') | null;
+  };
+  /**
+   * Add terms and conditions text as needed
+   */
+  terms: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contact1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Contact5Block".
+ */
+export interface Contact5Block {
+  /**
+   * Add tagline, heading (H6) and description text as needed
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  contactInfo: {
+    email: string;
+    phone: string;
+    address: string;
+  };
+  button: {
+    title: string;
+    variant?: ('primary' | 'secondary' | 'link') | null;
+    size?: ('sm' | 'lg' | 'link') | null;
+  };
+  /**
+   * Add terms and conditions text as needed
+   */
+  terms: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contact5';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ContentBlock".
  */
 export interface ContentBlock {
@@ -1000,6 +1145,118 @@ export interface ContentBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'content';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTA1Block".
+ */
+export interface CTA1Block {
+  /**
+   * Add CTA content with headings and text as needed
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  buttons?:
+    | {
+        title: string;
+        variant?: ('primary' | 'secondary' | 'ghost' | 'link') | null;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  image: {
+    /**
+     * Upload image or use placeholder
+     */
+    media: number | Media;
+    /**
+     * Descripción de la imagen para accesibilidad
+     */
+    alt?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTA5Block".
+ */
+export interface CTA5Block {
+  /**
+   * Add CTA content with headings and text as needed
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  buttons?:
+    | {
+        title: string;
+        variant?: ('primary' | 'secondary' | 'secondary-alt' | 'ghost' | 'link') | null;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  video: {
+    /**
+     * Pega la URL del video de YouTube (ej: https://www.youtube.com/watch?v=VIDEO_ID)
+     */
+    youtubeUrl: string;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta5';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1382,6 +1639,94 @@ export interface EventItemHeader5Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQ1Block".
+ */
+export interface FAQ1Block {
+  /**
+   * Add main content with heading and description as needed
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  questions?:
+    | {
+        title: string;
+        /**
+         * Add answer text as needed
+         */
+        answer: {
+          root: {
+            type: string;
+            children: {
+              type: string;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Add footer content with heading and description as needed
+   */
+  footerContent: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  button: {
+    title: string;
+    variant?: ('primary' | 'secondary' | 'ghost' | 'link') | null;
+    size?: ('sm' | 'primary' | 'icon' | 'link') | null;
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
+    };
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faq1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "FAQ2Block".
  */
 export interface FAQ2Block {
@@ -1431,6 +1776,311 @@ export interface FAQ4Block {
   id?: string | null;
   blockName?: string | null;
   blockType: 'faq4';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQ5Block".
+ */
+export interface FAQ5Block {
+  /**
+   * Add main content with heading and description as needed
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  questions?:
+    | {
+        title: string;
+        /**
+         * Add answer text as needed
+         */
+        answer: {
+          root: {
+            type: string;
+            children: {
+              type: string;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Add footer content with heading and description as needed
+   */
+  footerContent: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  button: {
+    title: string;
+    variant?: ('primary' | 'secondary' | 'ghost' | 'link') | null;
+    size?: ('sm' | 'primary' | 'icon' | 'link') | null;
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
+    };
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faq5';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Footer1Block".
+ */
+export interface Footer1Block {
+  logo: {
+    /**
+     * Upload logo image or use placeholder
+     */
+    media: number | Media;
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
+    };
+  };
+  newsletterDescription: string;
+  inputPlaceholder?: string | null;
+  button: {
+    title: string;
+    size?: ('sm' | 'md' | 'lg') | null;
+    variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
+  };
+  termsAndConditions?: {
+    text?: string | null;
+    /**
+     * Link to Terms and Conditions page
+     */
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
+    };
+    suffix?: string | null;
+  };
+  columnLinks?:
+    | {
+        title: string;
+        links?:
+          | {
+              title: string;
+              link?: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+              };
+              icon?: ('facebook' | 'instagram' | 'x' | 'linkedin' | 'youtube') | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  footerText?: string | null;
+  footerLinks?:
+    | {
+        title: string;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'footer1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Footer5Block".
+ */
+export interface Footer5Block {
+  logo: {
+    /**
+     * Upload logo image or use placeholder
+     */
+    media: number | Media;
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
+    };
+  };
+  newsletterHeading: string;
+  newsletterDescription: string;
+  inputPlaceholder?: string | null;
+  button: {
+    title: string;
+    size?: ('sm' | 'md' | 'lg') | null;
+    variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
+  };
+  termsAndConditions?: {
+    text?: string | null;
+    /**
+     * Link to Terms and Conditions page
+     */
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
+    };
+    suffix?: string | null;
+  };
+  columnLinks?:
+    | {
+        title: string;
+        links?:
+          | {
+              title: string;
+              link?: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  socialMediaLinks?:
+    | {
+        url: string;
+        icon: 'facebook' | 'instagram' | 'x' | 'linkedin' | 'youtube';
+        id?: string | null;
+      }[]
+    | null;
+  footerText?: string | null;
+  footerLinks?:
+    | {
+        title: string;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'footer5';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1868,6 +2518,326 @@ export interface Gallery27Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Header44Block".
+ */
+export interface Header44Block {
+  tagline: string;
+  /**
+   * Use H4 for "Short heading here" or customize as needed
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Add description text like "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  links?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'header44';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Header48Block".
+ */
+export interface Header48Block {
+  tagline: string;
+  /**
+   * Use H3 for "Medium length heading here" or customize as needed
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Add description text like "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  inputPlaceholder?: string | null;
+  button: {
+    title: string;
+    size?: ('sm' | 'md' | 'lg') | null;
+    variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
+  };
+  /**
+   * Add terms and conditions text as needed
+   */
+  termsAndConditions?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'header48';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout1Block".
+ */
+export interface Layout1Block {
+  tagline: string;
+  /**
+   * Use H3 for "Medium length heading here" or customize as needed
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Add description text like "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Agregue hasta 2 botones/enlaces
+   */
+  links?:
+    | {
+        /**
+         * Configure el enlace para este botón
+         */
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Upload image or use placeholder
+   */
+  media: number | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layout1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout5Block".
+ */
+export interface Layout5Block {
+  tagline: string;
+  /**
+   * Use H1 for "Medium length section heading goes here" or customize as needed
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Add description text like "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Agregue subencabezados (máximo 2)
+   */
+  subHeadings?:
+    | {
+        /**
+         * Título del subencabezado
+         */
+        title: string;
+        /**
+         * Descripción del subencabezado
+         */
+        description: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Agregue botones/enlaces (máximo 2)
+   */
+  buttons?:
+    | {
+        /**
+         * Configure el enlace para este botón
+         */
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * URL del video (YouTube, Vimeo, etc. - se aceptan URLs normales y de embed)
+   */
+  video?: string | null;
+  /**
+   * Imagen de portada para el video
+   */
+  image?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layout5';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Links1Block".
  */
 export interface Links1Block {
@@ -2160,6 +3130,235 @@ export interface MediaBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Navbar1Block".
+ */
+export interface Navbar1Block {
+  logo?: {
+    useMedia?: boolean | null;
+    media?: (number | null) | Media;
+    url?: string | null;
+    src?: string | null;
+    alt?: string | null;
+  };
+  navLinks?:
+    | {
+        title: string;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        subMenuLinks?:
+          | {
+              title: string;
+              link?: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  buttons?:
+    | {
+        title: string;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        size?: ('sm' | 'lg') | null;
+        variant?: ('default' | 'secondary' | 'ghost' | 'link') | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'navbar1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Navbar5Block".
+ */
+export interface Navbar5Block {
+  logo?: {
+    useMedia?: boolean | null;
+    /**
+     * Upload logo image or use placeholder
+     */
+    media?: (number | null) | Media;
+    url?: string | null;
+    src?: string | null;
+    alt?: string | null;
+  };
+  links?:
+    | {
+        title: string;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        megaMenu: {
+          categoryLinks?:
+            | {
+                title: string;
+                links?:
+                  | {
+                      link?: {
+                        type?: ('reference' | 'custom') | null;
+                        newTab?: boolean | null;
+                        reference?:
+                          | ({
+                              relationTo: 'pages';
+                              value: number | Page;
+                            } | null)
+                          | ({
+                              relationTo: 'posts';
+                              value: number | Post;
+                            } | null);
+                        url?: string | null;
+                      };
+                      image: {
+                        src: string;
+                        alt?: string | null;
+                      };
+                      title: string;
+                      description?: string | null;
+                      button?: {
+                        title?: string | null;
+                        size?: ('sm' | 'lg') | null;
+                        variant?: ('default' | 'secondary' | 'ghost' | 'link') | null;
+                      };
+                      id?: string | null;
+                    }[]
+                  | null;
+                id?: string | null;
+              }[]
+            | null;
+          featuredSections: {
+            title: string;
+            links?:
+              | {
+                  link?: {
+                    type?: ('reference' | 'custom') | null;
+                    newTab?: boolean | null;
+                    reference?:
+                      | ({
+                          relationTo: 'pages';
+                          value: number | Page;
+                        } | null)
+                      | ({
+                          relationTo: 'posts';
+                          value: number | Post;
+                        } | null);
+                    url?: string | null;
+                  };
+                  image: {
+                    src: string;
+                    alt?: string | null;
+                  };
+                  title: string;
+                  description?: string | null;
+                  button?: {
+                    title?: string | null;
+                    size?: ('sm' | 'lg') | null;
+                    variant?: ('default' | 'secondary' | 'ghost' | 'link') | null;
+                  };
+                  id?: string | null;
+                }[]
+              | null;
+          };
+          button: {
+            title: string;
+            size?: ('sm' | 'lg') | null;
+            variant?: ('default' | 'secondary' | 'ghost' | 'link') | null;
+            link?: {
+              type?: ('reference' | 'custom') | null;
+              newTab?: boolean | null;
+              reference?:
+                | ({
+                    relationTo: 'pages';
+                    value: number | Page;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: number | Post;
+                  } | null);
+              url?: string | null;
+            };
+          };
+        };
+        id?: string | null;
+      }[]
+    | null;
+  buttons?:
+    | {
+        title: string;
+        size?: ('sm' | 'lg') | null;
+        variant?: ('default' | 'secondary' | 'ghost' | 'link') | null;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'navbar5';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Portfolio1Block".
  */
 export interface Portfolio1Block {
@@ -2266,6 +3465,76 @@ export interface PortfolioHeader2Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Pricing1Block".
+ */
+export interface Pricing1Block {
+  /**
+   * Add tagline, heading and description text as needed
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  pricingPlan: {
+    /**
+     * Add plan name (H6), monthly and annual pricing as needed
+     */
+    plan: {
+      root: {
+        type: string;
+        children: {
+          type: string;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    /**
+     * Add plan features using lists for each characteristic
+     */
+    features: {
+      root: {
+        type: string;
+        children: {
+          type: string;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    button: {
+      title: string;
+      variant?: ('primary' | 'secondary' | 'ghost' | 'link') | null;
+      size?: ('sm' | 'primary' | 'icon' | 'link') | null;
+    };
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'pricing1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Pricing5Block".
  */
 export interface Pricing5Block {
@@ -2368,6 +3637,56 @@ export interface Stats3Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Testimonial1Block".
+ */
+export interface Testimonial1Block {
+  /**
+   * Add testimonial quote text as needed
+   */
+  quote: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  logo: {
+    /**
+     * Upload company logo or use placeholder
+     */
+    media: number | Media;
+    /**
+     * Descripción del logo para accesibilidad
+     */
+    alt?: string | null;
+  };
+  avatar: {
+    /**
+     * Upload user avatar or use placeholder
+     */
+    media: number | Media;
+    /**
+     * Descripción del avatar para accesibilidad
+     */
+    alt?: string | null;
+  };
+  name: string;
+  position: string;
+  companyName: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'testimonial1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Testimonial3Block".
  */
 export interface Testimonial3Block {
@@ -2391,6 +3710,79 @@ export interface Testimonial3Block {
   id?: string | null;
   blockName?: string | null;
   blockType: 'testimonial3';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Testimonial5Block".
+ */
+export interface Testimonial5Block {
+  /**
+   * Add main content with heading and description as needed
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  testimonials?:
+    | {
+        numberOfStars: number;
+        /**
+         * Add testimonial quote text as needed
+         */
+        quote: {
+          root: {
+            type: string;
+            children: {
+              type: string;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        avatar: {
+          /**
+           * Upload user avatar or use placeholder
+           */
+          media: number | Media;
+          /**
+           * Descripción del avatar para accesibilidad
+           */
+          alt?: string | null;
+        };
+        name: string;
+        position: string;
+        logo: {
+          /**
+           * Upload company logo or use placeholder
+           */
+          media: number | Media;
+          /**
+           * Descripción del logo para accesibilidad
+           */
+          alt?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'testimonial5';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2882,6 +4274,7 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         archive?: T | ArchiveBlockSelect<T>;
+        banner1?: T | Banner1BlockSelect<T>;
         banner4?: T | Banner4BlockSelect<T>;
         banner9?: T | Banner9BlockSelect<T>;
         blog1?: T | Blog1BlockTypeSelect<T>;
@@ -2954,7 +4347,11 @@ export interface PagesSelect<T extends boolean = true> {
             };
         comparison1?: T | Comparison1BlockSelect<T>;
         comparison13?: T | Comparison13BlockSelect<T>;
+        contact1?: T | Contact1BlockSelect<T>;
+        contact5?: T | Contact5BlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
+        cta1?: T | CTA1BlockSelect<T>;
+        cta5?: T | CTA5BlockSelect<T>;
         cta_custom_2?: T | CTACustom_2BlockSelect<T>;
         event1?: T | Event1BlockSelect<T>;
         event3?: T | Event3BlockSelect<T>;
@@ -2962,8 +4359,12 @@ export interface PagesSelect<T extends boolean = true> {
         eventHeader3?: T | EventHeader3BlockSelect<T>;
         eventItemHdr1?: T | EventItemHeader1BlockSelect<T>;
         eventItemHdr5?: T | EventItemHeader5BlockSelect<T>;
+        faq1?: T | FAQ1BlockSelect<T>;
         faq2?: T | FAQ2BlockSelect<T>;
         faq4?: T | FAQ4BlockSelect<T>;
+        faq5?: T | FAQ5BlockSelect<T>;
+        footer1?: T | Footer1BlockSelect<T>;
+        footer5?: T | Footer5BlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         form_custom_2?: T | FormCustom_2BlockSelect<T>;
         multiForm2?: T | MultiForm2BlockSelect<T>;
@@ -2971,6 +4372,10 @@ export interface PagesSelect<T extends boolean = true> {
         gallery6?: T | Gallery6BlockSelect<T>;
         gallery19?: T | Gallery19BlockSelect<T>;
         gallery27?: T | Gallery27BlockSelect<T>;
+        header44?: T | Header44BlockSelect<T>;
+        header48?: T | Header48BlockSelect<T>;
+        layout1?: T | Layout1BlockSelect<T>;
+        layout5?: T | Layout5BlockSelect<T>;
         links1?: T | Links1BlockSelect<T>;
         links4?: T | Links4BlockSelect<T>;
         logo1?: T | Logo1BlockSelect<T>;
@@ -2980,10 +4385,13 @@ export interface PagesSelect<T extends boolean = true> {
         longContent3?: T | LongContent3BlockSelect<T>;
         longContent4?: T | LongContent4BlockSelect<T>;
         mediaBlock?: T | MediaBlockSelect<T>;
+        navbar1?: T | Navbar1BlockSelect<T>;
+        navbar5?: T | Navbar5BlockSelect<T>;
         portfolio1?: T | Portfolio1BlockSelect<T>;
         portfolio5?: T | Portfolio5BlockSelect<T>;
         portfolioHeader1?: T | PortfolioHeader1BlockSelect<T>;
         portfolioHeader2?: T | PortfolioHeader2BlockSelect<T>;
+        pricing1?: T | Pricing1BlockSelect<T>;
         pricing5?: T | Pricing5BlockSelect<T>;
         stats1?: T | Stats1BlockSelect<T>;
         stats3?: T | Stats3BlockSelect<T>;
@@ -3063,7 +4471,9 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        testimonial1?: T | Testimonial1BlockSelect<T>;
         testimonial3?: T | Testimonial3BlockSelect<T>;
+        testimonial5?: T | Testimonial5BlockSelect<T>;
         testimonial6?: T | Testimonial6BlockSelect<T>;
         timeline1?: T | Timeline1BlockSelect<T>;
         timeline3?: T | Timeline3BlockSelect<T>;
@@ -3094,6 +4504,31 @@ export interface ArchiveBlockSelect<T extends boolean = true> {
   categories?: T;
   limit?: T;
   selectedDocs?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Banner1Block_select".
+ */
+export interface Banner1BlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  logo?:
+    | T
+    | {
+        url?: T;
+        src?: T;
+        alt?: T;
+      };
+  inputPlaceholder?: T;
+  button?:
+    | T
+    | {
+        title?: T;
+        size?: T;
+        variant?: T;
+      };
   id?: T;
   blockName?: T;
 }
@@ -3417,6 +4852,47 @@ export interface Comparison13BlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Contact1Block_select".
+ */
+export interface Contact1BlockSelect<T extends boolean = true> {
+  content?: T;
+  button?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+      };
+  terms?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Contact5Block_select".
+ */
+export interface Contact5BlockSelect<T extends boolean = true> {
+  content?: T;
+  contactInfo?:
+    | T
+    | {
+        email?: T;
+        phone?: T;
+        address?: T;
+      };
+  button?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+      };
+  terms?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ContentBlock_select".
  */
 export interface ContentBlockSelect<T extends boolean = true> {
@@ -3437,6 +4913,65 @@ export interface ContentBlockSelect<T extends boolean = true> {
               appearance?: T;
             };
         id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTA1Block_select".
+ */
+export interface CTA1BlockSelect<T extends boolean = true> {
+  content?: T;
+  buttons?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        id?: T;
+      };
+  image?:
+    | T
+    | {
+        media?: T;
+        alt?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTA5Block_select".
+ */
+export interface CTA5BlockSelect<T extends boolean = true> {
+  content?: T;
+  buttons?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        id?: T;
+      };
+  video?:
+    | T
+    | {
+        youtubeUrl?: T;
       };
   id?: T;
   blockName?: T;
@@ -3773,6 +5308,38 @@ export interface EventItemHeader5BlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQ1Block_select".
+ */
+export interface FAQ1BlockSelect<T extends boolean = true> {
+  content?: T;
+  questions?:
+    | T
+    | {
+        title?: T;
+        answer?: T;
+        id?: T;
+      };
+  footerContent?: T;
+  button?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "FAQ2Block_select".
  */
 export interface FAQ2BlockSelect<T extends boolean = true> {
@@ -3821,6 +5388,205 @@ export interface FAQ4BlockSelect<T extends boolean = true> {
         url?: T;
         variant?: T;
         size?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQ5Block_select".
+ */
+export interface FAQ5BlockSelect<T extends boolean = true> {
+  content?: T;
+  questions?:
+    | T
+    | {
+        title?: T;
+        answer?: T;
+        id?: T;
+      };
+  footerContent?: T;
+  button?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Footer1Block_select".
+ */
+export interface Footer1BlockSelect<T extends boolean = true> {
+  logo?:
+    | T
+    | {
+        media?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+      };
+  newsletterDescription?: T;
+  inputPlaceholder?: T;
+  button?:
+    | T
+    | {
+        title?: T;
+        size?: T;
+        variant?: T;
+      };
+  termsAndConditions?:
+    | T
+    | {
+        text?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        suffix?: T;
+      };
+  columnLinks?:
+    | T
+    | {
+        title?: T;
+        links?:
+          | T
+          | {
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              icon?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  footerText?: T;
+  footerLinks?:
+    | T
+    | {
+        title?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Footer5Block_select".
+ */
+export interface Footer5BlockSelect<T extends boolean = true> {
+  logo?:
+    | T
+    | {
+        media?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+      };
+  newsletterHeading?: T;
+  newsletterDescription?: T;
+  inputPlaceholder?: T;
+  button?:
+    | T
+    | {
+        title?: T;
+        size?: T;
+        variant?: T;
+      };
+  termsAndConditions?:
+    | T
+    | {
+        text?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        suffix?: T;
+      };
+  columnLinks?:
+    | T
+    | {
+        title?: T;
+        links?:
+          | T
+          | {
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  socialMediaLinks?:
+    | T
+    | {
+        url?: T;
+        icon?: T;
+        id?: T;
+      };
+  footerText?: T;
+  footerLinks?:
+    | T
+    | {
+        title?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        id?: T;
       };
   id?: T;
   blockName?: T;
@@ -4054,6 +5820,114 @@ export interface Gallery27BlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Header44Block_select".
+ */
+export interface Header44BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Header48Block_select".
+ */
+export interface Header48BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  inputPlaceholder?: T;
+  button?:
+    | T
+    | {
+        title?: T;
+        size?: T;
+        variant?: T;
+      };
+  termsAndConditions?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout1Block_select".
+ */
+export interface Layout1BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  media?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout5Block_select".
+ */
+export interface Layout5BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  subHeadings?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  video?: T;
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Links1Block_select".
  */
 export interface Links1BlockSelect<T extends boolean = true> {
@@ -4267,6 +6141,200 @@ export interface MediaBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Navbar1Block_select".
+ */
+export interface Navbar1BlockSelect<T extends boolean = true> {
+  logo?:
+    | T
+    | {
+        useMedia?: T;
+        media?: T;
+        url?: T;
+        src?: T;
+        alt?: T;
+      };
+  navLinks?:
+    | T
+    | {
+        title?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        subMenuLinks?:
+          | T
+          | {
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  buttons?:
+    | T
+    | {
+        title?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        size?: T;
+        variant?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Navbar5Block_select".
+ */
+export interface Navbar5BlockSelect<T extends boolean = true> {
+  logo?:
+    | T
+    | {
+        useMedia?: T;
+        media?: T;
+        url?: T;
+        src?: T;
+        alt?: T;
+      };
+  links?:
+    | T
+    | {
+        title?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        megaMenu?:
+          | T
+          | {
+              categoryLinks?:
+                | T
+                | {
+                    title?: T;
+                    links?:
+                      | T
+                      | {
+                          link?:
+                            | T
+                            | {
+                                type?: T;
+                                newTab?: T;
+                                reference?: T;
+                                url?: T;
+                              };
+                          image?:
+                            | T
+                            | {
+                                src?: T;
+                                alt?: T;
+                              };
+                          title?: T;
+                          description?: T;
+                          button?:
+                            | T
+                            | {
+                                title?: T;
+                                size?: T;
+                                variant?: T;
+                              };
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              featuredSections?:
+                | T
+                | {
+                    title?: T;
+                    links?:
+                      | T
+                      | {
+                          link?:
+                            | T
+                            | {
+                                type?: T;
+                                newTab?: T;
+                                reference?: T;
+                                url?: T;
+                              };
+                          image?:
+                            | T
+                            | {
+                                src?: T;
+                                alt?: T;
+                              };
+                          title?: T;
+                          description?: T;
+                          button?:
+                            | T
+                            | {
+                                title?: T;
+                                size?: T;
+                                variant?: T;
+                              };
+                          id?: T;
+                        };
+                  };
+              button?:
+                | T
+                | {
+                    title?: T;
+                    size?: T;
+                    variant?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                        };
+                  };
+            };
+        id?: T;
+      };
+  buttons?:
+    | T
+    | {
+        title?: T;
+        size?: T;
+        variant?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Portfolio1Block_select".
  */
 export interface Portfolio1BlockSelect<T extends boolean = true> {
@@ -4372,6 +6440,28 @@ export interface PortfolioHeader2BlockSelect<T extends boolean = true> {
         id?: T;
       };
   image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Pricing1Block_select".
+ */
+export interface Pricing1BlockSelect<T extends boolean = true> {
+  content?: T;
+  pricingPlan?:
+    | T
+    | {
+        plan?: T;
+        features?: T;
+        button?:
+          | T
+          | {
+              title?: T;
+              variant?: T;
+              size?: T;
+            };
+      };
   id?: T;
   blockName?: T;
 }
@@ -4484,6 +6574,30 @@ export interface Stats3BlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Testimonial1Block_select".
+ */
+export interface Testimonial1BlockSelect<T extends boolean = true> {
+  quote?: T;
+  logo?:
+    | T
+    | {
+        media?: T;
+        alt?: T;
+      };
+  avatar?:
+    | T
+    | {
+        media?: T;
+        alt?: T;
+      };
+  name?: T;
+  position?: T;
+  companyName?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Testimonial3Block_select".
  */
 export interface Testimonial3BlockSelect<T extends boolean = true> {
@@ -4508,6 +6622,36 @@ export interface Testimonial3BlockSelect<T extends boolean = true> {
         name?: T;
         position?: T;
         companyName?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Testimonial5Block_select".
+ */
+export interface Testimonial5BlockSelect<T extends boolean = true> {
+  content?: T;
+  testimonials?:
+    | T
+    | {
+        numberOfStars?: T;
+        quote?: T;
+        avatar?:
+          | T
+          | {
+              media?: T;
+              alt?: T;
+            };
+        name?: T;
+        position?: T;
+        logo?:
+          | T
+          | {
+              media?: T;
+              alt?: T;
+            };
         id?: T;
       };
   id?: T;
