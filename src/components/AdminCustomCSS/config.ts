@@ -31,6 +31,24 @@ export const blockConfigs: BlockConfig[] = [
     className: 'custom-long-content-preview'
   },
   {
+    name: 'Long Content 2',
+    selector: 'Long Content 2',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/640532fbbac136015993dd5e_section_content2.png',
+    className: 'custom-long-content2-preview'
+  },
+  {
+    name: 'Long Content 3',
+    selector: 'Long Content 3',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/640532fb1122c684f9c2f462_section_content3.png',
+    className: 'custom-long-content3-preview'
+  },
+  {
+    name: 'Long Content 4',
+    selector: 'Long Content 4',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/640532faa68c028948d1ebf5_section_content4.png',
+    className: 'custom-long-content4-preview'
+  },
+  {
     name: 'Testimonial3',
     selector: 'Testimonial3',
     imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/654462e9cb268058279cb8ee_XRVbXGYAXhhY6o_YT0XkPi2h-o6bczkT3rRkgwxYDak.png',
@@ -53,6 +71,18 @@ export const blockConfigs: BlockConfig[] = [
     selector: 'Career Section 1',
     imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/61f91cb7f1b3a61eb23734e5_61f919a9b8d04c9bcb54b8fe_image-career1.png',
     className: 'custom-career-section1-preview'
+  },
+  {
+    name: 'Career Section 3',
+    selector: 'Career Section 3',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/61f91cb601ef430e59de7361_61f919bf2252d0166ed1084c_image-career3.png',
+    className: 'custom-career-section3-preview'
+  },
+  {
+    name: 'Career Section 4',
+    selector: 'Career Section 4',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/61f91cb5ddfecfd937896f83_61f919cbf3cc808209576526_image-career4.png',
+    className: 'custom-career-section4-preview'
   },
   {
     name: 'Gallery 6',
@@ -79,10 +109,34 @@ export const blockConfigs: BlockConfig[] = [
     className: 'custom-timeline1-preview'
   },
   {
+    name: 'Timeline 3',
+    selector: 'Timeline 3',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/65f92f7a45e523db21681934_waQFTpODvueL3GKau7Bgq0xgj2hPCQWgHVkk9_M9Xck.png',
+    className: 'custom-timeline3-preview'
+  },
+  {
+    name: 'Timeline 7',
+    selector: 'Timeline 7',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/65f92f84c8919f6802e0eace_9MenVhHUusBYF1yXDXuyUq2dpSkRhDlKQBApJiC5xSI.png',
+    className: 'custom-timeline7-preview'
+  },
+  {
     name: 'Multi-step form 1',
     selector: 'Multi-step form 1',
     imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/65b8505c2b52beebf786c58c_fdtF-l5bvbIDJwhru8p3qXu8X0TWEVXkJj-3fLUGuA8.png',
     className: 'custom-multistep-form1-preview'
+  },
+  {
+    name: 'Multi-step form 2',
+    selector: 'Multi-step form 2',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/65b8505dc21d7ddfe91ae227_IL_rRQEFuGWfbEJTVG4hMn1O6VxatF7UBPC16gPRoJo.png',
+    className: 'custom-multistep-form2-preview'
+  },
+  {
+    name: 'Multi-step form 7',
+    selector: 'Multi-step form 7',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/65b850653dd81480053e6e68_AVSt6i55eRPSU8Tg8dQag6fBfXRJypPfEw02KEa1Fhs.png',
+    className: 'custom-multistep-form7-preview'
   },
   {
     name: 'Contact modal 2',

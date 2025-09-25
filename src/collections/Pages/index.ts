@@ -11,16 +11,23 @@ import { BlogPostHeader1 } from '../../blocks/Blog_Post_Header_1/config'
 import { BlogPostHeader5 } from '../../blocks/Blog_Post_Header_5/config'
 import { CallToAction } from '../../blocks/CallToAction/config'
 import { CareerSection1 } from '../../blocks/Career_Section_1/config'
+import { Career3Block } from '../../blocks/Career_Section_3/config'
+import { Career4Block } from '../../blocks/Caree_Section_4/config'
 import { Content } from '../../blocks/Content/config'
 import { CTA_custom_2 } from '../../blocks/CTA_custom_2/config'
 import { FormBlock } from '../../blocks/Form/config'
 import { Form_custom_2 } from '../../blocks/Multi-step_form_1/config'
+import { MultiForm2 } from '../../blocks/Multi-step_form_2/config'
+import { MultiForm7 } from '../../blocks/Multi-step_form_7/config'
 import { Gallery6 } from '../../blocks/Gallery_6/config'
 import { Gallery19 } from '../../blocks/Gallery_19/config'
 import { Gallery27 } from '../../blocks/Gallery_27/config'
 import { Logo1 } from '../../blocks/Logo_1/config'
 import { Logo2 } from '../../blocks/Logo_2/config'
 import { LongContent1 } from '../../blocks/Long_Content_1/config'
+import { LongContent2 } from '../../blocks/Long_Content_2/config'
+import { LongContent3 } from '../../blocks/Long_Content_3/config'
+import { LongContent4 } from '../../blocks/Long_Content_4/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { Pricing5 } from '../../blocks/Pricing_5/config'
 import { Team1 } from '../../blocks/Team1/config'
@@ -28,6 +35,8 @@ import { Team2 } from '../../blocks/Team2/config'
 import { Testimonial3Block } from '../../blocks/Testimonial_3/config'
 import { Testimonial6Block } from '../../blocks/Testimonial_6/config'
 import { Timeline1 } from '../../blocks/Timeline_1/config'
+import { Timeline3 } from '../../blocks/Timeline_3/config'
+import { Timeline7 } from '../../blocks/Timeline_7/config'
 import { Portfolio1 } from '../../blocks/Portfolio_1/config'
 import { Portfolio5 } from '../../blocks/Portfolio_5/config'
 import { PortfolioHeader1 } from '../../blocks/Portfolio_Header_1/config'
@@ -114,7 +123,7 @@ export const Pages: CollectionConfig<'pages'> = {
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [Archive, Banner4, Banner9, Blog1, Blog5, BlogPostHeader1, BlogPostHeader5, CallToAction, CareerSection1, Comparison1, Comparison13, Content, CTA_custom_2, Event1, Event3, EventHeader1, EventHeader3, EventItemHeader1, EventItemHeader5, FAQ2, FAQ4, FormBlock, Form_custom_2, Gallery6, Gallery19, Gallery27, Links1, Links4, Logo1, Logo2, LongContent1, MediaBlock, Portfolio1, Portfolio5, PortfolioHeader1, PortfolioHeader2, Pricing5, Stats1, Stats3, Team1, Team2, Testimonial3Block, Testimonial6Block, Timeline1],
+              blocks: [Archive, Banner4, Banner9, Blog1, Blog5, BlogPostHeader1, BlogPostHeader5, CallToAction, CareerSection1, Career3Block, Career4Block, Comparison1, Comparison13, Content, CTA_custom_2, Event1, Event3, EventHeader1, EventHeader3, EventItemHeader1, EventItemHeader5, FAQ2, FAQ4, FormBlock, Form_custom_2, MultiForm2, MultiForm7, Gallery6, Gallery19, Gallery27, Links1, Links4, Logo1, Logo2, LongContent1, LongContent2, LongContent3, LongContent4, MediaBlock, Portfolio1, Portfolio5, PortfolioHeader1, PortfolioHeader2, Pricing5, Stats1, Stats3, Team1, Team2, Testimonial3Block, Testimonial6Block, Timeline1, Timeline3, Timeline7],
               required: true,
               admin: {
                 initCollapsed: true,

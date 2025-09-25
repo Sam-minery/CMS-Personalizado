@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     const payload = await getPayload({ config })
     const body = await request.json()
-    const { submissionData } = body
+    const { submissionData, formType = 'form-custom-2' } = body
 
     if (!submissionData || !Array.isArray(submissionData)) {
       return NextResponse.json(
@@ -20,6 +20,9 @@ export async function POST(request: NextRequest) {
       acc[item.field] = item.value
       return acc
     }, {} as Record<string, unknown>)
+
+    // Determinar el tipo de formulario basado en el parámetro formType
+    const source = formType === 'multi-form-2' ? 'multi-form-2' : 'form-custom-2'
 
     // Crear el envío del formulario en la collection FormCustom2Submissions
     const formSubmission = await payload.create({
@@ -35,11 +38,11 @@ export async function POST(request: NextRequest) {
         website: formData.website,
         country: formData.country,
         date: formData.date,
-        source: 'form-custom-2',
+        source: source,
       },
     })
 
-    console.log('Form custom 2 submission saved to Payload:', formSubmission)
+    console.log(`${source} submission saved to Payload:`, formSubmission)
 
     return NextResponse.json(
       { 

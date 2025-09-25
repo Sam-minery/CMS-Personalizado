@@ -205,6 +205,62 @@ export interface Page {
     | BlogPostHeader5BlockType
     | CallToActionBlock
     | CareerSection1Block
+    | {
+        tagline: string;
+        heading: string;
+        description: string;
+        depts3?:
+          | {
+              title: string;
+              jobs?:
+                | {
+                    title: string;
+                    location: string;
+                    description: string;
+                    url: string;
+                    button: {
+                      title: string;
+                      variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                      size?: ('sm' | 'default' | 'lg') | null;
+                    };
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'career3';
+      }
+    | {
+        tagline: string;
+        heading: string;
+        description: string;
+        depts4?:
+          | {
+              title: string;
+              jobs?:
+                | {
+                    title: string;
+                    location: string;
+                    description: string;
+                    url: string;
+                    button: {
+                      title: string;
+                      variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                      size?: ('sm' | 'default' | 'lg') | null;
+                    };
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'career4';
+      }
     | Comparison1Block
     | Comparison13Block
     | ContentBlock
@@ -219,6 +275,8 @@ export interface Page {
     | FAQ4Block
     | FormBlock
     | FormCustom_2Block
+    | MultiForm2Block
+    | MultiForm7Block
     | Gallery6Block
     | Gallery19Block
     | Gallery27Block
@@ -227,6 +285,9 @@ export interface Page {
     | Logo1Block
     | Logo2Block
     | LongContent1Block
+    | LongContent2Block
+    | LongContent3Block
+    | LongContent4Block
     | MediaBlock
     | Portfolio1Block
     | Portfolio5Block
@@ -304,6 +365,8 @@ export interface Page {
     | Testimonial3Block
     | Testimonial6Block
     | Timeline1Block
+    | Timeline3Block
+    | Timeline7Block
   )[];
   meta?: {
     title?: string | null;
@@ -1628,6 +1691,128 @@ export interface FormCustom_2Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MultiForm2Block".
+ */
+export interface MultiForm2Block {
+  /**
+   * Selecciona una imagen para el logo desde la biblioteca de medios
+   */
+  logo?: (number | null) | Media;
+  /**
+   * URL personalizada para el logo (si no se selecciona una imagen)
+   */
+  logoUrl?: string | null;
+  navText?: string | null;
+  navButton?: {
+    title?: string | null;
+    variant?: ('link' | 'default' | 'secondary' | 'outline') | null;
+    size?: ('link' | 'default' | 'sm' | 'lg') | null;
+  };
+  footerText?: string | null;
+  step1Title?: string | null;
+  step1Description?: string | null;
+  step2Title?: string | null;
+  step2Description?: string | null;
+  step3Title?: string | null;
+  step3Description?: string | null;
+  step4Title?: string | null;
+  step4Description?: string | null;
+  serviceTypeOptions?:
+    | {
+        label?: string | null;
+        value?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  budgetOptions?:
+    | {
+        label?: string | null;
+        value?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  employeesOptions?:
+    | {
+        label?: string | null;
+        value?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  countriesOptions?:
+    | {
+        id?: number | null;
+        label?: string | null;
+        value?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'multiForm2';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MultiForm7Block".
+ */
+export interface MultiForm7Block {
+  /**
+   * Selecciona una imagen para el logo desde la biblioteca de medios
+   */
+  logo?: (number | null) | Media;
+  /**
+   * URL personalizada para el logo (si no se selecciona una imagen)
+   */
+  logoUrl?: string | null;
+  /**
+   * Selecciona una imagen para el lado derecho del formulario
+   */
+  image?: (number | null) | Media;
+  /**
+   * URL personalizada para la imagen de fondo (si no se selecciona una imagen)
+   */
+  imageUrl?: string | null;
+  footerText?: string | null;
+  step1Title?: string | null;
+  step1Description?: string | null;
+  step2Title?: string | null;
+  step2Description?: string | null;
+  step3Title?: string | null;
+  step3Description?: string | null;
+  step4Title?: string | null;
+  step4Description?: string | null;
+  serviceTypeOptions?:
+    | {
+        label?: string | null;
+        value?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  budgetOptions?:
+    | {
+        label?: string | null;
+        value?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  employeesOptions?:
+    | {
+        label?: string | null;
+        value?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  countriesOptions?:
+    | {
+        id?: number | null;
+        label?: string | null;
+        value?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'multiForm7';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Gallery6Block".
  */
 export interface Gallery6Block {
@@ -1867,6 +2052,101 @@ export interface LongContent1Block {
   id?: string | null;
   blockName?: string | null;
   blockType: 'longContent1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LongContent2Block".
+ */
+export interface LongContent2Block {
+  heading: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  image: {
+    src: number | Media;
+    alt: string;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'longContent2';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LongContent3Block".
+ */
+export interface LongContent3Block {
+  heading: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * URL del video (ej: https://www.youtube.com/embed/VIDEO_ID)
+   */
+  video: string;
+  image: {
+    src: number | Media;
+    alt: string;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'longContent3';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LongContent4Block".
+ */
+export interface LongContent4Block {
+  heading: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * URL del video (ej: https://www.youtube.com/embed/VIDEO_ID)
+   */
+  video: string;
+  image: {
+    src: number | Media;
+    alt: string;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'longContent4';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2171,6 +2451,84 @@ export interface Timeline1Block {
   blockType: 'timeline1';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Timeline3Block".
+ */
+export interface Timeline3Block {
+  tagline: string;
+  heading: string;
+  description: string;
+  buttons?:
+    | {
+        title: string;
+        variant?: ('default' | 'secondary' | 'outline' | 'ghost' | 'link') | null;
+        size?: ('sm' | 'default' | 'lg' | 'link') | null;
+        href?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  timelines?:
+    | {
+        date: string;
+        heading: string;
+        description: string;
+        buttons?:
+          | {
+              title: string;
+              variant?: ('default' | 'secondary' | 'outline' | 'ghost' | 'link') | null;
+              size?: ('sm' | 'default' | 'lg' | 'link') | null;
+              href?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'timeline3';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Timeline7Block".
+ */
+export interface Timeline7Block {
+  tagline: string;
+  heading: string;
+  description: string;
+  buttons?:
+    | {
+        title: string;
+        variant?: ('default' | 'secondary' | 'outline' | 'ghost' | 'link') | null;
+        size?: ('sm' | 'default' | 'lg' | 'link') | null;
+        href?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  timelineItems?:
+    | {
+        heading: string;
+        title: string;
+        description: string;
+        buttons?:
+          | {
+              title: string;
+              variant?: ('default' | 'secondary' | 'outline' | 'ghost' | 'link') | null;
+              size?: ('sm' | 'default' | 'lg' | 'link') | null;
+              href?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'timeline7';
+}
+/**
  * Envíos del formulario de Contact Section 2
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2201,7 +2559,7 @@ export interface ContactSubmission {
   createdAt: string;
 }
 /**
- * Envíos del formulario personalizado 2
+ * Envíos de formularios multi-paso (formulario 1 y 2)
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-custom-2-submissions".
@@ -2221,7 +2579,7 @@ export interface FormCustom2Submission {
   /**
    * Identifica de qué formulario proviene el envío
    */
-  source?: string | null;
+  source?: ('form-custom-2' | 'multi-form-2') | null;
   /**
    * Estado del envío del formulario
    */
@@ -2532,6 +2890,68 @@ export interface PagesSelect<T extends boolean = true> {
         blogPostHeader5?: T | BlogPostHeader5BlockTypeSelect<T>;
         cta?: T | CallToActionBlockSelect<T>;
         careerSection1?: T | CareerSection1BlockSelect<T>;
+        career3?:
+          | T
+          | {
+              tagline?: T;
+              heading?: T;
+              description?: T;
+              depts3?:
+                | T
+                | {
+                    title?: T;
+                    jobs?:
+                      | T
+                      | {
+                          title?: T;
+                          location?: T;
+                          description?: T;
+                          url?: T;
+                          button?:
+                            | T
+                            | {
+                                title?: T;
+                                variant?: T;
+                                size?: T;
+                              };
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        career4?:
+          | T
+          | {
+              tagline?: T;
+              heading?: T;
+              description?: T;
+              depts4?:
+                | T
+                | {
+                    title?: T;
+                    jobs?:
+                      | T
+                      | {
+                          title?: T;
+                          location?: T;
+                          description?: T;
+                          url?: T;
+                          button?:
+                            | T
+                            | {
+                                title?: T;
+                                variant?: T;
+                                size?: T;
+                              };
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
         comparison1?: T | Comparison1BlockSelect<T>;
         comparison13?: T | Comparison13BlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
@@ -2546,6 +2966,8 @@ export interface PagesSelect<T extends boolean = true> {
         faq4?: T | FAQ4BlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         form_custom_2?: T | FormCustom_2BlockSelect<T>;
+        multiForm2?: T | MultiForm2BlockSelect<T>;
+        multiForm7?: T | MultiForm7BlockSelect<T>;
         gallery6?: T | Gallery6BlockSelect<T>;
         gallery19?: T | Gallery19BlockSelect<T>;
         gallery27?: T | Gallery27BlockSelect<T>;
@@ -2554,6 +2976,9 @@ export interface PagesSelect<T extends boolean = true> {
         logo1?: T | Logo1BlockSelect<T>;
         logo2?: T | Logo2BlockSelect<T>;
         longContent1?: T | LongContent1BlockSelect<T>;
+        longContent2?: T | LongContent2BlockSelect<T>;
+        longContent3?: T | LongContent3BlockSelect<T>;
+        longContent4?: T | LongContent4BlockSelect<T>;
         mediaBlock?: T | MediaBlockSelect<T>;
         portfolio1?: T | Portfolio1BlockSelect<T>;
         portfolio5?: T | Portfolio5BlockSelect<T>;
@@ -2641,6 +3066,8 @@ export interface PagesSelect<T extends boolean = true> {
         testimonial3?: T | Testimonial3BlockSelect<T>;
         testimonial6?: T | Testimonial6BlockSelect<T>;
         timeline1?: T | Timeline1BlockSelect<T>;
+        timeline3?: T | Timeline3BlockSelect<T>;
+        timeline7?: T | Timeline7BlockSelect<T>;
       };
   meta?:
     | T
@@ -3471,6 +3898,110 @@ export interface FormCustom_2BlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MultiForm2Block_select".
+ */
+export interface MultiForm2BlockSelect<T extends boolean = true> {
+  logo?: T;
+  logoUrl?: T;
+  navText?: T;
+  navButton?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+      };
+  footerText?: T;
+  step1Title?: T;
+  step1Description?: T;
+  step2Title?: T;
+  step2Description?: T;
+  step3Title?: T;
+  step3Description?: T;
+  step4Title?: T;
+  step4Description?: T;
+  serviceTypeOptions?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  budgetOptions?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  employeesOptions?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  countriesOptions?:
+    | T
+    | {
+        id?: T;
+        label?: T;
+        value?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MultiForm7Block_select".
+ */
+export interface MultiForm7BlockSelect<T extends boolean = true> {
+  logo?: T;
+  logoUrl?: T;
+  image?: T;
+  imageUrl?: T;
+  footerText?: T;
+  step1Title?: T;
+  step1Description?: T;
+  step2Title?: T;
+  step2Description?: T;
+  step3Title?: T;
+  step3Description?: T;
+  step4Title?: T;
+  step4Description?: T;
+  serviceTypeOptions?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  budgetOptions?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  employeesOptions?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  countriesOptions?:
+    | T
+    | {
+        id?: T;
+        label?: T;
+        value?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Gallery6Block_select".
  */
 export interface Gallery6BlockSelect<T extends boolean = true> {
@@ -3666,6 +4197,56 @@ export interface Logo2BlockSelect<T extends boolean = true> {
 export interface LongContent1BlockSelect<T extends boolean = true> {
   heading?: T;
   content?: T;
+  image?:
+    | T
+    | {
+        src?: T;
+        alt?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LongContent2Block_select".
+ */
+export interface LongContent2BlockSelect<T extends boolean = true> {
+  heading?: T;
+  content?: T;
+  image?:
+    | T
+    | {
+        src?: T;
+        alt?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LongContent3Block_select".
+ */
+export interface LongContent3BlockSelect<T extends boolean = true> {
+  heading?: T;
+  content?: T;
+  video?: T;
+  image?:
+    | T
+    | {
+        src?: T;
+        alt?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LongContent4Block_select".
+ */
+export interface LongContent4BlockSelect<T extends boolean = true> {
+  heading?: T;
+  content?: T;
+  video?: T;
   image?:
     | T
     | {
@@ -3985,6 +4566,82 @@ export interface Timeline1BlockSelect<T extends boolean = true> {
               href?: T;
               id?: T;
             };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Timeline3Block_select".
+ */
+export interface Timeline3BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  buttons?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+        href?: T;
+        id?: T;
+      };
+  timelines?:
+    | T
+    | {
+        date?: T;
+        heading?: T;
+        description?: T;
+        buttons?:
+          | T
+          | {
+              title?: T;
+              variant?: T;
+              size?: T;
+              href?: T;
+              id?: T;
+            };
+        image?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Timeline7Block_select".
+ */
+export interface Timeline7BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  buttons?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+        href?: T;
+        id?: T;
+      };
+  timelineItems?:
+    | T
+    | {
+        heading?: T;
+        title?: T;
+        description?: T;
+        buttons?:
+          | T
+          | {
+              title?: T;
+              variant?: T;
+              size?: T;
+              href?: T;
+              id?: T;
+            };
+        image?: T;
         id?: T;
       };
   id?: T;

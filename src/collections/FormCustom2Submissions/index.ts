@@ -11,10 +11,10 @@ export const FormCustom2Submissions: CollectionConfig = {
     update: authenticated,
   },
   admin: {
-    defaultColumns: ['name', 'email', 'companyName', 'serviceType', 'createdAt'],
+    defaultColumns: ['name', 'email', 'companyName', 'serviceType', 'source', 'createdAt'],
     useAsTitle: 'name',
     group: 'Content',
-    description: 'Envíos del formulario personalizado 2',
+    description: 'Envíos de formularios multi-paso (formulario 1 y 2)',
   },
   fields: [
     {
@@ -109,12 +109,15 @@ export const FormCustom2Submissions: CollectionConfig = {
     },
     {
       name: 'source',
-      type: 'text',
+      type: 'select',
       label: 'Fuente del formulario',
+      options: [
+        { label: 'Multi-step form 1', value: 'form-custom-2' },
+        { label: 'Multi-step form 2', value: 'multi-form-2' },
+      ],
       defaultValue: 'form-custom-2',
       admin: {
         position: 'sidebar',
-        readOnly: true,
         description: 'Identifica de qué formulario proviene el envío',
       },
     },
