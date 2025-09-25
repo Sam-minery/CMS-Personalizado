@@ -20,11 +20,18 @@ import { BlogPostHeader1Block } from '@/blocks/Blog_Post_Header_1/Component'
 import { BlogPostHeader5Block } from '@/blocks/Blog_Post_Header_5/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { CareerSection1Block } from '@/blocks/Career_Section_1/Component'
+import { Career3 } from '@/blocks/Career_Section_3/Component'
+import { Career4 } from '@/blocks/Caree_Section_4/Component'
 import { CTA_custom_2Block } from '@/blocks/CTA_custom_2/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { Form_custom_2Block } from '@/blocks/Multi-step_form_1/Component'
+import { MultiForm2Block } from '@/blocks/Multi-step_form_2/Component'
+import { MultiForm7Block } from '@/blocks/Multi-step_form_7/Component'
 import { LongContent1Block } from '@/blocks/Long_Content_1/Component'
+import { LongContent2Block } from '@/blocks/Long_Content_2/Component'
+import { LongContent3Block } from '@/blocks/Long_Content_3/Component'
+import { LongContent4Block } from '@/blocks/Long_Content_4/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { Pricing5Block } from '@/blocks/Pricing_5/Component'
 import { Testimonial3 } from '@/blocks/Testimonial_3/Component'
@@ -37,6 +44,8 @@ import { Logo2Block } from '@/blocks/Logo_2/Component'
 import { Team1 as Team1Block } from '@/blocks/Team1/Component'
 import { Team2 as Team2Block } from '@/blocks/Team2/Component'
 import { Timeline1Block } from '@/blocks/Timeline_1/Component'
+import { Timeline3 as Timeline3Block } from '@/blocks/Timeline_3/Component'
+import { Timeline7 as Timeline7Block } from '@/blocks/Timeline_7/Component'
 import { Portfolio1 as Portfolio1Block } from '@/blocks/Portfolio_1/Component'
 import { Portfolio5 as Portfolio5Block } from '@/blocks/Portfolio_5/Component'
 import { FAQ2 as FAQ2Block } from '@/blocks/FAQ_2/Component'
@@ -83,11 +92,15 @@ const blockComponents = {
   blogPostHeader1: BlogPostHeader1Block,
   blogPostHeader5: BlogPostHeader5Block,
   careerSection1: CareerSection1Block,
+  career3: Career3,
+  career4: Career4,
   content: ContentBlock,
   cta: CallToActionBlock,
   cta_custom_2: CTA_custom_2Block,
   formBlock: FormBlock,
   form_custom_2: Form_custom_2Block,
+  multiForm2: MultiForm2Block,
+  multiForm7: MultiForm7Block,
   gallery6: Gallery6Block,
   gallery19: Gallery19Block,
   gallery27: Gallery27Block,
@@ -96,11 +109,16 @@ const blockComponents = {
   team1: Team1Block,
   team2: Team2Block,
   longContent1: LongContent1Block,
+  longContent2: LongContent2Block,
+  longContent3: LongContent3Block,
+  longContent4: LongContent4Block,
   mediaBlock: MediaBlock,
   pricing5: Pricing5Block,
   testimonial3: Testimonial3,
   testimonial6: Testimonial6,
   timeline1: Timeline1Block,
+  timeline3: Timeline3Block,
+  timeline7: Timeline7Block,
   portfolio1: Portfolio1Block,
   portfolio5: Portfolio5Block,
   faq2: FAQ2Block,
