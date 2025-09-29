@@ -4,6 +4,8 @@ import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Archive } from '../../blocks/ArchiveBlock/config'
 import { Banner1Block } from '../../blocks/Banner1/config'
+import { Banner2Block } from '../../blocks/Banner2/config'
+import { Banner3Block } from '../../blocks/Banner3/config'
 import { Banner4 } from '../../blocks/Banner_4/config'
 import { Banner9 } from '../../blocks/Banner_9/config'
 import { Contact1Block } from '../../blocks/Contact1/config'
@@ -17,11 +19,15 @@ import { Footer5Block } from '../../blocks/Footer5/config'
 import { Blog1 } from '../../blocks/Blog_1/config'
 import { Blog5 } from '../../blocks/Blog_5/config'
 import { BlogPostHeader1 } from '../../blocks/Blog_Post_Header_1/config'
+import { BlogPostHeader2Block } from '../../blocks/Blog_Post_Header2/config'
+import { BlogPostHeader3Block } from '../../blocks/Blog_Post_Header3/config'
 import { BlogPostHeader5 } from '../../blocks/Blog_Post_Header_5/config'
 import { CallToAction } from '../../blocks/CallToAction/config'
 import { CareerSection1 } from '../../blocks/Career_Section_1/config'
 import { Career3Block } from '../../blocks/Career_Section_3/config'
 import { Career4Block } from '../../blocks/Caree_Section_4/config'
+import { Career5 } from '../../blocks/Career5/config'
+import { Career6 } from '../../blocks/Career6/config'
 import { Content } from '../../blocks/Content/config'
 import { CTA_custom_2 } from '../../blocks/CTA_custom_2/config'
 import { FormBlock } from '../../blocks/Form/config'
@@ -144,16 +150,22 @@ export const Pages: CollectionConfig<'pages'> = {
               blocks: [
                 Archive,
                 Banner1Block,
+                Banner2Block,
+                Banner3Block,
                 Banner4,
                 Banner9,
                 Blog1,
                 Blog5,
                 BlogPostHeader1,
+                BlogPostHeader2Block,
+                BlogPostHeader3Block,
                 BlogPostHeader5,
                 CallToAction,
                 CareerSection1,
                 Career3Block,
                 Career4Block,
+                Career5,
+                Career6,
                 Comparison1,
                 Comparison13,
                 Contact1Block,

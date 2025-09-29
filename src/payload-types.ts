@@ -198,11 +198,15 @@ export interface Page {
   layout: (
     | ArchiveBlock
     | Banner1Block
+    | Banner2Block
+    | Banner3Block
     | Banner4Block
     | Banner9Block
     | Blog1BlockType
     | Blog5BlockType
     | BlogPostHeader1BlockType
+    | BlogPostHeader2Block
+    | BlogPostHeader3Block
     | BlogPostHeader5BlockType
     | CallToActionBlock
     | CareerSection1Block
@@ -262,6 +266,8 @@ export interface Page {
         blockName?: string | null;
         blockType: 'career4';
       }
+    | Career5Block
+    | Career6Block
     | Comparison1Block
     | Comparison13Block
     | Contact1Block
@@ -644,6 +650,55 @@ export interface Banner1Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Banner2Block".
+ */
+export interface Banner2Block {
+  heading: string;
+  description: string;
+  logo?: {
+    useMedia?: boolean | null;
+    mediaImage?: (number | null) | Media;
+    url?: string | null;
+    src?: string | null;
+    alt?: string | null;
+  };
+  button: {
+    title: string;
+    size?: ('sm' | 'md' | 'lg') | null;
+    variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'banner2';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Banner3Block".
+ */
+export interface Banner3Block {
+  heading: string;
+  description: string;
+  logo?: {
+    useMedia?: boolean | null;
+    mediaImage?: (number | null) | Media;
+    url?: string | null;
+    src?: string | null;
+    alt?: string | null;
+  };
+  buttons?:
+    | {
+        title: string;
+        size?: ('sm' | 'md' | 'lg') | null;
+        variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'banner3';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Banner4Block".
  */
 export interface Banner4Block {
@@ -800,6 +855,106 @@ export interface BlogPostHeader1BlockType {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BlogPostHeader2Block".
+ */
+export interface BlogPostHeader2Block {
+  button: {
+    title: string;
+    variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
+    size?: ('sm' | 'md' | 'lg' | 'link') | null;
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
+    };
+  };
+  category: string;
+  readTime: string;
+  heading: string;
+  image?: {
+    useMedia?: boolean | null;
+    mediaImage?: (number | null) | Media;
+    src?: string | null;
+    alt?: string | null;
+  };
+  authorName: string;
+  publishedDate: string;
+  socialMediaLinks?:
+    | {
+        platform: 'link' | 'linkedin' | 'twitter' | 'facebook';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'blogPostHeader2';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BlogPostHeader3Block".
+ */
+export interface BlogPostHeader3Block {
+  breadcrumbs?:
+    | {
+        title: string;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  heading: string;
+  image?: {
+    useMedia?: boolean | null;
+    mediaImage?: (number | null) | Media;
+    src?: string | null;
+    alt?: string | null;
+  };
+  author: {
+    avatar?: {
+      useMedia?: boolean | null;
+      mediaImage?: (number | null) | Media;
+      src?: string | null;
+      alt?: string | null;
+    };
+    fullName: string;
+    date: string;
+    readTime: string;
+  };
+  socialMediaLinks?:
+    | {
+        platform: 'link' | 'linkedin' | 'twitter' | 'facebook';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'blogPostHeader3';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "BlogPostHeader5BlockType".
  */
 export interface BlogPostHeader5BlockType {
@@ -895,6 +1050,97 @@ export interface CareerSection1Block {
   id?: string | null;
   blockName?: string | null;
   blockType: 'careerSection1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Career5Block".
+ */
+export interface Career5Block {
+  tagline: string;
+  heading: string;
+  description: string;
+  sectionTitle: string;
+  jobDepartments?:
+    | {
+        title: string;
+        jobs?:
+          | {
+              title: string;
+              location: string;
+              description: string;
+              button: {
+                title: string;
+                variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                size?: ('sm' | 'default' | 'lg') | null;
+              };
+              link?: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'career5';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Career6Block".
+ */
+export interface Career6Block {
+  tagline: string;
+  heading: string;
+  description: string;
+  jobDepartments?:
+    | {
+        title: string;
+        jobs?:
+          | {
+              title: string;
+              location: string;
+              description: string;
+              button: {
+                title: string;
+                variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                size?: ('sm' | 'default' | 'lg') | null;
+              };
+              link?: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'career6';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4275,11 +4521,15 @@ export interface PagesSelect<T extends boolean = true> {
     | {
         archive?: T | ArchiveBlockSelect<T>;
         banner1?: T | Banner1BlockSelect<T>;
+        banner2?: T | Banner2BlockSelect<T>;
+        banner3?: T | Banner3BlockSelect<T>;
         banner4?: T | Banner4BlockSelect<T>;
         banner9?: T | Banner9BlockSelect<T>;
         blog1?: T | Blog1BlockTypeSelect<T>;
         blog5?: T | Blog5BlockTypeSelect<T>;
         blogPostHeader1?: T | BlogPostHeader1BlockTypeSelect<T>;
+        blogPostHeader2?: T | BlogPostHeader2BlockSelect<T>;
+        blogPostHeader3?: T | BlogPostHeader3BlockSelect<T>;
         blogPostHeader5?: T | BlogPostHeader5BlockTypeSelect<T>;
         cta?: T | CallToActionBlockSelect<T>;
         careerSection1?: T | CareerSection1BlockSelect<T>;
@@ -4345,6 +4595,8 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        career5?: T | Career5BlockSelect<T>;
+        career6?: T | Career6BlockSelect<T>;
         comparison1?: T | Comparison1BlockSelect<T>;
         comparison13?: T | Comparison13BlockSelect<T>;
         contact1?: T | Contact1BlockSelect<T>;
@@ -4534,6 +4786,59 @@ export interface Banner1BlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Banner2Block_select".
+ */
+export interface Banner2BlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  logo?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        url?: T;
+        src?: T;
+        alt?: T;
+      };
+  button?:
+    | T
+    | {
+        title?: T;
+        size?: T;
+        variant?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Banner3Block_select".
+ */
+export interface Banner3BlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  logo?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        url?: T;
+        src?: T;
+        alt?: T;
+      };
+  buttons?:
+    | T
+    | {
+        title?: T;
+        size?: T;
+        variant?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Banner4Block_select".
  */
 export interface Banner4BlockSelect<T extends boolean = true> {
@@ -4683,6 +4988,102 @@ export interface BlogPostHeader1BlockTypeSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BlogPostHeader2Block_select".
+ */
+export interface BlogPostHeader2BlockSelect<T extends boolean = true> {
+  button?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+      };
+  category?: T;
+  readTime?: T;
+  heading?: T;
+  image?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  authorName?: T;
+  publishedDate?: T;
+  socialMediaLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BlogPostHeader3Block_select".
+ */
+export interface BlogPostHeader3BlockSelect<T extends boolean = true> {
+  breadcrumbs?:
+    | T
+    | {
+        title?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        id?: T;
+      };
+  heading?: T;
+  image?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  author?:
+    | T
+    | {
+        avatar?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              src?: T;
+              alt?: T;
+            };
+        fullName?: T;
+        date?: T;
+        readTime?: T;
+      };
+  socialMediaLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "BlogPostHeader5BlockType_select".
  */
 export interface BlogPostHeader5BlockTypeSelect<T extends boolean = true> {
@@ -4749,6 +5150,87 @@ export interface CareerSection1BlockSelect<T extends boolean = true> {
                     title?: T;
                     variant?: T;
                     size?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Career5Block_select".
+ */
+export interface Career5BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  sectionTitle?: T;
+  jobDepartments?:
+    | T
+    | {
+        title?: T;
+        jobs?:
+          | T
+          | {
+              title?: T;
+              location?: T;
+              description?: T;
+              button?:
+                | T
+                | {
+                    title?: T;
+                    variant?: T;
+                    size?: T;
+                  };
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Career6Block_select".
+ */
+export interface Career6BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  jobDepartments?:
+    | T
+    | {
+        title?: T;
+        jobs?:
+          | T
+          | {
+              title?: T;
+              location?: T;
+              description?: T;
+              button?:
+                | T
+                | {
+                    title?: T;
+                    variant?: T;
+                    size?: T;
+                  };
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
                   };
               id?: T;
             };
