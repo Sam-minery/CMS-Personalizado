@@ -18,6 +18,8 @@ import { Footer1 } from '@/blocks/Footer1/Component'
 import { Footer5 } from '@/blocks/Footer5/Component'
 import { Blog1Block } from '@/blocks/Blog_1/Component'
 import { Blog5Block } from '@/blocks/Blog_5/Component'
+import { Blog7Block } from '@/blocks/Blog_7/Component'
+import { Blog9Block } from '@/blocks/Blog_9/Component'
 import { BlogPostHeader1Block } from '@/blocks/Blog_Post_Header_1/Component'
 import { BlogPostHeader2 } from '@/blocks/Blog_Post_Header2/Component'
 import { BlogPostHeader3 } from '@/blocks/Blog_Post_Header3/Component'
@@ -29,6 +31,8 @@ import { Career4 } from '@/blocks/Caree_Section_4/Component'
 import { Career5Block } from '@/blocks/Career5/Component'
 import { Career6Block } from '@/blocks/Career6/Component'
 import { CTA_custom_2Block } from '@/blocks/CTA_custom_2/Component'
+import { CTA4Block } from '@/blocks/CTA_4/Component'
+import { CTA9Block } from '@/blocks/CTA_9/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { Form_custom_2Block } from '@/blocks/Multi-step_form_1/Component'
@@ -62,6 +66,8 @@ import { EventItemHeader1 as EventItemHeader1Block } from '@/blocks/Event_Item_H
 import { EventItemHeader5 as EventItemHeader5Block } from '@/blocks/Event_Item_Header_5/Component'
 import { EventHeader1 as EventHeader1Block } from '@/blocks/Event_Header_1/Component'
 import { EventHeader3 as EventHeader3Block } from '@/blocks/Event_Header_3/Component'
+import { EventHeader4 as EventHeader4Block } from '@/blocks/Event_Header_4/Component'
+import { EventHeader5 as EventHeader5Block } from '@/blocks/Event_Header_5/Component'
 import { Event1 as Event1Block } from '@/blocks/Event_1/Component'
 import { Event3 as Event3Block } from '@/blocks/Event_3/Component'
 import { Stats1 as Stats1Block } from '@/blocks/Stats_1/Component'
@@ -97,6 +103,8 @@ const blockComponents = {
   footer5: Footer5,
   blog1: Blog1Block,
   blog5: Blog5Block,
+  blog7: Blog7Block,
+  blog9: Blog9Block,
   blogPostHeader1: BlogPostHeader1Block,
   blogPostHeader2: BlogPostHeader2,
   blogPostHeader3: BlogPostHeader3,
@@ -109,6 +117,8 @@ const blockComponents = {
   content: ContentBlock,
   cta: CallToActionBlock,
   cta_custom_2: CTA_custom_2Block,
+  cta4: CTA4Block,
+  cta9: CTA9Block,
   formBlock: FormBlock,
   form_custom_2: Form_custom_2Block,
   multiForm2: MultiForm2Block,
@@ -141,6 +151,8 @@ const blockComponents = {
   eventItemHdr5: EventItemHeader5Block,
   eventHeader1: EventHeader1Block,
   eventHeader3: EventHeader3Block,
+  eventHeader4: EventHeader4Block,
+  eventHeader5: EventHeader5Block,
   event1: Event1Block,
   event3: Event3Block,
   stats1: Stats1Block,

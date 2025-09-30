@@ -25,6 +25,18 @@ export const blockConfigs: BlockConfig[] = [
     className: 'custom-cta-preview'
   },
   {
+    name: 'CTA 4',
+    selector: 'CTA 4',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/618f3e1af89f99d60855bc77_618502a9f548a180499ceb6f_section-cta4.png',
+    className: 'custom-cta4-preview'
+  },
+  {
+    name: 'CTA 9',
+    selector: 'CTA 9',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/618f3e1f1bc00370c870124e_618502b15ebb6d3feebd08b7_section-cta9.png',
+    className: 'custom-cta9-preview'
+  },
+  {
     name: 'Long Content 1',
     selector: 'Long Content 1',
     imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/640532f700b83d495236b39d_section_content1.png',
@@ -181,6 +193,18 @@ export const blockConfigs: BlockConfig[] = [
     className: 'custom-blog5-preview'
   },
   {
+    name: 'Blog 7',
+    selector: 'Blog 7',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/618f3b6a318803748aaf17a4_61850202a5a785c738ec8658_section-blog7.png',
+    className: 'custom-blog7-preview'
+  },
+  {
+    name: 'Blog 9',
+    selector: 'Blog 9',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/618f3b6db4571875b5c4b2b9_6185020470030605d5771789_section-blog9.png',
+    className: 'custom-blog9-preview'
+  },
+  {
     name: 'Blog Post Header 1',
     selector: 'Blog Post Header 1',
     imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/64ded40924cdaa278750149c__yjgRrfOyyX586Yw3wsXEM0tEq5vyZRMfERcdEjg_5s.png',
@@ -251,6 +275,18 @@ export const blockConfigs: BlockConfig[] = [
     selector: 'Event Header 3',
     imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/65681fae6db77563d3b2df1f_section_event-header3.png',
     className: 'custom-event-header3-preview'
+  },
+  {
+    name: 'Event Header 4',
+    selector: 'Event Header 4',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/65681fae350784c46f8deea5_section_event-header4.png',
+    className: 'custom-event-header4-preview'
+  },
+  {
+    name: 'Event Header 5',
+    selector: 'Event Header 5',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/65681faeb330bb3fe4174049_section_event-header5.png',
+    className: 'custom-event-header5-preview'
   },
   {
     name: 'Event Item Header 1',
