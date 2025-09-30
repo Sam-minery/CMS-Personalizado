@@ -16,6 +16,8 @@ import { Footer1Block } from '../../blocks/Footer1/config'
 import { Footer5Block } from '../../blocks/Footer5/config'
 import { Blog1 } from '../../blocks/Blog_1/config'
 import { Blog5 } from '../../blocks/Blog_5/config'
+import { Blog7 } from '../../blocks/Blog_7/config'
+import { Blog9 } from '../../blocks/Blog_9/config'
 import { BlogPostHeader1 } from '../../blocks/Blog_Post_Header_1/config'
 import { BlogPostHeader5 } from '../../blocks/Blog_Post_Header_5/config'
 import { CallToAction } from '../../blocks/CallToAction/config'
@@ -24,6 +26,8 @@ import { Career3Block } from '../../blocks/Career_Section_3/config'
 import { Career4Block } from '../../blocks/Caree_Section_4/config'
 import { Content } from '../../blocks/Content/config'
 import { CTA_custom_2 } from '../../blocks/CTA_custom_2/config'
+import { CTA4Block } from '../../blocks/CTA_4/config'
+import { CTA9Block } from '../../blocks/CTA_9/config'
 import { FormBlock } from '../../blocks/Form/config'
 import { Form_custom_2 } from '../../blocks/Multi-step_form_1/config'
 import { MultiForm2 } from '../../blocks/Multi-step_form_2/config'
@@ -54,6 +58,8 @@ import { EventItemHeader1 } from '../../blocks/Event_Item_Header_1/config'
 import { EventItemHeader5 } from '../../blocks/Event_Item_Header_5/config'
 import { EventHeader1 } from '../../blocks/Event_Header_1/config'
 import { EventHeader3 } from '../../blocks/Event_Header_3/config'
+import { EventHeader4 } from '../../blocks/Event_Header_4/config'
+import { EventHeader5 } from '../../blocks/Event_Header_5/config'
 import { Event1 } from '../../blocks/Event_1/config'
 import { Event3 } from '../../blocks/Event_3/config'
 import { Stats1 } from '../../blocks/Stats_1/config'
@@ -148,6 +154,8 @@ export const Pages: CollectionConfig<'pages'> = {
                 Banner9,
                 Blog1,
                 Blog5,
+                Blog7,
+                Blog9,
                 BlogPostHeader1,
                 BlogPostHeader5,
                 CallToAction,
@@ -160,12 +168,16 @@ export const Pages: CollectionConfig<'pages'> = {
                 Contact5Block,
                 Content,
                 CTA1Block,
+                CTA4Block,
+                CTA9Block,
                 CTA5Block,
                 CTA_custom_2,
                 Event1,
                 Event3,
                 EventHeader1,
                 EventHeader3,
+                EventHeader4,
+                EventHeader5,
                 EventItemHeader1,
                 EventItemHeader5,
                 FAQ1Block,
