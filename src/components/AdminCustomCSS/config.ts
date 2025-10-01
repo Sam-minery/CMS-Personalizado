@@ -7,6 +7,24 @@ export interface BlockConfig {
 
 export const blockConfigs: BlockConfig[] = [
   {
+    name: 'Banner 1',
+    selector: 'Banner 1',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/624ad73f1be6a28da3d886d0_621dbf64ecf4fc30d09afe99_image-banner1.png',
+    className: 'custom-banner1-preview'
+  },
+  {
+    name: 'Banner 2',
+    selector: 'Banner 2',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/624ad740876f54f341d538e0_621dbf7284d5871542ca8221_image-banner2.png',
+    className: 'custom-banner2-preview'
+  },
+  {
+    name: 'Banner 3',
+    selector: 'Banner 3',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/624ad74072aee70df5474ab0_621dbf7becc70bde14d4011d_image-banner3.png',
+    className: 'custom-banner3-preview'
+  },
+  {
     name: 'Banner 4',
     selector: 'Banner 4',
     imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/624ad741654c015fd1eed35b_621dbf86e9df18ef2115bdd9_image-banner4.png',
