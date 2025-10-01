@@ -85,8 +85,10 @@ import { Layout1Block } from '@/blocks/Layout1/Component'
 import { Layout5Block } from '@/blocks/Layout5/Component'
 import { Header44Block } from '@/blocks/Header44/Component'
 import { Header48Block } from '@/blocks/Header48/Component'
+import { AnimatedPin3DBlock } from '@/blocks/3D_Animated_Pin/Component'
 
 const blockComponents = {
+  animatedPin3D: AnimatedPin3DBlock,
   archive: ArchiveBlock,
   banner1: Banner1,
   banner2: Banner2,

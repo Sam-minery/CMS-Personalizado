@@ -85,6 +85,7 @@ import { Layout1Block } from '../../blocks/Layout1/config'
 import { Layout5Block } from '../../blocks/Layout5/config'
 import { Header44Block } from '../../blocks/Header44/config'
 import { Header48Block } from '../../blocks/Header48/config'
+import { AnimatedPin3DBlock } from '../../blocks/3D_Animated_Pin/Config'
 import { hero } from '@/heros/config'
 import { slugField } from '@/fields/slug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -154,6 +155,7 @@ export const Pages: CollectionConfig<'pages'> = {
               name: 'layout',
               type: 'blocks',
               blocks: [
+                AnimatedPin3DBlock,
                 Archive,
                 Banner1Block,
                 Banner2Block,

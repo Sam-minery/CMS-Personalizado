@@ -196,6 +196,23 @@ export interface Page {
     media?: (number | null) | Media;
   };
   layout: (
+    | {
+        title: string;
+        description: string;
+        /**
+         * Si no se proporciona imagen, se mostrará un gradiente por defecto
+         */
+        media?: (number | null) | Media;
+        pinTitle: string;
+        /**
+         * URL a la que dirigir cuando se haga clic en el pin
+         */
+        href?: string | null;
+        backgroundColor?: ('violet-purple-blue' | 'green-blue-cyan' | 'pink-red-orange' | 'yellow-orange-red') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'animatedPin3D';
+      }
     | ArchiveBlock
     | Banner1Block
     | Banner2Block
@@ -4813,6 +4830,18 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
+        animatedPin3D?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              media?: T;
+              pinTitle?: T;
+              href?: T;
+              backgroundColor?: T;
+              id?: T;
+              blockName?: T;
+            };
         archive?: T | ArchiveBlockSelect<T>;
         banner1?: T | Banner1BlockSelect<T>;
         banner2?: T | Banner2BlockSelect<T>;
