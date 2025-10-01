@@ -62,12 +62,16 @@ import { PortfolioHeader1 } from '../../blocks/Portfolio_Header_1/config'
 import { PortfolioHeader2 } from '../../blocks/Portfolio_Header_2/config'
 import { EventItemHeader1 } from '../../blocks/Event_Item_Header_1/config'
 import { EventItemHeader5 } from '../../blocks/Event_Item_Header_5/config'
+import { EventItemHeader6 } from '../../blocks/Event_Item_Header_6/config'
+import { EventItemHeader7 } from '../../blocks/Event_Item_Header_7/config'
 import { EventHeader1 } from '../../blocks/Event_Header_1/config'
 import { EventHeader3 } from '../../blocks/Event_Header_3/config'
 import { EventHeader4 } from '../../blocks/Event_Header_4/config'
 import { EventHeader5 } from '../../blocks/Event_Header_5/config'
 import { Event1 } from '../../blocks/Event_1/config'
 import { Event3 } from '../../blocks/Event_3/config'
+import { Event4 } from '../../blocks/Event_4/config'
+import { Event6 } from '../../blocks/Event_6/config'
 import { Stats1 } from '../../blocks/Stats_1/config'
 import { Stats3 } from '../../blocks/Stats_3/config'
 import { Comparison1 } from '../../blocks/Comparison_1/config'
@@ -188,12 +192,16 @@ export const Pages: CollectionConfig<'pages'> = {
                 CTA_custom_2,
                 Event1,
                 Event3,
+                Event4,
+                Event6,
                 EventHeader1,
                 EventHeader3,
                 EventHeader4,
                 EventHeader5,
                 EventItemHeader1,
                 EventItemHeader5,
+                EventItemHeader6,
+                EventItemHeader7,
                 FAQ1Block,
                 FAQ2,
                 FAQ4,

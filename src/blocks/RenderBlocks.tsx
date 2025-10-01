@@ -64,12 +64,16 @@ import { PortfolioHeader1 as PortfolioHeader1Block } from '@/blocks/Portfolio_He
 import { PortfolioHeader2 as PortfolioHeader2Block } from '@/blocks/Portfolio_Header_2/Component'
 import { EventItemHeader1 as EventItemHeader1Block } from '@/blocks/Event_Item_Header_1/Component'
 import { EventItemHeader5 as EventItemHeader5Block } from '@/blocks/Event_Item_Header_5/Component'
+import { EventItemHeader6 as EventItemHeader6Block } from '@/blocks/Event_Item_Header_6/Component'
+import { EventItemHeader7 as EventItemHeader7Block } from '@/blocks/Event_Item_Header_7/Component'
 import { EventHeader1 as EventHeader1Block } from '@/blocks/Event_Header_1/Component'
 import { EventHeader3 as EventHeader3Block } from '@/blocks/Event_Header_3/Component'
 import { EventHeader4 as EventHeader4Block } from '@/blocks/Event_Header_4/Component'
 import { EventHeader5 as EventHeader5Block } from '@/blocks/Event_Header_5/Component'
 import { Event1 as Event1Block } from '@/blocks/Event_1/Component'
 import { Event3 as Event3Block } from '@/blocks/Event_3/Component'
+import { Event4 as Event4Block } from '@/blocks/Event_4/Component'
+import { Event6 as Event6Block } from '@/blocks/Event_6/Component'
 import { Stats1 as Stats1Block } from '@/blocks/Stats_1/Component'
 import { Stats3 as Stats3Block } from '@/blocks/Stats_3/Component'
 import { Comparison1 as Comparison1Block } from '@/blocks/Comparison_1/Component'
@@ -151,12 +155,16 @@ const blockComponents = {
   portfolioHeader2: PortfolioHeader2Block,
   eventItemHdr1: EventItemHeader1Block,
   eventItemHdr5: EventItemHeader5Block,
+  eventItemHdr6: EventItemHeader6Block,
+  eventItemHdr7: EventItemHeader7Block,
   eventHeader1: EventHeader1Block,
   eventHeader3: EventHeader3Block,
   eventHeader4: EventHeader4Block,
   eventHeader5: EventHeader5Block,
   event1: Event1Block,
   event3: Event3Block,
+  event4: Event4Block,
+  event6: Event6Block,
   stats1: Stats1Block,
   stats3: Stats3Block,
   comparison1: Comparison1Block,
