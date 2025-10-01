@@ -4,6 +4,8 @@ import type { Page } from '@/payload-types'
 
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { Banner1 } from '@/blocks/Banner1/Component'
+import { Banner2 } from '@/blocks/Banner2/Component'
+import { Banner3 } from '@/blocks/Banner3/Component'
 import { Banner4 } from '@/blocks/Banner_4/Component'
 import { Banner9 } from '@/blocks/Banner_9/Component'
 import { Contact1 } from '@/blocks/Contact1/Component'
@@ -16,13 +18,21 @@ import { Footer1 } from '@/blocks/Footer1/Component'
 import { Footer5 } from '@/blocks/Footer5/Component'
 import { Blog1Block } from '@/blocks/Blog_1/Component'
 import { Blog5Block } from '@/blocks/Blog_5/Component'
+import { Blog7Block } from '@/blocks/Blog_7/Component'
+import { Blog9Block } from '@/blocks/Blog_9/Component'
 import { BlogPostHeader1Block } from '@/blocks/Blog_Post_Header_1/Component'
+import { BlogPostHeader2 } from '@/blocks/Blog_Post_Header2/Component'
+import { BlogPostHeader3 } from '@/blocks/Blog_Post_Header3/Component'
 import { BlogPostHeader5Block } from '@/blocks/Blog_Post_Header_5/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { CareerSection1Block } from '@/blocks/Career_Section_1/Component'
 import { Career3 } from '@/blocks/Career_Section_3/Component'
 import { Career4 } from '@/blocks/Caree_Section_4/Component'
+import { Career5Block } from '@/blocks/Career5/Component'
+import { Career6Block } from '@/blocks/Career6/Component'
 import { CTA_custom_2Block } from '@/blocks/CTA_custom_2/Component'
+import { CTA4Block } from '@/blocks/CTA_4/Component'
+import { CTA9Block } from '@/blocks/CTA_9/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { Form_custom_2Block } from '@/blocks/Multi-step_form_1/Component'
@@ -54,10 +64,16 @@ import { PortfolioHeader1 as PortfolioHeader1Block } from '@/blocks/Portfolio_He
 import { PortfolioHeader2 as PortfolioHeader2Block } from '@/blocks/Portfolio_Header_2/Component'
 import { EventItemHeader1 as EventItemHeader1Block } from '@/blocks/Event_Item_Header_1/Component'
 import { EventItemHeader5 as EventItemHeader5Block } from '@/blocks/Event_Item_Header_5/Component'
+import { EventItemHeader6 as EventItemHeader6Block } from '@/blocks/Event_Item_Header_6/Component'
+import { EventItemHeader7 as EventItemHeader7Block } from '@/blocks/Event_Item_Header_7/Component'
 import { EventHeader1 as EventHeader1Block } from '@/blocks/Event_Header_1/Component'
 import { EventHeader3 as EventHeader3Block } from '@/blocks/Event_Header_3/Component'
+import { EventHeader4 as EventHeader4Block } from '@/blocks/Event_Header_4/Component'
+import { EventHeader5 as EventHeader5Block } from '@/blocks/Event_Header_5/Component'
 import { Event1 as Event1Block } from '@/blocks/Event_1/Component'
 import { Event3 as Event3Block } from '@/blocks/Event_3/Component'
+import { Event4 as Event4Block } from '@/blocks/Event_4/Component'
+import { Event6 as Event6Block } from '@/blocks/Event_6/Component'
 import { Stats1 as Stats1Block } from '@/blocks/Stats_1/Component'
 import { Stats3 as Stats3Block } from '@/blocks/Stats_3/Component'
 import { Comparison1 as Comparison1Block } from '@/blocks/Comparison_1/Component'
@@ -73,10 +89,14 @@ import { Layout1Block } from '@/blocks/Layout1/Component'
 import { Layout5Block } from '@/blocks/Layout5/Component'
 import { Header44Block } from '@/blocks/Header44/Component'
 import { Header48Block } from '@/blocks/Header48/Component'
+import { AnimatedPin3DBlock } from '@/blocks/3D_Animated_Pin/Component'
 
 const blockComponents = {
+  animatedPin3D: AnimatedPin3DBlock,
   archive: ArchiveBlock,
   banner1: Banner1,
+  banner2: Banner2,
+  banner3: Banner3,
   banner4: Banner4,
   banner9: Banner9,
   contact1: Contact1,
@@ -89,14 +109,22 @@ const blockComponents = {
   footer5: Footer5,
   blog1: Blog1Block,
   blog5: Blog5Block,
+  blog7: Blog7Block,
+  blog9: Blog9Block,
   blogPostHeader1: BlogPostHeader1Block,
+  blogPostHeader2: BlogPostHeader2,
+  blogPostHeader3: BlogPostHeader3,
   blogPostHeader5: BlogPostHeader5Block,
   careerSection1: CareerSection1Block,
   career3: Career3,
   career4: Career4,
+  career5: Career5Block,
+  career6: Career6Block,
   content: ContentBlock,
   cta: CallToActionBlock,
   cta_custom_2: CTA_custom_2Block,
+  cta4: CTA4Block,
+  cta9: CTA9Block,
   formBlock: FormBlock,
   form_custom_2: Form_custom_2Block,
   multiForm2: MultiForm2Block,
@@ -127,10 +155,16 @@ const blockComponents = {
   portfolioHeader2: PortfolioHeader2Block,
   eventItemHdr1: EventItemHeader1Block,
   eventItemHdr5: EventItemHeader5Block,
+  eventItemHdr6: EventItemHeader6Block,
+  eventItemHdr7: EventItemHeader7Block,
   eventHeader1: EventHeader1Block,
   eventHeader3: EventHeader3Block,
+  eventHeader4: EventHeader4Block,
+  eventHeader5: EventHeader5Block,
   event1: Event1Block,
   event3: Event3Block,
+  event4: Event4Block,
+  event6: Event6Block,
   stats1: Stats1Block,
   stats3: Stats3Block,
   comparison1: Comparison1Block,

@@ -196,13 +196,36 @@ export interface Page {
     media?: (number | null) | Media;
   };
   layout: (
+    | {
+        title: string;
+        description: string;
+        /**
+         * Si no se proporciona imagen, se mostrará un gradiente por defecto
+         */
+        media?: (number | null) | Media;
+        pinTitle: string;
+        /**
+         * URL a la que dirigir cuando se haga clic en el pin
+         */
+        href?: string | null;
+        backgroundColor?: ('violet-purple-blue' | 'green-blue-cyan' | 'pink-red-orange' | 'yellow-orange-red') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'animatedPin3D';
+      }
     | ArchiveBlock
     | Banner1Block
+    | Banner2Block
+    | Banner3Block
     | Banner4Block
     | Banner9Block
     | Blog1BlockType
     | Blog5BlockType
+    | Blog7BlockType
+    | Blog9BlockType
     | BlogPostHeader1BlockType
+    | BlogPostHeader2Block
+    | BlogPostHeader3Block
     | BlogPostHeader5BlockType
     | CallToActionBlock
     | CareerSection1Block
@@ -262,20 +285,30 @@ export interface Page {
         blockName?: string | null;
         blockType: 'career4';
       }
+    | Career5Block
+    | Career6Block
     | Comparison1Block
     | Comparison13Block
     | Contact1Block
     | Contact5Block
     | ContentBlock
     | CTA1Block
+    | CTA4Block
+    | CTA9Block
     | CTA5Block
     | CTACustom_2Block
     | Event1Block
     | Event3Block
+    | Event4Block
+    | Event6Block
     | EventHeader1Block
     | EventHeader3Block
+    | EventHeader4Block
+    | EventHeader5Block
     | EventItemHeader1Block
     | EventItemHeader5Block
+    | EventItemHeader6Block
+    | EventItemHeader7Block
     | FAQ1Block
     | FAQ2Block
     | FAQ4Block
@@ -644,6 +677,55 @@ export interface Banner1Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Banner2Block".
+ */
+export interface Banner2Block {
+  heading: string;
+  description: string;
+  logo?: {
+    useMedia?: boolean | null;
+    mediaImage?: (number | null) | Media;
+    url?: string | null;
+    src?: string | null;
+    alt?: string | null;
+  };
+  button: {
+    title: string;
+    size?: ('sm' | 'md' | 'lg') | null;
+    variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'banner2';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Banner3Block".
+ */
+export interface Banner3Block {
+  heading: string;
+  description: string;
+  logo?: {
+    useMedia?: boolean | null;
+    mediaImage?: (number | null) | Media;
+    url?: string | null;
+    src?: string | null;
+    alt?: string | null;
+  };
+  buttons?:
+    | {
+        title: string;
+        size?: ('sm' | 'md' | 'lg') | null;
+        variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'banner3';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Banner4Block".
  */
 export interface Banner4Block {
@@ -769,6 +851,103 @@ export interface Blog5BlockType {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Blog7BlockType".
+ */
+export interface Blog7BlockType {
+  tagline?: string | null;
+  heading?: string | null;
+  description?: string | null;
+  featuredBlogPost: {
+    url: string;
+    image: number | Media;
+    category: string;
+    title: string;
+    description: string;
+    avatar: number | Media;
+    fullName: string;
+    date: string;
+    readTime: string;
+  };
+  defaultValue?: string | null;
+  tabs?:
+    | {
+        value: string;
+        trigger: string;
+        content?:
+          | {
+              url: string;
+              image: number | Media;
+              category: string;
+              title: string;
+              description: string;
+              avatar: number | Media;
+              fullName: string;
+              date: string;
+              readTime: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'blog7';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Blog9BlockType".
+ */
+export interface Blog9BlockType {
+  tagline?: string | null;
+  heading?: string | null;
+  description?: string | null;
+  featuredBlogIitle?: string | null;
+  featuredBlogPost: {
+    url: string;
+    image: number | Media;
+    category: string;
+    title: string;
+    description: string;
+    avatar: number | Media;
+    fullName: string;
+    date: string;
+    readTime: string;
+  };
+  smallFeaturedBlogPosts?:
+    | {
+        url: string;
+        image: number | Media;
+        category: string;
+        title: string;
+        avatar: number | Media;
+        fullName: string;
+        date: string;
+        readTime: string;
+        id?: string | null;
+      }[]
+    | null;
+  latestBlogTitle?: string | null;
+  blogPosts?:
+    | {
+        url: string;
+        image: number | Media;
+        category: string;
+        title: string;
+        description: string;
+        avatar: number | Media;
+        fullName: string;
+        date: string;
+        readTime: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'blog9';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "BlogPostHeader1BlockType".
  */
 export interface BlogPostHeader1BlockType {
@@ -797,6 +976,106 @@ export interface BlogPostHeader1BlockType {
   id?: string | null;
   blockName?: string | null;
   blockType: 'blogPostHeader1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BlogPostHeader2Block".
+ */
+export interface BlogPostHeader2Block {
+  button: {
+    title: string;
+    variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
+    size?: ('sm' | 'md' | 'lg' | 'link') | null;
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
+    };
+  };
+  category: string;
+  readTime: string;
+  heading: string;
+  image?: {
+    useMedia?: boolean | null;
+    mediaImage?: (number | null) | Media;
+    src?: string | null;
+    alt?: string | null;
+  };
+  authorName: string;
+  publishedDate: string;
+  socialMediaLinks?:
+    | {
+        platform: 'link' | 'linkedin' | 'twitter' | 'facebook';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'blogPostHeader2';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BlogPostHeader3Block".
+ */
+export interface BlogPostHeader3Block {
+  breadcrumbs?:
+    | {
+        title: string;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  heading: string;
+  image?: {
+    useMedia?: boolean | null;
+    mediaImage?: (number | null) | Media;
+    src?: string | null;
+    alt?: string | null;
+  };
+  author: {
+    avatar?: {
+      useMedia?: boolean | null;
+      mediaImage?: (number | null) | Media;
+      src?: string | null;
+      alt?: string | null;
+    };
+    fullName: string;
+    date: string;
+    readTime: string;
+  };
+  socialMediaLinks?:
+    | {
+        platform: 'link' | 'linkedin' | 'twitter' | 'facebook';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'blogPostHeader3';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -895,6 +1174,97 @@ export interface CareerSection1Block {
   id?: string | null;
   blockName?: string | null;
   blockType: 'careerSection1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Career5Block".
+ */
+export interface Career5Block {
+  tagline: string;
+  heading: string;
+  description: string;
+  sectionTitle: string;
+  jobDepartments?:
+    | {
+        title: string;
+        jobs?:
+          | {
+              title: string;
+              location: string;
+              description: string;
+              button: {
+                title: string;
+                variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                size?: ('sm' | 'default' | 'lg') | null;
+              };
+              link?: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'career5';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Career6Block".
+ */
+export interface Career6Block {
+  tagline: string;
+  heading: string;
+  description: string;
+  jobDepartments?:
+    | {
+        title: string;
+        jobs?:
+          | {
+              title: string;
+              location: string;
+              description: string;
+              button: {
+                title: string;
+                variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                size?: ('sm' | 'default' | 'lg') | null;
+              };
+              link?: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'career6';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1206,6 +1576,66 @@ export interface CTA1Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTA4Block".
+ */
+export interface CTA4Block {
+  heading: string;
+  description: string;
+  inputPlaceholder?: string | null;
+  button: {
+    title: string;
+    variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+    size?: ('sm' | 'default' | 'lg') | null;
+  };
+  /**
+   * HTML personalizado para términos y condiciones
+   */
+  termsAndConditions?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image: number | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta4';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTA9Block".
+ */
+export interface CTA9Block {
+  heading: string;
+  description: string;
+  buttons?:
+    | {
+        title: string;
+        variant?: ('primary' | 'secondary' | 'secondary-alt' | 'ghost' | 'link') | null;
+        size?: ('sm' | 'default' | 'lg') | null;
+        /**
+         * URL a la que debe redirigir el botón
+         */
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  image: number | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta9';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "CTA5Block".
  */
 export interface CTA5Block {
@@ -1359,6 +1789,81 @@ export interface Event3Block {
   id?: string | null;
   blockName?: string | null;
   blockType: 'event3';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Event4Block".
+ */
+export interface Event4Block {
+  tagline: string;
+  heading: string;
+  description: string;
+  tabs?:
+    | {
+        value: string;
+        trigger: string;
+        content?:
+          | {
+              url: string;
+              image: number | Media;
+              date: {
+                weekday: string;
+                day: string;
+                month: string;
+                year: string;
+              };
+              title: string;
+              status?: string | null;
+              location: string;
+              description: string;
+              button: {
+                variant: 'primary' | 'secondary' | 'outline' | 'ghost';
+                size: 'sm' | 'md' | 'lg';
+                title: string;
+                url: string;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'event4';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Event6Block".
+ */
+export interface Event6Block {
+  tagline: string;
+  heading: string;
+  description: string;
+  tabs?:
+    | {
+        value: string;
+        trigger: string;
+        content?:
+          | {
+              url: string;
+              title: string;
+              duration: string;
+              status?: string | null;
+              description: string;
+              /**
+               * URL del video que se reproducirá al hacer clic en el botón de play. Si no se proporciona, se usará la URL del webinar.
+               */
+              videoUrl?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'event6';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1517,6 +2022,137 @@ export interface EventHeader3Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventHeader4Block".
+ */
+export interface EventHeader4Block {
+  tagline: string;
+  heading: string;
+  description: string;
+  event: {
+    url: string;
+    image?: (number | null) | Media;
+    category: string;
+    /**
+     * Dejar vacío si no hay estado especial
+     */
+    status?: string | null;
+    title: string;
+    date: {
+      weekday: string;
+      day: string;
+      month: string;
+      year: string;
+    };
+    location: string;
+    description: string;
+    button: {
+      title: string;
+      /**
+       * Enlace al que dirigirá el botón al hacer clic
+       */
+      url: string;
+      variant: 'primary' | 'secondary' | 'link' | 'outline';
+      size: 'small' | 'medium' | 'large' | 'primary' | 'link';
+    };
+  };
+  featuredEvents?:
+    | {
+        url: string;
+        /**
+         * Dejar vacío si no hay estado especial
+         */
+        status?: string | null;
+        date: {
+          weekday: string;
+          day: string;
+          month: string;
+          year: string;
+        };
+        location: string;
+        title: string;
+        description: string;
+        button: {
+          title: string;
+          /**
+           * Enlace al que dirigirá el botón al hacer clic
+           */
+          url: string;
+          variant: 'primary' | 'secondary' | 'link' | 'outline';
+          size: 'small' | 'medium' | 'large' | 'primary' | 'link';
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'eventHeader4';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventHeader5Block".
+ */
+export interface EventHeader5Block {
+  tagline: string;
+  heading: string;
+  description: string;
+  event: {
+    url: string;
+    image?: (number | null) | Media;
+    /**
+     * URL del video (ej: https://www.youtube.com/embed/VIDEO_ID)
+     */
+    video: string;
+    category: string;
+    /**
+     * Dejar vacío si no hay estado especial
+     */
+    status?: string | null;
+    title: string;
+    date: {
+      weekday: string;
+      day: string;
+      month: string;
+      year: string;
+    };
+    description: string;
+    button: {
+      title: string;
+      /**
+       * Enlace al que dirigirá el botón al hacer clic
+       */
+      url: string;
+      variant: 'primary' | 'secondary' | 'link' | 'outline';
+      size: 'small' | 'medium' | 'large' | 'primary' | 'link';
+    };
+  };
+  filters?:
+    | {
+        title: string;
+        url: string;
+        variant: 'primary' | 'secondary' | 'link' | 'outline';
+        size: 'sm' | 'medium' | 'large' | 'primary' | 'link';
+        id?: string | null;
+      }[]
+    | null;
+  events?:
+    | {
+        url: string;
+        /**
+         * Dejar vacío si no hay estado especial
+         */
+        status?: string | null;
+        title: string;
+        duration: string;
+        description: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'eventHeader5';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "EventItemHeader1Block".
  */
 export interface EventItemHeader1Block {
@@ -1636,6 +2272,82 @@ export interface EventItemHeader5Block {
   id?: string | null;
   blockName?: string | null;
   blockType: 'eventItemHdr5';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventItemHeader6Block".
+ */
+export interface EventItemHeader6Block {
+  breadcrumbs?:
+    | {
+        url: string;
+        title: string;
+        id?: string | null;
+      }[]
+    | null;
+  heading: string;
+  description: string;
+  image: number | Media;
+  buttons?:
+    | {
+        title: string;
+        /**
+         * Valores: primary, secondary, link
+         */
+        variant?: string | null;
+        /**
+         * Valores: sm, md, lg
+         */
+        size?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  date: {
+    weekday: string;
+    day: string;
+    month: string;
+    year?: string | null;
+  };
+  location: string;
+  speakers: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'eventItemHdr6';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventItemHeader7Block".
+ */
+export interface EventItemHeader7Block {
+  tagline: string;
+  heading: string;
+  description: string;
+  date: {
+    weekday: string;
+    day: string;
+    month: string;
+    year: string;
+  };
+  location: string;
+  speakers: string;
+  image: number | Media;
+  buttons?:
+    | {
+        title: string;
+        /**
+         * Valores: primary, secondary, link
+         */
+        variant?: string | null;
+        /**
+         * Valores: sm, md, lg
+         */
+        size?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'eventItemHdr7';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4273,13 +4985,31 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
+        animatedPin3D?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              media?: T;
+              pinTitle?: T;
+              href?: T;
+              backgroundColor?: T;
+              id?: T;
+              blockName?: T;
+            };
         archive?: T | ArchiveBlockSelect<T>;
         banner1?: T | Banner1BlockSelect<T>;
+        banner2?: T | Banner2BlockSelect<T>;
+        banner3?: T | Banner3BlockSelect<T>;
         banner4?: T | Banner4BlockSelect<T>;
         banner9?: T | Banner9BlockSelect<T>;
         blog1?: T | Blog1BlockTypeSelect<T>;
         blog5?: T | Blog5BlockTypeSelect<T>;
+        blog7?: T | Blog7BlockTypeSelect<T>;
+        blog9?: T | Blog9BlockTypeSelect<T>;
         blogPostHeader1?: T | BlogPostHeader1BlockTypeSelect<T>;
+        blogPostHeader2?: T | BlogPostHeader2BlockSelect<T>;
+        blogPostHeader3?: T | BlogPostHeader3BlockSelect<T>;
         blogPostHeader5?: T | BlogPostHeader5BlockTypeSelect<T>;
         cta?: T | CallToActionBlockSelect<T>;
         careerSection1?: T | CareerSection1BlockSelect<T>;
@@ -4345,20 +5075,30 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        career5?: T | Career5BlockSelect<T>;
+        career6?: T | Career6BlockSelect<T>;
         comparison1?: T | Comparison1BlockSelect<T>;
         comparison13?: T | Comparison13BlockSelect<T>;
         contact1?: T | Contact1BlockSelect<T>;
         contact5?: T | Contact5BlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
         cta1?: T | CTA1BlockSelect<T>;
+        cta4?: T | CTA4BlockSelect<T>;
+        cta9?: T | CTA9BlockSelect<T>;
         cta5?: T | CTA5BlockSelect<T>;
         cta_custom_2?: T | CTACustom_2BlockSelect<T>;
         event1?: T | Event1BlockSelect<T>;
         event3?: T | Event3BlockSelect<T>;
+        event4?: T | Event4BlockSelect<T>;
+        event6?: T | Event6BlockSelect<T>;
         eventHeader1?: T | EventHeader1BlockSelect<T>;
         eventHeader3?: T | EventHeader3BlockSelect<T>;
+        eventHeader4?: T | EventHeader4BlockSelect<T>;
+        eventHeader5?: T | EventHeader5BlockSelect<T>;
         eventItemHdr1?: T | EventItemHeader1BlockSelect<T>;
         eventItemHdr5?: T | EventItemHeader5BlockSelect<T>;
+        eventItemHdr6?: T | EventItemHeader6BlockSelect<T>;
+        eventItemHdr7?: T | EventItemHeader7BlockSelect<T>;
         faq1?: T | FAQ1BlockSelect<T>;
         faq2?: T | FAQ2BlockSelect<T>;
         faq4?: T | FAQ4BlockSelect<T>;
@@ -4534,6 +5274,59 @@ export interface Banner1BlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Banner2Block_select".
+ */
+export interface Banner2BlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  logo?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        url?: T;
+        src?: T;
+        alt?: T;
+      };
+  button?:
+    | T
+    | {
+        title?: T;
+        size?: T;
+        variant?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Banner3Block_select".
+ */
+export interface Banner3BlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  logo?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        url?: T;
+        src?: T;
+        alt?: T;
+      };
+  buttons?:
+    | T
+    | {
+        title?: T;
+        size?: T;
+        variant?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Banner4Block_select".
  */
 export interface Banner4BlockSelect<T extends boolean = true> {
@@ -4651,6 +5444,105 @@ export interface Blog5BlockTypeSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Blog7BlockType_select".
+ */
+export interface Blog7BlockTypeSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  featuredBlogPost?:
+    | T
+    | {
+        url?: T;
+        image?: T;
+        category?: T;
+        title?: T;
+        description?: T;
+        avatar?: T;
+        fullName?: T;
+        date?: T;
+        readTime?: T;
+      };
+  defaultValue?: T;
+  tabs?:
+    | T
+    | {
+        value?: T;
+        trigger?: T;
+        content?:
+          | T
+          | {
+              url?: T;
+              image?: T;
+              category?: T;
+              title?: T;
+              description?: T;
+              avatar?: T;
+              fullName?: T;
+              date?: T;
+              readTime?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Blog9BlockType_select".
+ */
+export interface Blog9BlockTypeSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  featuredBlogIitle?: T;
+  featuredBlogPost?:
+    | T
+    | {
+        url?: T;
+        image?: T;
+        category?: T;
+        title?: T;
+        description?: T;
+        avatar?: T;
+        fullName?: T;
+        date?: T;
+        readTime?: T;
+      };
+  smallFeaturedBlogPosts?:
+    | T
+    | {
+        url?: T;
+        image?: T;
+        category?: T;
+        title?: T;
+        avatar?: T;
+        fullName?: T;
+        date?: T;
+        readTime?: T;
+        id?: T;
+      };
+  latestBlogTitle?: T;
+  blogPosts?:
+    | T
+    | {
+        url?: T;
+        image?: T;
+        category?: T;
+        title?: T;
+        description?: T;
+        avatar?: T;
+        fullName?: T;
+        date?: T;
+        readTime?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "BlogPostHeader1BlockType_select".
  */
 export interface BlogPostHeader1BlockTypeSelect<T extends boolean = true> {
@@ -4676,6 +5568,102 @@ export interface BlogPostHeader1BlockTypeSelect<T extends boolean = true> {
     | {
         url?: T;
         iconType?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BlogPostHeader2Block_select".
+ */
+export interface BlogPostHeader2BlockSelect<T extends boolean = true> {
+  button?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+      };
+  category?: T;
+  readTime?: T;
+  heading?: T;
+  image?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  authorName?: T;
+  publishedDate?: T;
+  socialMediaLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BlogPostHeader3Block_select".
+ */
+export interface BlogPostHeader3BlockSelect<T extends boolean = true> {
+  breadcrumbs?:
+    | T
+    | {
+        title?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        id?: T;
+      };
+  heading?: T;
+  image?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  author?:
+    | T
+    | {
+        avatar?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              src?: T;
+              alt?: T;
+            };
+        fullName?: T;
+        date?: T;
+        readTime?: T;
+      };
+  socialMediaLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
         id?: T;
       };
   id?: T;
@@ -4749,6 +5737,87 @@ export interface CareerSection1BlockSelect<T extends boolean = true> {
                     title?: T;
                     variant?: T;
                     size?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Career5Block_select".
+ */
+export interface Career5BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  sectionTitle?: T;
+  jobDepartments?:
+    | T
+    | {
+        title?: T;
+        jobs?:
+          | T
+          | {
+              title?: T;
+              location?: T;
+              description?: T;
+              button?:
+                | T
+                | {
+                    title?: T;
+                    variant?: T;
+                    size?: T;
+                  };
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Career6Block_select".
+ */
+export interface Career6BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  jobDepartments?:
+    | T
+    | {
+        title?: T;
+        jobs?:
+          | T
+          | {
+              title?: T;
+              location?: T;
+              description?: T;
+              button?:
+                | T
+                | {
+                    title?: T;
+                    variant?: T;
+                    size?: T;
+                  };
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
                   };
               id?: T;
             };
@@ -4949,6 +6018,46 @@ export interface CTA1BlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTA4Block_select".
+ */
+export interface CTA4BlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  inputPlaceholder?: T;
+  button?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+      };
+  termsAndConditions?: T;
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTA9Block_select".
+ */
+export interface CTA9BlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  buttons?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+        url?: T;
+        id?: T;
+      };
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "CTA5Block_select".
  */
 export interface CTA5BlockSelect<T extends boolean = true> {
@@ -5076,6 +6185,80 @@ export interface Event3BlockSelect<T extends boolean = true> {
                     title?: T;
                     url?: T;
                   };
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Event4Block_select".
+ */
+export interface Event4BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  tabs?:
+    | T
+    | {
+        value?: T;
+        trigger?: T;
+        content?:
+          | T
+          | {
+              url?: T;
+              image?: T;
+              date?:
+                | T
+                | {
+                    weekday?: T;
+                    day?: T;
+                    month?: T;
+                    year?: T;
+                  };
+              title?: T;
+              status?: T;
+              location?: T;
+              description?: T;
+              button?:
+                | T
+                | {
+                    variant?: T;
+                    size?: T;
+                    title?: T;
+                    url?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Event6Block_select".
+ */
+export interface Event6BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  tabs?:
+    | T
+    | {
+        value?: T;
+        trigger?: T;
+        content?:
+          | T
+          | {
+              url?: T;
+              title?: T;
+              duration?: T;
+              status?: T;
+              description?: T;
+              videoUrl?: T;
               id?: T;
             };
         id?: T;
@@ -5224,6 +6407,127 @@ export interface EventHeader3BlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventHeader4Block_select".
+ */
+export interface EventHeader4BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  event?:
+    | T
+    | {
+        url?: T;
+        image?: T;
+        category?: T;
+        status?: T;
+        title?: T;
+        date?:
+          | T
+          | {
+              weekday?: T;
+              day?: T;
+              month?: T;
+              year?: T;
+            };
+        location?: T;
+        description?: T;
+        button?:
+          | T
+          | {
+              title?: T;
+              url?: T;
+              variant?: T;
+              size?: T;
+            };
+      };
+  featuredEvents?:
+    | T
+    | {
+        url?: T;
+        status?: T;
+        date?:
+          | T
+          | {
+              weekday?: T;
+              day?: T;
+              month?: T;
+              year?: T;
+            };
+        location?: T;
+        title?: T;
+        description?: T;
+        button?:
+          | T
+          | {
+              title?: T;
+              url?: T;
+              variant?: T;
+              size?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventHeader5Block_select".
+ */
+export interface EventHeader5BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  event?:
+    | T
+    | {
+        url?: T;
+        image?: T;
+        video?: T;
+        category?: T;
+        status?: T;
+        title?: T;
+        date?:
+          | T
+          | {
+              weekday?: T;
+              day?: T;
+              month?: T;
+              year?: T;
+            };
+        description?: T;
+        button?:
+          | T
+          | {
+              title?: T;
+              url?: T;
+              variant?: T;
+              size?: T;
+            };
+      };
+  filters?:
+    | T
+    | {
+        title?: T;
+        url?: T;
+        variant?: T;
+        size?: T;
+        id?: T;
+      };
+  events?:
+    | T
+    | {
+        url?: T;
+        status?: T;
+        title?: T;
+        duration?: T;
+        description?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "EventItemHeader1Block_select".
  */
 export interface EventItemHeader1BlockSelect<T extends boolean = true> {
@@ -5303,6 +6607,72 @@ export interface EventItemHeader5BlockSelect<T extends boolean = true> {
       };
   countdownIsoDate?: T;
   amountLeft?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventItemHeader6Block_select".
+ */
+export interface EventItemHeader6BlockSelect<T extends boolean = true> {
+  breadcrumbs?:
+    | T
+    | {
+        url?: T;
+        title?: T;
+        id?: T;
+      };
+  heading?: T;
+  description?: T;
+  image?: T;
+  buttons?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+        id?: T;
+      };
+  date?:
+    | T
+    | {
+        weekday?: T;
+        day?: T;
+        month?: T;
+        year?: T;
+      };
+  location?: T;
+  speakers?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventItemHeader7Block_select".
+ */
+export interface EventItemHeader7BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  date?:
+    | T
+    | {
+        weekday?: T;
+        day?: T;
+        month?: T;
+        year?: T;
+      };
+  location?: T;
+  speakers?: T;
+  image?: T;
+  buttons?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }

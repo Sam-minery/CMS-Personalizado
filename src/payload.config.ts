@@ -70,6 +70,7 @@ export default buildConfig({
         rejectUnauthorized: false,
       },
     },
+    push: false, //cambiar a true si no funciona la migracion
   }),
   collections: [Pages, Posts, Media, Categories, Users, ContactSubmissions, FormCustom2Submissions],
   cors: (() => {
