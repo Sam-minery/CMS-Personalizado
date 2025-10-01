@@ -276,12 +276,16 @@ export interface Page {
     | CTACustom_2Block
     | Event1Block
     | Event3Block
+    | Event4Block
+    | Event6Block
     | EventHeader1Block
     | EventHeader3Block
     | EventHeader4Block
     | EventHeader5Block
     | EventItemHeader1Block
     | EventItemHeader5Block
+    | EventItemHeader6Block
+    | EventItemHeader7Block
     | FAQ1Block
     | FAQ2Block
     | FAQ4Block
@@ -1525,6 +1529,81 @@ export interface Event3Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Event4Block".
+ */
+export interface Event4Block {
+  tagline: string;
+  heading: string;
+  description: string;
+  tabs?:
+    | {
+        value: string;
+        trigger: string;
+        content?:
+          | {
+              url: string;
+              image: number | Media;
+              date: {
+                weekday: string;
+                day: string;
+                month: string;
+                year: string;
+              };
+              title: string;
+              status?: string | null;
+              location: string;
+              description: string;
+              button: {
+                variant: 'primary' | 'secondary' | 'outline' | 'ghost';
+                size: 'sm' | 'md' | 'lg';
+                title: string;
+                url: string;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'event4';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Event6Block".
+ */
+export interface Event6Block {
+  tagline: string;
+  heading: string;
+  description: string;
+  tabs?:
+    | {
+        value: string;
+        trigger: string;
+        content?:
+          | {
+              url: string;
+              title: string;
+              duration: string;
+              status?: string | null;
+              description: string;
+              /**
+               * URL del video que se reproducirá al hacer clic en el botón de play. Si no se proporciona, se usará la URL del webinar.
+               */
+              videoUrl?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'event6';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "EventHeader1Block".
  */
 export interface EventHeader1Block {
@@ -1930,6 +2009,82 @@ export interface EventItemHeader5Block {
   id?: string | null;
   blockName?: string | null;
   blockType: 'eventItemHdr5';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventItemHeader6Block".
+ */
+export interface EventItemHeader6Block {
+  breadcrumbs?:
+    | {
+        url: string;
+        title: string;
+        id?: string | null;
+      }[]
+    | null;
+  heading: string;
+  description: string;
+  image: number | Media;
+  buttons?:
+    | {
+        title: string;
+        /**
+         * Valores: primary, secondary, link
+         */
+        variant?: string | null;
+        /**
+         * Valores: sm, md, lg
+         */
+        size?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  date: {
+    weekday: string;
+    day: string;
+    month: string;
+    year?: string | null;
+  };
+  location: string;
+  speakers: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'eventItemHdr6';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventItemHeader7Block".
+ */
+export interface EventItemHeader7Block {
+  tagline: string;
+  heading: string;
+  description: string;
+  date: {
+    weekday: string;
+    day: string;
+    month: string;
+    year: string;
+  };
+  location: string;
+  speakers: string;
+  image: number | Media;
+  buttons?:
+    | {
+        title: string;
+        /**
+         * Valores: primary, secondary, link
+         */
+        variant?: string | null;
+        /**
+         * Valores: sm, md, lg
+         */
+        size?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'eventItemHdr7';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4653,12 +4808,16 @@ export interface PagesSelect<T extends boolean = true> {
         cta_custom_2?: T | CTACustom_2BlockSelect<T>;
         event1?: T | Event1BlockSelect<T>;
         event3?: T | Event3BlockSelect<T>;
+        event4?: T | Event4BlockSelect<T>;
+        event6?: T | Event6BlockSelect<T>;
         eventHeader1?: T | EventHeader1BlockSelect<T>;
         eventHeader3?: T | EventHeader3BlockSelect<T>;
         eventHeader4?: T | EventHeader4BlockSelect<T>;
         eventHeader5?: T | EventHeader5BlockSelect<T>;
         eventItemHdr1?: T | EventItemHeader1BlockSelect<T>;
         eventItemHdr5?: T | EventItemHeader5BlockSelect<T>;
+        eventItemHdr6?: T | EventItemHeader6BlockSelect<T>;
+        eventItemHdr7?: T | EventItemHeader7BlockSelect<T>;
         faq1?: T | FAQ1BlockSelect<T>;
         faq2?: T | FAQ2BlockSelect<T>;
         faq4?: T | FAQ4BlockSelect<T>;
@@ -5524,6 +5683,80 @@ export interface Event3BlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Event4Block_select".
+ */
+export interface Event4BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  tabs?:
+    | T
+    | {
+        value?: T;
+        trigger?: T;
+        content?:
+          | T
+          | {
+              url?: T;
+              image?: T;
+              date?:
+                | T
+                | {
+                    weekday?: T;
+                    day?: T;
+                    month?: T;
+                    year?: T;
+                  };
+              title?: T;
+              status?: T;
+              location?: T;
+              description?: T;
+              button?:
+                | T
+                | {
+                    variant?: T;
+                    size?: T;
+                    title?: T;
+                    url?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Event6Block_select".
+ */
+export interface Event6BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  tabs?:
+    | T
+    | {
+        value?: T;
+        trigger?: T;
+        content?:
+          | T
+          | {
+              url?: T;
+              title?: T;
+              duration?: T;
+              status?: T;
+              description?: T;
+              videoUrl?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "EventHeader1Block_select".
  */
 export interface EventHeader1BlockSelect<T extends boolean = true> {
@@ -5863,6 +6096,72 @@ export interface EventItemHeader5BlockSelect<T extends boolean = true> {
       };
   countdownIsoDate?: T;
   amountLeft?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventItemHeader6Block_select".
+ */
+export interface EventItemHeader6BlockSelect<T extends boolean = true> {
+  breadcrumbs?:
+    | T
+    | {
+        url?: T;
+        title?: T;
+        id?: T;
+      };
+  heading?: T;
+  description?: T;
+  image?: T;
+  buttons?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+        id?: T;
+      };
+  date?:
+    | T
+    | {
+        weekday?: T;
+        day?: T;
+        month?: T;
+        year?: T;
+      };
+  location?: T;
+  speakers?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventItemHeader7Block_select".
+ */
+export interface EventItemHeader7BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  date?:
+    | T
+    | {
+        weekday?: T;
+        day?: T;
+        month?: T;
+        year?: T;
+      };
+  location?: T;
+  speakers?: T;
+  image?: T;
+  buttons?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }

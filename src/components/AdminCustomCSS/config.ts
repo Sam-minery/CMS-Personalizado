@@ -265,6 +265,18 @@ export const blockConfigs: BlockConfig[] = [
     className: 'custom-event3-preview'
   },
   {
+    name: 'Event 4',
+    selector: 'Event 4',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/659cdcf4274be1a3e279311c_aYw2ThxYMN7-jr0gY9m0hNzk7PIYNhLO99FTCrBGtcw.png',
+    className: 'custom-event4-preview'
+  },
+  {
+    name: 'Event 6',
+    selector: 'Event 6',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/659cdcf7ade0eca541f4474b_4PEUY0G1D9Pr5zvOKk6q65fY-KwqO3fh4uHK8X1StYM.png',
+    className: 'custom-event6-preview'
+  },
+  {
     name: 'Event Header 1',
     selector: 'Event Header 1',
     imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/65681fadb3b85effde84fc31_section_event-header1.png',
@@ -299,6 +311,18 @@ export const blockConfigs: BlockConfig[] = [
     selector: 'Event Item Header 5',
     imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/659cd4dbea1dfee0ecdccbb5_8ku6axjlwtIkI7YuKLawEJW2bpQQAgTuGuA8qie04Ag.png',
     className: 'custom-event-item-header5-preview'
+  },
+  {
+    name: 'Event Item Header 6',
+    selector: 'Event Item Header 6',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/65681fac7b37860798194230_section_event-item-header6.png',
+    className: 'custom-event-item-header6-preview'
+  },
+  {
+    name: 'Event Item Header 7',
+    selector: 'Event Item Header 7',
+    imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/65681fad93020f9b678620ae_section_event-item-header7.png',
+    className: 'custom-event-item-header7-preview'
   },
   {
     name: 'Stats 1',
