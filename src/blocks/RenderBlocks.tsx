@@ -91,6 +91,7 @@ import { Layout5Block } from '@/blocks/Layout5/Component'
 import { Header44Block } from '@/blocks/Header44/Component'
 import { Header48Block } from '@/blocks/Header48/Component'
 import { AnimatedPin3DBlock } from '@/blocks/3D_Animated_Pin/Component'
+import { Pulse_Beams } from '@/blocks/Pulse_Beams/Component'
 
 const blockComponents = {
   animatedPin3D: AnimatedPin3DBlock,
@@ -182,6 +183,7 @@ const blockComponents = {
   layout5: Layout5Block,
   header44: Header44Block,
   header48: Header48Block,
+  pulseBeams: Pulse_Beams,
 }
 
 export const RenderBlocks: React.FC<{
