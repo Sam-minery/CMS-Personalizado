@@ -346,6 +346,16 @@ export interface Page {
     | Stats1Block
     | Stats3Block
     | {
+        title?: string | null;
+        description?: string | null;
+        spotlightColor: 'white' | 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'pink' | 'cyan' | 'orange';
+        backgroundColor: 'black' | 'white';
+        textColor: 'white' | 'black';
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'spotlight';
+      }
+    | {
         tagline?: string | null;
         heading?: string | null;
         description?: string | null;
@@ -5158,6 +5168,17 @@ export interface PagesSelect<T extends boolean = true> {
         pricing5?: T | Pricing5BlockSelect<T>;
         stats1?: T | Stats1BlockSelect<T>;
         stats3?: T | Stats3BlockSelect<T>;
+        spotlight?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              spotlightColor?: T;
+              backgroundColor?: T;
+              textColor?: T;
+              id?: T;
+              blockName?: T;
+            };
         team1?:
           | T
           | {

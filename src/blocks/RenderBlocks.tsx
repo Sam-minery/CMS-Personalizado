@@ -76,6 +76,7 @@ import { Event4 as Event4Block } from '@/blocks/Event_4/Component'
 import { Event6 as Event6Block } from '@/blocks/Event_6/Component'
 import { Stats1 as Stats1Block } from '@/blocks/Stats_1/Component'
 import { Stats3 as Stats3Block } from '@/blocks/Stats_3/Component'
+import { SpotlightBlock } from '@/blocks/Spotlight/Component'
 import { Comparison1 as Comparison1Block } from '@/blocks/Comparison_1/Component'
 import { Comparison13 as Comparison13Block } from '@/blocks/Comparison_13/Component'
 import { Links1 as Links1Block } from '@/blocks/Links_1/Component'
@@ -168,6 +169,7 @@ const blockComponents = {
   event6: Event6Block,
   stats1: Stats1Block,
   stats3: Stats3Block,
+  spotlight: SpotlightBlock,
   comparison1: Comparison1Block,
   comparison13: Comparison13Block,
   links1: Links1Block,
