@@ -3,7 +3,6 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import { Button, Input } from "@relume_io/relume-ui"
-import type { ButtonProps } from "@relume_io/relume-ui"
 import RichText from '@/components/RichText'
 import type { CTA4Block as CTA4BlockProps } from '@/payload-types'
 

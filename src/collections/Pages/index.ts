@@ -74,6 +74,7 @@ import { Event4 } from '../../blocks/Event_4/config'
 import { Event6 } from '../../blocks/Event_6/config'
 import { Stats1 } from '../../blocks/Stats_1/config'
 import { Stats3 } from '../../blocks/Stats_3/config'
+import { SpotlightBlock } from '../../blocks/Spotlight/config'
 import { Comparison1 } from '../../blocks/Comparison_1/config'
 import { Comparison13 } from '../../blocks/Comparison_13/config'
 import { Links1 } from '../../blocks/Links_1/config'
@@ -238,6 +239,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 Pricing5,
                 Stats1,
                 Stats3,
+                SpotlightBlock,
                 Team1,
                 Team2,
                 Testimonial1Block,
