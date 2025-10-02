@@ -90,6 +90,7 @@ import { Layout5Block } from '../../blocks/Layout5/config'
 import { Header44Block } from '../../blocks/Header44/config'
 import { Header48Block } from '../../blocks/Header48/config'
 import { AnimatedPin3DBlock } from '../../blocks/3D_Animated_Pin/Config'
+import { Pulse_Beams } from '../../blocks/Pulse_Beams'
 import { hero } from '@/heros/config'
 import { slugField } from '@/fields/slug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -247,6 +248,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 Timeline1,
                 Timeline3,
                 Timeline7,
+                Pulse_Beams,
               ],
               required: true,
               admin: {

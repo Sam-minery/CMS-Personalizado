@@ -418,6 +418,29 @@ export interface Page {
     | Timeline1Block
     | Timeline3Block
     | Timeline7Block
+    | {
+        buttonText: string;
+        buttonLink?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        backgroundColor?: ('slate-950' | 'zinc-950' | 'gray-950' | 'neutral-950') | null;
+        height?: ('30rem' | '40rem' | '50rem' | '60rem') | null;
+        buttonSize?: ('small' | 'medium' | 'large' | 'xlarge') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'pulseBeams';
+      }
   )[];
   meta?: {
     title?: string | null;
@@ -5218,6 +5241,24 @@ export interface PagesSelect<T extends boolean = true> {
         timeline1?: T | Timeline1BlockSelect<T>;
         timeline3?: T | Timeline3BlockSelect<T>;
         timeline7?: T | Timeline7BlockSelect<T>;
+        pulseBeams?:
+          | T
+          | {
+              buttonText?: T;
+              buttonLink?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              backgroundColor?: T;
+              height?: T;
+              buttonSize?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   meta?:
     | T
