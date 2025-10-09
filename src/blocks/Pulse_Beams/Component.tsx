@@ -4,7 +4,6 @@ import { motion } from 'motion/react'
 import Link from 'next/link'
 import type { Block as BlockType } from 'payload'
 
-import { simpleLink } from '@/fields/simpleLink'
 
 type Props = BlockType & {
   buttonText?: string
