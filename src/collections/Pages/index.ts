@@ -92,6 +92,9 @@ import { Header44Block } from '../../blocks/Header44/config'
 import { Header48Block } from '../../blocks/Header48/config'
 import { AnimatedPin3DBlock } from '../../blocks/3D_Animated_Pin/Config'
 import { Pulse_Beams } from '../../blocks/Pulse_Beams'
+import { Background_Ripple_Effect } from '../../blocks/Background_Ripple_Effect'
+import { Glowing_Background_Star_Card } from '../../blocks/Glowing_Background_Star_Card'
+import { Text_Reveal_Card } from '../../blocks/Text_Reveal_Card'
 import { hero } from '@/heros/config'
 import { slugField } from '@/fields/slug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -251,6 +254,9 @@ export const Pages: CollectionConfig<'pages'> = {
                 Timeline3,
                 Timeline7,
                 Pulse_Beams,
+                Background_Ripple_Effect,
+                Glowing_Background_Star_Card,
+                Text_Reveal_Card,
               ],
               required: true,
               admin: {

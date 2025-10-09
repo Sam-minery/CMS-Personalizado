@@ -451,6 +451,54 @@ export interface Page {
         blockName?: string | null;
         blockType: 'pulseBeams';
       }
+    | {
+        title: string;
+        subtitle?: string | null;
+        backgroundColor?: ('slate-950' | 'zinc-950' | 'gray-950' | 'neutral-950') | null;
+        height?: ('screen' | '30rem' | '40rem' | '50rem' | '60rem') | null;
+        rippleColor?: ('blue' | 'cyan' | 'green' | 'purple' | 'pink') | null;
+        gridSize?: ('small' | 'medium' | 'large') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'backgroundRippleEffect';
+      }
+    | {
+        title: string;
+        description: string;
+        button: {
+          text: string;
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            url?: string | null;
+          };
+        };
+        backgroundColor?: ('slate-950' | 'zinc-950' | 'gray-950' | 'neutral-950') | null;
+        height?: ('auto' | 'screen' | '30rem' | '40rem' | '50rem') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'GlowingStarCard';
+      }
+    | {
+        title: string;
+        description: string;
+        visibleText: string;
+        revealText: string;
+        backgroundColor?: ('dark' | 'slate-950' | 'zinc-950' | 'gray-950' | 'neutral-950') | null;
+        height?: ('30rem' | '40rem' | '50rem' | '60rem' | 'screen') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'TextRevealCard';
+      }
   )[];
   meta?: {
     title?: string | null;
@@ -5277,6 +5325,53 @@ export interface PagesSelect<T extends boolean = true> {
               backgroundColor?: T;
               height?: T;
               buttonSize?: T;
+              id?: T;
+              blockName?: T;
+            };
+        backgroundRippleEffect?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              backgroundColor?: T;
+              height?: T;
+              rippleColor?: T;
+              gridSize?: T;
+              id?: T;
+              blockName?: T;
+            };
+        GlowingStarCard?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              button?:
+                | T
+                | {
+                    text?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                        };
+                  };
+              backgroundColor?: T;
+              height?: T;
+              id?: T;
+              blockName?: T;
+            };
+        TextRevealCard?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              visibleText?: T;
+              revealText?: T;
+              backgroundColor?: T;
+              height?: T;
               id?: T;
               blockName?: T;
             };
