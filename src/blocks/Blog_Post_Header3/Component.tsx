@@ -39,7 +39,6 @@ type SocialMediaLink = {
 };
 
 type AuthorDetails = {
-  avatar: ImageProps;
   fullName: string;
   date: string;
   readTime: string;
@@ -167,11 +166,6 @@ export const BlogPostHeader3Defaults: Props = {
   ],
   heading: "Blog title heading will go here",
   author: {
-    avatar: {
-      useMedia: false,
-      src: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image.svg",
-      alt: "Relume placeholder avatar",
-    },
     fullName: "Full name",
     date: "11 Jan 2022",
     readTime: "5 min read",

@@ -13,6 +13,16 @@ import * as migration_20251007_111414 from './20251007_111414';
 import * as migration_20251007_113851 from './20251007_113851';
 import * as migration_20251007_122243 from './20251007_122243';
 import * as migration_20251007_123703 from './20251007_123703';
+import * as migration_20251009_121556 from './20251009_121556';
+import * as migration_20251009_123159 from './20251009_123159';
+import * as migration_20251010_103833 from './20251010_103833';
+import * as migration_20251010_110423 from './20251010_110423';
+import * as migration_20251010_115353 from './20251010_115353';
+import * as migration_20251010_124927 from './20251010_124927';
+import * as migration_20251014_131245 from './20251014_131245';
+import * as migration_20251015_103052 from './20251015_103052';
+import * as migration_20251015_115905 from './20251015_115905';
+import * as migration_20251015_124754 from './20251015_124754';
 
 export const migrations = [
   {
@@ -88,6 +98,56 @@ export const migrations = [
   {
     up: migration_20251007_123703.up,
     down: migration_20251007_123703.down,
-    name: '20251007_123703'
+    name: '20251007_123703',
+  },
+  {
+    up: migration_20251009_121556.up,
+    down: migration_20251009_121556.down,
+    name: '20251009_121556',
+  },
+  {
+    up: migration_20251009_123159.up,
+    down: migration_20251009_123159.down,
+    name: '20251009_123159',
+  },
+  {
+    up: migration_20251010_103833.up,
+    down: migration_20251010_103833.down,
+    name: '20251010_103833',
+  },
+  {
+    up: migration_20251010_110423.up,
+    down: migration_20251010_110423.down,
+    name: '20251010_110423',
+  },
+  {
+    up: migration_20251010_115353.up,
+    down: migration_20251010_115353.down,
+    name: '20251010_115353',
+  },
+  {
+    up: migration_20251010_124927.up,
+    down: migration_20251010_124927.down,
+    name: '20251010_124927',
+  },
+  {
+    up: migration_20251014_131245.up,
+    down: migration_20251014_131245.down,
+    name: '20251014_131245',
+  },
+  {
+    up: migration_20251015_103052.up,
+    down: migration_20251015_103052.down,
+    name: '20251015_103052',
+  },
+  {
+    up: migration_20251015_115905.up,
+    down: migration_20251015_115905.down,
+    name: '20251015_115905',
+  },
+  {
+    up: migration_20251015_124754.up,
+    down: migration_20251015_124754.down,
+    name: '20251015_124754'
   },
 ];

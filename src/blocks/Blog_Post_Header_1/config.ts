@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { simpleLink } from '@/fields/simpleLink'
 
 export const BlogPostHeader1: Block = {
   slug: 'blogPostHeader1',
@@ -13,22 +14,17 @@ export const BlogPostHeader1: Block = {
       name: 'breadcrumbs',
       type: 'array',
       label: 'Breadcrumbs',
-      dbName: 'breadcrumbs',
+      dbName: 'blog_post_header1_breadcrumbs',
       minRows: 1,
-      maxRows: 10,
+      maxRows: 5,
       fields: [
-        {
-          name: 'url',
-          type: 'text',
-          label: 'URL',
-          required: true,
-        },
         {
           name: 'title',
           type: 'text',
-          label: 'Title',
           required: true,
+          defaultValue: 'Blog',
         },
+        simpleLink(),
       ],
     },
     {
@@ -84,7 +80,7 @@ export const BlogPostHeader1: Block = {
       name: 'socialMediaLinks',
       type: 'array',
       label: 'Social Media Links',
-      dbName: 'social_links',
+      dbName: 'blog_post_header1_social_links',
       minRows: 1,
       maxRows: 10,
       fields: [

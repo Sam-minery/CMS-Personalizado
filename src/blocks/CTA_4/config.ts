@@ -1,5 +1,12 @@
 import type { Block } from 'payload'
 
+import {
+  FixedToolbarFeature,
+  HeadingFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
+
 export const CTA4Block: Block = {
   slug: 'cta4',
   interfaceName: 'CTA4Block',
@@ -65,8 +72,18 @@ export const CTA4Block: Block = {
       name: 'termsAndConditions',
       type: 'richText',
       label: 'Términos y Condiciones',
+      editor: lexicalEditor({
+        features: ({ rootFeatures }) => {
+          return [
+            ...rootFeatures,
+            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
+            FixedToolbarFeature(),
+            InlineToolbarFeature(),
+          ]
+        },
+      }),
       admin: {
-        description: 'HTML personalizado para términos y condiciones',
+        description: 'Editor de texto enriquecido para términos y condiciones con soporte para enlaces',
       },
     },
     {

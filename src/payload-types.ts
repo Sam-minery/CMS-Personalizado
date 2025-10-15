@@ -1034,8 +1034,21 @@ export interface Blog9BlockType {
 export interface BlogPostHeader1BlockType {
   breadcrumbs?:
     | {
-        url: string;
         title: string;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
         id?: string | null;
       }[]
     | null;
@@ -1137,12 +1150,6 @@ export interface BlogPostHeader3Block {
     alt?: string | null;
   };
   author: {
-    avatar?: {
-      useMedia?: boolean | null;
-      mediaImage?: (number | null) | Media;
-      src?: string | null;
-      alt?: string | null;
-    };
     fullName: string;
     date: string;
     readTime: string;
@@ -1355,12 +1362,13 @@ export interface Comparison1Block {
   tagline: string;
   heading: string;
   description: string;
+  comparisonTitle: string;
   comparisonProducts?:
     | {
         title?: string | null;
         products?:
           | {
-              icon: number | Media;
+              icon?: (number | null) | Media;
               productName: string;
               description: string;
               id?: string | null;
@@ -1387,7 +1395,20 @@ export interface Comparison1Block {
         title: string;
         variant: 'primary' | 'secondary' | 'outline' | 'ghost' | 'link';
         size: 'sm' | 'md' | 'lg' | 'link';
-        url: string;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
         iconRight?: boolean | null;
         id?: string | null;
       }[]
@@ -1669,7 +1690,7 @@ export interface CTA4Block {
     size?: ('sm' | 'default' | 'lg') | null;
   };
   /**
-   * HTML personalizado para términos y condiciones
+   * Editor de texto enriquecido para términos y condiciones con soporte para enlaces
    */
   termsAndConditions?: {
     root: {
@@ -2238,17 +2259,22 @@ export interface EventHeader5Block {
  */
 export interface EventItemHeader1Block {
   backLink: {
-    url: string;
-    button: {
-      title: string;
-      /**
-       * Valores: primary, secondary, link
-       */
-      variant?: string | null;
-      /**
-       * Valores: sm, md, lg, link
-       */
-      size?: string | null;
+    title: string;
+    variant?: ('primary' | 'secondary' | 'link') | null;
+    size?: ('sm' | 'default' | 'lg') | null;
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
     };
   };
   heading: string;
@@ -2257,15 +2283,12 @@ export interface EventItemHeader1Block {
   inputPlaceholder: string;
   button: {
     title: string;
-    /**
-     * Valores: primary, secondary, link
-     */
-    variant?: string | null;
-    /**
-     * Valores: sm, md, lg
-     */
-    size?: string | null;
+    variant?: ('primary' | 'secondary' | 'link') | null;
+    size?: ('sm' | 'default' | 'lg') | null;
   };
+  /**
+   * Editor de texto enriquecido para términos y condiciones con soporte para enlaces
+   */
   termsAndConditions?: {
     root: {
       type: string;
@@ -2287,7 +2310,17 @@ export interface EventItemHeader1Block {
     month: string;
     year?: string | null;
   };
-  countdownIsoDate: string;
+  countdown: {
+    date: string;
+    /**
+     * Formato: HH:MM (ej: 14:30)
+     */
+    time: string;
+    /**
+     * Zona horaria del evento (ej: Europe/Madrid, America/New_York)
+     */
+    timezone?: string | null;
+  };
   amountLeft: string;
   id?: string | null;
   blockName?: string | null;
@@ -2299,17 +2332,22 @@ export interface EventItemHeader1Block {
  */
 export interface EventItemHeader5Block {
   backLink: {
-    url: string;
-    button: {
-      title: string;
-      /**
-       * Valores: primary, secondary, link
-       */
-      variant?: string | null;
-      /**
-       * Valores: sm, md, lg, link
-       */
-      size?: string | null;
+    title: string;
+    variant?: ('primary' | 'secondary' | 'link') | null;
+    size?: ('sm' | 'default' | 'lg') | null;
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
     };
   };
   heading: string;
@@ -2318,15 +2356,12 @@ export interface EventItemHeader5Block {
   inputPlaceholder: string;
   button: {
     title: string;
-    /**
-     * Valores: primary, secondary, link
-     */
-    variant?: string | null;
-    /**
-     * Valores: sm, md, lg
-     */
-    size?: string | null;
+    variant?: ('primary' | 'secondary' | 'link') | null;
+    size?: ('sm' | 'default' | 'lg') | null;
   };
+  /**
+   * Editor de texto enriquecido para términos y condiciones con soporte para enlaces
+   */
   termsAndConditions?: {
     root: {
       type: string;
@@ -2348,7 +2383,17 @@ export interface EventItemHeader5Block {
     month: string;
     year?: string | null;
   };
-  countdownIsoDate: string;
+  countdown: {
+    date: string;
+    /**
+     * Formato: HH:MM (ej: 14:30)
+     */
+    time: string;
+    /**
+     * Zona horaria del evento (ej: Europe/Madrid, America/New_York)
+     */
+    timezone?: string | null;
+  };
   amountLeft: string;
   id?: string | null;
   blockName?: string | null;
@@ -2361,8 +2406,21 @@ export interface EventItemHeader5Block {
 export interface EventItemHeader6Block {
   breadcrumbs?:
     | {
-        url: string;
         title: string;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
         id?: string | null;
       }[]
     | null;
@@ -2372,14 +2430,22 @@ export interface EventItemHeader6Block {
   buttons?:
     | {
         title: string;
-        /**
-         * Valores: primary, secondary, link
-         */
-        variant?: string | null;
-        /**
-         * Valores: sm, md, lg
-         */
-        size?: string | null;
+        variant?: ('primary' | 'secondary' | 'link') | null;
+        size?: ('sm' | 'default' | 'lg') | null;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
         id?: string | null;
       }[]
     | null;
@@ -2415,14 +2481,22 @@ export interface EventItemHeader7Block {
   buttons?:
     | {
         title: string;
-        /**
-         * Valores: primary, secondary, link
-         */
-        variant?: string | null;
-        /**
-         * Valores: sm, md, lg
-         */
-        size?: string | null;
+        variant?: ('primary' | 'secondary' | 'link') | null;
+        size?: ('sm' | 'default' | 'lg') | null;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
         id?: string | null;
       }[]
     | null;
@@ -5706,8 +5780,15 @@ export interface BlogPostHeader1BlockTypeSelect<T extends boolean = true> {
   breadcrumbs?:
     | T
     | {
-        url?: T;
         title?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
         id?: T;
       };
   heading?: T;
@@ -5804,14 +5885,6 @@ export interface BlogPostHeader3BlockSelect<T extends boolean = true> {
   author?:
     | T
     | {
-        avatar?:
-          | T
-          | {
-              useMedia?: T;
-              mediaImage?: T;
-              src?: T;
-              alt?: T;
-            };
         fullName?: T;
         date?: T;
         readTime?: T;
@@ -5991,6 +6064,7 @@ export interface Comparison1BlockSelect<T extends boolean = true> {
   tagline?: T;
   heading?: T;
   description?: T;
+  comparisonTitle?: T;
   comparisonProducts?:
     | T
     | {
@@ -6024,7 +6098,14 @@ export interface Comparison1BlockSelect<T extends boolean = true> {
         title?: T;
         variant?: T;
         size?: T;
-        url?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
         iconRight?: T;
         id?: T;
       };
@@ -6691,13 +6772,16 @@ export interface EventItemHeader1BlockSelect<T extends boolean = true> {
   backLink?:
     | T
     | {
-        url?: T;
-        button?:
+        title?: T;
+        variant?: T;
+        size?: T;
+        link?:
           | T
           | {
-              title?: T;
-              variant?: T;
-              size?: T;
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
             };
       };
   heading?: T;
@@ -6720,7 +6804,13 @@ export interface EventItemHeader1BlockSelect<T extends boolean = true> {
         month?: T;
         year?: T;
       };
-  countdownIsoDate?: T;
+  countdown?:
+    | T
+    | {
+        date?: T;
+        time?: T;
+        timezone?: T;
+      };
   amountLeft?: T;
   id?: T;
   blockName?: T;
@@ -6733,13 +6823,16 @@ export interface EventItemHeader5BlockSelect<T extends boolean = true> {
   backLink?:
     | T
     | {
-        url?: T;
-        button?:
+        title?: T;
+        variant?: T;
+        size?: T;
+        link?:
           | T
           | {
-              title?: T;
-              variant?: T;
-              size?: T;
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
             };
       };
   heading?: T;
@@ -6762,7 +6855,13 @@ export interface EventItemHeader5BlockSelect<T extends boolean = true> {
         month?: T;
         year?: T;
       };
-  countdownIsoDate?: T;
+  countdown?:
+    | T
+    | {
+        date?: T;
+        time?: T;
+        timezone?: T;
+      };
   amountLeft?: T;
   id?: T;
   blockName?: T;
@@ -6775,8 +6874,15 @@ export interface EventItemHeader6BlockSelect<T extends boolean = true> {
   breadcrumbs?:
     | T
     | {
-        url?: T;
         title?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
         id?: T;
       };
   heading?: T;
@@ -6788,6 +6894,14 @@ export interface EventItemHeader6BlockSelect<T extends boolean = true> {
         title?: T;
         variant?: T;
         size?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
         id?: T;
       };
   date?:
@@ -6828,6 +6942,14 @@ export interface EventItemHeader7BlockSelect<T extends boolean = true> {
         title?: T;
         variant?: T;
         size?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
         id?: T;
       };
   id?: T;
@@ -8854,7 +8976,7 @@ export interface Footer {
   /**
    * Selecciona el tipo de footer a usar
    */
-  footerType?: ('default' | 'footer4') | null;
+  footerType?: ('default' | 'footer1' | 'footer4' | 'footer5') | null;
   navItems?:
     | {
         link: {
@@ -8875,18 +8997,144 @@ export interface Footer {
         id?: string | null;
       }[]
     | null;
+  footer1Config?: {
+    logo: {
+      /**
+       * Sube la imagen del logo
+       */
+      media: number | Media;
+      link?: {
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        url?: string | null;
+      };
+    };
+    newsletterDescription: string;
+    inputPlaceholder?: string | null;
+    button: {
+      title: string;
+      size?: ('sm' | 'md' | 'lg') | null;
+      variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
+    };
+    termsAndConditions?: {
+      text?: string | null;
+      /**
+       * Enlace a la página de Términos y Condiciones
+       */
+      link?: {
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        url?: string | null;
+      };
+      suffix?: string | null;
+    };
+    columnLinks?:
+      | {
+          title: string;
+          links?:
+            | {
+                title: string;
+                link?: {
+                  type?: ('reference' | 'custom') | null;
+                  newTab?: boolean | null;
+                  reference?:
+                    | ({
+                        relationTo: 'pages';
+                        value: number | Page;
+                      } | null)
+                    | ({
+                        relationTo: 'posts';
+                        value: number | Post;
+                      } | null);
+                  url?: string | null;
+                };
+                icon?: ('facebook' | 'instagram' | 'x' | 'linkedin' | 'youtube') | null;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    footerText?: string | null;
+    footerLinks?:
+      | {
+          title: string;
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            url?: string | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
   footer4Config?: {
     logo: {
-      url?: string | null;
-      src: string;
-      alt?: string | null;
+      /**
+       * Sube la imagen del logo
+       */
+      media: number | Media;
+      link?: {
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        url?: string | null;
+      };
     };
     columnLinks?:
       | {
           links?:
             | {
                 title: string;
-                url: string;
+                link?: {
+                  type?: ('reference' | 'custom') | null;
+                  newTab?: boolean | null;
+                  reference?:
+                    | ({
+                        relationTo: 'pages';
+                        value: number | Page;
+                      } | null)
+                    | ({
+                        relationTo: 'posts';
+                        value: number | Post;
+                      } | null);
+                  url?: string | null;
+                };
                 id?: string | null;
               }[]
             | null;
@@ -8895,7 +9143,20 @@ export interface Footer {
       | null;
     socialMediaLinks?:
       | {
-          url: string;
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            url?: string | null;
+          };
           platform: 'facebook' | 'instagram' | 'twitter' | 'linkedin' | 'youtube';
           id?: string | null;
         }[]
@@ -8904,7 +9165,138 @@ export interface Footer {
     footerLinks?:
       | {
           title: string;
-          url: string;
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            url?: string | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  footer5Config?: {
+    logo: {
+      /**
+       * Sube la imagen del logo
+       */
+      media: number | Media;
+      link?: {
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        url?: string | null;
+      };
+    };
+    newsletterHeading: string;
+    newsletterDescription: string;
+    inputPlaceholder?: string | null;
+    button: {
+      title: string;
+      size?: ('sm' | 'md' | 'lg') | null;
+      variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
+    };
+    termsAndConditions?: {
+      text?: string | null;
+      /**
+       * Enlace a la página de Términos y Condiciones
+       */
+      link?: {
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        url?: string | null;
+      };
+      suffix?: string | null;
+    };
+    columnLinks?:
+      | {
+          title: string;
+          links?:
+            | {
+                title: string;
+                link?: {
+                  type?: ('reference' | 'custom') | null;
+                  newTab?: boolean | null;
+                  reference?:
+                    | ({
+                        relationTo: 'pages';
+                        value: number | Page;
+                      } | null)
+                    | ({
+                        relationTo: 'posts';
+                        value: number | Post;
+                      } | null);
+                  url?: string | null;
+                };
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    socialMediaLinks?:
+      | {
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            url?: string | null;
+          };
+          icon: 'facebook' | 'instagram' | 'x' | 'linkedin' | 'youtube';
+          id?: string | null;
+        }[]
+      | null;
+    footerText?: string | null;
+    footerLinks?:
+      | {
+          title: string;
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            url?: string | null;
+          };
           id?: string | null;
         }[]
       | null;
@@ -8996,15 +9388,97 @@ export interface FooterSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  footer1Config?:
+    | T
+    | {
+        logo?:
+          | T
+          | {
+              media?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+            };
+        newsletterDescription?: T;
+        inputPlaceholder?: T;
+        button?:
+          | T
+          | {
+              title?: T;
+              size?: T;
+              variant?: T;
+            };
+        termsAndConditions?:
+          | T
+          | {
+              text?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              suffix?: T;
+            };
+        columnLinks?:
+          | T
+          | {
+              title?: T;
+              links?:
+                | T
+                | {
+                    title?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                        };
+                    icon?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+        footerText?: T;
+        footerLinks?:
+          | T
+          | {
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              id?: T;
+            };
+      };
   footer4Config?:
     | T
     | {
         logo?:
           | T
           | {
-              url?: T;
-              src?: T;
-              alt?: T;
+              media?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
             };
         columnLinks?:
           | T
@@ -9013,7 +9487,14 @@ export interface FooterSelect<T extends boolean = true> {
                 | T
                 | {
                     title?: T;
-                    url?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                        };
                     id?: T;
                   };
               id?: T;
@@ -9021,7 +9502,14 @@ export interface FooterSelect<T extends boolean = true> {
         socialMediaLinks?:
           | T
           | {
-              url?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
               platform?: T;
               id?: T;
             };
@@ -9030,7 +9518,104 @@ export interface FooterSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              url?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              id?: T;
+            };
+      };
+  footer5Config?:
+    | T
+    | {
+        logo?:
+          | T
+          | {
+              media?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+            };
+        newsletterHeading?: T;
+        newsletterDescription?: T;
+        inputPlaceholder?: T;
+        button?:
+          | T
+          | {
+              title?: T;
+              size?: T;
+              variant?: T;
+            };
+        termsAndConditions?:
+          | T
+          | {
+              text?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              suffix?: T;
+            };
+        columnLinks?:
+          | T
+          | {
+              title?: T;
+              links?:
+                | T
+                | {
+                    title?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+            };
+        socialMediaLinks?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              icon?: T;
+              id?: T;
+            };
+        footerText?: T;
+        footerLinks?:
+          | T
+          | {
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
               id?: T;
             };
       };

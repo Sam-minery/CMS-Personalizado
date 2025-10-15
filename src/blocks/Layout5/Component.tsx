@@ -126,34 +126,34 @@ export const Layout5Block: React.FC<Layout5BlockProps> = ({
                     }
                   }}
                 >
-                  <div className="relative bg-white rounded-lg p-6 max-w-4xl w-full mx-4">
+                  <div className="relative bg-white rounded-lg p-4 max-w-2xl w-full mx-4">
                     <button
                       onClick={() => {
                         setIsDialogOpen(false)
                         setIsIframeLoaded(false)
                       }}
-                      className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl z-10"
+                      className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-3xl z-20 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md"
                     >
                       ×
                     </button>
-                    <div className="relative">
+                    <div className="relative mt-8">
                       {!isIframeLoaded && (
                         <div className="flex items-center justify-center h-64">
-                          <CgSpinner className="size-16 animate-spin text-gray-500" />
+                          <CgSpinner className="size-12 animate-spin text-gray-500" />
                         </div>
                       )}
-                                             <iframe
-                         className={clsx("w-full aspect-video", {
-                           visible: isIframeLoaded,
-                           hidden: !isIframeLoaded,
-                         })}
-                         src={getVideoUrl(video)}
-                         title="Video"
-                         frameBorder="0"
-                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                         allowFullScreen
-                         onLoad={() => setIsIframeLoaded(true)}
-                       />
+                      <iframe
+                        className={clsx("w-full h-80 rounded", {
+                          visible: isIframeLoaded,
+                          hidden: !isIframeLoaded,
+                        })}
+                        src={getVideoUrl(video)}
+                        title="Video"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                        onLoad={() => setIsIframeLoaded(true)}
+                      />
                     </div>
                   </div>
                 </div>

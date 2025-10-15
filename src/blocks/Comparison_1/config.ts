@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { simpleLink } from '@/fields/simpleLink'
 
 export const Comparison1: Block = {
   slug: 'comparison1',
@@ -31,10 +32,18 @@ export const Comparison1: Block = {
       defaultValue: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     },
     {
+      name: 'comparisonTitle',
+      type: 'text',
+      required: true,
+      label: 'Título de Comparación',
+      defaultValue: 'Product comparison',
+    },
+    {
       name: 'comparisonProducts',
       type: 'array',
       label: 'Productos de Comparación',
       minRows: 1,
+      maxRows: 1,
       fields: [
         {
           name: 'title',
@@ -47,13 +56,14 @@ export const Comparison1: Block = {
           type: 'array',
           label: 'Productos',
           minRows: 1,
+          maxRows: 3,
           fields: [
             {
               name: 'icon',
               type: 'upload',
               relationTo: 'media',
-              required: true,
-              label: 'Icono del Producto',
+              required: false,
+              label: 'Icono del Producto (Opcional)',
             },
             {
               name: 'productName',
@@ -91,6 +101,7 @@ export const Comparison1: Block = {
           type: 'array',
           label: 'Elementos de la Característica',
           minRows: 2,
+          maxRows: 3,
           fields: [
             {
               name: 'type',
@@ -120,6 +131,7 @@ export const Comparison1: Block = {
       name: 'buttons',
       type: 'array',
       label: 'Botones',
+      dbName: 'comparison_1_buttons',
       minRows: 1,
       fields: [
         {
@@ -156,13 +168,12 @@ export const Comparison1: Block = {
           ],
           defaultValue: 'md',
         },
-        {
-          name: 'url',
-          type: 'text',
-          required: true,
-          label: 'URL del Botón',
-          defaultValue: '#',
-        },
+        simpleLink({
+          overrides: {
+            name: 'link',
+            label: 'Enlace del Botón',
+          }
+        }),
         {
           name: 'iconRight',
           type: 'checkbox',

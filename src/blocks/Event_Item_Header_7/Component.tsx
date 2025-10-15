@@ -5,6 +5,7 @@ import { Button } from "@relume_io/relume-ui";
 import type { ButtonProps } from "@relume_io/relume-ui";
 import { BiMap, BiCalendarAlt, BiUser } from "react-icons/bi";
 import Image from "next/image";
+import { CMSLink } from '@/components/Link';
 
 type ImageProps = {
   src?: string;
@@ -27,7 +28,17 @@ type Props = {
   location: string;
   speakers: string;
   image: ImageProps;
-  buttons: ButtonProps[];
+  buttons: {
+    title: string;
+    variant: string;
+    size: string;
+    link: {
+      type: 'reference' | 'custom';
+      url?: string;
+      reference?: any;
+      newTab?: boolean;
+    };
+  }[];
 };
 
 export type EventItemHeader7Props = React.ComponentPropsWithoutRef<"section"> & Partial<Props>;
@@ -62,9 +73,31 @@ export const EventItemHeader7 = (props: EventItemHeader7Props) => {
           </div>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-4 md:mt-8">
             {buttons.map((button, index) => (
-              <Button key={index} {...button}>
-                {button.title}
-              </Button>
+              <CMSLink key={index} {...button.link}>
+                <Button 
+                  variant={button.variant as any}
+                  size={button.size as any}
+                  className={`
+                    ${button.variant === 'primary' 
+                      ? 'bg-black text-white hover:bg-gray-800 border border-gray-700' 
+                      : button.variant === 'secondary'
+                      ? 'bg-white text-black hover:bg-gray-100 border border-gray-300'
+                      : button.variant === 'link'
+                      ? 'bg-transparent text-black hover:text-gray-600 underline'
+                      : 'bg-black text-white hover:bg-gray-800'
+                    }
+                    ${button.size === 'sm' 
+                      ? 'px-3 py-2 text-sm' 
+                      : button.size === 'lg' 
+                      ? 'px-8 py-4 text-lg' 
+                      : 'px-6 py-3 text-base'
+                    }
+                    font-medium rounded-md transition-colors duration-200
+                  `}
+                >
+                  {button.title}
+                </Button>
+              </CMSLink>
             ))}
           </div>
         </div>
@@ -100,5 +133,24 @@ export const EventItemHeader7Defaults: Props = {
     src: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image.svg",
     alt: "Relume placeholder image",
   },
-  buttons: [{ title: "Save my spot" }, { title: "View event", variant: "secondary" }],
+  buttons: [
+    { 
+      title: "Save my spot",
+      variant: "primary",
+      size: "default",
+      link: {
+        type: "custom",
+        url: "#",
+      }
+    }, 
+    { 
+      title: "View event", 
+      variant: "secondary",
+      size: "default",
+      link: {
+        type: "custom",
+        url: "#",
+      }
+    }
+  ],
 };

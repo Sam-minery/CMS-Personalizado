@@ -8,7 +8,7 @@ export const BlogPostHeader3Block: Block = {
     {
       name: 'breadcrumbs',
       type: 'array',
-      dbName: 'breadcrumbs',
+      dbName: 'blog_post_header3_breadcrumbs',
       minRows: 1,
       maxRows: 5,
       fields: [
@@ -65,39 +65,6 @@ export const BlogPostHeader3Block: Block = {
       type: 'group',
       fields: [
         {
-          name: 'avatar',
-          type: 'group',
-          fields: [
-            {
-              name: 'useMedia',
-              type: 'checkbox',
-              label: 'Usar Media',
-              defaultValue: false,
-            },
-            {
-              name: 'mediaImage',
-              type: 'relationship',
-              relationTo: 'media',
-              admin: {
-                condition: (data, siblingData) => siblingData?.useMedia === true,
-              },
-            },
-            {
-              name: 'src',
-              type: 'text',
-              defaultValue: 'https://d22po4pjz3o32e.cloudfront.net/placeholder-image.svg',
-              admin: {
-                condition: (data, siblingData) => siblingData?.useMedia === false,
-              },
-            },
-            {
-              name: 'alt',
-              type: 'text',
-              defaultValue: 'Relume placeholder avatar',
-            },
-          ],
-        },
-        {
           name: 'fullName',
           type: 'text',
           required: true,
@@ -120,7 +87,7 @@ export const BlogPostHeader3Block: Block = {
     {
       name: 'socialMediaLinks',
       type: 'array',
-      dbName: 'social_links',
+      dbName: 'blog_post_header3_social_links',
       minRows: 1,
       maxRows: 4,
       fields: [

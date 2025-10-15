@@ -46,6 +46,25 @@ export const CTA4Block: React.FC<CTA4BlockProps> = ({
               <Button 
                 variant={button.variant === 'default' ? 'primary' : button.variant as any}
                 size={button.size as any}
+                className={`
+                  ${button.variant === 'default' 
+                    ? 'bg-white text-black hover:bg-gray-100 border border-gray-300' 
+                    : button.variant === 'secondary'
+                    ? 'bg-black text-white hover:bg-gray-800 border border-gray-700'
+                    : button.variant === 'outline'
+                    ? 'bg-transparent text-white border border-white hover:bg-white hover:text-black'
+                    : button.variant === 'ghost'
+                    ? 'bg-transparent text-white hover:bg-white/10'
+                    : 'bg-white text-black hover:bg-gray-100'
+                  }
+                  ${button.size === 'sm' 
+                    ? 'px-3 py-2 text-sm' 
+                    : button.size === 'lg' 
+                    ? 'px-8 py-4 text-lg' 
+                    : 'px-6 py-3 text-base'
+                  }
+                  font-medium rounded-md transition-colors duration-200
+                `}
               >
                 {button.title}
               </Button>

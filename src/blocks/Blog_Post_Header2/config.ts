@@ -108,7 +108,7 @@ export const BlogPostHeader2Block: Block = {
     {
       name: 'socialMediaLinks',
       type: 'array',
-      dbName: 'social_links',
+      dbName: 'blog_post_header2_social_links',
       minRows: 1,
       maxRows: 4,
       fields: [

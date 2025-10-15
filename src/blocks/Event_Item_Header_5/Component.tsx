@@ -8,6 +8,8 @@ import { Button, Input } from "@relume_io/relume-ui";
 import type { ButtonProps } from "@relume_io/relume-ui";
 import { RxChevronLeft } from "react-icons/rx";
 import Image from "next/image";
+import { CMSLink } from '@/components/Link';
+import RichText from '@/components/RichText';
 
 type ImageProps = {
   src?: string;
@@ -38,17 +40,32 @@ type CountdownProps = {
 
 type Props = {
   backLink: {
-    url: string;
-    button: ButtonProps;
+    title: string;
+    variant: string;
+    size: string;
+    link: {
+      type: 'reference' | 'custom';
+      url?: string;
+      reference?: any;
+      newTab?: boolean;
+    };
   };
   heading: string;
   description: string;
   image: ImageProps;
   inputPlaceholder: string;
-  button: ButtonProps;
-  termsAndConditions: string;
+  button: {
+    title: string;
+    variant: string;
+    size: string;
+  };
+  termsAndConditions: any;
   date: Date;
-  countdownIsoDate: string;
+  countdown: {
+    date: string;
+    time: string;
+    timezone: string;
+  };
   amountLeft: string;
 };
 
@@ -64,13 +81,80 @@ export const EventItemHeader5 = (props: EventItemHeader5Props) => {
     button,
     termsAndConditions,
     date,
-    countdownIsoDate,
+    countdown,
     amountLeft,
   } = {
     ...EventItemHeader5Defaults,
     ...props,
   };
   const [emailInput, setEmailInput] = useState<string>("");
+  
+  // Función para construir la fecha ISO a partir de los campos separados
+  const buildCountdownIsoDate = () => {
+    // Usar valores por defecto si no hay datos
+    const defaultDate = '2024-12-31';
+    const defaultTime = '23:59';
+    
+    const dateValue = countdown?.date;
+    const timeStr = countdown?.time?.toString() || defaultTime;
+    
+    try {
+      let cleanDate: string;
+      
+      // Manejar diferentes formatos de fecha
+      if (typeof dateValue === 'string') {
+        // Si es una fecha ISO completa, extraer solo la parte de fecha
+        if (dateValue.includes('T')) {
+          cleanDate = dateValue.split('T')[0];
+        } else {
+          cleanDate = dateValue.trim();
+        }
+      } else if (dateValue && typeof dateValue === 'object' && 'toISOString' in dateValue) {
+        // Si es un objeto Date, convertir a string YYYY-MM-DD
+        const dateObj = dateValue as any;
+        cleanDate = dateObj.toISOString().split('T')[0];
+      } else {
+        cleanDate = defaultDate;
+      }
+      
+      const cleanTime = timeStr.trim();
+      
+      // Verificar formato básico de fecha (YYYY-MM-DD)
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(cleanDate)) {
+        console.error('Formato de fecha inválido:', cleanDate);
+        return `${defaultDate}T${defaultTime}:59.000Z`;
+      }
+      
+      // Verificar formato básico de hora (HH:MM)
+      if (!/^\d{2}:\d{2}$/.test(cleanTime)) {
+        console.error('Formato de hora inválido:', cleanTime);
+        return `${defaultDate}T${defaultTime}:59.000Z`;
+      }
+      
+      // Construir la fecha completa
+      const fullDateTime = `${cleanDate}T${cleanTime}:00`;
+      const dateTime = new Date(fullDateTime);
+      
+      // Verificar que la fecha construida sea válida
+      if (isNaN(dateTime.getTime())) {
+        console.error('Fecha y hora inválidas:', fullDateTime);
+        return `${defaultDate}T${defaultTime}:59.000Z`;
+      }
+      
+      console.log('Fecha construida exitosamente:', fullDateTime, '->', dateTime.toISOString());
+      return dateTime.toISOString();
+    } catch (error) {
+      console.error('Error construyendo fecha ISO:', error);
+      return `${defaultDate}T${defaultTime}:59.000Z`;
+    }
+  };
+  
+  const countdownIsoDate = buildCountdownIsoDate();
+  
+  // Debug: mostrar datos de countdown
+  console.log('Countdown data:', countdown);
+  console.log('Generated ISO date:', countdownIsoDate);
+  
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log({
@@ -82,9 +166,31 @@ export const EventItemHeader5 = (props: EventItemHeader5Props) => {
       <div className="container relative z-10">
         <div className="grid auto-cols-fr grid-rows-[auto] items-center gap-x-20 gap-y-12 text-text-alternative md:min-h-0 md:grid-flow-row md:grid-cols-1 md:gap-y-16 lg:grid-cols-2">
           <div className="flex flex-col items-start">
-            <Button {...backLink.button} className="py-1 text-text-alternative" asChild>
-              <a href={backLink.url}>{backLink.button.title}</a>
-            </Button>
+            <CMSLink {...backLink.link}>
+              <Button 
+                variant={backLink.variant as any}
+                size={backLink.size as any}
+                className={`
+                  ${backLink.variant === 'primary' 
+                    ? 'bg-black text-white hover:bg-gray-800 border border-gray-700' 
+                    : backLink.variant === 'secondary'
+                    ? 'bg-white text-black hover:bg-gray-100 border border-gray-300'
+                    : backLink.variant === 'link'
+                    ? 'bg-transparent text-black hover:text-gray-600 underline'
+                    : 'bg-black text-white hover:bg-gray-800'
+                  }
+                  ${backLink.size === 'sm' 
+                    ? 'px-3 py-2 text-sm' 
+                    : backLink.size === 'lg' 
+                    ? 'px-8 py-4 text-lg' 
+                    : 'px-6 py-3 text-base'
+                  }
+                  font-medium rounded-md transition-colors duration-200
+                `}
+              >
+                {backLink.title}
+              </Button>
+            </CMSLink>
             <h1 className="mt-6 text-5xl font-bold md:mt-8 md:text-7xl lg:text-8xl">{heading}</h1>
             <p className="mt-5 text-base md:mt-6 md:text-md">{description}</p>
             <div className="mt-6 w-full max-w-sm md:mt-8">
@@ -100,9 +206,35 @@ export const EventItemHeader5 = (props: EventItemHeader5Props) => {
                   onChange={(e) => setEmailInput(e.target.value)}
                   className="text-text-primary"
                 />
-                <Button {...button} className="bg-black text-white hover:bg-gray-800">{button.title}</Button>
+                <Button 
+                  variant={button.variant as any}
+                  size={button.size as any}
+                  className={`
+                    ${button.variant === 'primary' 
+                      ? 'bg-black text-white hover:bg-gray-800 border border-gray-700' 
+                      : button.variant === 'secondary'
+                      ? 'bg-white text-black hover:bg-gray-100 border border-gray-300'
+                      : button.variant === 'link'
+                      ? 'bg-transparent text-black hover:text-gray-600 underline'
+                      : 'bg-black text-white hover:bg-gray-800'
+                    }
+                    ${button.size === 'sm' 
+                      ? 'px-3 py-2 text-sm' 
+                      : button.size === 'lg' 
+                      ? 'px-8 py-4 text-lg' 
+                      : 'px-6 py-3 text-base'
+                    }
+                    font-medium rounded-md transition-colors duration-200
+                  `}
+                >
+                  {button.title}
+                </Button>
               </form>
-              <div dangerouslySetInnerHTML={{ __html: termsAndConditions }} />
+              {termsAndConditions && (
+                <div className="text-xs text-white mt-2 [&_*]:text-white [&_a]:text-white [&_p]:text-white [&_span]:text-white">
+                  <RichText data={termsAndConditions} enableGutter={false} />
+                </div>
+              )}
             </div>
           </div>
           <div className="flex flex-col items-start lg:items-center">
@@ -114,7 +246,7 @@ export const EventItemHeader5 = (props: EventItemHeader5Props) => {
               className="mt-5 border-border-alternative md:mt-6"
               dividerClassName="bg-background-primary"
             />
-            <p className="mt-4 bg-background-secondary px-2 py-1 text-sm font-semibold text-text-primary">
+            <p className="mt-4 bg-background-secondary px-2 py-1 text-sm font-semibold text-white">
               {amountLeft} Spots left!
             </p>
           </div>
@@ -218,12 +350,12 @@ const Countdown: React.FC<CountdownProps> = ({
 
 export const EventItemHeader5Defaults: Props = {
   backLink: {
-    url: "#",
-    button: {
-      title: "All events",
-      variant: "link",
-      size: "link",
-      iconLeft: <RxChevronLeft />,
+    title: "All events",
+    variant: "primary",
+    size: "default",
+    link: {
+      type: "custom",
+      url: "#",
     },
   },
   heading: "Event title heading",
@@ -234,19 +366,22 @@ export const EventItemHeader5Defaults: Props = {
     alt: "Relume placeholder image",
   },
   inputPlaceholder: "Enter your email",
-  button: { title: "Save my spot" },
-  termsAndConditions: `
-  <p class='text-xs'>
-    By clicking Save my spot you're confirming that you agree with our
-    <a href='#' class='underline'>Terms and Conditions</a>.
-  </p>
-  `,
+  button: { 
+    title: "Save my spot",
+    variant: "primary",
+    size: "default"
+  },
+  termsAndConditions: null,
   date: {
     weekday: "Sat",
     day: "10",
     month: "Feb",
     year: null,
   },
-  countdownIsoDate: "2024-11-14T01:23:29.000+01:00",
+  countdown: {
+    date: "2024-12-14",
+    time: "19:00",
+    timezone: "Europe/Madrid",
+  },
   amountLeft: "10",
 };
