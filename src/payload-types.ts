@@ -9069,7 +9069,7 @@ export interface Header {
           subMenuLinks?:
             | {
                 title: string;
-                link: {
+                link?: {
                   type?: ('reference' | 'custom') | null;
                   newTab?: boolean | null;
                   reference?:
@@ -9082,7 +9082,6 @@ export interface Header {
                         value: number | Post;
                       } | null);
                   url?: string | null;
-                  label: string;
                 };
                 id?: string | null;
               }[]
@@ -9705,7 +9704,6 @@ export interface HeaderSelect<T extends boolean = true> {
                           newTab?: T;
                           reference?: T;
                           url?: T;
-                          label?: T;
                         };
                     id?: T;
                   };
