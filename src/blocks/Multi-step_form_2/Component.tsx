@@ -275,7 +275,7 @@ export const MultiForm2Block: React.FC<{
       </section>
       <footer className="px-[5%]">
         <div className="flex min-h-16 items-center justify-center md:min-h-18">
-          <p className="text-sm">{footerText}</p>
+          <p className="text-sm text-black">{footerText}</p>
         </div>
       </footer>
     </div>
@@ -308,13 +308,14 @@ const StepAction = ({
   handlePrev: () => void
 }) => (
   <div className="mt-6 flex items-center justify-between gap-2">
-    <p>
+    <p className="text-black">
       Step {step + 1}/{totalSteps}
     </p>
     <div className="flex flex-wrap gap-4">
       <Button
         type="button"
-        variant="secondary"
+        variant="ghost"
+        className="bg-gray-100 text-black hover:bg-gray-200 border border-gray-300"
         onClick={() => {
           if (!isFirstStep) {
             handlePrev()
@@ -323,7 +324,7 @@ const StepAction = ({
       >
         {isFirstStep ? 'Cancel' : 'Back'}
       </Button>
-      <Button type="submit">{isLastStep ? 'Get started' : 'Next'}</Button>
+      <Button type="submit" className="text-black">{isLastStep ? 'Get started' : 'Next'}</Button>
     </div>
   </div>
 )
@@ -331,10 +332,10 @@ const StepAction = ({
 const StepOne: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) => (
   <React.Fragment>
     <div className="mb-6 text-center md:mb-8">
-      <h2 className="text-2xl font-bold md:text-3xl md:leading-[1.3] lg:text-4xl">
+      <h2 className="text-2xl font-bold md:text-3xl md:leading-[1.3] lg:text-4xl text-black">
         {stepTitle}
       </h2>
-      <p className="mt-3 md:mt-4">{stepDescription}</p>
+      <p className="mt-3 md:mt-4 text-black">{stepDescription}</p>
     </div>
     <div className="flex flex-col gap-y-6">
       <FormField
@@ -342,7 +343,7 @@ const StepOne: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) => (
         name="name"
         render={({ field, fieldState }) => (
           <FormItem>
-            <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+            <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
               Enter your name
             </FormLabel>
             <FormControl>
@@ -357,7 +358,7 @@ const StepOne: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) => (
         name="email"
         render={({ field, fieldState }) => (
           <FormItem>
-            <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+            <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
               Enter your email*
             </FormLabel>
             <FormControl>
@@ -407,7 +408,7 @@ const StepTwo: React.FC<StepProps & { serviceTypeOptions?: Array<{ label: string
           name="serviceType"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 Service type
               </FormLabel>
               <FormControl>
@@ -416,9 +417,14 @@ const StepTwo: React.FC<StepProps & { serviceTypeOptions?: Array<{ label: string
                     return (
                       <Button
                         key={index}
-                        className="py-2 pl-2 pr-4"
+                        className={clsx(
+                          "py-2 pl-2 pr-4",
+                          field.value === item.value 
+                            ? "bg-blue-600 text-white hover:bg-blue-700" 
+                            : "bg-gray-100 text-black hover:bg-gray-200 border border-gray-300"
+                        )}
                         type="button"
-                        variant={field.value === item.value ? 'primary' : 'secondary'}
+                        variant="ghost"
                         onClick={() => field.onChange(item.value)}
                       >
                         <span className="mr-2 inline-flex size-8 items-center justify-center border border-border-primary uppercase">
@@ -439,7 +445,7 @@ const StepTwo: React.FC<StepProps & { serviceTypeOptions?: Array<{ label: string
           name="budget"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 Your budget
               </FormLabel>
               <FormControl>
@@ -447,9 +453,9 @@ const StepTwo: React.FC<StepProps & { serviceTypeOptions?: Array<{ label: string
                   <SelectTrigger className={clsx({ 'border-border-error': fieldState.invalid })}>
                     <SelectValue placeholder="Select one..." />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border border-gray-300">
                     {budgetOptions.map((option, index) => (
-                      <SelectItem key={index} value={option.value}>
+                      <SelectItem key={index} value={option.value} className="text-black hover:bg-gray-100">
                         {option.label}
                       </SelectItem>
                     ))}
@@ -465,7 +471,7 @@ const StepTwo: React.FC<StepProps & { serviceTypeOptions?: Array<{ label: string
           name="aboutProject"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 About the project
               </FormLabel>
               <FormControl>
@@ -507,7 +513,7 @@ const StepThree: React.FC<StepProps & { employeesOptions?: Array<{ label: string
           name="companyName"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 What is your company name?
               </FormLabel>
               <FormControl>
@@ -522,7 +528,7 @@ const StepThree: React.FC<StepProps & { employeesOptions?: Array<{ label: string
           name="employees"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 How many people are you working with?
               </FormLabel>
               <FormControl>
@@ -532,8 +538,13 @@ const StepThree: React.FC<StepProps & { employeesOptions?: Array<{ label: string
                       <Button
                         key={index}
                         type="button"
-                        className="px-4 py-2"
-                        variant={field.value === item.value ? 'primary' : 'secondary'}
+                        className={clsx(
+                          "px-4 py-2",
+                          field.value === item.value 
+                            ? "bg-blue-600 text-white hover:bg-blue-700" 
+                            : "bg-gray-100 text-black hover:bg-gray-200 border border-gray-300"
+                        )}
+                        variant="ghost"
                         onClick={() => field.onChange(item.value)}
                       >
                         {item.label}
@@ -551,7 +562,7 @@ const StepThree: React.FC<StepProps & { employeesOptions?: Array<{ label: string
           name="website"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 Website link
               </FormLabel>
               <FormControl>
@@ -602,7 +613,7 @@ const StepFour: React.FC<StepProps & { countriesOptions?: Array<{ id: number; la
           name="country"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 Country
               </FormLabel>
               <FormControl>
@@ -610,9 +621,9 @@ const StepFour: React.FC<StepProps & { countriesOptions?: Array<{ id: number; la
                   <SelectTrigger className={clsx({ 'border-border-error': fieldState.invalid })}>
                     <SelectValue placeholder="Select one..." />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border border-gray-300">
                     {countriesOptions.map((country) => (
-                      <SelectItem key={country.id} value={country.value}>
+                      <SelectItem key={country.id} value={country.value} className="text-black hover:bg-gray-100">
                         {country.label}
                       </SelectItem>
                     ))}
@@ -628,17 +639,17 @@ const StepFour: React.FC<StepProps & { countriesOptions?: Array<{ id: number; la
           name="date"
           render={({ field, fieldState }) => (
             <FormItem className="flex flex-col">
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 Preferred date for chat
               </FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    variant={'secondary'}
+                    variant={'ghost'}
                     className={cn(
-                      'justify-start py-[9px] pl-3 text-left font-normal',
-                      !field.value && 'text-muted-foreground',
-                      fieldState.invalid && 'border-border-error',
+                      'justify-start py-[9px] pl-3 text-left font-normal bg-gray-100 text-black hover:bg-gray-200 border border-gray-300',
+                      !field.value && 'text-gray-500',
+                      fieldState.invalid && 'border-red-500',
                     )}
                     type="button"
                   >

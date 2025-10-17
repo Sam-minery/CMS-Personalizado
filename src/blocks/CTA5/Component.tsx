@@ -26,20 +26,28 @@ export const CTA5Block: React.FC<CTA5BlockProps> = ({ content, buttons, video })
     <section id="relume" className="relative px-[5%] py-16 md:py-24 lg:py-28 overflow-hidden">
       <div className="container relative z-10">
         <div className="w-full max-w-lg">
-          <div className="mb-5 md:mb-6">
+          <div className="mb-5 md:mb-6 text-white [&_p]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_h4]:text-white [&_h5]:text-white [&_h6]:text-white [&_span]:text-white [&_div]:text-white [&_strong]:text-white [&_em]:text-white [&_a]:text-white [&_ul]:text-white [&_ol]:text-white [&_li]:text-white">
             <RichText data={content} enableGutter={false} />
           </div>
           <div className="mt-6 flex flex-wrap gap-4 md:mt-8">
             {buttons?.map((button, index) => {
-              const buttonProps: ButtonProps = {
-                variant: button.variant || 'primary',
+              // Estilos personalizados según la variante
+              const getButtonStyles = (variant: string) => {
+                switch (variant) {
+                  case 'primary':
+                    return 'bg-black text-white border-0 hover:bg-gray-800 transition-colors duration-200 px-6 py-3 rounded-md font-medium'
+                  case 'secondary':
+                    return 'bg-transparent text-white border border-white hover:bg-white hover:text-black transition-colors duration-200 px-6 py-3 rounded-md font-medium'
+                  default:
+                    return 'bg-black text-white border-0 hover:bg-gray-800 transition-colors duration-200 px-6 py-3 rounded-md font-medium'
+                }
               }
 
               return (
                 <CMSLink key={index} {...button.link}>
-                  <Button {...buttonProps}>
+                  <button className={getButtonStyles(button.variant || 'primary')}>
                     {button.title}
-                  </Button>
+                  </button>
                 </CMSLink>
               )
             })}

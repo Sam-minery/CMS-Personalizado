@@ -27,12 +27,12 @@ export const CTA9Block: Block = {
       defaultValue: [
         {
           title: 'Button',
-          variant: 'primary',
+          variant: 'solid',
           url: '#',
         },
         {
           title: 'Button',
-          variant: 'secondary-alt',
+          variant: 'outline',
           url: '#',
         },
       ],
@@ -48,39 +48,16 @@ export const CTA9Block: Block = {
           name: 'variant',
           type: 'select',
           label: 'Variante del botón',
-          defaultValue: 'primary',
+          defaultValue: 'solid',
           options: [
             {
-              label: 'Primario',
-              value: 'primary',
+              label: 'Fondo Negro',
+              value: 'solid',
             },
             {
-              label: 'Secundario',
-              value: 'secondary',
+              label: 'Fondo Transparente',
+              value: 'outline',
             },
-            {
-              label: 'Secundario Alternativo',
-              value: 'secondary-alt',
-            },
-            {
-              label: 'Fantasma',
-              value: 'ghost',
-            },
-            {
-              label: 'Enlace',
-              value: 'link',
-            },
-          ],
-        },
-        {
-          name: 'size',
-          type: 'select',
-          label: 'Tamaño del botón',
-          defaultValue: 'default',
-          options: [
-            { label: 'Pequeño', value: 'sm' },
-            { label: 'Mediano', value: 'default' },
-            { label: 'Grande', value: 'lg' },
           ],
         },
         {

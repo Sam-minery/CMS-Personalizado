@@ -18,8 +18,13 @@ type ImageProps = {
 };
 
 type BreadcrumbProps = {
-  url: string;
   title: string;
+  link: {
+    type: 'reference' | 'custom';
+    newTab?: boolean;
+    reference?: any;
+    url?: string;
+  };
 };
 
 type SocialMediaLinksProps = {
@@ -72,14 +77,26 @@ export const BlogPostHeader1Block = (props: BlogPostHeader1Props) => {
         <div className="mx-auto mb-12 flex w-full max-w-lg flex-col items-start justify-start md:mb-16 lg:mb-20">
           <Breadcrumb className="mb-6 flex w-full items-center">
             <BreadcrumbList>
-              {breadcrumbs.map((item, index) => (
-                <React.Fragment key={index}>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href={item.url}>{item.title}</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  {index < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
-                </React.Fragment>
-              ))}
+              {breadcrumbs.map((item, index) => {
+                const href = item.link?.type === 'reference' 
+                  ? (item.link.reference?.slug ? `/${item.link.reference.slug}` : '#')
+                  : (item.link?.url || '#');
+                
+                return (
+                  <React.Fragment key={index}>
+                    <BreadcrumbItem>
+                      <BreadcrumbLink 
+                        href={href}
+                        target={item.link?.newTab ? '_blank' : undefined}
+                        rel={item.link?.newTab ? 'noopener noreferrer' : undefined}
+                      >
+                        {item.title}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    {index < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
+                  </React.Fragment>
+                );
+              })}
             </BreadcrumbList>
           </Breadcrumb>
           <h1 className="mb-8 text-5xl font-bold md:mb-10 md:text-7xl lg:mb-12 lg:text-8xl">
@@ -140,8 +157,20 @@ export const BlogPostHeader1Block = (props: BlogPostHeader1Props) => {
 
 export const BlogPostHeader1Defaults: Props = {
   breadcrumbs: [
-    { url: "#", title: "Blog" },
-    { url: "#", title: "Category" },
+    { 
+      title: "Blog",
+      link: {
+        type: "custom",
+        url: "#"
+      }
+    },
+    { 
+      title: "Category",
+      link: {
+        type: "custom",
+        url: "#"
+      }
+    },
   ],
   heading: "Blog title heading will go here",
   author: {

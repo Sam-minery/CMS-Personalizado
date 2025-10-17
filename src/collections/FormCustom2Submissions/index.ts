@@ -114,6 +114,9 @@ export const FormCustom2Submissions: CollectionConfig = {
       options: [
         { label: 'Multi-step form 1', value: 'form-custom-2' },
         { label: 'Multi-step form 2', value: 'multi-form-2' },
+        { label: 'Banner 1', value: 'banner1' },
+        { label: 'Contact 1', value: 'contact1' },
+        { label: 'Contact 5', value: 'contact5' },
       ],
       defaultValue: 'form-custom-2',
       admin: {

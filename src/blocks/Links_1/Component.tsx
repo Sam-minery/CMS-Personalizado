@@ -14,6 +14,8 @@ import {
 } from "react-icons/bi";
 import { getMediaUrl } from "@/utilities/getMediaUrl";
 import type { Media } from "@/payload-types";
+import { CMSLink } from "@/components/Link";
+import RichText from "@/components/RichText";
 
 type ImageProps = {
   src: string;
@@ -28,9 +30,14 @@ type AuthorDetailsProps = {
 };
 
 type CategoryLinkProps = {
-  url: string;
   title: string;
-  variant?: "secondary" | "link" | "primary" | "ghost" | "secondary-alt" | "tertiary" | "link-alt";
+  variant?: "primary" | "default" | "secondary" | "outline" | "ghost" | "link" | "destructive";
+  link: {
+    type: 'reference' | 'custom';
+    url?: string;
+    reference?: any;
+    newTab?: boolean;
+  };
 };
 
 type CategoryProps = {
@@ -39,8 +46,13 @@ type CategoryProps = {
 };
 
 type SocialLinkProps = {
-  href: string;
   platform: string;
+  link: {
+    type: 'reference' | 'custom';
+    url?: string;
+    reference?: any;
+    newTab?: boolean;
+  };
 };
 
 type NewsletterProps = {
@@ -48,7 +60,7 @@ type NewsletterProps = {
   description: string;
   inputPlaceholder?: string;
   submitButtonTitle: string;
-  termsAndConditions?: string;
+  termsAndConditions?: any; // RichText content
 };
 
 type Props = {
@@ -131,10 +143,19 @@ export const Links1 = (props: Links1Props) => {
                   value={emailInput}
                   onChange={(e) => setEmailInput(e.target.value)}
                 />
-                <Button variant="primary">{newsLetter.submitButtonTitle}</Button>
+                <Button
+                  variant="primary"
+                  className="bg-white text-black border border-black hover:bg-gray-50"
+                >
+                  {newsLetter.submitButtonTitle}
+                </Button>
               </form>
               {newsLetter.termsAndConditions && (
-                <div dangerouslySetInnerHTML={{ __html: newsLetter.termsAndConditions }} />
+                <RichText 
+                  data={newsLetter.termsAndConditions} 
+                  className="text-xs"
+                  enableGutter={false}
+                />
               )}
             </DialogContent>
           </Dialog>
@@ -158,9 +179,14 @@ export const Links1 = (props: Links1Props) => {
               };
               
               return (
-                <a key={index} href={link.href}>
+                <CMSLink
+                  key={index}
+                  {...link.link}
+                  appearance="inline"
+                  className="text-gray-600 hover:text-gray-900 transition-colors"
+                >
                   {getIcon(link.platform)}
-                </a>
+                </CMSLink>
               );
             })}
           </div>
@@ -177,9 +203,13 @@ const Category = (category: CategoryProps) => {
         <h3 className="text-md font-bold leading-[1.4] md:text-xl">{category.heading}</h3>
       )}
       {category.links.map((link, index) => (
-        <Button key={index} {...link} asChild>
-          <a href={link.url}>{link.title}</a>
-        </Button>
+        <CMSLink
+          key={index}
+          {...link.link}
+          appearance={link.variant === 'primary' ? 'default' : (link.variant || 'secondary')}
+          className={link.variant === 'primary' ? 'bg-white text-black border border-black hover:bg-gray-50' : undefined}
+          label={link.title}
+        />
       ))}
     </div>
   );
@@ -202,9 +232,12 @@ export const Links1Defaults: Props = {
     {
       links: [
         {
-          url: "#",
           title: "Link one",
           variant: "secondary",
+          link: {
+            type: 'custom',
+            url: "#",
+          },
         },
       ],
     },
@@ -212,19 +245,28 @@ export const Links1Defaults: Props = {
       heading: "Category name",
       links: [
         {
-          url: "#",
           title: "Link two",
           variant: "secondary",
+          link: {
+            type: 'custom',
+            url: "#",
+          },
         },
         {
-          url: "#",
           title: "Link three",
           variant: "secondary",
+          link: {
+            type: 'custom',
+            url: "#",
+          },
         },
         {
-          url: "#",
           title: "Link four",
           variant: "secondary",
+          link: {
+            type: 'custom',
+            url: "#",
+          },
         },
       ],
     },
@@ -232,14 +274,20 @@ export const Links1Defaults: Props = {
       heading: "Category name",
       links: [
         {
-          url: "#",
           title: "Link five",
           variant: "secondary",
+          link: {
+            type: 'custom',
+            url: "#",
+          },
         },
         {
-          url: "#",
           title: "Link six",
           variant: "secondary",
+          link: {
+            type: 'custom',
+            url: "#",
+          },
         },
       ],
     },
@@ -263,10 +311,40 @@ By subscribing you agree to with our
   },
 
   socialLinks: [
-    { href: "#", platform: "facebook" },
-    { href: "#", platform: "instagram" },
-    { href: "#", platform: "twitter" },
-    { href: "#", platform: "linkedin" },
-    { href: "#", platform: "youtube" },
+    { 
+      platform: "facebook",
+      link: {
+        type: 'custom',
+        url: "#",
+      },
+    },
+    { 
+      platform: "instagram",
+      link: {
+        type: 'custom',
+        url: "#",
+      },
+    },
+    { 
+      platform: "twitter",
+      link: {
+        type: 'custom',
+        url: "#",
+      },
+    },
+    { 
+      platform: "linkedin",
+      link: {
+        type: 'custom',
+        url: "#",
+      },
+    },
+    { 
+      platform: "youtube",
+      link: {
+        type: 'custom',
+        url: "#",
+      },
+    },
   ],
 };

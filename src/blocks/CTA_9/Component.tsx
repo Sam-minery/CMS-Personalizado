@@ -1,13 +1,11 @@
 import React from 'react'
 import Image from 'next/image'
-import { Button } from "@relume_io/relume-ui"
-import { CMSLink } from '@/components/Link'
 import type { CTA9Block as CTA9BlockProps } from '@/payload-types'
 
 export const CTA9Block: React.FC<CTA9BlockProps> = ({ 
   heading = "Medium length heading goes here", 
   description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", 
-  buttons = [{ title: "Button", url: "#" }, { title: "Button", variant: "secondary-alt", url: "#" }],
+  buttons = [{ title: "Button", variant: "solid", url: "#" }, { title: "Button", variant: "outline", url: "#" }],
   image
 }) => {
   return (
@@ -24,18 +22,31 @@ export const CTA9Block: React.FC<CTA9BlockProps> = ({
           </div>
           <div className="flex items-start justify-start gap-4">
             {buttons?.map((button: any, index: number) => {
-              const { url, ...buttonProps } = button
+              const { url, variant, ...buttonProps } = button
+              
+              // Clases base para todos los botones (tamaño fijo)
+              const baseClasses = "inline-flex items-center justify-center px-6 py-3 text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-md whitespace-nowrap"
+              
+              // Clases específicas según la variante
+              const variantClasses = variant === 'solid' 
+                ? "bg-black text-white hover:bg-gray-800 focus:ring-gray-500" 
+                : "bg-transparent text-white border border-white hover:bg-white hover:text-black focus:ring-white"
+              
+              const buttonClasses = `${baseClasses} ${variantClasses}`
               
               return (
-                <CMSLink 
+                <a 
                   key={index} 
-                  url={url || '#'}
-                  appearance="default"
+                  href={url || '#'}
+                  className="no-underline"
                 >
-                  <Button {...buttonProps}>
+                  <button 
+                    className={buttonClasses}
+                    {...buttonProps}
+                  >
                     {button.title}
-                  </Button>
-                </CMSLink>
+                  </button>
+                </a>
               )
             })}
           </div>

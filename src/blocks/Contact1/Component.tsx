@@ -31,30 +31,49 @@ export const Contact1 = (props: Contact1BlockType) => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [acceptTerms, setAcceptTerms] = useState<boolean | "indeterminate">(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState<string>("");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    
-    // Mostrar datos en consola para desarrollo
-    console.log('Formulario de contacto enviado:', { 
-      name, 
-      email, 
-      message, 
-      acceptTerms,
-      timestamp: new Date().toISOString()
-    });
+    setIsSubmitting(true);
+    setSubmitMessage("");
 
-    // Aquí posteriormente se puede integrar con un servicio de email
-    // o plugin de Payload para el envío real
-    
-    // Resetear formulario después del envío
-    setName("");
-    setEmail("");
-    setMessage("");
-    setAcceptTerms(false);
-    
-    // Mostrar mensaje de éxito (opcional)
-    alert('Mensaje enviado correctamente. Revisa la consola para ver los datos.');
+    try {
+      const response = await fetch('/api/form-custom-2-submissions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          submissionData: [
+            { field: 'name', value: name },
+            { field: 'email', value: email },
+            { field: 'aboutProject', value: message },
+            { field: 'source', value: 'contact1' }
+          ],
+          formType: 'contact1'
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmitMessage("¡Gracias! Tu mensaje ha sido enviado correctamente.");
+        // Resetear formulario después del envío exitoso
+        setName("");
+        setEmail("");
+        setMessage("");
+        setAcceptTerms(false);
+      } else {
+        setSubmitMessage("Error al enviar el formulario. Por favor, inténtalo de nuevo.");
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setSubmitMessage("Error al enviar el formulario. Por favor, inténtalo de nuevo.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -121,10 +140,16 @@ export const Contact1 = (props: Contact1BlockType) => {
               size={button.size}
               variant={button.variant}
               className="min-w-[120px]"
+              disabled={isSubmitting}
             >
-              {button.title}
+              {isSubmitting ? "Enviando..." : button.title}
             </Button>
           </div>
+          {submitMessage && (
+            <div className={`mt-4 text-center text-sm ${submitMessage.includes("Error") ? "text-red-600" : "text-green-600"}`}>
+              {submitMessage}
+            </div>
+          )}
         </form>
       </div>
     </section>

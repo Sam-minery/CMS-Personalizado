@@ -69,13 +69,16 @@ const Testimonial = ({ testimonial }: { testimonial: Testimonial }) => (
       <RichText data={testimonial.quote} />
     </blockquote>
     <div className="mt-6 flex w-full flex-col gap-3 md:mt-8 md:w-auto md:flex-row md:items-center md:gap-5">
-      <div>
+      <div className="flex items-center justify-center">
         {testimonial.avatar.media && (
-          <Media
-            resource={testimonial.avatar.media}
-            className="size-14 min-h-14 min-w-14 rounded-full object-cover overflow-hidden"
-            alt={testimonial.avatar.alt || ''}
-          />
+          <div className="relative w-14 h-14 rounded-full overflow-hidden flex items-center justify-center">
+            <Media
+              resource={testimonial.avatar.media}
+              fill={true}
+              imgClassName="object-cover rounded-full"
+              alt={testimonial.avatar.alt || ''}
+            />
+          </div>
         )}
       </div>
       <div className="mb-4 md:mb-0">
@@ -83,13 +86,22 @@ const Testimonial = ({ testimonial }: { testimonial: Testimonial }) => (
         <p>{testimonial.position}</p>
       </div>
       <div className="hidden w-px self-stretch bg-black md:block" />
-      <div>
+      <div className="flex items-start h-14">
         {testimonial.logo.media && (
-          <Media
-            resource={testimonial.logo.media}
-            className="max-h-12"
-            alt={testimonial.logo.alt || ''}
-          />
+          <div style={{ 
+            height: '20px', 
+            maxWidth: '80px', 
+            display: 'flex', 
+            alignItems: 'flex-start', 
+            justifyContent: 'center',
+            marginTop: '-2px'
+          }}>
+            <Media
+              resource={testimonial.logo.media}
+              className="max-h-full max-w-full object-contain"
+              alt={testimonial.logo.alt || ''}
+            />
+          </div>
         )}
       </div>
     </div>

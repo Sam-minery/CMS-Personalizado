@@ -14,11 +14,15 @@ type ImageProps = {
   alt?: string;
 };
 
+type ButtonWithUrl = ButtonProps & {
+  url?: string;
+};
+
 type Props = {
   heading: string;
   description: string;
   logo: ImageProps;
-  buttons: ButtonProps[];
+  buttons: ButtonWithUrl[];
 };
 
 export type Banner3Props = React.ComponentPropsWithoutRef<"section"> & Partial<Props>;
@@ -55,8 +59,10 @@ export const Banner3 = (props: Banner3Props) => {
         </div>
         <div className="flex">
           {buttons.map((button, index) => (
-            <Button key={index} {...button} className="mr-4 md:ml-4 md:mr-0">
-              {button.title}
+            <Button key={index} {...button} className="mr-4 md:ml-4 md:mr-0" asChild>
+              <a href={button.url || '#'}>
+                {button.title}
+              </a>
             </Button>
           ))}
         </div>
@@ -81,11 +87,13 @@ export const Banner3Defaults: Props = {
     {
       title: "Button",
       size: "sm",
+      url: "#",
     },
     {
       title: "Button",
       size: "sm",
       variant: "secondary",
+      url: "#",
     },
   ],
 };

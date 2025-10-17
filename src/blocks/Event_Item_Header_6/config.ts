@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 
+import { simpleLink } from '../../fields/simpleLink'
+
 export const EventItemHeader6: Block = {
   slug: 'eventItemHdr6',
   dbName: 'evt_hdr_6',
@@ -11,23 +13,22 @@ export const EventItemHeader6: Block = {
       label: 'Breadcrumbs',
       fields: [
         {
-          name: 'url',
-          type: 'text',
-          required: true,
-          label: 'URL del Enlace',
-          defaultValue: '#',
-        },
-        {
           name: 'title',
           type: 'text',
           required: true,
           label: 'Título del Breadcrumb',
           defaultValue: 'Events',
         },
+        simpleLink({
+          overrides: {
+            name: 'link',
+            label: 'Enlace del Breadcrumb',
+          },
+        }),
       ],
       defaultValue: [
-        { url: '#', title: 'Events' },
-        { url: '#', title: 'Event title' },
+        { title: 'Events', link: { type: 'custom', url: '#' } },
+        { title: 'Event title', link: { type: 'custom', url: '#' } },
       ],
     },
     {
@@ -65,26 +66,36 @@ export const EventItemHeader6: Block = {
         },
         {
           name: 'variant',
-          type: 'text',
+          type: 'select',
           label: 'Variante del Botón',
           defaultValue: 'primary',
-          admin: {
-            description: 'Valores: primary, secondary, link',
-          },
+          options: [
+            { label: 'Primario', value: 'primary' },
+            { label: 'Secundario', value: 'secondary' },
+            { label: 'Enlace', value: 'link' },
+          ],
         },
         {
           name: 'size',
-          type: 'text',
+          type: 'select',
           label: 'Tamaño del Botón',
-          defaultValue: 'md',
-          admin: {
-            description: 'Valores: sm, md, lg',
-          },
+          defaultValue: 'default',
+          options: [
+            { label: 'Pequeño', value: 'sm' },
+            { label: 'Mediano', value: 'default' },
+            { label: 'Grande', value: 'lg' },
+          ],
         },
+        simpleLink({
+          overrides: {
+            name: 'link',
+            label: 'Enlace del Botón',
+          },
+        }),
       ],
       defaultValue: [
-        { title: 'Save my spot', variant: 'primary', size: 'md' },
-        { title: 'View event', variant: 'secondary', size: 'md' },
+        { title: 'Save my spot', variant: 'primary', size: 'default', link: { type: 'custom', url: '#' } },
+        { title: 'View event', variant: 'secondary', size: 'default', link: { type: 'custom', url: '#' } },
       ],
     },
     {

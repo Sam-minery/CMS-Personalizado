@@ -1,5 +1,6 @@
 import type { ButtonProps } from "@relume_io/relume-ui";
 import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from "@relume_io/relume-ui";
+import Image from "next/image";
 
 type Date = {
   weekday: string;
@@ -15,7 +16,7 @@ type FeaturedEvent = {
   status: string | null;
   location: string;
   description: string;
-  button: ButtonProps;
+  button: ButtonProps & { url: string };
 };
 
 type Tab = {
@@ -109,8 +110,10 @@ const FeaturedEvent: React.FC<FeaturedEvent> = ({
         <p>{description}</p>
       </div>
       <div className="flex">
-        <Button {...button} className="flex items-center justify-center">
-          {button.title}
+        <Button {...button} className="flex items-center justify-center" asChild>
+          <a href={button.url}>
+            {button.title}
+          </a>
         </Button>
       </div>
     </div>
@@ -144,6 +147,7 @@ export const Event1Defaults: Props = {
             variant: "secondary",
             size: "sm",
             title: "Save my spot",
+            url: "#",
           },
         },
         {
@@ -163,6 +167,7 @@ export const Event1Defaults: Props = {
             variant: "secondary",
             size: "sm",
             title: "Save my spot",
+            url: "#",
           },
         },
         {
@@ -182,6 +187,7 @@ export const Event1Defaults: Props = {
             variant: "secondary",
             size: "sm",
             title: "Save my spot",
+            url: "#",
           },
         },
       ],
@@ -207,6 +213,7 @@ export const Event1Defaults: Props = {
             variant: "secondary",
             size: "sm",
             title: "Save my spot",
+            url: "#",
           },
         },
         {
@@ -226,6 +233,7 @@ export const Event1Defaults: Props = {
             variant: "secondary",
             size: "sm",
             title: "Save my spot",
+            url: "#",
           },
         },
       ],
@@ -251,6 +259,7 @@ export const Event1Defaults: Props = {
             variant: "secondary",
             size: "sm",
             title: "Save my spot",
+            url: "#",
           },
         },
         {
@@ -270,6 +279,7 @@ export const Event1Defaults: Props = {
             variant: "secondary",
             size: "sm",
             title: "Save my spot",
+            url: "#",
           },
         },
       ],
@@ -295,6 +305,7 @@ export const Event1Defaults: Props = {
             variant: "secondary",
             size: "sm",
             title: "Save my spot",
+            url: "#",
           },
         },
         {
@@ -314,6 +325,7 @@ export const Event1Defaults: Props = {
             variant: "secondary",
             size: "sm",
             title: "Save my spot",
+            url: "#",
           },
         },
       ],
@@ -339,6 +351,7 @@ export const Event1Defaults: Props = {
             variant: "secondary",
             size: "sm",
             title: "Save my spot",
+            url: "#",
           },
         },
         {
@@ -358,6 +371,7 @@ export const Event1Defaults: Props = {
             variant: "secondary",
             size: "sm",
             title: "Save my spot",
+            url: "#",
           },
         },
       ],

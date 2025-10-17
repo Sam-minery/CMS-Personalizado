@@ -6,6 +6,7 @@ import type { ButtonProps } from "@relume_io/relume-ui";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { RxChevronRight } from "react-icons/rx";
+import { CMSLink } from "@/components/Link";
 
 type ImageProps = {
   url?: string;
@@ -16,7 +17,7 @@ type TimelineItem = {
   heading: string;
   title: string;
   description: string;
-  buttons: ButtonProps[];
+  buttons: Array<ButtonProps & { href?: string }>;
   image: ImageProps;
 };
 
@@ -24,7 +25,7 @@ type Props = {
   tagline: string;
   heading: string;
   description: string;
-  buttons: ButtonProps[];
+  buttons: Array<ButtonProps & { href?: string }>;
   timelineItems: TimelineItem[];
 };
 
@@ -44,6 +45,24 @@ export const Timeline7 = (props: Timeline7Props) => {
 
   const lineColor = useTransform(scrollYProgress, [0, 1], ["#e5e5e5", "#000000"]);
 
+  // Mapeo de variantes para CMSLink
+  const variantMapping: Record<string, 'default' | 'secondary' | 'outline' | 'ghost' | 'link'> = {
+    'default': 'default',
+    'secondary': 'secondary',
+    'outline': 'outline',
+    'ghost': 'ghost',
+    'link': 'link',
+  };
+
+  // Mapeo de tamaños para CMSLink
+  const sizeMapping: Record<string, 'default' | 'sm' | 'lg' | 'icon' | 'clear'> = {
+    'sm': 'sm',
+    'default': 'default',
+    'lg': 'lg',
+    'icon': 'icon',
+    'link': 'clear',
+  };
+
   return (
     <section id="relume" className="px-[5%] py-16 md:py-24 lg:py-28">
       <div className="container max-w-lg">
@@ -53,11 +72,30 @@ export const Timeline7 = (props: Timeline7Props) => {
             <h2 className="mb-5 text-5xl font-bold md:mb-6 md:text-7xl lg:text-8xl">{heading}</h2>
             <p className="md:text-md">{description}</p>
             <div className="mt-6 flex flex-wrap items-center gap-4 md:mt-8">
-              {buttons.map((button, index) => (
-                <Button key={index} {...button}>
-                  {button.title}
-                </Button>
-              ))}
+              {buttons.map((button, index) => {
+                // Si hay un enlace, usar CMSLink, si no, usar Button normal
+                if (button.href) {
+                  const mappedVariant = variantMapping[button.variant || 'default'] || 'default';
+                  const mappedSize = sizeMapping[button.size || 'default'] || 'default';
+                  
+                  return (
+                    <CMSLink 
+                      key={index} 
+                      url={button.href}
+                      appearance={mappedVariant}
+                      size={mappedSize}
+                    >
+                      {button.title}
+                    </CMSLink>
+                  );
+                }
+                
+                return (
+                  <Button key={index} {...button}>
+                    {button.title}
+                  </Button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -96,6 +134,24 @@ const TimelineItem = ({ item }: { item: TimelineItem }) => {
     backgroundColor: useTransform(scrollYProgress, [0.85, 1], ["#ccc", "#000"]),
   };
 
+  // Mapeo de variantes para CMSLink
+  const variantMapping: Record<string, 'default' | 'secondary' | 'outline' | 'ghost' | 'link'> = {
+    'default': 'default',
+    'secondary': 'secondary',
+    'outline': 'outline',
+    'ghost': 'ghost',
+    'link': 'link',
+  };
+
+  // Mapeo de tamaños para CMSLink
+  const sizeMapping: Record<string, 'default' | 'sm' | 'lg' | 'icon' | 'clear'> = {
+    'sm': 'sm',
+    'default': 'default',
+    'lg': 'lg',
+    'icon': 'icon',
+    'link': 'clear',
+  };
+
   return (
     <div className="relative mb-16 last:mb-0">
       {/* Círculo del timeline */}
@@ -116,11 +172,30 @@ const TimelineItem = ({ item }: { item: TimelineItem }) => {
           <h4 className="mb-3 text-xl font-bold md:mb-4 md:text-2xl">{item.title}</h4>
           <p className="text-gray-600">{item.description}</p>
           <div className="mt-6 flex flex-wrap items-center gap-4 md:mt-8">
-            {item.buttons.map((button, index) => (
-              <Button key={index} {...button}>
-                {button.title}
-              </Button>
-            ))}
+            {item.buttons.map((button, index) => {
+              // Si hay un enlace, usar CMSLink, si no, usar Button normal
+              if (button.href) {
+                const mappedVariant = variantMapping[button.variant || 'default'] || 'default';
+                const mappedSize = sizeMapping[button.size || 'default'] || 'default';
+                
+                return (
+                  <CMSLink 
+                    key={index} 
+                    url={button.href}
+                    appearance={mappedVariant}
+                    size={mappedSize}
+                  >
+                    {button.title}
+                  </CMSLink>
+                );
+              }
+              
+              return (
+                <Button key={index} {...button}>
+                  {button.title}
+                </Button>
+              );
+            })}
           </div>
         </div>
         <div className="overflow-hidden rounded-lg">

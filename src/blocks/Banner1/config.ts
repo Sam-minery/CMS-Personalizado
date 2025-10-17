@@ -22,25 +22,21 @@ export const Banner1Block: Block = {
     },
     {
       name: 'logo',
-      type: 'group',
-      fields: [
-        {
-          name: 'url',
-          type: 'text',
-          defaultValue: '#',
-        },
-        {
-          name: 'src',
-          type: 'text',
-          required: true,
-          defaultValue: 'https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg',
-        },
-        {
-          name: 'alt',
-          type: 'text',
-          defaultValue: 'Relume logo',
-        },
-      ],
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Logo',
+      admin: {
+        description: 'Selecciona una imagen para el logo desde la biblioteca de medios',
+      },
+    },
+    {
+      name: 'logoUrl',
+      type: 'text',
+      label: 'URL del logo (opcional)',
+      admin: {
+        description: 'URL personalizada para el logo (si no se selecciona una imagen)',
+        condition: (data) => !data.logo,
+      },
     },
     {
       name: 'inputPlaceholder',

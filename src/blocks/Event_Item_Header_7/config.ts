@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 
+import { simpleLink } from '../../fields/simpleLink'
+
 export const EventItemHeader7: Block = {
   slug: 'eventItemHdr7',
   dbName: 'evt_hdr_7',
@@ -96,26 +98,36 @@ export const EventItemHeader7: Block = {
         },
         {
           name: 'variant',
-          type: 'text',
+          type: 'select',
           label: 'Variante del Botón',
           defaultValue: 'primary',
-          admin: {
-            description: 'Valores: primary, secondary, link',
-          },
+          options: [
+            { label: 'Primario', value: 'primary' },
+            { label: 'Secundario', value: 'secondary' },
+            { label: 'Enlace', value: 'link' },
+          ],
         },
         {
           name: 'size',
-          type: 'text',
+          type: 'select',
           label: 'Tamaño del Botón',
-          defaultValue: 'md',
-          admin: {
-            description: 'Valores: sm, md, lg',
-          },
+          defaultValue: 'default',
+          options: [
+            { label: 'Pequeño', value: 'sm' },
+            { label: 'Mediano', value: 'default' },
+            { label: 'Grande', value: 'lg' },
+          ],
         },
+        simpleLink({
+          overrides: {
+            name: 'link',
+            label: 'Enlace del Botón',
+          },
+        }),
       ],
       defaultValue: [
-        { title: 'Save my spot', variant: 'primary', size: 'md' },
-        { title: 'View event', variant: 'secondary', size: 'md' },
+        { title: 'Save my spot', variant: 'primary', size: 'default', link: { type: 'custom', url: '#' } },
+        { title: 'View event', variant: 'secondary', size: 'default', link: { type: 'custom', url: '#' } },
       ],
     },
   ],

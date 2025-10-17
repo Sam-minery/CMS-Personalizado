@@ -96,6 +96,16 @@ export const Banner3Block: Block = {
           ],
           defaultValue: 'default',
         },
+        {
+          name: 'url',
+          type: 'text',
+          required: true,
+          label: 'URL del botón',
+          defaultValue: '#',
+          admin: {
+            description: 'URL a la que debe redirigir el botón',
+          },
+        },
       ],
     },
   ],

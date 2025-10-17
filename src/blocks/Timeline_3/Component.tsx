@@ -5,6 +5,7 @@ import { useScroll, useTransform, motion } from "framer-motion";
 import { Button } from "@relume_io/relume-ui";
 import type { ButtonProps } from "@relume_io/relume-ui";
 import { RxChevronRight } from "react-icons/rx";
+import { CMSLink } from "@/components/Link";
 
 type ImageProps = {
   url?: string;
@@ -15,7 +16,7 @@ type Timeline = {
   date: string;
   heading: string;
   description: string;
-  buttons: ButtonProps[];
+  buttons: Array<ButtonProps & { href?: string }>;
   image: ImageProps;
 };
 
@@ -23,7 +24,7 @@ type Props = {
   tagline: string;
   heading: string;
   description: string;
-  buttons: ButtonProps[];
+  buttons: Array<ButtonProps & { href?: string }>;
   timelines: Timeline[];
 };
 
@@ -35,6 +36,24 @@ export const Timeline3 = (props: Timeline3Props) => {
     ...props,
   };
 
+  // Mapeo de variantes para CMSLink
+  const variantMapping: Record<string, 'default' | 'secondary' | 'outline' | 'ghost' | 'link'> = {
+    'default': 'default',
+    'secondary': 'secondary',
+    'outline': 'outline',
+    'ghost': 'ghost',
+    'link': 'link',
+  };
+
+  // Mapeo de tamaños para CMSLink
+  const sizeMapping: Record<string, 'default' | 'sm' | 'lg' | 'icon' | 'clear'> = {
+    'sm': 'sm',
+    'default': 'default',
+    'lg': 'lg',
+    'icon': 'icon',
+    'link': 'clear',
+  };
+
   return (
     <section id="relume" className="px-[5%] py-16 md:py-24 lg:py-28">
       <div className="container">
@@ -44,11 +63,30 @@ export const Timeline3 = (props: Timeline3Props) => {
             <h1 className="mb-5 text-5xl font-bold md:mb-6 md:text-7xl lg:text-8xl">{heading}</h1>
             <p className="md:text-md">{description}</p>
             <div className="mt-6 flex flex-wrap items-center gap-4 md:mt-8">
-              {buttons.map((button, index) => (
-                <Button key={index} {...button}>
-                  {button.title}
-                </Button>
-              ))}
+              {buttons.map((button, index) => {
+                // Si hay un enlace, usar CMSLink, si no, usar Button normal
+                if (button.href) {
+                  const mappedVariant = variantMapping[button.variant || 'default'] || 'default';
+                  const mappedSize = sizeMapping[button.size || 'default'] || 'default';
+                  
+                  return (
+                    <CMSLink 
+                      key={index} 
+                      url={button.href}
+                      appearance={mappedVariant}
+                      size={mappedSize}
+                    >
+                      {button.title}
+                    </CMSLink>
+                  );
+                }
+                
+                return (
+                  <Button key={index} {...button}>
+                    {button.title}
+                  </Button>
+                );
+              })}
             </div>
           </div>
           <div className="absolute z-0 flex h-full w-8 flex-col items-center justify-self-start [grid-area:2/1/3/2] md:z-auto md:justify-self-center md:[grid-area:auto]">
@@ -81,6 +119,24 @@ const Timeline = ({ timeline }: { timeline: Timeline }) => {
     backgroundColor: useTransform(scrollYProgress, [0.85, 1], ["#ccc", "#000"]),
   };
 
+  // Mapeo de variantes para CMSLink
+  const variantMapping: Record<string, 'default' | 'secondary' | 'outline' | 'ghost' | 'link'> = {
+    'default': 'default',
+    'secondary': 'secondary',
+    'outline': 'outline',
+    'ghost': 'ghost',
+    'link': 'link',
+  };
+
+  // Mapeo de tamaños para CMSLink
+  const sizeMapping: Record<string, 'default' | 'sm' | 'lg' | 'icon' | 'clear'> = {
+    'sm': 'sm',
+    'default': 'default',
+    'lg': 'lg',
+    'icon': 'icon',
+    'link': 'clear',
+  };
+
   return (
     <div className="relative">
       <div className="absolute flex h-full w-8 items-start justify-center md:-ml-24 md:w-24 lg:-ml-32 lg:w-32">
@@ -98,11 +154,30 @@ const Timeline = ({ timeline }: { timeline: Timeline }) => {
           <h3 className="mb-3 text-xl font-bold md:mb-4 md:text-2xl">{timeline.heading}</h3>
           <p>{timeline.description}</p>
           <div className="mt-6 flex flex-wrap items-center gap-4 md:mt-8">
-            {timeline.buttons.map((button, index) => (
-              <Button key={index} {...button}>
-                {button.title}
-              </Button>
-            ))}
+            {timeline.buttons.map((button, index) => {
+              // Si hay un enlace, usar CMSLink, si no, usar Button normal
+              if (button.href) {
+                const mappedVariant = variantMapping[button.variant || 'default'] || 'default';
+                const mappedSize = sizeMapping[button.size || 'default'] || 'default';
+                
+                return (
+                  <CMSLink 
+                    key={index} 
+                    url={button.href}
+                    appearance={mappedVariant}
+                    size={mappedSize}
+                  >
+                    {button.title}
+                  </CMSLink>
+                );
+              }
+              
+              return (
+                <Button key={index} {...button}>
+                  {button.title}
+                </Button>
+              );
+            })}
           </div>
         </div>
         <div className="overflow-hidden">

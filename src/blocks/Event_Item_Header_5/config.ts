@@ -1,5 +1,14 @@
 import type { Block } from 'payload'
 
+import {
+  FixedToolbarFeature,
+  HeadingFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
+
+import { simpleLink } from '../../fields/simpleLink'
+
 export const EventItemHeader5: Block = {
   slug: 'eventItemHdr5',
   dbName: 'evt_hdr_5',
@@ -11,44 +20,40 @@ export const EventItemHeader5: Block = {
       label: 'Enlace de Regreso',
       fields: [
         {
-          name: 'url',
+          name: 'title',
           type: 'text',
           required: true,
-          label: 'URL del Enlace',
-          defaultValue: '#',
+          label: 'Texto del Botón',
+          defaultValue: 'All events',
         },
         {
-          name: 'button',
-          type: 'group',
-          label: 'Configuración del Botón',
-          fields: [
-            {
-              name: 'title',
-              type: 'text',
-              required: true,
-              label: 'Texto del Botón',
-              defaultValue: 'All events',
-            },
-            {
-              name: 'variant',
-              type: 'text',
-              label: 'Variante del Botón',
-              defaultValue: 'link',
-              admin: {
-                description: 'Valores: primary, secondary, link',
-              },
-            },
-            {
-              name: 'size',
-              type: 'text',
-              label: 'Tamaño del Botón',
-              defaultValue: 'link',
-              admin: {
-                description: 'Valores: sm, md, lg, link',
-              },
-            },
+          name: 'variant',
+          type: 'select',
+          label: 'Variante del Botón',
+          defaultValue: 'primary',
+          options: [
+            { label: 'Primario', value: 'primary' },
+            { label: 'Secundario', value: 'secondary' },
+            { label: 'Enlace', value: 'link' },
           ],
         },
+        {
+          name: 'size',
+          type: 'select',
+          label: 'Tamaño del Botón',
+          defaultValue: 'default',
+          options: [
+            { label: 'Pequeño', value: 'sm' },
+            { label: 'Mediano', value: 'default' },
+            { label: 'Grande', value: 'lg' },
+          ],
+        },
+        simpleLink({
+          overrides: {
+            name: 'link',
+            label: 'Enlace del Botón',
+          },
+        }),
       ],
     },
     {
@@ -93,21 +98,25 @@ export const EventItemHeader5: Block = {
         },
         {
           name: 'variant',
-          type: 'text',
+          type: 'select',
           label: 'Variante del Botón',
           defaultValue: 'primary',
-          admin: {
-            description: 'Valores: primary, secondary, link',
-          },
+          options: [
+            { label: 'Primario', value: 'primary' },
+            { label: 'Secundario', value: 'secondary' },
+            { label: 'Enlace', value: 'link' },
+          ],
         },
         {
           name: 'size',
-          type: 'text',
+          type: 'select',
           label: 'Tamaño del Botón',
-          defaultValue: 'md',
-          admin: {
-            description: 'Valores: sm, md, lg',
-          },
+          defaultValue: 'default',
+          options: [
+            { label: 'Pequeño', value: 'sm' },
+            { label: 'Mediano', value: 'default' },
+            { label: 'Grande', value: 'lg' },
+          ],
         },
       ],
     },
@@ -115,6 +124,19 @@ export const EventItemHeader5: Block = {
       name: 'termsAndConditions',
       type: 'richText',
       label: 'Términos y Condiciones',
+      editor: lexicalEditor({
+        features: ({ rootFeatures }) => {
+          return [
+            ...rootFeatures,
+            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
+            FixedToolbarFeature(),
+            InlineToolbarFeature(),
+          ]
+        },
+      }),
+      admin: {
+        description: 'Editor de texto enriquecido para términos y condiciones con soporte para enlaces',
+      },
     },
     {
       name: 'date',
@@ -150,11 +172,41 @@ export const EventItemHeader5: Block = {
       ],
     },
     {
-      name: 'countdownIsoDate',
-      type: 'text',
-      required: true,
-      label: 'Fecha de Cuenta Regresiva (ISO)',
-      defaultValue: '2024-11-14T01:23:29.000+01:00',
+      name: 'countdown',
+      type: 'group',
+      label: 'Cuenta Regresiva',
+      fields: [
+        {
+          name: 'date',
+          type: 'date',
+          required: true,
+          label: 'Fecha de Cuenta Regresiva',
+          admin: {
+            date: {
+              pickerAppearance: 'dayOnly',
+            },
+          },
+        },
+        {
+          name: 'time',
+          type: 'text',
+          required: true,
+          label: 'Hora de Cuenta Regresiva',
+          admin: {
+            description: 'Formato: HH:MM (ej: 14:30)',
+          },
+          defaultValue: '19:00',
+        },
+        {
+          name: 'timezone',
+          type: 'text',
+          label: 'Zona Horaria',
+          admin: {
+            description: 'Zona horaria del evento (ej: Europe/Madrid, America/New_York)',
+          },
+          defaultValue: 'Europe/Madrid',
+        },
+      ],
     },
     {
       name: 'amountLeft',
