@@ -37,7 +37,26 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
         <Navbar11 
           logo={{
             url: data.navbar11Config.logo?.url || '#',
-            src: data.navbar11Config.logo?.src || 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg',
+            src: (data.navbar11Config.logo as any)?.src || 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg',
+            image: data.navbar11Config.logo?.image ? {
+              url: typeof data.navbar11Config.logo.image === 'number' 
+                ? 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg' // Fallback para ID de media
+                : data.navbar11Config.logo.image.url || 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg',
+              alt: typeof data.navbar11Config.logo.image === 'number' 
+                ? data.navbar11Config.logo.alt || 'Logo'
+                : data.navbar11Config.logo.image.alt || data.navbar11Config.logo.alt || 'Logo',
+              width: typeof data.navbar11Config.logo.image === 'object' 
+                ? data.navbar11Config.logo.image.width || 240 
+                : 240,
+              height: typeof data.navbar11Config.logo.image === 'object' 
+                ? data.navbar11Config.logo.image.height || 80 
+                : 80
+            } : {
+              url: 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg',
+              alt: data.navbar11Config.logo?.alt || 'Logo',
+              width: 240,
+              height: 80
+            },
             alt: data.navbar11Config.logo?.alt || 'Logo'
           }}
           navLinks={data.navbar11Config.navLinks?.map(link => ({
@@ -45,8 +64,14 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
             url: link.url,
             subMenuLinks: link.subMenuLinks?.map(subLink => ({
               icon: {
-                src: subLink.icon.src,
-                alt: subLink.icon.alt || 'Icon'
+                src: subLink.icon?.src || 'https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg',
+                image: {
+                  url: (subLink.icon as any)?.image?.url || subLink.icon?.src || 'https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg',
+                  alt: (subLink.icon as any)?.image?.alt || subLink.icon?.alt || 'Icon',
+                  width: (subLink.icon as any)?.image?.width || 24,
+                  height: (subLink.icon as any)?.image?.height || 24
+                },
+                alt: subLink.icon?.alt || 'Icon'
               },
               title: subLink.title,
               description: subLink.description,

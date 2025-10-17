@@ -741,11 +741,14 @@ export interface ArchiveBlock {
 export interface Banner1Block {
   heading: string;
   description: string;
-  logo: {
-    url?: string | null;
-    src: string;
-    alt?: string | null;
-  };
+  /**
+   * Selecciona una imagen para el logo desde la biblioteca de medios
+   */
+  logo?: (number | null) | Media;
+  /**
+   * URL personalizada para el logo (si no se selecciona una imagen)
+   */
+  logoUrl?: string | null;
   inputPlaceholder: string;
   button: {
     title: string;
@@ -798,6 +801,10 @@ export interface Banner3Block {
         title: string;
         size?: ('sm' | 'md' | 'lg') | null;
         variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
+        /**
+         * URL a la que debe redirigir el botón
+         */
+        url: string;
         id?: string | null;
       }[]
     | null;
@@ -859,28 +866,29 @@ export interface Blog1BlockType {
   tagline?: string | null;
   heading?: string | null;
   description?: string | null;
-  buttons?:
+  defaultValue?: string | null;
+  tabs?:
     | {
-        title: string;
-        variant?: ('primary' | 'secondary' | 'link') | null;
+        value: string;
+        trigger: string;
+        content?:
+          | {
+              url: string;
+              image: number | Media;
+              category: string;
+              title: string;
+              description: string;
+              avatar: number | Media;
+              fullName: string;
+              date: string;
+              readTime: string;
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;
   categoryLink?: string | null;
-  blogPosts?:
-    | {
-        url: string;
-        image: number | Media;
-        category: string;
-        title: string;
-        description: string;
-        avatar: number | Media;
-        fullName: string;
-        date: string;
-        readTime: string;
-        id?: string | null;
-      }[]
-    | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'blog1';
@@ -893,10 +901,25 @@ export interface Blog5BlockType {
   tagline?: string | null;
   heading?: string | null;
   description?: string | null;
-  buttons?:
+  defaultValue?: string | null;
+  tabs?:
     | {
-        title: string;
-        variant?: ('primary' | 'secondary' | 'link') | null;
+        value: string;
+        trigger: string;
+        content?:
+          | {
+              url: string;
+              image: number | Media;
+              category: string;
+              title: string;
+              description: string;
+              avatar: number | Media;
+              fullName: string;
+              date: string;
+              readTime: string;
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;
@@ -912,20 +935,6 @@ export interface Blog5BlockType {
     date: string;
     readTime: string;
   };
-  blogPosts?:
-    | {
-        url: string;
-        image: number | Media;
-        category: string;
-        title: string;
-        description: string;
-        avatar: number | Media;
-        fullName: string;
-        date: string;
-        readTime: string;
-        id?: string | null;
-      }[]
-    | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'blog5';
@@ -1701,8 +1710,7 @@ export interface CTA9Block {
   buttons?:
     | {
         title: string;
-        variant?: ('primary' | 'secondary' | 'secondary-alt' | 'ghost' | 'link') | null;
-        size?: ('sm' | 'default' | 'lg') | null;
+        variant?: ('solid' | 'outline') | null;
         /**
          * URL a la que debe redirigir el botón
          */
@@ -1741,7 +1749,7 @@ export interface CTA5Block {
   buttons?:
     | {
         title: string;
-        variant?: ('primary' | 'secondary' | 'secondary-alt' | 'ghost' | 'link') | null;
+        variant?: ('primary' | 'secondary') | null;
         link?: {
           type?: ('reference' | 'custom') | null;
           newTab?: boolean | null;
@@ -1818,6 +1826,7 @@ export interface Event1Block {
                 variant: 'primary' | 'secondary' | 'outline' | 'ghost';
                 size: 'sm' | 'md' | 'lg';
                 title: string;
+                url: string;
               };
               id?: string | null;
             }[]
@@ -1974,28 +1983,19 @@ export interface EventHeader1Block {
     button: {
       title: string;
       /**
-       * Valores: primary, secondary, link
+       * Enlace al que dirigirá el botón al hacer clic
        */
-      variant?: string | null;
-      /**
-       * Valores: sm, md, lg, primary
-       */
-      size?: string | null;
+      url: string;
+      variant: 'primary' | 'secondary' | 'link' | 'outline';
+      size: 'small' | 'medium' | 'large' | 'primary' | 'link';
     };
   };
   filters?:
     | {
-        button: {
-          title: string;
-          /**
-           * Valores: primary, secondary, link
-           */
-          variant?: string | null;
-          /**
-           * Valores: sm, md, lg
-           */
-          size?: string | null;
-        };
+        title: string;
+        url: string;
+        variant: 'primary' | 'secondary' | 'link' | 'outline';
+        size: 'sm' | 'medium' | 'large' | 'primary' | 'link';
         id?: string | null;
       }[]
     | null;
@@ -2018,13 +2018,11 @@ export interface EventHeader1Block {
         button: {
           title: string;
           /**
-           * Valores: primary, secondary, link
+           * Enlace al que dirigirá el botón al hacer clic
            */
-          variant?: string | null;
-          /**
-           * Valores: sm, md, lg
-           */
-          size?: string | null;
+          url: string;
+          variant: 'primary' | 'secondary' | 'link' | 'outline';
+          size: 'sm' | 'medium' | 'large' | 'primary' | 'link';
         };
         id?: string | null;
       }[]
@@ -3082,7 +3080,7 @@ export interface Form {
 export interface FormCustom_2Block {
   logo?: {
     url?: string | null;
-    src?: string | null;
+    image?: (number | null) | Media;
     alt?: string | null;
   };
   navText?: string | null;
@@ -4764,7 +4762,7 @@ export interface FormCustom2Submission {
   /**
    * Identifica de qué formulario proviene el envío
    */
-  source?: ('form-custom-2' | 'multi-form-2') | null;
+  source?: ('form-custom-2' | 'multi-form-2' | 'banner1' | 'contact1' | 'contact5') | null;
   /**
    * Estado del envío del formulario
    */
@@ -5411,13 +5409,8 @@ export interface ArchiveBlockSelect<T extends boolean = true> {
 export interface Banner1BlockSelect<T extends boolean = true> {
   heading?: T;
   description?: T;
-  logo?:
-    | T
-    | {
-        url?: T;
-        src?: T;
-        alt?: T;
-      };
+  logo?: T;
+  logoUrl?: T;
   inputPlaceholder?: T;
   button?:
     | T
@@ -5477,6 +5470,7 @@ export interface Banner3BlockSelect<T extends boolean = true> {
         title?: T;
         size?: T;
         variant?: T;
+        url?: T;
         id?: T;
       };
   id?: T;
@@ -5528,28 +5522,29 @@ export interface Blog1BlockTypeSelect<T extends boolean = true> {
   tagline?: T;
   heading?: T;
   description?: T;
-  buttons?:
+  defaultValue?: T;
+  tabs?:
     | T
     | {
-        title?: T;
-        variant?: T;
+        value?: T;
+        trigger?: T;
+        content?:
+          | T
+          | {
+              url?: T;
+              image?: T;
+              category?: T;
+              title?: T;
+              description?: T;
+              avatar?: T;
+              fullName?: T;
+              date?: T;
+              readTime?: T;
+              id?: T;
+            };
         id?: T;
       };
   categoryLink?: T;
-  blogPosts?:
-    | T
-    | {
-        url?: T;
-        image?: T;
-        category?: T;
-        title?: T;
-        description?: T;
-        avatar?: T;
-        fullName?: T;
-        date?: T;
-        readTime?: T;
-        id?: T;
-      };
   id?: T;
   blockName?: T;
 }
@@ -5561,11 +5556,26 @@ export interface Blog5BlockTypeSelect<T extends boolean = true> {
   tagline?: T;
   heading?: T;
   description?: T;
-  buttons?:
+  defaultValue?: T;
+  tabs?:
     | T
     | {
-        title?: T;
-        variant?: T;
+        value?: T;
+        trigger?: T;
+        content?:
+          | T
+          | {
+              url?: T;
+              image?: T;
+              category?: T;
+              title?: T;
+              description?: T;
+              avatar?: T;
+              fullName?: T;
+              date?: T;
+              readTime?: T;
+              id?: T;
+            };
         id?: T;
       };
   categoryLink?: T;
@@ -5581,20 +5591,6 @@ export interface Blog5BlockTypeSelect<T extends boolean = true> {
         fullName?: T;
         date?: T;
         readTime?: T;
-      };
-  blogPosts?:
-    | T
-    | {
-        url?: T;
-        image?: T;
-        category?: T;
-        title?: T;
-        description?: T;
-        avatar?: T;
-        fullName?: T;
-        date?: T;
-        readTime?: T;
-        id?: T;
       };
   id?: T;
   blockName?: T;
@@ -6205,7 +6201,6 @@ export interface CTA9BlockSelect<T extends boolean = true> {
     | {
         title?: T;
         variant?: T;
-        size?: T;
         url?: T;
         id?: T;
       };
@@ -6296,6 +6291,7 @@ export interface Event1BlockSelect<T extends boolean = true> {
                     variant?: T;
                     size?: T;
                     title?: T;
+                    url?: T;
                   };
               id?: T;
             };
@@ -6453,6 +6449,7 @@ export interface EventHeader1BlockSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              url?: T;
               variant?: T;
               size?: T;
             };
@@ -6460,13 +6457,10 @@ export interface EventHeader1BlockSelect<T extends boolean = true> {
   filters?:
     | T
     | {
-        button?:
-          | T
-          | {
-              title?: T;
-              variant?: T;
-              size?: T;
-            };
+        title?: T;
+        url?: T;
+        variant?: T;
+        size?: T;
         id?: T;
       };
   events?:
@@ -6489,6 +6483,7 @@ export interface EventHeader1BlockSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              url?: T;
               variant?: T;
               size?: T;
             };
@@ -7138,7 +7133,7 @@ export interface FormCustom_2BlockSelect<T extends boolean = true> {
     | T
     | {
         url?: T;
-        src?: T;
+        image?: T;
         alt?: T;
       };
   navText?: T;
@@ -8809,9 +8804,10 @@ export interface Header {
       }[]
     | null;
   navbar11Config?: {
-    logo: {
+    logo?: {
       url?: string | null;
-      src: string;
+      src?: string | null;
+      image?: (number | null) | Media;
       alt?: string | null;
     };
     navLinks?:
@@ -8820,8 +8816,9 @@ export interface Header {
           url: string;
           subMenuLinks?:
             | {
-                icon: {
-                  src: string;
+                icon?: {
+                  src?: string | null;
+                  image?: (number | null) | Media;
                   alt?: string | null;
                 };
                 title: string;
@@ -8940,6 +8937,7 @@ export interface HeaderSelect<T extends boolean = true> {
           | {
               url?: T;
               src?: T;
+              image?: T;
               alt?: T;
             };
         navLinks?:
@@ -8954,6 +8952,7 @@ export interface HeaderSelect<T extends boolean = true> {
                       | T
                       | {
                           src?: T;
+                          image?: T;
                           alt?: T;
                         };
                     title?: T;

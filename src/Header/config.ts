@@ -60,8 +60,12 @@ export const Header: GlobalConfig = {
             {
               name: 'src',
               type: 'text',
-              required: true,
               defaultValue: 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg',
+            },
+            {
+              name: 'image',
+              type: 'upload',
+              relationTo: 'media',
             },
             {
               name: 'alt',
@@ -96,8 +100,12 @@ export const Header: GlobalConfig = {
                     {
                       name: 'src',
                       type: 'text',
-                      required: true,
                       defaultValue: 'https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg',
+                    },
+                    {
+                      name: 'image',
+                      type: 'upload',
+                      relationTo: 'media',
                     },
                     {
                       name: 'alt',

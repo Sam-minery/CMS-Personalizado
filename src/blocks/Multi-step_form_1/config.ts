@@ -16,10 +16,10 @@ export const Form_custom_2: Block = {
           defaultValue: '#',
         },
         {
-          name: 'src',
-          type: 'text',
-          label: 'URL de la imagen del logo',
-          defaultValue: 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg',
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Imagen del logo',
         },
         {
           name: 'alt',
