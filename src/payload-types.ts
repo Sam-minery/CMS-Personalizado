@@ -3719,9 +3719,22 @@ export interface Links1Block {
         heading?: string | null;
         links?:
           | {
-              url: string;
               title: string;
-              variant?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'link') | null;
+              variant?: ('primary' | 'default' | 'secondary' | 'outline' | 'ghost' | 'link' | 'destructive') | null;
+              link?: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+              };
               id?: string | null;
             }[]
           | null;
@@ -3729,7 +3742,7 @@ export interface Links1Block {
       }[]
     | null;
   button: {
-    variant: 'primary' | 'secondary' | 'outline' | 'ghost' | 'link';
+    variant: 'primary' | 'default' | 'secondary' | 'outline' | 'ghost' | 'link' | 'destructive';
     title: string;
     subtitle: string;
   };
@@ -3756,8 +3769,21 @@ export interface Links1Block {
   };
   socialLinks?:
     | {
-        href: string;
         platform: 'facebook' | 'instagram' | 'twitter' | 'linkedin' | 'youtube';
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
         id?: string | null;
       }[]
     | null;
@@ -3781,9 +3807,22 @@ export interface Links4Block {
         heading?: string | null;
         links?:
           | {
-              url: string;
               title: string;
-              variant?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'link') | null;
+              variant?: ('primary' | 'default' | 'secondary' | 'outline' | 'ghost' | 'link' | 'destructive') | null;
+              link?: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+              };
               id?: string | null;
             }[]
           | null;
@@ -3791,7 +3830,7 @@ export interface Links4Block {
       }[]
     | null;
   button: {
-    variant: 'primary' | 'secondary' | 'outline' | 'ghost' | 'link';
+    variant: 'primary' | 'default' | 'secondary' | 'outline' | 'ghost' | 'link' | 'destructive';
     title: string;
     subtitle: string;
   };
@@ -3818,8 +3857,21 @@ export interface Links4Block {
   };
   socialLinks?:
     | {
-        href: string;
         platform: 'facebook' | 'instagram' | 'twitter' | 'linkedin' | 'youtube';
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
         id?: string | null;
       }[]
     | null;
@@ -7595,9 +7647,16 @@ export interface Links1BlockSelect<T extends boolean = true> {
         links?:
           | T
           | {
-              url?: T;
               title?: T;
               variant?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
               id?: T;
             };
         id?: T;
@@ -7621,8 +7680,15 @@ export interface Links1BlockSelect<T extends boolean = true> {
   socialLinks?:
     | T
     | {
-        href?: T;
         platform?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
         id?: T;
       };
   id?: T;
@@ -7648,9 +7714,16 @@ export interface Links4BlockSelect<T extends boolean = true> {
         links?:
           | T
           | {
-              url?: T;
               title?: T;
               variant?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
               id?: T;
             };
         id?: T;
@@ -7674,8 +7747,15 @@ export interface Links4BlockSelect<T extends boolean = true> {
   socialLinks?:
     | T
     | {
-        href?: T;
         platform?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
         id?: T;
       };
   id?: T;
@@ -8909,7 +8989,7 @@ export interface Header {
   /**
    * Selecciona el tipo de navbar a usar
    */
-  navbarType?: ('default' | 'navbar11') | null;
+  navbarType?: ('default' | 'navbar1' | 'navbar5' | 'navbar11') | null;
   navItems?:
     | {
         link: {
@@ -8960,6 +9040,233 @@ export interface Header {
           title: string;
           variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
           size?: ('sm' | 'default' | 'lg') | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  navbar1Config?: {
+    logo?: {
+      useMedia?: boolean | null;
+      media?: (number | null) | Media;
+      url?: string | null;
+      src?: string | null;
+      alt?: string | null;
+    };
+    navLinks?:
+      | {
+          title: string;
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            url?: string | null;
+          };
+          subMenuLinks?:
+            | {
+                title: string;
+                link: {
+                  type?: ('reference' | 'custom') | null;
+                  newTab?: boolean | null;
+                  reference?:
+                    | ({
+                        relationTo: 'pages';
+                        value: number | Page;
+                      } | null)
+                    | ({
+                        relationTo: 'posts';
+                        value: number | Post;
+                      } | null);
+                  url?: string | null;
+                  label: string;
+                };
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    buttons?:
+      | {
+          title: string;
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            url?: string | null;
+          };
+          size?: ('sm' | 'lg') | null;
+          variant?: ('default' | 'secondary' | 'ghost' | 'link') | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  navbar5Config?: {
+    logo?: {
+      useMedia?: boolean | null;
+      media?: (number | null) | Media;
+      url?: string | null;
+      src?: string | null;
+      alt?: string | null;
+      link?: {
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        url?: string | null;
+      };
+    };
+    links?:
+      | {
+          title: string;
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            url?: string | null;
+          };
+          megaMenu: {
+            categoryLinks?:
+              | {
+                  title: string;
+                  links?:
+                    | {
+                        link?: {
+                          type?: ('reference' | 'custom') | null;
+                          newTab?: boolean | null;
+                          reference?:
+                            | ({
+                                relationTo: 'pages';
+                                value: number | Page;
+                              } | null)
+                            | ({
+                                relationTo: 'posts';
+                                value: number | Post;
+                              } | null);
+                          url?: string | null;
+                        };
+                        image: {
+                          src: string;
+                          alt?: string | null;
+                        };
+                        title: string;
+                        description?: string | null;
+                        button?: {
+                          title?: string | null;
+                          size?: ('sm' | 'primary') | null;
+                          variant?: ('primary' | 'secondary' | 'ghost' | 'link') | null;
+                        };
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
+            featuredSections: {
+              title: string;
+              links?:
+                | {
+                    link?: {
+                      type?: ('reference' | 'custom') | null;
+                      newTab?: boolean | null;
+                      reference?:
+                        | ({
+                            relationTo: 'pages';
+                            value: number | Page;
+                          } | null)
+                        | ({
+                            relationTo: 'posts';
+                            value: number | Post;
+                          } | null);
+                      url?: string | null;
+                    };
+                    image: {
+                      src: string;
+                      alt?: string | null;
+                    };
+                    title: string;
+                    description?: string | null;
+                    button?: {
+                      title?: string | null;
+                      size?: ('sm' | 'primary') | null;
+                      variant?: ('primary' | 'secondary' | 'ghost' | 'link') | null;
+                    };
+                    id?: string | null;
+                  }[]
+                | null;
+            };
+            button: {
+              title: string;
+              size?: ('sm' | 'primary') | null;
+              variant?: ('primary' | 'secondary' | 'ghost' | 'link') | null;
+              link?: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+              };
+            };
+          };
+          id?: string | null;
+        }[]
+      | null;
+    buttons?:
+      | {
+          title: string;
+          size?: ('sm' | 'primary') | null;
+          variant?: ('primary' | 'secondary' | 'ghost' | 'link') | null;
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            url?: string | null;
+          };
           id?: string | null;
         }[]
       | null;
@@ -9361,6 +9668,201 @@ export interface HeaderSelect<T extends boolean = true> {
               title?: T;
               variant?: T;
               size?: T;
+              id?: T;
+            };
+      };
+  navbar1Config?:
+    | T
+    | {
+        logo?:
+          | T
+          | {
+              useMedia?: T;
+              media?: T;
+              url?: T;
+              src?: T;
+              alt?: T;
+            };
+        navLinks?:
+          | T
+          | {
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              subMenuLinks?:
+                | T
+                | {
+                    title?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                          label?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+            };
+        buttons?:
+          | T
+          | {
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              size?: T;
+              variant?: T;
+              id?: T;
+            };
+      };
+  navbar5Config?:
+    | T
+    | {
+        logo?:
+          | T
+          | {
+              useMedia?: T;
+              media?: T;
+              url?: T;
+              src?: T;
+              alt?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+            };
+        links?:
+          | T
+          | {
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              megaMenu?:
+                | T
+                | {
+                    categoryLinks?:
+                      | T
+                      | {
+                          title?: T;
+                          links?:
+                            | T
+                            | {
+                                link?:
+                                  | T
+                                  | {
+                                      type?: T;
+                                      newTab?: T;
+                                      reference?: T;
+                                      url?: T;
+                                    };
+                                image?:
+                                  | T
+                                  | {
+                                      src?: T;
+                                      alt?: T;
+                                    };
+                                title?: T;
+                                description?: T;
+                                button?:
+                                  | T
+                                  | {
+                                      title?: T;
+                                      size?: T;
+                                      variant?: T;
+                                    };
+                                id?: T;
+                              };
+                          id?: T;
+                        };
+                    featuredSections?:
+                      | T
+                      | {
+                          title?: T;
+                          links?:
+                            | T
+                            | {
+                                link?:
+                                  | T
+                                  | {
+                                      type?: T;
+                                      newTab?: T;
+                                      reference?: T;
+                                      url?: T;
+                                    };
+                                image?:
+                                  | T
+                                  | {
+                                      src?: T;
+                                      alt?: T;
+                                    };
+                                title?: T;
+                                description?: T;
+                                button?:
+                                  | T
+                                  | {
+                                      title?: T;
+                                      size?: T;
+                                      variant?: T;
+                                    };
+                                id?: T;
+                              };
+                        };
+                    button?:
+                      | T
+                      | {
+                          title?: T;
+                          size?: T;
+                          variant?: T;
+                          link?:
+                            | T
+                            | {
+                                type?: T;
+                                newTab?: T;
+                                reference?: T;
+                                url?: T;
+                              };
+                        };
+                  };
+              id?: T;
+            };
+        buttons?:
+          | T
+          | {
+              title?: T;
+              size?: T;
+              variant?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
               id?: T;
             };
       };

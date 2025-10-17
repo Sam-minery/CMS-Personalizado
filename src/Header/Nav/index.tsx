@@ -23,3 +23,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
     </nav>
   )
 }
+
+export { Navbar1 } from './Navbar1'
+export { Navbar5 } from './Navbar5'
+export { Navbar11 } from './Navbar11'

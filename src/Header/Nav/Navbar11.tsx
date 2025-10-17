@@ -57,7 +57,7 @@ export const Navbar11: React.FC<Navbar11Props> = (props) => {
   return (
     <section
       id="relume"
-      className="z-[999] flex w-full items-center border-b border-border-primary bg-background-primary md:min-h-18 lg:px-[5%]"
+      className="z-[999] flex w-full items-center border-b border-gray-200 bg-white md:min-h-18 lg:px-[5%]"
     >
       <div className="mx-auto size-full items-center justify-between lg:flex">
         <div className="grid min-h-16 grid-cols-2 items-center justify-between px-[5%] md:min-h-18 lg:min-h-full lg:px-0">
@@ -164,7 +164,7 @@ const SubMenu = ({
       </button>
       {isDropdownOpen && (
         <nav
-          className={`z-50 bg-background-primary lg:absolute lg:w-80 lg:border lg:border-border-primary lg:p-6 transition-all duration-300 ${
+          className={`z-50 bg-white lg:absolute lg:w-80 lg:border lg:border-gray-200 lg:p-6 transition-all duration-300 ${
             isDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
           }`}
         >
