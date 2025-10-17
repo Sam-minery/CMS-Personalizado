@@ -171,11 +171,7 @@ const SubMenu = ({
       </button>
       {isDropdownOpen && (
         <nav
-<<<<<<< HEAD
           className={`z-50 bg-white lg:absolute lg:w-80 lg:border lg:border-gray-200 lg:p-6 transition-all duration-300 ${
-=======
-          className={`z-50 bg-white shadow-lg lg:absolute lg:w-80 lg:border lg:border-gray-200 lg:rounded-lg lg:p-6 transition-all duration-300 ${
->>>>>>> origin/sam-branch
             isDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
           }`}
         >

@@ -3,6 +3,10 @@ import type { Block } from 'payload'
 export const Testimonial6Block: Block = {
   slug: 'testimonial6',
   interfaceName: 'Testimonial6Block',
+  labels: {
+    singular: 'Testimonial 6',
+    plural: 'Testimonial 6 Blocks',
+  },
   fields: [
     {
       name: 'heading',
