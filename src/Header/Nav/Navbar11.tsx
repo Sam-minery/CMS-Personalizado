@@ -8,7 +8,13 @@ import { CMSLink } from '@/components/Link';
 
 type ImageProps = {
   url?: string;
-  src: string;
+  src?: string;
+  image?: {
+    url: string;
+    alt?: string;
+    width?: number;
+    height?: number;
+  };
   alt?: string;
 };
 
@@ -62,12 +68,13 @@ export const Navbar11: React.FC<Navbar11Props> = (props) => {
       <div className="mx-auto size-full items-center justify-between lg:flex">
         <div className="grid min-h-16 grid-cols-2 items-center justify-between px-[5%] md:min-h-18 lg:min-h-full lg:px-0">
           <a href={logo.url}>
-            {logo.src && (
+            {(logo.image?.url || logo.src) && (
               <Image 
-                src={logo.src} 
-                alt={logo.alt || 'Logo'} 
-                width={150} 
-                height={50} 
+                src={logo.image?.url || logo.src || ''} 
+                alt={logo.image?.alt || logo.alt || 'Logo'} 
+                width={logo.image?.width || 240} 
+                height={logo.image?.height || 80} 
+                className="max-w-[240px] max-h-[80px] object-contain"
               />
             )}
           </a>
@@ -164,7 +171,11 @@ const SubMenu = ({
       </button>
       {isDropdownOpen && (
         <nav
+<<<<<<< HEAD
           className={`z-50 bg-white lg:absolute lg:w-80 lg:border lg:border-gray-200 lg:p-6 transition-all duration-300 ${
+=======
+          className={`z-50 bg-white shadow-lg lg:absolute lg:w-80 lg:border lg:border-gray-200 lg:rounded-lg lg:p-6 transition-all duration-300 ${
+>>>>>>> origin/sam-branch
             isDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
           }`}
         >
@@ -174,14 +185,14 @@ const SubMenu = ({
                 key={index}
                 url={subMenuLink.url}
                 appearance="link"
-                className="grid auto-cols-fr grid-cols-[max-content_1fr] items-start gap-x-3 py-2 lg:py-1"
+                className="grid auto-cols-fr grid-cols-[max-content_1fr] items-start gap-x-3 py-3 px-3 rounded-lg hover:bg-gray-50 transition-colors duration-200"
               >
                 <div>
-                  {subMenuLink.icon.src && (
+                  {(subMenuLink.icon.image?.url || subMenuLink.icon.src) && (
                     <Image
                       className="size-6"
-                      src={subMenuLink.icon.src}
-                      alt={subMenuLink.icon.alt || 'Icon'}
+                      src={subMenuLink.icon.image?.url || subMenuLink.icon.src || ''}
+                      alt={subMenuLink.icon.image?.alt || subMenuLink.icon.alt || 'Icon'}
                       width={24}
                       height={24}
                     />
@@ -204,6 +215,12 @@ export const Navbar11Defaults: Props = {
   logo: {
     url: "#",
     src: "https://d22po4pjz3o32e.cloudfront.net/logo-image.svg",
+    image: {
+      url: "https://d22po4pjz3o32e.cloudfront.net/logo-image.svg",
+      alt: "Company logo",
+      width: 240,
+      height: 80,
+    },
     alt: "Company logo",
   },
   navLinks: [
@@ -217,6 +234,12 @@ export const Navbar11Defaults: Props = {
         {
           icon: {
             src: "https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg",
+            image: {
+              url: "https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg",
+              alt: "Icon 1",
+              width: 24,
+              height: 24,
+            },
             alt: "Icon 1",
           },
           title: "Page one",
@@ -226,6 +249,12 @@ export const Navbar11Defaults: Props = {
         {
           icon: {
             src: "https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg",
+            image: {
+              url: "https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg",
+              alt: "Icon 2",
+              width: 24,
+              height: 24,
+            },
             alt: "Icon 2",
           },
           title: "Page two",
@@ -235,6 +264,12 @@ export const Navbar11Defaults: Props = {
         {
           icon: {
             src: "https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg",
+            image: {
+              url: "https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg",
+              alt: "Icon 3",
+              width: 24,
+              height: 24,
+            },
             alt: "Icon 3",
           },
           title: "Page three",
@@ -244,6 +279,12 @@ export const Navbar11Defaults: Props = {
         {
           icon: {
             src: "https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg",
+            image: {
+              url: "https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg",
+              alt: "Icon 4",
+              width: 24,
+              height: 24,
+            },
             alt: "Icon 4",
           },
           title: "Page four",

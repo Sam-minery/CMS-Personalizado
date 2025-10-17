@@ -1,23 +1,42 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
-import { Button } from "@relume_io/relume-ui"
-import type { ButtonProps } from "@relume_io/relume-ui"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@relume_io/relume-ui"
+import { AnimatePresence, motion } from "framer-motion"
 import clsx from "clsx"
+import type { Media } from '@/payload-types'
 
 type ImageProps = {
   url: string
   alt?: string
 }
 
+// Helper function to get image URL from upload field
+const getImageUrl = (image: string | Media | ImageProps): string => {
+  if (typeof image === 'string') return image
+  if (image && typeof image === 'object' && 'url' in image) {
+    return image.url || ''
+  }
+  return ''
+}
+
+// Helper function to get image alt from upload field
+const getImageAlt = (image: string | Media | ImageProps): string => {
+  if (typeof image === 'string') return ''
+  if (image && typeof image === 'object' && 'alt' in image) {
+    return image.alt || ''
+  }
+  return ''
+}
+
 type BlogPost = {
   url: string
-  image: ImageProps
+  image: string | Media | ImageProps
   category: string
   title: string
   description: string
-  avatar: ImageProps
+  avatar: string | Media | ImageProps
   fullName: string
   date: string
   readTime: string
@@ -25,24 +44,46 @@ type BlogPost = {
 
 type FeaturedBlogPost = BlogPost
 
+type Tab = {
+  value: string
+  trigger: string
+  content: BlogPost[]
+}
+
 type Props = {
   tagline: string
   heading: string
   description: string
-  buttons: ButtonProps[]
+  defaultValue: string
+  tabs: Tab[]
   categoryLink: string
   featuredBlogPost: FeaturedBlogPost
-  blogPosts: BlogPost[]
   disableInnerContainer?: boolean
 }
 
 export type Blog5Props = React.ComponentPropsWithoutRef<"section"> & Partial<Props>
 
 export const Blog5Block = (props: Blog5Props) => {
-  const { tagline, heading, description, buttons, categoryLink, featuredBlogPost, blogPosts } = {
+  const { tagline, heading, description, defaultValue, tabs, categoryLink, featuredBlogPost } = {
     ...Blog5Defaults,
     ...props,
   }
+  
+  // Asegurar que siempre haya una pestaña activa válida
+  const getInitialTab = () => {
+    if (tabs && tabs.length > 0) {
+      // Si defaultValue existe en las pestañas, usarlo
+      if (tabs.some(tab => tab.value === defaultValue)) {
+        return defaultValue
+      }
+      // Si no, usar la primera pestaña
+      return tabs[0].value
+    }
+    return defaultValue || 'view-all'
+  }
+  
+  const [activeTab, setActiveTab] = useState<string>(getInitialTab())
+  const MotionTabsContent = motion.create(TabsContent)
   
   return (
     <section id="relume" className="px-[5%] py-16 md:py-24 lg:py-28">
@@ -57,15 +98,13 @@ export const Blog5Block = (props: Blog5Props) => {
         <div className="flex flex-col justify-start">
           <div className="rb-12 mb-12 grid grid-cols-1 items-center gap-6 md:mb-16 md:grid-cols-2 md:gap-12">
             <a href={featuredBlogPost.url} className="w-full">
-              {featuredBlogPost.image.url && (
-                <Image
-                  src={featuredBlogPost.image.url}
-                  alt={featuredBlogPost.image.alt || 'Featured blog post'}
-                  width={600}
-                  height={400}
-                  className="aspect-[3/2] size-full object-cover"
-                />
-              )}
+              <Image
+                src={getImageUrl(featuredBlogPost.image)}
+                alt={getImageAlt(featuredBlogPost.image)}
+                width={600}
+                height={400}
+                className="aspect-[3/2] size-full object-cover"
+              />
             </a>
             <div className="flex h-full flex-col items-start justify-center">
               <a
@@ -83,17 +122,15 @@ export const Blog5Block = (props: Blog5Props) => {
                 <p>{featuredBlogPost.description}</p>
                 <div className="mt-6 flex items-center">
                   <div className="mr-4 shrink-0">
-                    {featuredBlogPost.avatar.url && (
-                      <Image
-                        src={featuredBlogPost.avatar.url}
-                        alt={featuredBlogPost.avatar.alt || 'Author avatar'}
-                        width={96}
-                        height={96}
-                        className="size-12 min-h-12 min-w-12 rounded-full object-cover"
-                        quality={100}
-                        priority
-                      />
-                    )}
+                    <Image
+                      src={getImageUrl(featuredBlogPost.avatar)}
+                      alt={getImageAlt(featuredBlogPost.avatar)}
+                      width={96}
+                      height={96}
+                      className="size-12 min-h-12 min-w-12 rounded-full object-cover"
+                      quality={100}
+                      priority
+                    />
                   </div>
                   <div>
                     <h6 className="text-sm font-semibold">{featuredBlogPost.fullName}</h6>
@@ -107,90 +144,143 @@ export const Blog5Block = (props: Blog5Props) => {
               </div>
             </div>
           </div>
-          <div className="no-scrollbar mb-12 ml-[-5vw] flex w-screen items-center justify-start overflow-scroll pl-[5vw] md:mb-16 md:ml-0 md:w-full md:overflow-hidden md:pl-0">
-            {buttons.map((button, index) => (
-              <Button
-                key={index}
-                {...button}
-                asChild
-                className={clsx("border px-4 py-2 text-black", {
-                  "border-border-primary": index === 0,
-                  "border-transparent": index !== 0,
-                })}
-              >
-                <a href={categoryLink}>{button.title}</a>
-              </Button>
-            ))}
-          </div>
-          <div className="grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 md:gap-y-16 lg:grid-cols-3">
-            {blogPosts.map((post, index) => (
-              <div key={index}>
-                <a href={post.url} className="mb-6 inline-block w-full max-w-full">
-                  <div className="w-full overflow-hidden">
-                    {post.image.url && (
-                      <Image
-                        src={post.image.url}
-                        alt={post.image.alt || 'Blog post image'}
-                        width={400}
-                        height={267}
-                        className="aspect-[3/2] size-full object-cover"
-                      />
-                    )}
-                  </div>
-                </a>
-                <a
-                  href={post.url}
-                  className="mb-2 mr-4 inline-block max-w-full text-sm font-semibold"
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="flex flex-col justify-start"
+          >
+            <TabsList className="no-scrollbar mb-12 ml-[-5vw] flex w-screen items-center overflow-auto pl-[5vw] md:mb-16 md:ml-0 md:w-full md:overflow-hidden md:pl-0">
+              {tabs.map((tab, index) => (
+                <TabsTrigger
+                  key={index}
+                  value={tab.value}
+                  className="px-4 data-[state=active]:border data-[state=active]:border-border-primary data-[state=inactive]:border-transparent data-[state=active]:bg-transparent data-[state=active]:text-neutral-black"
                 >
-                  {post.category}
-                </a>
+                  {tab.trigger}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <AnimatePresence initial={false}>
+              {tabs.map((tab) => {
+                return (
+                  <MotionTabsContent
+                    key={tab.value}
+                    value={tab.value}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: activeTab === tab.value ? 1 : 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.6, ease: "easeInOut" }}
+                  >
+                    <div className="grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 md:gap-y-16 lg:grid-cols-3">
+                      {tab.content.map((post, index) => (
+                        <div key={index}>
+                          <a href={post.url} className="mb-6 inline-block w-full max-w-full">
+                            <div className="w-full overflow-hidden">
+                              <Image
+                                src={getImageUrl(post.image)}
+                                alt={getImageAlt(post.image)}
+                                width={400}
+                                height={267}
+                                className="aspect-[3/2] size-full object-cover"
+                              />
+                            </div>
+                          </a>
+                          <a
+                            href={post.url}
+                            className="mb-2 mr-4 inline-block max-w-full text-sm font-semibold"
+                          >
+                            {post.category}
+                          </a>
 
-                <a href={post.url} className="mb-2 block max-w-full">
-                  <h5 className="text-xl font-bold md:text-2xl">{post.title}</h5>
-                </a>
-                <p>{post.description}</p>
-                <div className="mt-6 flex items-center">
-                  <div className="mr-4 shrink-0">
-                    {post.avatar.url && (
-                      <Image
-                        src={post.avatar.url}
-                        alt={post.avatar.alt || 'Author avatar'}
-                        width={96}
-                        height={96}
-                        className="size-12 min-h-12 min-w-12 rounded-full object-cover"
-                        quality={100}
-                        priority
-                      />
-                    )}
-                  </div>
-                  <div>
-                    <h6 className="text-sm font-semibold">{post.fullName}</h6>
-                    <div className="flex items-center">
-                      <p className="text-sm">{post.date}</p>
-                      <span className="mx-2">•</span>
-                      <p className="text-sm">{post.readTime}</p>
+                          <a href={post.url} className="mb-2 block max-w-full">
+                            <h5 className="text-xl font-bold md:text-2xl">{post.title}</h5>
+                          </a>
+                          <p>{post.description}</p>
+                          <div className="mt-6 flex items-center">
+                            <div className="mr-4 shrink-0">
+                              <Image
+                                src={getImageUrl(post.avatar)}
+                                alt={getImageAlt(post.avatar)}
+                                width={96}
+                                height={96}
+                                className="size-12 min-h-12 min-w-12 rounded-full object-cover"
+                                quality={100}
+                                priority
+                              />
+                            </div>
+                            <div>
+                              <h6 className="text-sm font-semibold">{post.fullName}</h6>
+                              <div className="flex items-center">
+                                <p className="text-sm">{post.date}</p>
+                                <span className="mx-2">•</span>
+                                <p className="text-sm">{post.readTime}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                  </MotionTabsContent>
+                )
+              })}
+            </AnimatePresence>
+          </Tabs>
         </div>
       </div>
     </section>
   )
 }
 
+const blogPost: BlogPost = {
+  url: "#",
+  image: {
+    url: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image-landscape.svg",
+    alt: "Relume placeholder image",
+  },
+  category: "Category",
+  readTime: "5 min read",
+  title: "Blog title heading will go here",
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.",
+  avatar: {
+    url: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image.svg",
+    alt: "Relume placeholder avatar",
+  },
+  fullName: "Full name",
+  date: "11 Jan 2022",
+}
+
 export const Blog5Defaults: Props = {
   tagline: "Blog",
   heading: "Short heading goes here",
   description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  buttons: [
-    { title: "View all", variant: "secondary" },
-    { title: "Category one", variant: "link" },
-    { title: "Category two", variant: "link" },
-    { title: "Category three", variant: "link" },
-    { title: "Category four", variant: "link" },
+  defaultValue: "view-all",
+  tabs: [
+    {
+      value: "view-all",
+      trigger: "View all",
+      content: [blogPost, blogPost, blogPost, blogPost, blogPost, blogPost],
+    },
+    {
+      value: "category-one",
+      trigger: "Category one",
+      content: [blogPost, blogPost, blogPost],
+    },
+    {
+      value: "category-two",
+      trigger: "Category two",
+      content: [blogPost, blogPost, blogPost],
+    },
+    {
+      value: "category-three",
+      trigger: "Category three",
+      content: [blogPost, blogPost, blogPost],
+    },
+    {
+      value: "category-four",
+      trigger: "Category four",
+      content: [blogPost, blogPost, blogPost],
+    },
   ],
   categoryLink: "#",
   featuredBlogPost: {
@@ -211,114 +301,4 @@ export const Blog5Defaults: Props = {
     date: "11 Jan 2022",
     readTime: "5 min read",
   },
-  blogPosts: [
-    {
-      url: "#",
-      image: {
-        url: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image-landscape.svg",
-        alt: "Relume placeholder image 1",
-      },
-      category: "Category",
-      title: "Blog title heading will go here",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.",
-      avatar: {
-        url: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image.svg",
-        alt: "Relume placeholder avatar 2",
-      },
-      fullName: "Full name",
-      date: "11 Jan 2022",
-      readTime: "5 min read",
-    },
-    {
-      url: "#",
-      image: {
-        url: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image-landscape.svg",
-        alt: "Relume placeholder image 2",
-      },
-      category: "Category",
-      title: "Blog title heading will go here",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.",
-      avatar: {
-        url: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image.svg",
-        alt: "Relume placeholder avatar 3",
-      },
-      fullName: "Full name",
-      date: "11 Jan 2022",
-      readTime: "5 min read",
-    },
-    {
-      url: "#",
-      image: {
-        url: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image-landscape.svg",
-        alt: "Relume placeholder image 3",
-      },
-      category: "Category",
-      title: "Blog title heading will go here",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.",
-      avatar: {
-        url: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image.svg",
-        alt: "Relume placeholder avatar 4",
-      },
-      fullName: "Full name",
-      date: "11 Jan 2022",
-      readTime: "5 min read",
-    },
-    {
-      url: "#",
-      image: {
-        url: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image-landscape.svg",
-        alt: "Relume placeholder image 4",
-      },
-      category: "Category",
-      title: "Blog title heading will go here",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.",
-      avatar: {
-        url: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image.svg",
-        alt: "Relume placeholder avatar 5",
-      },
-      fullName: "Full name",
-      date: "11 Jan 2022",
-      readTime: "5 min read",
-    },
-    {
-      url: "#",
-      image: {
-        url: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image-landscape.svg",
-        alt: "Relume placeholder image 5",
-      },
-      category: "Category",
-      title: "Blog title heading will go here",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.",
-      avatar: {
-        url: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image.svg",
-        alt: "Relume placeholder avatar 6",
-      },
-      fullName: "Full name",
-      date: "11 Jan 2022",
-      readTime: "5 min read",
-    },
-    {
-      url: "#",
-      image: {
-        url: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image-landscape.svg",
-        alt: "Relume placeholder image 6",
-      },
-      category: "Category",
-      title: "Blog title heading will go here",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.",
-      avatar: {
-        url: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image.svg",
-        alt: "Relume placeholder avatar 7",
-      },
-      fullName: "Full name",
-      date: "11 Jan 2022",
-      readTime: "5 min read",
-    },
-  ],
 }

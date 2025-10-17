@@ -161,6 +161,13 @@ export const Event1: Block = {
                   label: 'Texto del Botón',
                   defaultValue: 'Save my spot',
                 },
+                {
+                  name: 'url',
+                  type: 'text',
+                  required: true,
+                  label: 'URL del Botón',
+                  defaultValue: '#',
+                },
               ],
             },
           ],

@@ -63,7 +63,10 @@ interface StepProps {
 export const Form_custom_2Block: React.FC<{
   logo?: {
     url?: string
-    src?: string
+    image?: {
+      url?: string
+      alt?: string
+    } | string
     alt?: string
   }
   navText?: string
@@ -86,7 +89,7 @@ export const Form_custom_2Block: React.FC<{
   employeesOptions?: Array<{ label: string; value: string }>
   countriesOptions?: Array<{ id: number; label: string; value: string }>
 }> = ({
-  logo = { url: '#', src: 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg', alt: 'Logo image' },
+  logo = { url: '#', image: { url: 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg', alt: 'Logo image' }, alt: 'Logo image' },
   navText = 'Already have an account?',
   navButton = { title: 'Log In', variant: 'link', size: 'link' },
   footerText = '© 2024 Relume',
@@ -180,17 +183,25 @@ export const Form_custom_2Block: React.FC<{
       <nav className="px-[5%]">
         <div className="flex min-h-16 items-center justify-between md:min-h-18">
           <a href={logo.url}>
-            {(logo.src || logo.url) && (
+            {(logo.image || logo.url) && (
               <Image 
-                src={logo.src || logo.url || 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg'} 
-                alt={logo.alt || 'Logo'} 
+                src={
+                  typeof logo.image === 'string' 
+                    ? logo.image 
+                    : logo.image?.url || logo.url || 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg'
+                } 
+                alt={
+                  typeof logo.image === 'string' 
+                    ? logo.alt || 'Logo' 
+                    : logo.image?.alt || logo.alt || 'Logo'
+                } 
                 width={150} 
                 height={50} 
               />
             )}
           </a>
           <div className="flex items-center gap-x-1">
-            <span className="hidden md:inline-block">{navText}</span>
+            <span className="hidden md:inline-block text-black">{navText}</span>
             <Button className="underline" variant={navButton.variant} size={navButton.size}>
               {navButton.title}
             </Button>
@@ -225,7 +236,7 @@ export const Form_custom_2Block: React.FC<{
       </section>
       <footer className="px-[5%]">
         <div className="flex min-h-16 items-center justify-center md:min-h-18">
-          <p className="text-sm">{footerText}</p>
+          <p className="text-sm text-black">{footerText}</p>
         </div>
       </footer>
     </div>
@@ -258,13 +269,14 @@ const StepAction = ({
   handlePrev: () => void
 }) => (
   <div className="mt-6 flex items-center justify-between gap-2">
-    <p>
+    <p className="text-black">
       Step {step + 1}/{totalSteps}
     </p>
     <div className="flex flex-wrap gap-4">
       <Button
         type="button"
-        variant="secondary"
+        variant="ghost"
+        className="bg-gray-100 text-black hover:bg-gray-200 border border-gray-300"
         onClick={() => {
           if (!isFirstStep) {
             handlePrev()
@@ -273,7 +285,7 @@ const StepAction = ({
       >
         {isFirstStep ? 'Cancel' : 'Back'}
       </Button>
-      <Button type="submit">{isLastStep ? 'Get started' : 'Next'}</Button>
+      <Button type="submit" className="text-black">{isLastStep ? 'Get started' : 'Next'}</Button>
     </div>
   </div>
 )
@@ -281,10 +293,10 @@ const StepAction = ({
 const StepOne: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) => (
   <React.Fragment>
     <div className="mb-6 text-center md:mb-8">
-      <h2 className="text-2xl font-bold md:text-3xl md:leading-[1.3] lg:text-4xl">
+      <h2 className="text-2xl font-bold md:text-3xl md:leading-[1.3] lg:text-4xl text-black">
         {stepTitle}
       </h2>
-      <p className="mt-3 md:mt-4">{stepDescription}</p>
+      <p className="mt-3 md:mt-4 text-black">{stepDescription}</p>
     </div>
     <div className="flex flex-col gap-y-6">
       <FormField
@@ -292,7 +304,7 @@ const StepOne: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) => (
         name="name"
         render={({ field, fieldState }) => (
           <FormItem>
-            <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+            <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
               Enter your name
             </FormLabel>
             <FormControl>
@@ -307,7 +319,7 @@ const StepOne: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) => (
         name="email"
         render={({ field, fieldState }) => (
           <FormItem>
-            <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+            <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
               Enter your email*
             </FormLabel>
             <FormControl>
@@ -337,10 +349,10 @@ const StepTwo: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) => {
   return (
     <React.Fragment>
       <div className="mb-6 text-center md:mb-8">
-        <h2 className="text-2xl font-bold md:text-3xl md:leading-[1.3] lg:text-4xl">
+        <h2 className="text-2xl font-bold md:text-3xl md:leading-[1.3] lg:text-4xl text-black">
           {stepTitle}
         </h2>
-        <p className="mt-3 md:mt-4">{stepDescription}</p>
+        <p className="mt-3 md:mt-4 text-black">{stepDescription}</p>
       </div>
       <div className="flex flex-col gap-y-6">
         <FormField
@@ -348,7 +360,7 @@ const StepTwo: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) => {
           name="serviceType"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 Service type
               </FormLabel>
               <FormControl>
@@ -357,9 +369,14 @@ const StepTwo: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) => {
                     return (
                       <Button
                         key={index}
-                        className="py-2 pl-2 pr-4"
+                        className={clsx(
+                          "py-2 pl-2 pr-4",
+                          field.value === item.value 
+                            ? "bg-blue-600 text-white hover:bg-blue-700" 
+                            : "bg-gray-100 text-black hover:bg-gray-200 border border-gray-300"
+                        )}
                         type="button"
-                        variant={field.value === item.value ? 'primary' : 'secondary'}
+                        variant="ghost"
                         onClick={() => field.onChange(item.value)}
                       >
                         <span className="mr-2 inline-flex size-8 items-center justify-center border border-border-primary uppercase">
@@ -380,18 +397,18 @@ const StepTwo: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) => {
           name="budget"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 Your budget
               </FormLabel>
               <FormControl>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <SelectTrigger className={clsx({ 'border-border-error': fieldState.invalid })}>
-                    <SelectValue placeholder="Select one..." />
+                  <SelectTrigger className={clsx('bg-gray-100 text-black border border-gray-300', { 'border-red-500': fieldState.invalid })}>
+                    <SelectValue placeholder="Select one..." className="text-black" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="first">First choice</SelectItem>
-                    <SelectItem value="second">Second choice</SelectItem>
-                    <SelectItem value="third">Third choice</SelectItem>
+                  <SelectContent className="bg-white border border-gray-300">
+                    <SelectItem value="first" className="text-black hover:bg-gray-100">First choice</SelectItem>
+                    <SelectItem value="second" className="text-black hover:bg-gray-100">Second choice</SelectItem>
+                    <SelectItem value="third" className="text-black hover:bg-gray-100">Third choice</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -404,7 +421,7 @@ const StepTwo: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) => {
           name="aboutProject"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 About the project
               </FormLabel>
               <FormControl>
@@ -431,10 +448,10 @@ const StepThree: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) =>
   return (
     <React.Fragment>
       <div className="mb-6 text-center md:mb-8">
-        <h2 className="text-2xl font-bold md:text-3xl md:leading-[1.3] lg:text-4xl">
+        <h2 className="text-2xl font-bold md:text-3xl md:leading-[1.3] lg:text-4xl text-black">
           {stepTitle}
         </h2>
-        <p className="mt-3 md:mt-4">{stepDescription}</p>
+        <p className="mt-3 md:mt-4 text-black">{stepDescription}</p>
       </div>
       <div className="flex flex-col gap-y-6">
         <FormField
@@ -442,7 +459,7 @@ const StepThree: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) =>
           name="companyName"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 What is your company name?
               </FormLabel>
               <FormControl>
@@ -457,7 +474,7 @@ const StepThree: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) =>
           name="employees"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 How many people are you working with?
               </FormLabel>
               <FormControl>
@@ -467,8 +484,13 @@ const StepThree: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) =>
                       <Button
                         key={index}
                         type="button"
-                        className="px-4 py-2"
-                        variant={field.value === item.value ? 'primary' : 'secondary'}
+                        className={clsx(
+                          "px-4 py-2",
+                          field.value === item.value 
+                            ? "bg-blue-600 text-white hover:bg-blue-700" 
+                            : "bg-gray-100 text-black hover:bg-gray-200 border border-gray-300"
+                        )}
+                        variant="ghost"
                         onClick={() => field.onChange(item.value)}
                       >
                         {item.label}
@@ -486,7 +508,7 @@ const StepThree: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) =>
           name="website"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 Website link
               </FormLabel>
               <FormControl>
@@ -522,10 +544,10 @@ const StepFour: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) => 
   return (
     <React.Fragment>
       <div className="mb-6 text-center md:mb-8">
-        <h2 className="text-2xl font-bold md:text-3xl md:leading-[1.3] lg:text-4xl">
+        <h2 className="text-2xl font-bold md:text-3xl md:leading-[1.3] lg:text-4xl text-black">
           {stepTitle}
         </h2>
-        <p className="mt-3 md:mt-4">{stepDescription}</p>
+        <p className="mt-3 md:mt-4 text-black">{stepDescription}</p>
       </div>
       <div className="flex flex-col gap-y-6">
         <FormField
@@ -533,17 +555,17 @@ const StepFour: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) => 
           name="country"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 Country
               </FormLabel>
               <FormControl>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <SelectTrigger className={clsx({ 'border-border-error': fieldState.invalid })}>
-                    <SelectValue placeholder="Select one..." />
+                  <SelectTrigger className={clsx('bg-gray-100 text-black border border-gray-300', { 'border-red-500': fieldState.invalid })}>
+                    <SelectValue placeholder="Select one..." className="text-black" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border border-gray-300">
                     {countriesData.map((country) => (
-                      <SelectItem key={country.id} value={country.value}>
+                      <SelectItem key={country.id} value={country.value} className="text-black hover:bg-gray-100">
                         {country.label}
                       </SelectItem>
                     ))}
@@ -559,17 +581,17 @@ const StepFour: React.FC<StepProps> = ({ form, stepTitle, stepDescription }) => 
           name="date"
           render={({ field, fieldState }) => (
             <FormItem className="flex flex-col">
-              <FormLabel className={clsx({ 'text-text-error': fieldState.invalid })}>
+              <FormLabel className={clsx('text-black', { 'text-text-error': fieldState.invalid })}>
                 Preferred date for chat
               </FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    variant={'secondary'}
+                    variant={'ghost'}
                     className={cn(
-                      'justify-start py-[9px] pl-3 text-left font-normal',
-                      !field.value && 'text-muted-foreground',
-                      fieldState.invalid && 'border-border-error',
+                      'justify-start py-[9px] pl-3 text-left font-normal bg-gray-100 text-black hover:bg-gray-200 border border-gray-300',
+                      !field.value && 'text-gray-500',
+                      fieldState.invalid && 'border-red-500',
                     )}
                     type="button"
                   >

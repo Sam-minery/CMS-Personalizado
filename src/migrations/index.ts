@@ -13,6 +13,7 @@ import * as migration_20251007_111414 from './20251007_111414';
 import * as migration_20251007_113851 from './20251007_113851';
 import * as migration_20251007_122243 from './20251007_122243';
 import * as migration_20251007_123703 from './20251007_123703';
+<<<<<<< HEAD
 import * as migration_20251009_121556 from './20251009_121556';
 import * as migration_20251009_123159 from './20251009_123159';
 import * as migration_20251010_103833 from './20251010_103833';
@@ -28,6 +29,17 @@ import * as migration_20251016_151153 from './20251016_151153';
 import * as migration_20251017_095940 from './20251017_095940';
 import * as migration_20251017_102804 from './20251017_102804';
 import * as migration_20251017_104516 from './20251017_104516';
+=======
+import * as migration_20251009_093411 from './20251009_093411';
+import * as migration_20251009_095245 from './20251009_095245';
+import * as migration_20251009_104518 from './20251009_104518';
+import * as migration_20251010_070853 from './20251010_070853';
+import * as migration_20251013_123343 from './20251013_123343';
+import * as migration_20251014_110535 from './20251014_110535';
+import * as migration_20251016_114645 from './20251016_114645';
+import * as migration_20251016_115538 from './20251016_115538';
+import * as migration_20251017_100943 from './20251017_100943';
+>>>>>>> origin/sam-branch
 
 export const migrations = [
   {
@@ -106,6 +118,7 @@ export const migrations = [
     name: '20251007_123703',
   },
   {
+<<<<<<< HEAD
     up: migration_20251009_121556.up,
     down: migration_20251009_121556.down,
     name: '20251009_121556',
@@ -179,5 +192,50 @@ export const migrations = [
     up: migration_20251017_104516.up,
     down: migration_20251017_104516.down,
     name: '20251017_104516'
+=======
+    up: migration_20251009_093411.up,
+    down: migration_20251009_093411.down,
+    name: '20251009_093411',
+  },
+  {
+    up: migration_20251009_095245.up,
+    down: migration_20251009_095245.down,
+    name: '20251009_095245',
+  },
+  {
+    up: migration_20251009_104518.up,
+    down: migration_20251009_104518.down,
+    name: '20251009_104518',
+  },
+  {
+    up: migration_20251010_070853.up,
+    down: migration_20251010_070853.down,
+    name: '20251010_070853',
+  },
+  {
+    up: migration_20251013_123343.up,
+    down: migration_20251013_123343.down,
+    name: '20251013_123343',
+  },
+  {
+    up: migration_20251014_110535.up,
+    down: migration_20251014_110535.down,
+    name: '20251014_110535',
+  },
+  {
+    up: migration_20251016_114645.up,
+    down: migration_20251016_114645.down,
+    name: '20251016_114645',
+  },
+  {
+    up: migration_20251016_115538.up,
+    down: migration_20251016_115538.down,
+    name: '20251016_115538',
+  },
+  {
+    up: migration_20251017_100943.up,
+    down: migration_20251017_100943.down,
+    name: '20251017_100943'
+>>>>>>> origin/sam-branch
   },
 ];

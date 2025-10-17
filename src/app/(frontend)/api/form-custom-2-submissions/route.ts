@@ -22,24 +22,29 @@ export async function POST(request: NextRequest) {
     }, {} as Record<string, unknown>)
 
     // Determinar el tipo de formulario basado en el parámetro formType
-    const source = formType === 'multi-form-2' ? 'multi-form-2' : 'form-custom-2'
+    const source = formType === 'multi-form-2' ? 'multi-form-2' : 
+                   formType === 'banner1' ? 'banner1' :
+                   formType === 'contact1' ? 'contact1' :
+                   formType === 'contact5' ? 'contact5' : 'form-custom-2'
 
     // Crear el envío del formulario en la collection FormCustom2Submissions
+    const formSubmissionData = {
+      name: formData.name || formData.email || 'Usuario',
+      email: formData.email,
+      serviceType: formData.serviceType || (source === 'banner1' ? 'Banner subscription' : 'Contact form'),
+      budget: formData.budget || 'N/A',
+      aboutProject: formData.aboutProject || (source === 'banner1' ? 'Suscripción desde Banner1' : 'Mensaje de contacto'),
+      companyName: formData.companyName || 'N/A',
+      employees: formData.employees || 'N/A',
+      website: formData.website || 'N/A',
+      country: formData.country || 'N/A',
+      date: formData.date || new Date().toISOString(),
+      source: source as 'form-custom-2' | 'multi-form-2' | 'banner1' | 'contact1' | 'contact5',
+    }
+
     const formSubmission = await payload.create({
       collection: 'form-custom-2-submissions',
-      data: {
-        name: formData.name,
-        email: formData.email,
-        serviceType: formData.serviceType,
-        budget: formData.budget,
-        aboutProject: formData.aboutProject,
-        companyName: formData.companyName,
-        employees: formData.employees,
-        website: formData.website,
-        country: formData.country,
-        date: formData.date,
-        source: source,
-      },
+      data: formSubmissionData,
     })
 
     console.log(`${source} submission saved to Payload:`, formSubmission)

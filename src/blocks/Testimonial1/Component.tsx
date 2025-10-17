@@ -46,26 +46,39 @@ export const Testimonial1 = (props: Testimonial1BlockType) => {
     <section id="relume" className="px-[5%] py-16 md:py-24 lg:py-28">
       <div className="container w-full max-w-lg">
         <div className="flex flex-col items-center text-center">
-          <div className="mb-6 md:mb-8">
+          {/* Logo pequeño */}
+          <div className="mb-8 md:mb-12">
             {logo.media && (
-              <Media
-                resource={logo.media}
-                className="max-h-14"
-                alt={logo.alt || ''}
-              />
+              <div style={{ 
+                height: '20px', 
+                maxWidth: '80px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                margin: '0 auto'
+              }}>
+                <Media
+                  resource={logo.media}
+                  className="max-h-full max-w-full object-contain"
+                  alt={logo.alt || ''}
+                />
+              </div>
             )}
           </div>
           <blockquote className="text-xl font-bold md:text-2xl">
             <RichText data={quote} />
           </blockquote>
           <div className="mt-6 flex flex-col items-center justify-center md:mt-8">
-            <div className="mb-3 md:mb-4">
+            <div className="mb-3 md:mb-4 flex items-center justify-center">
               {avatar.media && (
-                <Media
-                  resource={avatar.media}
-                  className="w-16 h-16 rounded-full object-cover overflow-hidden"
-                  alt={avatar.alt || ''}
-                />
+                <div className="relative w-16 h-16 rounded-full overflow-hidden">
+                  <Media
+                    resource={avatar.media}
+                    fill={true}
+                    imgClassName="object-cover"
+                    alt={avatar.alt || ''}
+                  />
+                </div>
               )}
             </div>
             <div className="flex flex-col items-center justify-center">

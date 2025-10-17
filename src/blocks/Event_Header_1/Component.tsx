@@ -29,14 +29,12 @@ type Event = {
   status: string | null;
   location: string;
   description: string;
-  button: ButtonProps;
+  button: ButtonProps & { url?: string };
 };
 
 type FeaturedEvent = Omit<Event, "image" | "category">;
 
-type FilterItem = {
-  button: ButtonProps;
-};
+type FilterItem = ButtonProps & { url?: string };
 
 type Props = {
   tagline: string;
@@ -112,33 +110,31 @@ export const EventHeader1 = (props: EventHeader1Props) => {
               </a>
               <p className="mb-2">{event.location}</p>
               <p>{event.description}</p>
-              <Button {...event.button} className="mt-6 flex items-center justify-center gap-x-2">
-                {event.button.title}
-              </Button>
+              <a href={event.button.url || '#'}>
+                <Button {...event.button} className="mt-6 flex items-center justify-center gap-x-2">
+                  {event.button.title}
+                </Button>
+              </a>
             </div>
           </div>
         </div>
         <div className="flex flex-col justify-start">
           {filters && filters.length > 0 ? (
             <div className="no-scrollbar mb-12 ml-[-5vw] flex w-screen items-center gap-4 overflow-auto pl-[5vw] md:ml-0 md:w-full md:overflow-hidden md:pl-0">
-              {filters.map((filter, index) => {
-                // Los filtros vienen con estructura { button: ButtonProps }
-                const buttonProps = filter.button || filter;
-                return (
-                  <Button 
-                    key={index} 
-                    {...buttonProps}
-                    onClick={() => handleFilterClick(buttonProps.title || '')}
-                    className={`${buttonProps.className || ''} ${
-                      activeFilter === buttonProps.title 
-                        ? 'bg-primary text-white border-primary' 
-                        : 'bg-transparent hover:bg-gray-100'
-                    } transition-colors duration-200`}
-                  >
-                    {buttonProps.title}
-                  </Button>
-                );
-              })}
+              {filters.map((filter, index) => (
+                <Button 
+                  key={index} 
+                  {...filter}
+                  onClick={() => handleFilterClick(filter.title || '')}
+                  className={`${filter.className || ''} ${
+                    activeFilter === filter.title 
+                      ? 'bg-primary text-white border-primary' 
+                      : 'bg-transparent hover:bg-gray-100'
+                  } transition-colors duration-200`}
+                >
+                  {filter.title}
+                </Button>
+              ))}
             </div>
           ) : (
             <div className="mb-12 p-4 bg-yellow-100 border border-yellow-300 rounded">
@@ -209,9 +205,11 @@ const FeaturedEvent: React.FC<FeaturedEvent> = ({
         <p className="mb-4 text-sm">{location}</p>
         <p className="line-clamp-3">{description}</p>
       </div>
-      <Button {...button} className="flex items-center justify-center gap-x-2">
-        {button.title}
-      </Button>
+      <a href={button.url || '#'}>
+        <Button {...button} className="flex items-center justify-center gap-x-2">
+          {button.title}
+        </Button>
+      </a>
     </div>
   );
 };
@@ -243,43 +241,39 @@ export const EventHeader1Defaults: Props = {
       variant: "secondary",
       size: "primary",
       title: "Save my spot",
+      url: "#",
     },
   },
   filters: [
     {
-      button: {
-        variant: "secondary",
-        title: "View all",
-        size: "sm",
-      },
+      variant: "secondary",
+      title: "View all",
+      size: "sm",
+      url: "#",
     },
     {
-      button: {
-        variant: "link",
-        title: "Category one",
-        size: "sm",
-      },
+      variant: "link",
+      title: "Category one",
+      size: "sm",
+      url: "#",
     },
     {
-      button: {
-        variant: "link",
-        title: "Category two",
-        size: "sm",
-      },
+      variant: "link",
+      title: "Category two",
+      size: "sm",
+      url: "#",
     },
     {
-      button: {
-        variant: "link",
-        title: "Category three",
-        size: "sm",
-      },
+      variant: "link",
+      title: "Category three",
+      size: "sm",
+      url: "#",
     },
     {
-      button: {
-        variant: "link",
-        title: "Category four",
-        size: "sm",
-      },
+      variant: "link",
+      title: "Category four",
+      size: "sm",
+      url: "#",
     },
   ],
   events: [
@@ -300,6 +294,7 @@ export const EventHeader1Defaults: Props = {
         variant: "secondary",
         size: "sm",
         title: "Save my spot",
+        url: "#",
       },
     },
     {
@@ -319,6 +314,7 @@ export const EventHeader1Defaults: Props = {
         variant: "secondary",
         size: "sm",
         title: "Save my spot",
+        url: "#",
       },
     },
     {
@@ -338,6 +334,7 @@ export const EventHeader1Defaults: Props = {
         variant: "secondary",
         size: "sm",
         title: "Save my spot",
+        url: "#",
       },
     },
   ],

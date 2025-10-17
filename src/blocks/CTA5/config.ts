@@ -63,24 +63,12 @@ export const CTA5Block: Block = {
           defaultValue: 'primary',
           options: [
             {
-              label: 'Primario',
+              label: 'Fondo Negro (Texto Blanco)',
               value: 'primary',
             },
             {
-              label: 'Secundario',
+              label: 'Fondo Transparente (Borde Blanco)',
               value: 'secondary',
-            },
-            {
-              label: 'Secundario Alternativo',
-              value: 'secondary-alt',
-            },
-            {
-              label: 'Fantasma',
-              value: 'ghost',
-            },
-            {
-              label: 'Enlace',
-              value: 'link',
             },
           ],
         },
