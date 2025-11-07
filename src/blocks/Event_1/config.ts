@@ -1,0 +1,178 @@
+import type { Block } from 'payload'
+
+export const Event1: Block = {
+  slug: 'event1',
+  dbName: 'evt_1',
+  interfaceName: 'Event1Block',
+  labels: {
+    singular: 'Event 1',
+    plural: 'Events 1',
+  },
+  fields: [
+    {
+      name: 'tagline',
+      type: 'text',
+      required: true,
+      label: 'Tagline',
+      defaultValue: 'Tagline',
+    },
+    {
+      name: 'heading',
+      type: 'text',
+      required: true,
+      label: 'Título Principal',
+      defaultValue: 'Events',
+    },
+    {
+      name: 'description',
+      type: 'textarea',
+      required: true,
+      label: 'Descripción',
+      defaultValue: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.',
+    },
+    {
+      name: 'tabs',
+      type: 'array',
+      label: 'Pestañas de Eventos',
+      minRows: 1,
+      fields: [
+        {
+          name: 'value',
+          type: 'text',
+          required: true,
+          label: 'Valor de la Pestaña',
+          defaultValue: 'view-all',
+        },
+        {
+          name: 'trigger',
+          type: 'text',
+          required: true,
+          label: 'Texto del Trigger',
+          defaultValue: 'View all',
+        },
+        {
+          name: 'content',
+          type: 'array',
+          label: 'Eventos de la Pestaña',
+          minRows: 1,
+          fields: [
+            {
+              name: 'url',
+              type: 'text',
+              required: true,
+              label: 'URL del Evento',
+              defaultValue: '#',
+            },
+            {
+              name: 'date',
+              type: 'group',
+              label: 'Fecha del Evento',
+              fields: [
+                {
+                  name: 'weekday',
+                  type: 'text',
+                  required: true,
+                  label: 'Día de la Semana',
+                  defaultValue: 'Fri',
+                },
+                {
+                  name: 'day',
+                  type: 'text',
+                  required: true,
+                  label: 'Día',
+                  defaultValue: '09',
+                },
+                {
+                  name: 'month',
+                  type: 'text',
+                  required: true,
+                  label: 'Mes',
+                  defaultValue: 'Feb',
+                },
+                {
+                  name: 'year',
+                  type: 'text',
+                  required: true,
+                  label: 'Año',
+                  defaultValue: '2024',
+                },
+              ],
+            },
+            {
+              name: 'title',
+              type: 'text',
+              required: true,
+              label: 'Título del Evento',
+              defaultValue: 'Event title heading',
+            },
+            {
+              name: 'status',
+              type: 'text',
+              label: 'Estado del Evento',
+            },
+            {
+              name: 'location',
+              type: 'text',
+              required: true,
+              label: 'Ubicación',
+              defaultValue: 'Location',
+            },
+            {
+              name: 'description',
+              type: 'textarea',
+              required: true,
+              label: 'Descripción del Evento',
+              defaultValue: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.',
+            },
+            {
+              name: 'button',
+              type: 'group',
+              label: 'Botón del Evento',
+              fields: [
+                {
+                  name: 'variant',
+                  type: 'select',
+                  required: true,
+                  label: 'Variante del Botón',
+                  options: [
+                    { label: 'Primary', value: 'primary' },
+                    { label: 'Secondary', value: 'secondary' },
+                    { label: 'Outline', value: 'outline' },
+                    { label: 'Ghost', value: 'ghost' },
+                  ],
+                  defaultValue: 'secondary',
+                },
+                {
+                  name: 'size',
+                  type: 'select',
+                  required: true,
+                  label: 'Tamaño del Botón',
+                  options: [
+                    { label: 'Small', value: 'sm' },
+                    { label: 'Medium', value: 'md' },
+                    { label: 'Large', value: 'lg' },
+                  ],
+                  defaultValue: 'sm',
+                },
+                {
+                  name: 'title',
+                  type: 'text',
+                  required: true,
+                  label: 'Texto del Botón',
+                  defaultValue: 'Save my spot',
+                },
+                {
+                  name: 'url',
+                  type: 'text',
+                  required: true,
+                  label: 'URL del Botón',
+                  defaultValue: '#',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+}

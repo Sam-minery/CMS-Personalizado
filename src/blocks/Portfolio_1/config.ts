@@ -1,0 +1,152 @@
+import type { Block } from 'payload'
+
+export const Portfolio1: Block = {
+  slug: 'portfolio1',
+  interfaceName: 'Portfolio1Block',
+  fields: [
+    {
+      name: 'tagline',
+      type: 'text',
+      required: true,
+      label: 'Etiqueta',
+      defaultValue: 'Portfolio',
+    },
+    {
+      name: 'heading',
+      type: 'text',
+      required: true,
+      label: 'Título Principal',
+      defaultValue: 'Short heading goes here',
+    },
+    {
+      name: 'description',
+      type: 'textarea',
+      required: true,
+      label: 'Descripción',
+      defaultValue: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    },
+    {
+      name: 'projects',
+      type: 'array',
+      label: 'Proyectos',
+      minRows: 1,
+      maxRows: 10,
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+          label: 'Título del Proyecto',
+          defaultValue: 'Project name here',
+        },
+        {
+          name: 'description',
+          type: 'textarea',
+          required: true,
+          label: 'Descripción del Proyecto',
+          defaultValue: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.',
+        },
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+          label: 'Imagen del Proyecto',
+        },
+        {
+          name: 'url',
+          type: 'text',
+          required: true,
+          label: 'URL del Proyecto',
+          defaultValue: '#',
+        },
+        {
+          name: 'button',
+          type: 'group',
+          label: 'Configuración del Botón',
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              required: true,
+              label: 'Texto del Botón',
+              defaultValue: 'View project',
+            },
+            {
+              name: 'variant',
+              type: 'select',
+              required: true,
+              label: 'Variante del Botón',
+              options: [
+                { label: 'Primary', value: 'primary' },
+                { label: 'Secondary', value: 'secondary' },
+                { label: 'Link', value: 'link' },
+                { label: 'Outline', value: 'outline' },
+              ],
+              defaultValue: 'link',
+            },
+            {
+              name: 'size',
+              type: 'select',
+              required: true,
+              label: 'Tamaño del Botón',
+              options: [
+                { label: 'Small', value: 'small' },
+                { label: 'Medium', value: 'medium' },
+                { label: 'Large', value: 'large' },
+                { label: 'Primary', value: 'primary' },
+                { label: 'Link', value: 'link' },
+              ],
+              defaultValue: 'link',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'button',
+      type: 'group',
+      label: 'Configuración del Botón Principal',
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+          label: 'Texto del Botón',
+          defaultValue: 'View all',
+        },
+        {
+          name: 'variant',
+          type: 'select',
+          required: true,
+          label: 'Variante del Botón',
+          options: [
+            { label: 'Primary', value: 'primary' },
+            { label: 'Secondary', value: 'secondary' },
+            { label: 'Link', value: 'link' },
+            { label: 'Outline', value: 'outline' },
+          ],
+          defaultValue: 'secondary',
+        },
+        {
+          name: 'size',
+          type: 'select',
+          required: true,
+          label: 'Tamaño del Botón',
+          options: [
+            { label: 'Small', value: 'small' },
+            { label: 'Medium', value: 'medium' },
+            { label: 'Large', value: 'large' },
+            { label: 'Primary', value: 'primary' },
+            { label: 'Link', value: 'link' },
+          ],
+          defaultValue: 'primary',
+        },
+      ],
+    },
+  ],
+  labels: {
+    plural: 'Portfolios 1',
+    singular: 'Portfolio 1',
+  },
+}
