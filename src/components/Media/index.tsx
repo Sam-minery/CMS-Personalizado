@@ -9,17 +9,28 @@ export const Media: React.FC<Props> = (props) => {
   const { className, htmlElement = 'div', resource } = props
 
   const isVideo = typeof resource === 'object' && resource?.mimeType?.includes('video')
-  const Tag = htmlElement || Fragment
+  const content = isVideo ? <VideoMedia {...props} /> : <ImageMedia {...props} />
 
+  if (htmlElement === null) {
+    return <Fragment>{content}</Fragment>
+  }
+
+  // Si htmlElement es un string, lo usamos como nombre de elemento HTML
+  if (typeof htmlElement === 'string') {
+    const Tag = htmlElement
+    return (
+      // @ts-expect-error - Dynamic element type is valid
+      <Tag className={className}>
+        {content}
+      </Tag>
+    )
+  }
+
+  // Si es un componente, lo usamos directamente
+  const Tag = htmlElement
   return (
-    <Tag
-      {...(htmlElement !== null
-        ? {
-            className,
-          }
-        : {})}
-    >
-      {isVideo ? <VideoMedia {...props} /> : <ImageMedia {...props} />}
+    <Tag className={className}>
+      {content}
     </Tag>
   )
 }

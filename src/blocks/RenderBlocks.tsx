@@ -51,6 +51,7 @@ import { Gallery19Block } from '@/blocks/Gallery_19/Component'
 import { Gallery27Block } from '@/blocks/Gallery_27/Component'
 import { Logo1Block } from '@/blocks/Logo_1/Component'
 import { Logo2Block } from '@/blocks/Logo_2/Component'
+import { LogoCloud } from '@/blocks/Logo_Cloud/Component'
 import { Team1 as Team1Block } from '@/blocks/Team1/Component'
 import { Team2 as Team2Block } from '@/blocks/Team2/Component'
 import { Timeline1Block } from '@/blocks/Timeline_1/Component'
@@ -60,6 +61,7 @@ import { Portfolio1 as Portfolio1Block } from '@/blocks/Portfolio_1/Component'
 import { Portfolio5 as Portfolio5Block } from '@/blocks/Portfolio_5/Component'
 import { FAQ2 as FAQ2Block } from '@/blocks/FAQ_2/Component'
 import { FAQ4 as FAQ4Block } from '@/blocks/FAQ_4/Component'
+import { FeaturesTertiary } from '@/blocks/Features_Tertiary/Component'
 import { PortfolioHeader1 as PortfolioHeader1Block } from '@/blocks/Portfolio_Header_1/Component'
 import { PortfolioHeader2 as PortfolioHeader2Block } from '@/blocks/Portfolio_Header_2/Component'
 import { EventItemHeader1 as EventItemHeader1Block } from '@/blocks/Event_Item_Header_1/Component'
@@ -95,6 +97,24 @@ import { Pulse_Beams } from '@/blocks/Pulse_Beams/Component'
 import { Background_Ripple_Effect } from '@/blocks/Background_Ripple_Effect/Component'
 import { Glowing_Background_Star_Card } from '@/blocks/Glowing_Background_Star_Card/Component'
 import { Text_Reveal_Card } from '@/blocks/Text_Reveal_Card/Component'
+import { CardStackDemo } from '@/blocks/Card_Stack/Component'
+import { HoverEffect } from '@/blocks/Hover_Effect/Component'
+import { SVGMaskEffectDemo } from '@/blocks/SVG_Mask_Effect/Component'
+import { InfiniteMovingCardsDemo } from '@/blocks/Infinite_Moving_Cards/Component'
+import { BackgroundBeamsDemo } from '@/blocks/Background_Beams/Component'
+import { ContainerScrollAnimationBlock as ContainerScrollAnimationComponent } from '@/blocks/Container_Scroll_Animation/Component'
+import { LampSectionHeader } from '@/blocks/Lamp_Section_Header/Component'
+import { SparklesPreview } from '@/blocks/Sparkles/Component'
+import { EvervaultCardDemo } from '@/blocks/Evervault_Card/Component'
+import { PixelatedCanvasDemo } from '@/blocks/Pixelated_Canvas/Component'
+import { LayoutGridDemo } from '@/blocks/Layout_Grid/Component'
+import { WavyBackgroundDemo } from '@/blocks/Wavy_Background/Component'
+import { FocusCardsDemo } from '@/blocks/Focus_Cards/Component'
+import { WorldMapDemo } from '@/blocks/World_Map/Component'
+import { ThreeDMarqueeDemo } from '@/blocks/3D_Marquee/Component'
+import { CanvasRevealEffectDemo } from '@/blocks/Canvas_Reveal_Effect/Component'
+import { GlareCardDemo } from '@/blocks/Glare_Card/Component'
+import { AnimatedTestimonialsDemo } from '@/blocks/Animated_Testimonials/Component'
 
 const blockComponents = {
   animatedPin3D: AnimatedPin3DBlock,
@@ -139,6 +159,7 @@ const blockComponents = {
   gallery27: Gallery27Block,
   logo1: Logo1Block,
   logo2: Logo2Block,
+  logoCloud: LogoCloud,
   team1: Team1Block,
   team2: Team2Block,
   longContent1: LongContent1Block,
@@ -156,6 +177,7 @@ const blockComponents = {
   portfolio5: Portfolio5Block,
   faq2: FAQ2Block,
   faq4: FAQ4Block,
+  featuresTertiary: FeaturesTertiary,
   portfolioHeader1: PortfolioHeader1Block,
   portfolioHeader2: PortfolioHeader2Block,
   eventItemHdr1: EventItemHeader1Block,
@@ -190,6 +212,24 @@ const blockComponents = {
   backgroundRippleEffect: Background_Ripple_Effect,
   GlowingStarCard: Glowing_Background_Star_Card,
   TextRevealCard: Text_Reveal_Card,
+  cardStack: CardStackDemo,
+  hoverEffect: HoverEffect,
+  svgMaskEffect: SVGMaskEffectDemo,
+  infiniteMovingCards: InfiniteMovingCardsDemo,
+  backgroundBeams: BackgroundBeamsDemo,
+  containerScrollAnimation: ContainerScrollAnimationComponent,
+  lampSectionHeader: LampSectionHeader,
+  sparkles: SparklesPreview,
+  evervaultCard: EvervaultCardDemo,
+  pixelatedCanvas: PixelatedCanvasDemo,
+  layoutGrid: LayoutGridDemo,
+  wavyBackground: WavyBackgroundDemo,
+  focusCards: FocusCardsDemo,
+  worldMap: WorldMapDemo,
+  '3dMarquee': ThreeDMarqueeDemo,
+  canvasRevealEffect: CanvasRevealEffectDemo,
+  glareCard: GlareCardDemo,
+  animatedTestimonials: AnimatedTestimonialsDemo,
 }
 
 export const RenderBlocks: React.FC<{
@@ -211,7 +251,7 @@ export const RenderBlocks: React.FC<{
             if (Block) {
               return (
                 <div className="my-16" key={index}>
-                  {/* @ts-expect-error - Block components have different prop types */}
+                  {/* @ts-ignore - Block components have different prop types */}
                   <Block {...block} />
                 </div>
               )

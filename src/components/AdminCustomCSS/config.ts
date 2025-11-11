@@ -497,5 +497,101 @@ export const blockConfigs: BlockConfig[] = [
     selector: 'Links 4',
     imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/66833d6b1576e1b5e14cb2f7_QAManczCyFjSG2XzrmkczNyXoRPAZiLx70nUiRBIWHY.png',
     className: 'custom-links_4-preview'
+  },
+  {
+    name: 'Lamp Section Header',
+    selector: 'Lamp Section Header',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/cloudinary_bkp/Lamp_hlq3ln.png',
+    className: 'custom-lamp-section-header-preview'
+  },
+  {
+    name: 'Infinite Moving Cards',
+    selector: 'Infinite Moving Cards',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/cloudinary_bkp/Infinite_Moving_Cards_evhzur.png',
+    className: 'custom-infinite-moving-cards-preview'
+  },
+  {
+    name: 'Sparkles',
+    selector: 'Sparkles',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/cloudinary_bkp/stars_sxle3d.png',
+    className: 'custom-sparkles-preview'
+  },
+  {
+    name: 'SVG Mask Effect',
+    selector: 'SVG Mask Effect',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/cloudinary_bkp/SVG_Mask_Effect_idbmqx.png',
+    className: 'custom-svg-mask-effect-preview'
+  },
+  {
+    name: 'Hover Effect',
+    selector: 'Hover Effect',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/cloudinary_bkp/Evervault_Card_a1qko9.png',
+    className: 'custom-hover-effect-preview'
+  },
+  {
+    name: 'Card Stack',
+    selector: 'Card Stack',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/cloudinary_bkp/Card_Stack_bdxdhf.png',
+    className: 'custom-card-stack-preview'
+  },
+  {
+    name: 'Container Scroll Animation',
+    selector: 'Container Scroll Animation',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/cloudinary_bkp/Hero_Scroll_xzhqrj.png',
+    className: 'custom-container-scroll-animation-preview'
+  },
+  {
+    name: 'Pixelated Canvas',
+    selector: 'Pixelated Canvas',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/pixelated-canvas.webp',
+    className: 'custom-pixelated-canvas-preview'
+  },
+  {
+    name: 'Layout Grid',
+    selector: 'Layout Grid',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/layout-grid.png',
+    className: 'custom-layout-grid-preview'
+  },
+  {
+    name: 'Wavy Background',
+    selector: 'Wavy Background',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/wavy-background.png',
+    className: 'custom-wavy-background-preview'
+  },
+  {
+    name: 'Focus Cards',
+    selector: 'Focus Cards',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/focus-cards.webp',
+    className: 'custom-focus-cards-preview'
+  },
+  {
+    name: 'World Map',
+    selector: 'World Map',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/world-map.webp',
+    className: 'custom-world-map-preview'
+  },
+  {
+    name: '3D Marquee',
+    selector: '3D Marquee',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/3d-marquee.webp',
+    className: 'custom-3d-marquee-preview'
+  },
+  {
+    name: 'Canvas Reveal Effect',
+    selector: 'Canvas Reveal Effect',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/canvas-reveal-effect.png',
+    className: 'custom-canvas-reveal-effect-preview'
+  },
+  {
+    name: 'Glare Card',
+    selector: 'Glare Card',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=1080/https://assets.aceternity.com/glare-card.png',
+    className: 'custom-glare-card-preview'
+  },
+  {
+    name: 'Animated Testimonials',
+    selector: 'Animated Testimonials',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=1080/https://assets.aceternity.com/animated-testimonials.webp',
+    className: 'custom-animated-testimonials-preview'
   }
 ]

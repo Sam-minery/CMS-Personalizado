@@ -1,0 +1,119 @@
+"use client"
+
+import React from 'react'
+import { InfiniteMovingCards as InfiniteMovingCardsUI } from '@/components/ui/infinite-moving-cards'
+
+export type InfiniteMovingCardsItem = {
+  quote: string
+  name: string
+  title: string
+}
+
+type ColorScheme =
+  | 'slate'
+  | 'blue'
+  | 'red'
+  | 'green'
+  | 'purple'
+  | 'pink'
+  | 'orange'
+  | 'emerald'
+  | 'amber'
+  | 'indigo'
+
+type Props = {
+  colorScheme?: ColorScheme
+  height?: string
+  direction?: 'left' | 'right'
+  speed?: 'fast' | 'normal' | 'slow'
+  items?: InfiniteMovingCardsItem[]
+}
+
+// Mapa de colores para diferentes esquemas
+const colorSchemes = {
+  slate: {
+    border: 'border-slate-200 dark:border-slate-700',
+    bg: 'bg-slate-50 dark:bg-slate-900',
+    bgGradient: 'bg-[linear-gradient(180deg,#f8fafc,#f1f5f9)] dark:bg-[linear-gradient(180deg,#1e293b,#0f172a)]',
+  },
+  blue: {
+    border: 'border-blue-200 dark:border-blue-700',
+    bg: 'bg-blue-50 dark:bg-blue-900',
+    bgGradient: 'bg-[linear-gradient(180deg,#eff6ff,#dbeafe)] dark:bg-[linear-gradient(180deg,#1e3a8a,#1e40af)]',
+  },
+  red: {
+    border: 'border-red-200 dark:border-red-700',
+    bg: 'bg-red-50 dark:bg-red-900',
+    bgGradient: 'bg-[linear-gradient(180deg,#fef2f2,#fee2e2)] dark:bg-[linear-gradient(180deg,#991b1b,#dc2626)]',
+  },
+  green: {
+    border: 'border-green-200 dark:border-green-700',
+    bg: 'bg-green-50 dark:bg-green-900',
+    bgGradient: 'bg-[linear-gradient(180deg,#f0fdf4,#dcfce7)] dark:bg-[linear-gradient(180deg,#14532d,#166534)]',
+  },
+  purple: {
+    border: 'border-purple-200 dark:border-purple-700',
+    bg: 'bg-purple-50 dark:bg-purple-900',
+    bgGradient: 'bg-[linear-gradient(180deg,#faf5ff,#f3e8ff)] dark:bg-[linear-gradient(180deg,#581c87,#7c3aed)]',
+  },
+  pink: {
+    border: 'border-pink-200 dark:border-pink-700',
+    bg: 'bg-pink-50 dark:bg-pink-900',
+    bgGradient: 'bg-[linear-gradient(180deg,#fdf2f8,#fce7f3)] dark:bg-[linear-gradient(180deg,#831843,#be185d)]',
+  },
+  orange: {
+    border: 'border-orange-200 dark:border-orange-700',
+    bg: 'bg-orange-50 dark:bg-orange-900',
+    bgGradient: 'bg-[linear-gradient(180deg,#fff7ed,#ffedd5)] dark:bg-[linear-gradient(180deg,#7c2d12,#c2410c)]',
+  },
+  emerald: {
+    border: 'border-emerald-200 dark:border-emerald-700',
+    bg: 'bg-emerald-50 dark:bg-emerald-900',
+    bgGradient: 'bg-[linear-gradient(180deg,#ecfdf5,#d1fae5)] dark:bg-[linear-gradient(180deg,#064e3b,#065f46)]',
+  },
+  amber: {
+    border: 'border-amber-200 dark:border-amber-700',
+    bg: 'bg-amber-50 dark:bg-amber-900',
+    bgGradient: 'bg-[linear-gradient(180deg,#fffbeb,#fef3c7)] dark:bg-[linear-gradient(180deg,#78350f,#d97706)]',
+  },
+  indigo: {
+    border: 'border-indigo-200 dark:border-indigo-700',
+    bg: 'bg-indigo-50 dark:bg-indigo-900',
+    bgGradient: 'bg-[linear-gradient(180deg,#eef2ff,#e0e7ff)] dark:bg-[linear-gradient(180deg,#1e1b4b,#312e81)]',
+  },
+}
+
+export const InfiniteMovingCardsDemo: React.FC<Props> = (props) => {
+  const {
+    colorScheme = 'slate',
+    height = '40rem',
+    direction = 'left',
+    speed = 'normal',
+    items = [],
+  } = props
+
+  const colors = colorSchemes[colorScheme] || colorSchemes.slate
+  const cardClassName = `${colors.border} ${colors.bgGradient}`
+
+  if (items.length === 0) {
+    return (
+      <div className="text-neutral-500 text-center">
+        No hay elementos para mostrar
+      </div>
+    )
+  }
+
+  return (
+    <div
+      className="rounded-md flex flex-col antialiased bg-white dark:bg-black dark:bg-grid-white/[0.05] items-center justify-center relative overflow-hidden"
+      style={{ height }}
+    >
+      <InfiniteMovingCardsUI
+        items={items}
+        direction={direction}
+        speed={speed}
+        cardClassName={cardClassName}
+      />
+    </div>
+  )
+}

@@ -43,6 +43,7 @@ import { Gallery19 } from '../../blocks/Gallery_19/config'
 import { Gallery27 } from '../../blocks/Gallery_27/config'
 import { Logo1 } from '../../blocks/Logo_1/config'
 import { Logo2 } from '../../blocks/Logo_2/config'
+import { LogoCloudBlock } from '../../blocks/Logo_Cloud/config'
 import { LongContent1 } from '../../blocks/Long_Content_1/config'
 import { LongContent2 } from '../../blocks/Long_Content_2/config'
 import { LongContent3 } from '../../blocks/Long_Content_3/config'
@@ -81,6 +82,7 @@ import { Links1 } from '../../blocks/Links_1/config'
 import { Links4 } from '../../blocks/Links_4/config'
 import { FAQ2 } from '../../blocks/FAQ_2/config'
 import { FAQ4 } from '../../blocks/FAQ_4/config'
+import { FeaturesTertiaryBlock } from '../../blocks/Features_Tertiary/config'
 import { Navbar1Block } from '../../blocks/Navbar1/config'
 import { Pricing1Block } from '../../blocks/Pricing1/config'
 import { Testimonial1Block } from '../../blocks/Testimonial1/config'
@@ -95,6 +97,24 @@ import { Pulse_Beams } from '../../blocks/Pulse_Beams'
 import { Background_Ripple_Effect } from '../../blocks/Background_Ripple_Effect'
 import { Glowing_Background_Star_Card } from '../../blocks/Glowing_Background_Star_Card'
 import { Text_Reveal_Card } from '../../blocks/Text_Reveal_Card'
+import { CardStackBlock } from '../../blocks/Card_Stack/config'
+import { HoverEffectBlock } from '../../blocks/Hover_Effect/config'
+import { SVGMaskEffectBlock } from '../../blocks/SVG_Mask_Effect/config'
+import { InfiniteMovingCardsBlock } from '../../blocks/Infinite_Moving_Cards/config'
+import { BackgroundBeamsBlock } from '../../blocks/Background_Beams/config'
+import { ContainerScrollAnimationBlock } from '../../blocks/Container_Scroll_Animation/config'
+import { LampSectionHeaderBlock } from '../../blocks/Lamp_Section_Header/config'
+import { SparklesBlock } from '../../blocks/Sparkles/config'
+import { EvervaultCardBlock } from '../../blocks/Evervault_Card/config'
+import { PixelatedCanvasBlock } from '../../blocks/Pixelated_Canvas/config'
+import { LayoutGridBlock } from '../../blocks/Layout_Grid/config'
+import { WavyBackgroundBlock } from '../../blocks/Wavy_Background/config'
+import { FocusCardsBlock } from '../../blocks/Focus_Cards/config'
+import { WorldMapBlock } from '../../blocks/World_Map/config'
+import { ThreeDMarqueeBlock } from '../../blocks/3D_Marquee/config'
+import { CanvasRevealEffectBlock } from '../../blocks/Canvas_Reveal_Effect/config'
+import { GlareCardBlock } from '../../blocks/Glare_Card/config'
+import { AnimatedTestimonialsBlock } from '../../blocks/Animated_Testimonials/config'
 import { hero } from '@/heros/config'
 import { slugField } from '@/fields/slug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -166,6 +186,20 @@ export const Pages: CollectionConfig<'pages'> = {
               blocks: [
                 AnimatedPin3DBlock,
                 Archive,
+                BackgroundBeamsBlock,
+                LampSectionHeaderBlock,
+                ContainerScrollAnimationBlock,
+                SparklesBlock,
+                EvervaultCardBlock,
+                PixelatedCanvasBlock,
+                LayoutGridBlock,
+                WavyBackgroundBlock,
+                FocusCardsBlock,
+                WorldMapBlock,
+                ThreeDMarqueeBlock,
+                CanvasRevealEffectBlock,
+                GlareCardBlock,
+                AnimatedTestimonialsBlock,
                 Background_Ripple_Effect,
                 Banner1Block,
                 Banner2Block,
@@ -212,6 +246,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 FAQ2,
                 FAQ4,
                 FAQ5Block,
+                FeaturesTertiaryBlock,
                 Footer1Block,
                 Footer5Block,
                 FormBlock,
@@ -227,6 +262,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 Links4,
                 Logo1,
                 Logo2,
+                LogoCloudBlock,
                 LongContent1,
                 LongContent2,
                 LongContent3,
@@ -254,9 +290,13 @@ export const Pages: CollectionConfig<'pages'> = {
                 Testimonial5Block,
                 Testimonial6Block,
                 Text_Reveal_Card,
+                CardStackBlock,
                 Timeline1,
                 Timeline3,
                 Timeline7,
+                HoverEffectBlock,
+                SVGMaskEffectBlock,
+                InfiniteMovingCardsBlock,
               ],
               required: true,
               admin: {

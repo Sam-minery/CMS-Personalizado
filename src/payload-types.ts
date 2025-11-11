@@ -214,6 +214,20 @@ export interface Page {
         blockType: 'animatedPin3D';
       }
     | ArchiveBlock
+    | BackgroundBeamsBlock
+    | LampSectionHeaderBlock
+    | ContainerScrollAnimationBlock
+    | SparklesBlock
+    | EvervaultCardBlock
+    | PixelatedCanvasBlock
+    | LayoutGridBlock
+    | WavyBackgroundBlock
+    | FocusCardsBlock
+    | WorldMapBlock
+    | ThreeDMarqueeBlock
+    | CanvasRevealEffectBlock
+    | GlareCardBlock
+    | AnimatedTestimonialsBlock
     | {
         title: string;
         subtitle?: string | null;
@@ -324,6 +338,7 @@ export interface Page {
     | FAQ2Block
     | FAQ4Block
     | FAQ5Block
+    | FeaturesTertiaryBlock
     | Footer1Block
     | Footer5Block
     | FormBlock
@@ -364,6 +379,7 @@ export interface Page {
     | Links4Block
     | Logo1Block
     | Logo2Block
+    | LogoCloudBlock
     | LongContent1Block
     | LongContent2Block
     | LongContent3Block
@@ -496,9 +512,13 @@ export interface Page {
         blockName?: string | null;
         blockType: 'TextRevealCard';
       }
+    | CardStackBlock
     | Timeline1Block
     | Timeline3Block
     | Timeline7Block
+    | HoverEffectBlock
+    | SVGMaskEffectBlock
+    | InfiniteMovingCardsBlock
   )[];
   meta?: {
     title?: string | null;
@@ -733,6 +753,551 @@ export interface ArchiveBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'archive';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BackgroundBeamsBlock".
+ */
+export interface BackgroundBeamsBlock {
+  title: string;
+  description?: string | null;
+  placeholder?: string | null;
+  backgroundColor?: ('neutral-950' | 'slate-950' | 'zinc-950' | 'gray-950') | null;
+  height?: ('30rem' | '40rem' | '50rem' | '60rem') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'backgroundBeams';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LampSectionHeaderBlock".
+ */
+export interface LampSectionHeaderBlock {
+  titleTop: string;
+  titleBottom: string;
+  backgroundColor?: ('slate-950' | 'zinc-950' | 'neutral-950' | 'gray-950') | null;
+  hue?: ('cyan' | 'emerald' | 'violet' | 'fuchsia' | 'sky' | 'indigo' | 'amber' | 'rose') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'lampSectionHeader';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContainerScrollAnimationBlock".
+ */
+export interface ContainerScrollAnimationBlock {
+  heading: string;
+  highlight: string;
+  /**
+   * Controla la altura predefinida del contenedor/animación
+   */
+  size: 'auto' | 'sm' | 'md' | 'lg' | 'xl';
+  /**
+   * Selecciona la imagen desde la biblioteca de medios
+   */
+  media: number | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'containerScrollAnimation';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SparklesBlock".
+ */
+export interface SparklesBlock {
+  title: string;
+  backgroundColor?: ('black' | 'slate-950' | 'zinc-950' | 'neutral-950' | 'gray-950') | null;
+  height?: ('30rem' | '40rem' | '50rem' | '60rem') | null;
+  /**
+   * Tamaño mínimo de las partículas sparkles
+   */
+  minSize?: number | null;
+  /**
+   * Tamaño máximo de las partículas sparkles
+   */
+  maxSize?: number | null;
+  /**
+   * Cantidad de partículas (mayor número = más partículas)
+   */
+  particleDensity?: number | null;
+  /**
+   * Color hexadecimal de las partículas (ej: #FFFFFF, #FF0000)
+   */
+  particleColor?: string | null;
+  /**
+   * Mostrar las líneas de gradiente debajo del título
+   */
+  showGradients?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'sparkles';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EvervaultCardBlock".
+ */
+export interface EvervaultCardBlock {
+  /**
+   * Cómo se mostrarán las múltiples cards
+   */
+  layout?: ('grid' | 'flex-horizontal' | 'flex-vertical') | null;
+  /**
+   * Número de columnas cuando el diseño es Grid
+   */
+  gridColumns?: ('1' | '2' | '3' | '4') | null;
+  cards?:
+    | {
+        /**
+         * Texto que se muestra en el centro de la card
+         */
+        text: string;
+        /**
+         * Título que aparece debajo de la card
+         */
+        title?: string | null;
+        /**
+         * Texto del badge/botón
+         */
+        badgeText?: string | null;
+        height?: ('h-[25rem]' | 'h-[30rem]' | 'h-[35rem]' | 'h-[40rem]') | null;
+        maxWidth?: ('max-w-sm' | 'max-w-md' | 'max-w-lg' | 'max-w-xl') | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'evervaultCard';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PixelatedCanvasBlock".
+ */
+export interface PixelatedCanvasBlock {
+  /**
+   * Imagen a renderizar en formato pixelado
+   */
+  media: number | Media;
+  /**
+   * Ancho del canvas en píxeles
+   */
+  width?: number | null;
+  /**
+   * Altura del canvas en píxeles
+   */
+  height?: number | null;
+  /**
+   * Tamaño de cada celda (en píxeles CSS) usada para muestreo y espaciado
+   */
+  cellSize?: number | null;
+  /**
+   * Tamaño del punto como fracción del tamaño de celda (0..1)
+   */
+  dotScale?: number | null;
+  /**
+   * Forma del punto dibujado para cada muestra
+   */
+  shape?: ('circle' | 'square') | null;
+  /**
+   * Color de fondo del canvas (hexadecimal, ej: #000000)
+   */
+  backgroundColor?: string | null;
+  /**
+   * 0..1. Valor más alto elimina más puntos en regiones de bajo contraste
+   */
+  dropoutStrength?: number | null;
+  /**
+   * Habilitar animación de distorsión interactiva con el mouse
+   */
+  interactive?: boolean | null;
+  /**
+   * Desplazamiento máximo por punto (px) debido a la distorsión
+   */
+  distortionStrength?: number | null;
+  /**
+   * Radio (px) alrededor del puntero que influye en la distorsión
+   */
+  distortionRadius?: number | null;
+  /**
+   * Cómo se mueven los píxeles cerca del puntero
+   */
+  distortionMode?: ('repel' | 'attract' | 'swirl') | null;
+  /**
+   * 0..1 factor de suavizado para el seguimiento del puntero
+   */
+  followSpeed?: number | null;
+  /**
+   * Amplitud del movimiento aleatorio para puntos cerca del puntero
+   */
+  jitterStrength?: number | null;
+  /**
+   * Factor de velocidad para el movimiento aleatorio
+   */
+  jitterSpeed?: number | null;
+  /**
+   * Promediar múltiples muestras por celda en lugar de una sola muestra central
+   */
+  sampleAverage?: boolean | null;
+  /**
+   * Aplicar un tinte de color (ej: #0ea5e9 o rgb(14,165,233))
+   */
+  tintColor?: string | null;
+  /**
+   * 0..1 cantidad de mezcla de tinte con colores originales
+   */
+  tintStrength?: number | null;
+  /**
+   * Clases CSS adicionales para el canvas
+   */
+  className?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'pixelatedCanvas';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LayoutGridBlock".
+ */
+export interface LayoutGridBlock {
+  /**
+   * Altura del contenedor principal
+   */
+  height?: ('h-auto' | 'h-screen' | 'h-[50vh]' | 'h-[75vh]') | null;
+  /**
+   * Padding vertical del contenedor
+   */
+  padding?: ('py-0' | 'py-10' | 'py-20' | 'py-32') | null;
+  cards?:
+    | {
+        /**
+         * Imagen que se muestra como thumbnail
+         */
+        thumbnail: number | Media;
+        /**
+         * Título que se muestra cuando la tarjeta está seleccionada
+         */
+        title: string;
+        /**
+         * Subtítulo opcional
+         */
+        subtitle?: string | null;
+        /**
+         * Texto descriptivo que se muestra cuando la tarjeta está seleccionada
+         */
+        description: string;
+        /**
+         * Ancho de la tarjeta en el grid
+         */
+        className?: ('md:col-span-1' | 'md:col-span-2') | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layoutGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WavyBackgroundBlock".
+ */
+export interface WavyBackgroundBlock {
+  /**
+   * Título grande que se muestra sobre el fondo ondulado
+   */
+  title: string;
+  /**
+   * Texto descriptivo que se muestra debajo del título
+   */
+  description?: string | null;
+  /**
+   * Altura del componente
+   */
+  height?: ('h-screen' | 'h-auto' | 'h-[50vh]' | 'h-[75vh]' | 'h-[90vh]') | null;
+  /**
+   * Padding inferior del contenedor de contenido
+   */
+  padding?: ('pb-0' | 'pb-20' | 'pb-40' | 'pb-60') | null;
+  /**
+   * Ancho máximo del contenedor de contenido
+   */
+  maxWidth?: ('max-w-2xl' | 'max-w-4xl' | 'max-w-6xl' | 'max-w-7xl' | 'max-w-full') | null;
+  /**
+   * Velocidad de animación de las ondas
+   */
+  speed?: ('slow' | 'fast') | null;
+  /**
+   * Opacidad de las ondas (0 = transparente, 1 = opaco)
+   */
+  waveOpacity?: number | null;
+  /**
+   * Nivel de desenfoque aplicado a las ondas
+   */
+  blur?: number | null;
+  /**
+   * Ancho de las líneas de las ondas
+   */
+  waveWidth?: number | null;
+  /**
+   * Color de fondo del canvas (hex, rgb, o nombre de color)
+   */
+  backgroundFill?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'wavyBackground';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FocusCardsBlock".
+ */
+export interface FocusCardsBlock {
+  cards?:
+    | {
+        /**
+         * Título que se muestra cuando se hace hover sobre la tarjeta
+         */
+        title: string;
+        /**
+         * Imagen de la tarjeta
+         */
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'focusCards';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorldMapBlock".
+ */
+export interface WorldMapBlock {
+  /**
+   * Título principal que se muestra sobre el mapa
+   */
+  title: string;
+  /**
+   * Texto que se anima letra por letra en el título
+   */
+  titleHighlight?: string | null;
+  /**
+   * Texto descriptivo que se muestra debajo del título
+   */
+  description?: string | null;
+  /**
+   * Define las conexiones entre puntos en el mapa mundial
+   */
+  dots?:
+    | {
+        start: {
+          /**
+           * Latitud del punto de inicio (ej: 64.2008 para Alaska)
+           */
+          lat: number;
+          /**
+           * Longitud del punto de inicio (ej: -149.4937 para Alaska)
+           */
+          lng: number;
+          /**
+           * Nombre del lugar para referencia
+           */
+          label?: string | null;
+        };
+        end: {
+          /**
+           * Latitud del punto de destino
+           */
+          lat: number;
+          /**
+           * Longitud del punto de destino
+           */
+          lng: number;
+          /**
+           * Nombre del lugar para referencia
+           */
+          label?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Color hexadecimal de las líneas de conexión (ej: #0ea5e9)
+   */
+  lineColor?: string | null;
+  /**
+   * Espaciado vertical del contenedor
+   */
+  padding?: ('py-0' | 'py-20' | 'py-40' | 'py-60') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'worldMap';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ThreeDMarqueeBlock".
+ */
+export interface ThreeDMarqueeBlock {
+  /**
+   * Agrega imágenes que se mostrarán en el efecto 3D Marquee. Se recomienda agregar múltiples imágenes para un mejor efecto visual.
+   */
+  images: {
+    /**
+     * Imagen para el marquee 3D
+     */
+    image: number | Media;
+    id?: string | null;
+  }[];
+  /**
+   * Espaciado vertical del contenedor
+   */
+  padding?: ('my-0' | 'my-5' | 'my-10' | 'my-20') | null;
+  /**
+   * Color de fondo del contenedor
+   */
+  backgroundColor?: ('bg-gray-950/5' | 'bg-white' | 'bg-transparent' | 'bg-black') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: '3dMarquee';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CanvasRevealEffectBlock".
+ */
+export interface CanvasRevealEffectBlock {
+  /**
+   * Agrega tarjetas con efecto Canvas Reveal. Cada tarjeta mostrará una animación al pasar el mouse.
+   */
+  cards: {
+    /**
+     * Título que se mostrará en la tarjeta
+     */
+    title: string;
+    /**
+     * Velocidad de la animación (0.1 = más lento, 10 = más rápido). Valores recomendados: 3-6
+     */
+    animationSpeed?: number | null;
+    /**
+     * Clase CSS para el color de fondo del efecto (ej: bg-emerald-900, bg-black, bg-sky-600)
+     */
+    containerClassName?: string | null;
+    /**
+     * Colores RGB para el efecto. Puedes agregar 1-3 colores. Cada color se define con valores R, G, B (0-255)
+     */
+    colors?:
+      | {
+          /**
+           * Valor de rojo (0-255)
+           */
+          r: number;
+          /**
+           * Valor de verde (0-255)
+           */
+          g: number;
+          /**
+           * Valor de azul (0-255)
+           */
+          b: number;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Tamaño de los puntos en el efecto (por defecto: 3). Valores recomendados: 2-5
+     */
+    dotSize?: number | null;
+    /**
+     * Muestra un gradiente radial para un efecto de desvanecimiento más suave
+     */
+    showRadialGradient?: boolean | null;
+    id?: string | null;
+  }[];
+  /**
+   * Espaciado vertical del contenedor
+   */
+  padding?: ('py-0' | 'py-10' | 'py-20' | 'py-40') | null;
+  /**
+   * Color de fondo del contenedor principal
+   */
+  backgroundColor?: ('bg-white dark:bg-black' | 'bg-white' | 'bg-black' | 'bg-transparent') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'canvasRevealEffect';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GlareCardBlock".
+ */
+export interface GlareCardBlock {
+  /**
+   * Agrega tarjetas con efecto Glare. Cada tarjeta puede ser de tipo icono, imagen o texto.
+   */
+  cards: {
+    /**
+     * Selecciona el tipo de contenido para esta tarjeta
+     */
+    cardType: 'icon' | 'image' | 'text';
+    /**
+     * Imagen para la tarjeta (solo para tipo imagen)
+     */
+    image?: (number | null) | Media;
+    /**
+     * Título que se mostrará en la tarjeta (solo para tipo texto)
+     */
+    title?: string | null;
+    /**
+     * Descripción que se mostrará en la tarjeta (solo para tipo texto)
+     */
+    description?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * Número de columnas en el grid. En móvil siempre se mostrará 1 columna.
+   */
+  gridCols?: ('1' | '2' | '3' | '4') | null;
+  /**
+   * Espaciado vertical del contenedor
+   */
+  padding?: ('py-0' | 'py-10' | 'py-20' | 'py-40') | null;
+  /**
+   * Color de fondo del contenedor principal
+   */
+  backgroundColor?: ('bg-white dark:bg-black' | 'bg-white' | 'bg-black' | 'bg-transparent') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'glareCard';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AnimatedTestimonialsBlock".
+ */
+export interface AnimatedTestimonialsBlock {
+  /**
+   * Agrega testimonios con animación. Cada testimonio incluye una cita, nombre, designación e imagen.
+   */
+  testimonials: {
+    /**
+     * El testimonio o cita del cliente
+     */
+    quote: string;
+    /**
+     * Nombre completo de la persona
+     */
+    name: string;
+    /**
+     * Cargo o posición (ej: "Product Manager at TechFlow")
+     */
+    designation: string;
+    /**
+     * Foto de perfil de la persona
+     */
+    image: number | Media;
+    id?: string | null;
+  }[];
+  /**
+   * Activa la reproducción automática de testimonios cada 5 segundos
+   */
+  autoplay?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'animatedTestimonials';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2732,6 +3297,65 @@ export interface FAQ5Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeaturesTertiaryBlock".
+ */
+export interface FeaturesTertiaryBlock {
+  showStyleOne?: boolean | null;
+  showStyleTwo?: boolean | null;
+  showStyleThree?: boolean | null;
+  showStyleFour?: boolean | null;
+  features?:
+    | {
+        title: string;
+        description: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Elementos que aparecen en la lista animada (izquierda-arriba)
+   */
+  styleOneItems?:
+    | {
+        icon?: (number | null) | Media;
+        title: string;
+        description: string;
+        badgeText?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  galleryImages?:
+    | {
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  styleThreePills?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  styleFourItems?:
+    | {
+        title: string;
+        description: string;
+        color?: ('blue' | 'green' | 'indigo' | 'neutral' | 'purple') | null;
+        tags?:
+          | {
+              text: string;
+              icon?: (number | null) | Media;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featuresTertiary';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Footer1Block".
  */
 export interface Footer1Block {
@@ -3734,6 +4358,24 @@ export interface Logo2Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LogoCloudBlock".
+ */
+export interface LogoCloudBlock {
+  heading: string;
+  description?: string | null;
+  logos?:
+    | {
+        image: number | Media;
+        title?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'logoCloud';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "LongContent1Block".
  */
 export interface LongContent1Block {
@@ -4723,6 +5365,27 @@ export interface Testimonial6Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardStackBlock".
+ */
+export interface CardStackBlock {
+  height?: ('h-[30rem]' | 'h-[40rem]' | 'h-[50rem]' | 'h-auto') | null;
+  cards?:
+    | {
+        name: string;
+        designation: string;
+        /**
+         * Escribe el contenido. Usa **texto** para resaltar palabras o frases.
+         */
+        content: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cardStack';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Timeline1Block".
  */
 export interface Timeline1Block {
@@ -4836,6 +5499,69 @@ export interface Timeline7Block {
   id?: string | null;
   blockName?: string | null;
   blockType: 'timeline7';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HoverEffectBlock".
+ */
+export interface HoverEffectBlock {
+  colorScheme?:
+    | ('slate' | 'blue' | 'red' | 'green' | 'purple' | 'pink' | 'orange' | 'emerald' | 'amber' | 'indigo')
+    | null;
+  projects?:
+    | {
+        title: string;
+        description: string;
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'hoverEffect';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SVGMaskEffectBlock".
+ */
+export interface SVGMaskEffectBlock {
+  title: string;
+  highlightedText1?: string | null;
+  highlightedText2?: string | null;
+  additionalText?: string | null;
+  revealText: string;
+  height?: ('30rem' | '40rem' | '50rem' | '60rem') | null;
+  textSize?: ('2xl' | '3xl' | '4xl' | '5xl' | '6xl') | null;
+  /**
+   * Imagen que se revelará con el efecto de máscara. Si no se selecciona, se usará un fondo sólido.
+   */
+  backgroundImage?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'svgMaskEffect';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InfiniteMovingCardsBlock".
+ */
+export interface InfiniteMovingCardsBlock {
+  colorScheme?:
+    | ('slate' | 'blue' | 'red' | 'green' | 'purple' | 'pink' | 'orange' | 'emerald' | 'amber' | 'indigo')
+    | null;
+  height?: ('30rem' | '40rem' | '50rem' | '60rem') | null;
+  direction?: ('left' | 'right') | null;
+  speed?: ('fast' | 'normal' | 'slow') | null;
+  items?:
+    | {
+        quote: string;
+        name: string;
+        title: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'infiniteMovingCards';
 }
 /**
  * Envíos del formulario de Contact Section 2
@@ -5203,6 +5929,20 @@ export interface PagesSelect<T extends boolean = true> {
               blockName?: T;
             };
         archive?: T | ArchiveBlockSelect<T>;
+        backgroundBeams?: T | BackgroundBeamsBlockSelect<T>;
+        lampSectionHeader?: T | LampSectionHeaderBlockSelect<T>;
+        containerScrollAnimation?: T | ContainerScrollAnimationBlockSelect<T>;
+        sparkles?: T | SparklesBlockSelect<T>;
+        evervaultCard?: T | EvervaultCardBlockSelect<T>;
+        pixelatedCanvas?: T | PixelatedCanvasBlockSelect<T>;
+        layoutGrid?: T | LayoutGridBlockSelect<T>;
+        wavyBackground?: T | WavyBackgroundBlockSelect<T>;
+        focusCards?: T | FocusCardsBlockSelect<T>;
+        worldMap?: T | WorldMapBlockSelect<T>;
+        '3dMarquee'?: T | ThreeDMarqueeBlockSelect<T>;
+        canvasRevealEffect?: T | CanvasRevealEffectBlockSelect<T>;
+        glareCard?: T | GlareCardBlockSelect<T>;
+        animatedTestimonials?: T | AnimatedTestimonialsBlockSelect<T>;
         backgroundRippleEffect?:
           | T
           | {
@@ -5320,6 +6060,7 @@ export interface PagesSelect<T extends boolean = true> {
         faq2?: T | FAQ2BlockSelect<T>;
         faq4?: T | FAQ4BlockSelect<T>;
         faq5?: T | FAQ5BlockSelect<T>;
+        featuresTertiary?: T | FeaturesTertiaryBlockSelect<T>;
         footer1?: T | Footer1BlockSelect<T>;
         footer5?: T | Footer5BlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
@@ -5357,6 +6098,7 @@ export interface PagesSelect<T extends boolean = true> {
         links4?: T | Links4BlockSelect<T>;
         logo1?: T | Logo1BlockSelect<T>;
         logo2?: T | Logo2BlockSelect<T>;
+        logoCloud?: T | LogoCloudBlockSelect<T>;
         longContent1?: T | LongContent1BlockSelect<T>;
         longContent2?: T | LongContent2BlockSelect<T>;
         longContent3?: T | LongContent3BlockSelect<T>;
@@ -5496,9 +6238,13 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        cardStack?: T | CardStackBlockSelect<T>;
         timeline1?: T | Timeline1BlockSelect<T>;
         timeline3?: T | Timeline3BlockSelect<T>;
         timeline7?: T | Timeline7BlockSelect<T>;
+        hoverEffect?: T | HoverEffectBlockSelect<T>;
+        svgMaskEffect?: T | SVGMaskEffectBlockSelect<T>;
+        infiniteMovingCards?: T | InfiniteMovingCardsBlockSelect<T>;
       };
   meta?:
     | T
@@ -5525,6 +6271,273 @@ export interface ArchiveBlockSelect<T extends boolean = true> {
   categories?: T;
   limit?: T;
   selectedDocs?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BackgroundBeamsBlock_select".
+ */
+export interface BackgroundBeamsBlockSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  placeholder?: T;
+  backgroundColor?: T;
+  height?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LampSectionHeaderBlock_select".
+ */
+export interface LampSectionHeaderBlockSelect<T extends boolean = true> {
+  titleTop?: T;
+  titleBottom?: T;
+  backgroundColor?: T;
+  hue?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContainerScrollAnimationBlock_select".
+ */
+export interface ContainerScrollAnimationBlockSelect<T extends boolean = true> {
+  heading?: T;
+  highlight?: T;
+  size?: T;
+  media?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SparklesBlock_select".
+ */
+export interface SparklesBlockSelect<T extends boolean = true> {
+  title?: T;
+  backgroundColor?: T;
+  height?: T;
+  minSize?: T;
+  maxSize?: T;
+  particleDensity?: T;
+  particleColor?: T;
+  showGradients?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EvervaultCardBlock_select".
+ */
+export interface EvervaultCardBlockSelect<T extends boolean = true> {
+  layout?: T;
+  gridColumns?: T;
+  cards?:
+    | T
+    | {
+        text?: T;
+        title?: T;
+        badgeText?: T;
+        height?: T;
+        maxWidth?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PixelatedCanvasBlock_select".
+ */
+export interface PixelatedCanvasBlockSelect<T extends boolean = true> {
+  media?: T;
+  width?: T;
+  height?: T;
+  cellSize?: T;
+  dotScale?: T;
+  shape?: T;
+  backgroundColor?: T;
+  dropoutStrength?: T;
+  interactive?: T;
+  distortionStrength?: T;
+  distortionRadius?: T;
+  distortionMode?: T;
+  followSpeed?: T;
+  jitterStrength?: T;
+  jitterSpeed?: T;
+  sampleAverage?: T;
+  tintColor?: T;
+  tintStrength?: T;
+  className?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LayoutGridBlock_select".
+ */
+export interface LayoutGridBlockSelect<T extends boolean = true> {
+  height?: T;
+  padding?: T;
+  cards?:
+    | T
+    | {
+        thumbnail?: T;
+        title?: T;
+        subtitle?: T;
+        description?: T;
+        className?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WavyBackgroundBlock_select".
+ */
+export interface WavyBackgroundBlockSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  height?: T;
+  padding?: T;
+  maxWidth?: T;
+  speed?: T;
+  waveOpacity?: T;
+  blur?: T;
+  waveWidth?: T;
+  backgroundFill?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FocusCardsBlock_select".
+ */
+export interface FocusCardsBlockSelect<T extends boolean = true> {
+  cards?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorldMapBlock_select".
+ */
+export interface WorldMapBlockSelect<T extends boolean = true> {
+  title?: T;
+  titleHighlight?: T;
+  description?: T;
+  dots?:
+    | T
+    | {
+        start?:
+          | T
+          | {
+              lat?: T;
+              lng?: T;
+              label?: T;
+            };
+        end?:
+          | T
+          | {
+              lat?: T;
+              lng?: T;
+              label?: T;
+            };
+        id?: T;
+      };
+  lineColor?: T;
+  padding?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ThreeDMarqueeBlock_select".
+ */
+export interface ThreeDMarqueeBlockSelect<T extends boolean = true> {
+  images?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
+  padding?: T;
+  backgroundColor?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CanvasRevealEffectBlock_select".
+ */
+export interface CanvasRevealEffectBlockSelect<T extends boolean = true> {
+  cards?:
+    | T
+    | {
+        title?: T;
+        animationSpeed?: T;
+        containerClassName?: T;
+        colors?:
+          | T
+          | {
+              r?: T;
+              g?: T;
+              b?: T;
+              id?: T;
+            };
+        dotSize?: T;
+        showRadialGradient?: T;
+        id?: T;
+      };
+  padding?: T;
+  backgroundColor?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GlareCardBlock_select".
+ */
+export interface GlareCardBlockSelect<T extends boolean = true> {
+  cards?:
+    | T
+    | {
+        cardType?: T;
+        image?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  gridCols?: T;
+  padding?: T;
+  backgroundColor?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AnimatedTestimonialsBlock_select".
+ */
+export interface AnimatedTestimonialsBlockSelect<T extends boolean = true> {
+  testimonials?:
+    | T
+    | {
+        quote?: T;
+        name?: T;
+        designation?: T;
+        image?: T;
+        id?: T;
+      };
+  autoplay?: T;
   id?: T;
   blockName?: T;
 }
@@ -7122,6 +8135,61 @@ export interface FAQ5BlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeaturesTertiaryBlock_select".
+ */
+export interface FeaturesTertiaryBlockSelect<T extends boolean = true> {
+  showStyleOne?: T;
+  showStyleTwo?: T;
+  showStyleThree?: T;
+  showStyleFour?: T;
+  features?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  styleOneItems?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        description?: T;
+        badgeText?: T;
+        id?: T;
+      };
+  galleryImages?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
+  styleThreePills?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  styleFourItems?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        color?: T;
+        tags?:
+          | T
+          | {
+              text?: T;
+              icon?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Footer1Block_select".
  */
 export interface Footer1BlockSelect<T extends boolean = true> {
@@ -7619,6 +8687,23 @@ export interface Logo2BlockSelect<T extends boolean = true> {
     | {
         image?: T;
         alt?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LogoCloudBlock_select".
+ */
+export interface LogoCloudBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  logos?:
+    | T
+    | {
+        image?: T;
+        title?: T;
         id?: T;
       };
   id?: T;
@@ -8404,6 +9489,23 @@ export interface Testimonial6BlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardStackBlock_select".
+ */
+export interface CardStackBlockSelect<T extends boolean = true> {
+  height?: T;
+  cards?:
+    | T
+    | {
+        name?: T;
+        designation?: T;
+        content?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Timeline1Block_select".
  */
 export interface Timeline1BlockSelect<T extends boolean = true> {
@@ -8510,6 +9612,59 @@ export interface Timeline7BlockSelect<T extends boolean = true> {
               id?: T;
             };
         image?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HoverEffectBlock_select".
+ */
+export interface HoverEffectBlockSelect<T extends boolean = true> {
+  colorScheme?: T;
+  projects?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        link?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SVGMaskEffectBlock_select".
+ */
+export interface SVGMaskEffectBlockSelect<T extends boolean = true> {
+  title?: T;
+  highlightedText1?: T;
+  highlightedText2?: T;
+  additionalText?: T;
+  revealText?: T;
+  height?: T;
+  textSize?: T;
+  backgroundImage?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InfiniteMovingCardsBlock_select".
+ */
+export interface InfiniteMovingCardsBlockSelect<T extends boolean = true> {
+  colorScheme?: T;
+  height?: T;
+  direction?: T;
+  speed?: T;
+  items?:
+    | T
+    | {
+        quote?: T;
+        name?: T;
+        title?: T;
         id?: T;
       };
   id?: T;
