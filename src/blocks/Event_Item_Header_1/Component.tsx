@@ -1,0 +1,383 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { DateTime, Duration } from "luxon";
+import { Button, Input } from "@relume_io/relume-ui";
+import type { ButtonProps } from "@relume_io/relume-ui";
+import { RxChevronLeft } from "react-icons/rx";
+import Image from "next/image";
+import { CMSLink } from '@/components/Link';
+import RichText from '@/components/RichText';
+
+type ImageProps = {
+  src?: string;
+  url?: string;
+  alt?: string;
+} | string;
+
+type Date = {
+  weekday: string;
+  day: string;
+  month: string;
+  year: string | null;
+};
+
+type CountdownValues = {
+  days: string;
+  hours: string;
+  minutes: string;
+  seconds: string;
+};
+
+type CountdownProps = {
+  countdownIsoDate: string;
+  className?: string;
+  cellClassName?: string;
+  dividerClassName?: string;
+};
+
+type Props = {
+  backLink: {
+    title: string;
+    variant: string;
+    size: string;
+    link: {
+      type: 'reference' | 'custom';
+      url?: string;
+      reference?: any;
+      newTab?: boolean;
+    };
+  };
+  heading: string;
+  description: string;
+  image: ImageProps;
+  inputPlaceholder: string;
+  button: {
+    title: string;
+    variant: string;
+    size: string;
+  };
+  termsAndConditions: any;
+  date: Date;
+  countdown: {
+    date: string;
+    time: string;
+    timezone: string;
+  };
+  amountLeft: string;
+};
+
+export type EventItemHeader1Props = React.ComponentPropsWithoutRef<"section"> & Partial<Props>;
+
+export const EventItemHeader1 = (props: EventItemHeader1Props) => {
+  const {
+    backLink,
+    heading,
+    description,
+    inputPlaceholder,
+    button,
+    termsAndConditions,
+    image,
+    date,
+    countdown,
+    amountLeft,
+  } = {
+    ...EventItemHeader1Defaults,
+    ...props,
+  };
+  const [emailInput, setEmailInput] = useState<string>("");
+  
+  // Función para construir la fecha ISO a partir de los campos separados
+  const buildCountdownIsoDate = () => {
+    // Usar valores por defecto si no hay datos
+    const defaultDate = '2024-12-31';
+    const defaultTime = '23:59';
+    
+    const dateValue = countdown?.date;
+    const timeStr = countdown?.time?.toString() || defaultTime;
+    
+    try {
+      let cleanDate: string;
+      
+      // Manejar diferentes formatos de fecha
+      if (typeof dateValue === 'string') {
+        // Si es una fecha ISO completa, extraer solo la parte de fecha
+        if (dateValue.includes('T')) {
+          cleanDate = dateValue.split('T')[0];
+        } else {
+          cleanDate = dateValue.trim();
+        }
+      } else if (dateValue && typeof dateValue === 'object' && 'toISOString' in dateValue) {
+        // Si es un objeto Date, convertir a string YYYY-MM-DD
+        const dateObj = dateValue as any;
+        cleanDate = dateObj.toISOString().split('T')[0];
+      } else {
+        cleanDate = defaultDate;
+      }
+      
+      const cleanTime = timeStr.trim();
+      
+      // Verificar formato básico de fecha (YYYY-MM-DD)
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(cleanDate)) {
+        console.error('Formato de fecha inválido:', cleanDate);
+        return `${defaultDate}T${defaultTime}:59.000Z`;
+      }
+      
+      // Verificar formato básico de hora (HH:MM)
+      if (!/^\d{2}:\d{2}$/.test(cleanTime)) {
+        console.error('Formato de hora inválido:', cleanTime);
+        return `${defaultDate}T${defaultTime}:59.000Z`;
+      }
+      
+      // Construir la fecha completa
+      const fullDateTime = `${cleanDate}T${cleanTime}:00`;
+      const dateTime = new Date(fullDateTime);
+      
+      // Verificar que la fecha construida sea válida
+      if (isNaN(dateTime.getTime())) {
+        console.error('Fecha y hora inválidas:', fullDateTime);
+        return `${defaultDate}T${defaultTime}:59.000Z`;
+      }
+      
+      console.log('Fecha construida exitosamente:', fullDateTime, '->', dateTime.toISOString());
+      return dateTime.toISOString();
+    } catch (error) {
+      console.error('Error construyendo fecha ISO:', error);
+      return `${defaultDate}T${defaultTime}:59.000Z`;
+    }
+  };
+  
+  const countdownIsoDate = buildCountdownIsoDate();
+  
+  // Debug: mostrar datos de countdown
+  console.log('Countdown data:', countdown);
+  console.log('Generated ISO date:', countdownIsoDate);
+  
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log({
+      emailInput,
+    });
+  };
+  return (
+    <section id="relume" className="px-[5%] py-16 md:py-24 lg:py-28">
+      <div className="container">
+        <div className="grid auto-cols-fr grid-cols-1 items-center gap-x-20 gap-y-12 md:grid-flow-row md:gap-y-16 lg:grid-cols-2 lg:gap-y-12">
+          <div className="flex flex-col items-start">
+            <CMSLink {...backLink.link}>
+              <Button 
+                variant={backLink.variant as any}
+                size={backLink.size as any}
+                className={`
+                  ${backLink.variant === 'primary' 
+                    ? 'bg-black text-white hover:bg-gray-800 border border-gray-700' 
+                    : backLink.variant === 'secondary'
+                    ? 'bg-white text-black hover:bg-gray-100 border border-gray-300'
+                    : backLink.variant === 'link'
+                    ? 'bg-transparent text-black hover:text-gray-600 underline'
+                    : 'bg-black text-white hover:bg-gray-800'
+                  }
+                  ${backLink.size === 'sm' 
+                    ? 'px-3 py-2 text-sm' 
+                    : backLink.size === 'lg' 
+                    ? 'px-8 py-4 text-lg' 
+                    : 'px-6 py-3 text-base'
+                  }
+                  font-medium rounded-md transition-colors duration-200
+                `}
+              >
+                {backLink.title}
+              </Button>
+            </CMSLink>
+            <h1 className="mt-6 text-5xl font-bold md:mt-8 md:text-7xl lg:text-8xl">{heading}</h1>
+            <p className="mt-5 text-base md:mt-6 md:text-md">{description}</p>
+            <div className="mt-5 flex items-center gap-4 md:mt-6">
+              <div className="text-base font-semibold md:text-md">
+                {date.weekday} {date.day} {date.month}
+              </div>
+              <p className="bg-background-secondary px-2 py-1 text-sm font-semibold text-text-primary">
+                {amountLeft} Spots left!
+              </p>
+            </div>
+            <Countdown countdownIsoDate={countdownIsoDate} className="mt-8" />
+            <div className="mt-6 w-full max-w-sm md:mt-8">
+              <form
+                className="rb-4 mb-4 grid max-w-sm grid-cols-1 gap-y-3 sm:grid-cols-[1fr_max-content] sm:gap-4"
+                onSubmit={handleSubmit}
+              >
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder={inputPlaceholder}
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
+                />
+                <Button 
+                  variant={button.variant as any}
+                  size={button.size as any}
+                  className={`
+                    ${button.variant === 'primary' 
+                      ? 'bg-black text-white hover:bg-gray-800 border border-gray-700' 
+                      : button.variant === 'secondary'
+                      ? 'bg-white text-black hover:bg-gray-100 border border-gray-300'
+                      : button.variant === 'link'
+                      ? 'bg-transparent text-black hover:text-gray-600 underline'
+                      : 'bg-black text-white hover:bg-gray-800'
+                    }
+                    ${button.size === 'sm' 
+                      ? 'px-3 py-2 text-sm' 
+                      : button.size === 'lg' 
+                      ? 'px-8 py-4 text-lg' 
+                      : 'px-6 py-3 text-base'
+                    }
+                    font-medium rounded-md transition-colors duration-200
+                  `}
+                >
+                  {button.title}
+                </Button>
+              </form>
+              {termsAndConditions && (
+                <div className="text-xs text-gray-600 mt-2">
+                  <RichText data={termsAndConditions} enableGutter={false} />
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="w-full">
+            <div className="relative aspect-square">
+              <Image 
+                src={typeof image === 'string' ? image : image?.url || image?.src || 'https://d22po4pjz3o32e.cloudfront.net/placeholder-image.svg'} 
+                alt={typeof image === 'string' ? 'Event image' : image?.alt || 'Event image'} 
+                fill
+                className="object-cover" 
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Countdown: React.FC<CountdownProps> = ({
+  countdownIsoDate,
+  className,
+  cellClassName,
+  dividerClassName,
+}) => {
+  const [countdown, setCountdown] = useState<CountdownValues>({
+    days: "00",
+    hours: "00",
+    minutes: "00",
+    seconds: "00",
+  });
+
+  useEffect(() => {
+    const targetDate = DateTime.fromISO(countdownIsoDate);
+
+    const updateCountdown = () => {
+      const now = DateTime.now();
+      const diff = targetDate.diff(now);
+
+      if (diff.milliseconds <= 0) {
+        setCountdown({ days: "00", hours: "00", minutes: "00", seconds: "00" });
+        return;
+      }
+
+      const duration = Duration.fromObject(diff.toObject()).shiftTo(
+        "days",
+        "hours",
+        "minutes",
+        "seconds",
+      );
+
+      const padZero = (num: number): string => {
+        return num < 10 ? `0${num}` : num.toString();
+      };
+
+      setCountdown({
+        days: padZero(duration.days),
+        hours: padZero(duration.hours),
+        minutes: padZero(duration.minutes),
+        seconds: padZero(Math.floor(duration.seconds)),
+      });
+    };
+
+    updateCountdown();
+    const intervalId = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [countdownIsoDate]);
+
+  const renderCell = (value: string, label: string) => (
+    <div className={twMerge(clsx("flex min-w-18 flex-col items-center", cellClassName))}>
+      <span className="text-4xl font-bold leading-[1.2] md:text-5xl lg:text-6xl">{value}</span>
+      <span>{label}</span>
+    </div>
+  );
+
+  const renderDivider = () => (
+    <div
+      className={twMerge(clsx("hidden w-px bg-background-alternative sm:block", dividerClassName))}
+    />
+  );
+
+  return (
+    <div
+      className={twMerge(
+        clsx(
+          "flex flex-wrap justify-center gap-4 border border-border-primary px-4 py-4 sm:flex-nowrap sm:px-6",
+          className,
+        ),
+      )}
+    >
+      {renderCell(countdown.days, "Days")}
+      {renderDivider()}
+      {renderCell(countdown.hours, "Hours")}
+      {renderDivider()}
+      {renderCell(countdown.minutes, "Mins")}
+      {renderDivider()}
+      {renderCell(countdown.seconds, "Secs")}
+    </div>
+  );
+};
+
+export const EventItemHeader1Defaults: Props = {
+  backLink: {
+    title: "All events",
+    variant: "primary",
+    size: "default",
+    link: {
+      type: "custom",
+      url: "#",
+    },
+  },
+  heading: "Event title heading",
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.",
+  inputPlaceholder: "Enter your email",
+  button: { 
+    title: "Save my spot",
+    variant: "primary",
+    size: "default"
+  },
+  termsAndConditions: null,
+  image: {
+    src: "https://d22po4pjz3o32e.cloudfront.net/placeholder-image.svg",
+    alt: "Relume placeholder image",
+  },
+  date: {
+    weekday: "Sat",
+    day: "10",
+    month: "Feb",
+    year: null,
+  },
+  countdown: {
+    date: "2024-12-14",
+    time: "19:00",
+    timezone: "Europe/Madrid",
+  },
+  amountLeft: "10",
+};
