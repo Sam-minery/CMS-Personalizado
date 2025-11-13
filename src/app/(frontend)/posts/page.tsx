@@ -12,6 +12,22 @@ export const dynamic = 'force-static'
 export const revalidate = 600
 
 export default async function Page() {
+  if (process.env.SKIP_BUILD_DB === '1') {
+    return (
+      <div className="pt-24 pb-24">
+        <PageClient />
+        <div className="container mb-16">
+          <div className="prose dark:prose-invert max-w-none">
+            <h1>Posts</h1>
+          </div>
+        </div>
+        <div className="container mb-8">
+          <PageRange collection="posts" currentPage={1} limit={12} totalDocs={0} />
+        </div>
+        <CollectionArchive posts={[]} />
+      </div>
+    )
+  }
   const payload = await getPayload({ config: configPromise })
 
   const posts = await payload.find({
