@@ -41,10 +41,7 @@ const nextConfig = {
 
     return webpackConfig
   },
-<<<<<<< HEAD
-=======
   output: 'standalone',
->>>>>>> origin/deploy-do
   reactStrictMode: true,
   redirects,
 }
