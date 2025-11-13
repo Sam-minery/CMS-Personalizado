@@ -21,22 +21,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: 'npm'
 
-      - name: Enable corepack and pnpm
-        run: |
-          corepack enable
-          corepack prepare pnpm@10 --activate
-          pnpm -v
-
-      - name: Install dependencies
-        run: pnpm i --frozen-lockfile
+      - name: Install dependencies (npm)
+        run: npm install
 
       - name: Build (Next.js)
         env:
           NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
           NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
-        run: pnpm build
+        run: npm run build
       - name: Clean remote build dirs
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -70,7 +64,7 @@ jobs:
           source: "public/**"
           target: "${{ secrets.REMOTE_PATH }}/public"
 
-      - name: Run migrations and restart app (npm/pnpm start en background)
+      - name: Run migrations and restart app (npm start en background)
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -81,21 +75,22 @@ jobs:
             set -e
             cd "${{ secrets.REMOTE_PATH }}"
 
-            export NODE_ENV=production
             # Cargar variables locales del servidor
             if [ -f .env ]; then set -o allexport; . ./.env; set +o allexport; fi
 
-            # Asegurar pnpm (para CLI de payload y start)
-            if ! command -v pnpm >/dev/null 2>&1; then
-              corepack enable || true
-              corepack prepare pnpm@10 --activate || true
+            # Instalar dependencias (incluye dev por si el CLI de Payload requiere TS)
+            if command -v npm >/dev/null 2>&1; then
+              npm ci || npm install
+            else
+              echo "npm no encontrado en el servidor" >&2
+              exit 1
             fi
 
-            # Instalar dependencias (incluye dev por si el CLI de Payload requiere TS)
-            pnpm i --frozen-lockfile || pnpm i
-
             # Migraciones (ignorar si no hay pendientes)
-            pnpm payload migrate || true
+            npm run payload -- migrate || true
+
+            # Producción para el arranque
+            export NODE_ENV=production
 
             mkdir -p logs
 
@@ -111,8 +106,8 @@ jobs:
               fuser -k 3000/tcp || true
             fi
 
-            # Arrancar en background con pnpm (o npm si prefieres)
-            nohup pnpm start > logs/app.out.log 2>&1 & echo $! > run.pid
+            # Arrancar en background con npm
+            nohup npm start > logs/app.out.log 2>&1 & echo $! > run.pid
 
             # Recargar Nginx (si aplica)
             if command -v nginx >/dev/null 2>&1; then
