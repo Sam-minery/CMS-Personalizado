@@ -1,0 +1,111 @@
+name: Build and Deploy (Artifacts a Droplet)
+
+on:
+  push:
+    branches:
+      - deploy-do
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Enable corepack and pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10 --activate
+          pnpm -v
+
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile
+
+      - name: Build (Next.js)
+        env:
+          NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
+          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+        run: pnpm build
+
+      - name: Rsync .next to droplet (mirror only .next)
+        uses: burnett01/rsync-deployments@7.1.5
+        with:
+          switches: -az --delete
+          path: .next/
+          remote_path: ${{ secrets.REMOTE_PATH }}/.next/
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.SSH_KEY }}
+          remote_port: ${{ secrets.SSH_PORT }}
+
+      - name: Rsync public to droplet (static assets)
+        uses: burnett01/rsync-deployments@7.1.5
+        with:
+          switches: -az --delete
+          path: public/
+          remote_path: ${{ secrets.REMOTE_PATH }}/public/
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.SSH_KEY }}
+          remote_port: ${{ secrets.SSH_PORT }}
+
+      - name: Run migrations and restart app (npm/pnpm start en background)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            cd "${{ secrets.REMOTE_PATH }}"
+
+            export NODE_ENV=production
+            # Cargar variables locales del servidor
+            if [ -f .env ]; then set -o allexport; . ./.env; set +o allexport; fi
+
+            # Asegurar pnpm (para CLI de payload y start)
+            if ! command -v pnpm >/dev/null 2>&1; then
+              corepack enable || true
+              corepack prepare pnpm@10 --activate || true
+            fi
+
+            # Instalar dependencias (incluye dev por si el CLI de Payload requiere TS)
+            pnpm i --frozen-lockfile || pnpm i
+
+            # Migraciones (ignorar si no hay pendientes)
+            pnpm payload migrate || true
+
+            mkdir -p logs
+
+            # Parar proceso previo (PID file o puerto 3000)
+            if [ -f run.pid ] && kill -0 "$(cat run.pid)" 2>/dev/null; then
+              kill "$(cat run.pid)" || true
+              sleep 2
+            fi
+            # Fallback: matar por puerto si sigue ocupado
+            if command -v lsof >/dev/null 2>&1; then
+              lsof -ti:3000 | xargs -r kill -9 || true
+            elif command -v fuser >/dev/null 2>&1; then
+              fuser -k 3000/tcp || true
+            fi
+
+            # Arrancar en background con pnpm (o npm si prefieres)
+            nohup pnpm start > logs/app.out.log 2>&1 & echo $! > run.pid
+
+            # Recargar Nginx (si aplica)
+            if command -v nginx >/dev/null 2>&1; then
+              sudo systemctl reload nginx || true
+            fi
+

@@ -41,6 +41,7 @@ const nextConfig = {
 
     return webpackConfig
   },
+  output: 'standalone',
   reactStrictMode: true,
   redirects,
 }
