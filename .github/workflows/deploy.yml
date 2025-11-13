@@ -70,6 +70,9 @@ jobs:
             exit 1
           fi
           echo "${{ secrets.DB_CA_CERT }}" > ca.crt
+      - name: Map DB host to localhost for TLS SNI
+        run: |
+          echo "127.0.0.1 ${{ secrets.DB_HOST }}" | sudo tee -a /etc/hosts
 
       - name: Compose DATABASE_URI with CA
         run: |
@@ -78,7 +81,11 @@ jobs:
             echo "ERROR: DATABASE_URI_TUNNEL no está definido en Secrets" >&2
             exit 1
           fi
-          echo "DATABASE_URI=${{ secrets.DATABASE_URI_TUNNEL }}&sslrootcert=$GITHUB_WORKSPACE/ca.crt" >> $GITHUB_ENV
+          DB_URI="${{ secrets.DATABASE_URI_TUNNEL }}"
+          # Sustituir host 127.0.0.1 por el hostname real para que SNI/altname coincidan;
+          # la resolución apunta a 127.0.0.1 gracias a /etc/hosts
+          DB_URI="${DB_URI/127.0.0.1/${{ secrets.DB_HOST }}}"
+          echo "DATABASE_URI=${DB_URI}&sslrootcert=$GITHUB_WORKSPACE/ca.crt" >> $GITHUB_ENV
 
       - name: Build (Next.js)
         env:
