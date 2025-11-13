@@ -112,6 +112,8 @@ jobs:
             mkdir -p "${{ secrets.REMOTE_PATH }}"
             rm -rf "${{ secrets.REMOTE_PATH }}/.next"
             rm -rf "${{ secrets.REMOTE_PATH }}/public"
+            mkdir -p "${{ secrets.REMOTE_PATH }}/.next"
+            mkdir -p "${{ secrets.REMOTE_PATH }}/public"
 
       - name: Copy .next to droplet (scp)
         uses: appleboy/scp-action@v0.1.7
@@ -120,8 +122,8 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: ".next/**"
-          target: "${{ secrets.REMOTE_PATH }}/.next"
+          source: ".next/*"
+          target: "${{ secrets.REMOTE_PATH }}/.next/"
 
       - name: Copy public to droplet (scp)
         uses: appleboy/scp-action@v0.1.7
@@ -130,8 +132,26 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "public/**"
-          target: "${{ secrets.REMOTE_PATH }}/public"
+          source: "public/*"
+          target: "${{ secrets.REMOTE_PATH }}/public/"
+
+      - name: Fix nested dirs if present (.next/.next, public/public)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            if [ -d "${{ secrets.REMOTE_PATH }}/.next/.next" ]; then
+              rsync -a --delete "${{ secrets.REMOTE_PATH }}/.next/.next/" "${{ secrets.REMOTE_PATH }}/.next/"
+              rm -rf "${{ secrets.REMOTE_PATH }}/.next/.next"
+            fi
+            if [ -d "${{ secrets.REMOTE_PATH }}/public/public" ]; then
+              rsync -a --delete "${{ secrets.REMOTE_PATH }}/public/public/" "${{ secrets.REMOTE_PATH }}/public/"
+              rm -rf "${{ secrets.REMOTE_PATH }}/public/public"
+            fi
 
       - name: Run migrations and restart app (npm start en background)
         uses: appleboy/ssh-action@v1.2.0
