@@ -83,11 +83,11 @@ export default async function Page({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
+  if (process.env.SKIP_BUILD_DB === '1') {
+    return {}
+  }
   const { slug = 'home' } = await paramsPromise
-  const page = await queryPageBySlug({
-    slug,
-  })
-
+  const page = await queryPageBySlug({ slug })
   return generateMeta({ doc: page })
 }
 
