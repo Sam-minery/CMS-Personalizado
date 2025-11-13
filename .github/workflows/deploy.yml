@@ -33,8 +33,8 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          DB_HOST="${{ secrets.SSH_HOST }}"
-          DB_PORT="${{ secrets.SSH_PORT }}"
+          DB_HOST="${{ secrets.DB_HOST }}"
+          DB_PORT="${{ secrets.DB_PORT }}"
           if [ -z "$DB_HOST" ]; then
             echo "ERROR: DB_HOST secret no definido" >&2
             exit 1
@@ -42,7 +42,7 @@ jobs:
           if [ -z "$DB_PORT" ]; then
             DB_PORT=25060
           fi
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -f -N \
+          ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa -f -N \
             -L 5432:${DB_HOST}:${DB_PORT} \
             -p "${{ secrets.SSH_PORT }}" \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
