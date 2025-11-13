@@ -81,14 +81,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = 'home' } = await paramsPromise
-<<<<<<< HEAD
-  const page = await queryPageBySlug({
-    slug,
-  })
-
-=======
   const page = await queryPageBySlug({ slug })
->>>>>>> origin/deploy-do
   return generateMeta({ doc: page })
 }
 
