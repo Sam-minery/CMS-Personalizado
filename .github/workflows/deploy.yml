@@ -100,7 +100,28 @@ jobs:
         if: always()
         run: |
           pkill -f "ssh.*-L 5432:" || true
-      - name: Clean remote build dirs
+      - name: Archive build artifacts
+        run: |
+          set -e
+          tar -C .next -czf next.tgz .
+          if [ -d public ]; then
+            tar -C public -czf public.tgz .
+          else
+            # crea un tar vacío para evitar fallos si no hay public
+            tar -czf public.tgz --files-from /dev/null
+          fi
+
+      - name: Copy archives to droplet (scp)
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "next.tgz,public.tgz"
+          target: "${{ secrets.REMOTE_PATH }}/"
+
+      - name: Extract artifacts on droplet
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -109,48 +130,25 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            mkdir -p "${{ secrets.REMOTE_PATH }}"
-            rm -rf "${{ secrets.REMOTE_PATH }}/.next"
-            rm -rf "${{ secrets.REMOTE_PATH }}/public"
-            mkdir -p "${{ secrets.REMOTE_PATH }}/.next"
-            mkdir -p "${{ secrets.REMOTE_PATH }}/public"
-
-      - name: Copy .next to droplet (scp)
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          source: ".next/*"
-          target: "${{ secrets.REMOTE_PATH }}/.next/"
-
-      - name: Copy public to droplet (scp)
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          source: "public/*"
-          target: "${{ secrets.REMOTE_PATH }}/public/"
-
-      - name: Fix nested dirs if present (.next/.next, public/public)
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            set -e
-            if [ -d "${{ secrets.REMOTE_PATH }}/.next/.next" ]; then
-              rsync -a --delete "${{ secrets.REMOTE_PATH }}/.next/.next/" "${{ secrets.REMOTE_PATH }}/.next/" || true
-              rm -rf "${{ secrets.REMOTE_PATH }}/.next/.next"
+            cd "${{ secrets.REMOTE_PATH }}"
+            rm -rf .next public
+            mkdir -p .next public
+            # Extraer .next (incluye archivos ocultos como BUILD_ID)
+            if [ -f next.tgz ]; then
+              tar -xzf next.tgz -C .next
+              rm -f next.tgz
             fi
-            if [ -d "${{ secrets.REMOTE_PATH }}/public/public" ]; then
-              rsync -a --delete "${{ secrets.REMOTE_PATH }}/public/public/" "${{ secrets.REMOTE_PATH }}/public/" || true
-              rm -rf "${{ secrets.REMOTE_PATH }}/public/public"
+            # Extraer public (si tiene contenido)
+            if [ -s public.tgz ]; then
+              tar -xzf public.tgz -C public || true
+              rm -f public.tgz
+            fi
+            # Asegurar que no haya anidamientos .next/.next ni public/public
+            if [ -d ".next/.next" ]; then
+              cp -a .next/.next/. .next/ && rm -rf .next/.next
+            fi
+            if [ -d "public/public" ]; then
+              cp -a public/public/. public/ && rm -rf public/public
             fi
 
       - name: Run migrations and restart app (npm start en background)
