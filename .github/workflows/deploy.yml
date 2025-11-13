@@ -37,28 +37,38 @@ jobs:
           NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
           NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
         run: pnpm build
-
-      - name: Rsync .next to droplet (mirror only .next)
-        uses: burnett01/rsync-deployments@7.1.5
+      - name: Clean remote build dirs
+        uses: appleboy/ssh-action@v1.2.0
         with:
-          switches: -az --delete
-          path: .next/
-          remote_path: ${{ secrets.REMOTE_PATH }}/.next/
-          remote_host: ${{ secrets.SSH_HOST }}
-          remote_user: ${{ secrets.SSH_USER }}
-          remote_key: ${{ secrets.SSH_KEY }}
-          remote_port: ${{ secrets.SSH_PORT }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            mkdir -p "${{ secrets.REMOTE_PATH }}"
+            rm -rf "${{ secrets.REMOTE_PATH }}/.next"
+            rm -rf "${{ secrets.REMOTE_PATH }}/public"
 
-      - name: Rsync public to droplet (static assets)
-        uses: burnett01/rsync-deployments@7.1.5
+      - name: Copy .next to droplet (scp)
+        uses: appleboy/scp-action@v0.1.7
         with:
-          switches: -az --delete
-          path: public/
-          remote_path: ${{ secrets.REMOTE_PATH }}/public/
-          remote_host: ${{ secrets.SSH_HOST }}
-          remote_user: ${{ secrets.SSH_USER }}
-          remote_key: ${{ secrets.SSH_KEY }}
-          remote_port: ${{ secrets.SSH_PORT }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: ".next/**"
+          target: "${{ secrets.REMOTE_PATH }}/.next"
+
+      - name: Copy public to droplet (scp)
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "public/**"
+          target: "${{ secrets.REMOTE_PATH }}/public"
 
       - name: Run migrations and restart app (npm/pnpm start en background)
         uses: appleboy/ssh-action@v1.2.0
