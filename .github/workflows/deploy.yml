@@ -26,6 +26,27 @@ jobs:
       - name: Install dependencies (npm)
         run: npm install
 
+      - name: Open SSH tunnel to DO Postgres via droplet
+        shell: bash
+        run: |
+          set -e
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          DB_HOST="${{ secrets.DB_HOST }}"
+          DB_PORT="${{ secrets.DB_PORT }}"
+          if [ -z "$DB_HOST" ]; then
+            echo "ERROR: DB_HOST secret no definido" >&2
+            exit 1
+          fi
+          if [ -z "$DB_PORT" ]; then
+            DB_PORT=25060
+          fi
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -f -N \
+            -L 5432:${DB_HOST}:${DB_PORT} \
+            -p "${{ secrets.SSH_PORT }}" \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+
       - name: Build (Next.js)
         env:
           NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
@@ -33,8 +54,13 @@ jobs:
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
           PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
-          SKIP_BUILD_DB: "1"
+          DATABASE_URI: ${{ secrets.DATABASE_URI_TUNNEL }}
         run: npm run build
+
+      - name: Close SSH tunnel
+        if: always()
+        run: |
+          pkill -f "ssh.*-L 5432:" || true
       - name: Clean remote build dirs
         uses: appleboy/ssh-action@v1.2.0
         with:
