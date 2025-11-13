@@ -145,11 +145,11 @@ jobs:
           script: |
             set -e
             if [ -d "${{ secrets.REMOTE_PATH }}/.next/.next" ]; then
-              rsync -a --delete "${{ secrets.REMOTE_PATH }}/.next/.next/" "${{ secrets.REMOTE_PATH }}/.next/"
+              rsync -a --delete "${{ secrets.REMOTE_PATH }}/.next/.next/" "${{ secrets.REMOTE_PATH }}/.next/" || true
               rm -rf "${{ secrets.REMOTE_PATH }}/.next/.next"
             fi
             if [ -d "${{ secrets.REMOTE_PATH }}/public/public" ]; then
-              rsync -a --delete "${{ secrets.REMOTE_PATH }}/public/public/" "${{ secrets.REMOTE_PATH }}/public/"
+              rsync -a --delete "${{ secrets.REMOTE_PATH }}/public/public/" "${{ secrets.REMOTE_PATH }}/public/" || true
               rm -rf "${{ secrets.REMOTE_PATH }}/public/public"
             fi
 
