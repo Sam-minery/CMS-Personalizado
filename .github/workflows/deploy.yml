@@ -26,6 +26,21 @@ jobs:
       - name: Install dependencies (npm)
         run: npm install
 
+      - name: Sanity check secrets (DB tunnel)
+        shell: bash
+        run: |
+          # Verificar que DATABASE_URI_TUNNEL está definido
+          if [ -z "${{ secrets.DATABASE_URI_TUNNEL }}" ]; then
+            echo "ERROR: DATABASE_URI_TUNNEL no está definido en Secrets" >&2
+            exit 1
+          fi
+          # Verificar que DB_HOST está definido (destino del túnel)
+          if [ -z "${{ secrets.DB_HOST }}" ]; then
+            echo "ERROR: DB_HOST no está definido en Secrets" >&2
+            exit 1
+          fi
+          echo "Secrets de túnel presentes (valores ocultos por GitHub)."
+
       - name: Open SSH tunnel to DO Postgres via droplet
         shell: bash
         run: |
@@ -47,6 +62,24 @@ jobs:
             -p "${{ secrets.SSH_PORT }}" \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
 
+      - name: Write CA cert (DO Postgres)
+        run: |
+          set -e
+          if [ -z "${{ secrets.DB_CA_CERT }}" ]; then
+            echo "ERROR: DB_CA_CERT no está definido en Secrets" >&2
+            exit 1
+          fi
+          echo "${{ secrets.DB_CA_CERT }}" > ca.crt
+
+      - name: Compose DATABASE_URI with CA
+        run: |
+          # compone DATABASE_URI a partir de DATABASE_URI_TUNNEL + sslrootcert
+          if [ -z "${{ secrets.DATABASE_URI_TUNNEL }}" ]; then
+            echo "ERROR: DATABASE_URI_TUNNEL no está definido en Secrets" >&2
+            exit 1
+          fi
+          echo "DATABASE_URI=${{ secrets.DATABASE_URI_TUNNEL }}&sslrootcert=$GITHUB_WORKSPACE/ca.crt" >> $GITHUB_ENV
+
       - name: Build (Next.js)
         env:
           NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
@@ -54,7 +87,6 @@ jobs:
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
           PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
-          DATABASE_URI: ${{ secrets.DATABASE_URI_TUNNEL }}
         run: npm run build
 
       - name: Close SSH tunnel
