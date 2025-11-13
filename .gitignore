@@ -5,8 +5,15 @@ node_modules
 .env
 .next
 .vercel
+<<<<<<< HEAD
 
 # Payload default media upload directory
+=======
+.cursor
+
+# Payload default media upload directory
+public/media/
+>>>>>>> origin/deploy-do
 
 public/robots.txt
 public/sitemap*.xml

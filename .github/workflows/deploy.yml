@@ -1,0 +1,203 @@
+name: Build and Deploy (Artifacts a Droplet)
+
+on:
+  push:
+    branches:
+      - deploy-do
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies (npm)
+        run: npm install
+
+      - name: Sanity check secrets (DB tunnel)
+        shell: bash
+        run: |
+          # Verificar que DATABASE_URI_TUNNEL está definido
+          if [ -z "${{ secrets.DATABASE_URI_TUNNEL }}" ]; then
+            echo "ERROR: DATABASE_URI_TUNNEL no está definido en Secrets" >&2
+            exit 1
+          fi
+          # Verificar que DB_HOST está definido (destino del túnel)
+          if [ -z "${{ secrets.DB_HOST }}" ]; then
+            echo "ERROR: DB_HOST no está definido en Secrets" >&2
+            exit 1
+          fi
+          echo "Secrets de túnel presentes (valores ocultos por GitHub)."
+
+      - name: Open SSH tunnel to DO Postgres via droplet
+        shell: bash
+        run: |
+          set -e
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          DB_HOST="${{ secrets.DB_HOST }}"
+          DB_PORT="${{ secrets.DB_PORT }}"
+          if [ -z "$DB_HOST" ]; then
+            echo "ERROR: DB_HOST secret no definido" >&2
+            exit 1
+          fi
+          if [ -z "$DB_PORT" ]; then
+            DB_PORT=25060
+          fi
+          ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa -f -N \
+            -L 5432:${DB_HOST}:${DB_PORT} \
+            -p "${{ secrets.SSH_PORT }}" \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+
+      - name: Write CA cert (DO Postgres)
+        run: |
+          set -e
+          if [ -z "${{ secrets.DB_CA_CERT }}" ]; then
+            echo "ERROR: DB_CA_CERT no está definido en Secrets" >&2
+            exit 1
+          fi
+          echo "${{ secrets.DB_CA_CERT }}" > ca.crt
+      - name: Map DB host to localhost for TLS SNI
+        run: |
+          echo "127.0.0.1 ${{ secrets.DB_HOST }}" | sudo tee -a /etc/hosts
+
+      - name: Compose DATABASE_URI with CA
+        run: |
+          # compone DATABASE_URI a partir de DATABASE_URI_TUNNEL + sslrootcert
+          if [ -z "${{ secrets.DATABASE_URI_TUNNEL }}" ]; then
+            echo "ERROR: DATABASE_URI_TUNNEL no está definido en Secrets" >&2
+            exit 1
+          fi
+          DB_URI="${{ secrets.DATABASE_URI_TUNNEL }}"
+          # Sustituir host 127.0.0.1 por el hostname real para que SNI/altname coincidan;
+          # la resolución apunta a 127.0.0.1 gracias a /etc/hosts
+          DB_URI="${DB_URI/127.0.0.1/${{ secrets.DB_HOST }}}"
+          echo "DATABASE_URI=${DB_URI}&sslrootcert=$GITHUB_WORKSPACE/ca.crt" >> $GITHUB_ENV
+
+      - name: Build (Next.js)
+        env:
+          NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
+          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: npm run build
+
+      - name: Close SSH tunnel
+        if: always()
+        run: |
+          pkill -f "ssh.*-L 5432:" || true
+      - name: Archive build artifacts
+        run: |
+          set -e
+          tar -C .next -czf next.tgz .
+          if [ -d public ]; then
+            tar -C public -czf public.tgz .
+          else
+            # crea un tar vacío para evitar fallos si no hay public
+            tar -czf public.tgz --files-from /dev/null
+          fi
+
+      - name: Copy archives to droplet (scp)
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "next.tgz,public.tgz"
+          target: "${{ secrets.REMOTE_PATH }}/"
+
+      - name: Extract artifacts on droplet
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            cd "${{ secrets.REMOTE_PATH }}"
+            rm -rf .next public
+            mkdir -p .next public
+            # Extraer .next (incluye archivos ocultos como BUILD_ID)
+            if [ -f next.tgz ]; then
+              tar -xzf next.tgz -C .next
+              rm -f next.tgz
+            fi
+            # Extraer public (si tiene contenido)
+            if [ -s public.tgz ]; then
+              tar -xzf public.tgz -C public || true
+              rm -f public.tgz
+            fi
+            # Asegurar que no haya anidamientos .next/.next ni public/public
+            if [ -d ".next/.next" ]; then
+              cp -a .next/.next/. .next/ && rm -rf .next/.next
+            fi
+            if [ -d "public/public" ]; then
+              cp -a public/public/. public/ && rm -rf public/public
+            fi
+
+      - name: Run migrations and restart app (npm start en background)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            cd "${{ secrets.REMOTE_PATH }}"
+
+            # Cargar variables locales del servidor
+            if [ -f .env ]; then set -o allexport; . ./.env; set +o allexport; fi
+
+            # Instalar dependencias (incluye dev por si el CLI de Payload requiere TS)
+            if command -v npm >/dev/null 2>&1; then
+              npm ci || npm install
+            else
+              echo "npm no encontrado en el servidor" >&2
+              exit 1
+            fi
+
+            # Migraciones (ignorar si no hay pendientes)
+            npm run payload -- migrate || true
+
+            # Producción para el arranque
+            export NODE_ENV=production
+
+            mkdir -p logs
+
+            # Parar proceso previo (PID file o puerto 3000)
+            if [ -f run.pid ] && kill -0 "$(cat run.pid)" 2>/dev/null; then
+              kill "$(cat run.pid)" || true
+              sleep 2
+            fi
+            # Fallback: matar por puerto si sigue ocupado
+            if command -v lsof >/dev/null 2>&1; then
+              lsof -ti:3000 | xargs -r kill -9 || true
+            elif command -v fuser >/dev/null 2>&1; then
+              fuser -k 3000/tcp || true
+            fi
+
+            # Arrancar en background con npm
+            nohup npm start > logs/app.out.log 2>&1 & echo $! > run.pid
+
+            # Recargar Nginx (si aplica)
+            if command -v nginx >/dev/null 2>&1; then
+              sudo systemctl reload nginx || true
+            fi
+
