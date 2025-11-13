@@ -18,7 +18,7 @@ export const ArchiveBlock: React.FC<
 
   let posts: Post[] = []
 
-  if (process.env.SKIP_BUILD_DB !== '1' && populateBy === 'collection') {
+  if (populateBy === 'collection') {
     const payload = await getPayload({ config: configPromise })
 
     const flattenedCategories = categories?.map((category) => {

@@ -14,9 +14,6 @@ import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
 export async function generateStaticParams() {
-  if (process.env.SKIP_BUILD_DB === '1') {
-    return []
-  }
   const payload = await getPayload({ config: configPromise })
   const pages = await payload.find({
     collection: 'pages',
@@ -83,9 +80,6 @@ export default async function Page({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  if (process.env.SKIP_BUILD_DB === '1') {
-    return {}
-  }
   const { slug = 'home' } = await paramsPromise
   const page = await queryPageBySlug({ slug })
   return generateMeta({ doc: page })

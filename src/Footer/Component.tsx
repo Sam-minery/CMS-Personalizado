@@ -21,9 +21,6 @@ import { FooterTemplate } from './FooterTemplate'
 import { mapPayloadLinkToComponentLink, mapPayloadMediaToComponentMedia, mapPayloadButtonToComponentButton, createDefaultMedia } from './utils'
 
 export async function Footer() {
-  if (process.env.SKIP_BUILD_DB === '1') {
-    return null
-  }
   const footerData: Footer = await getCachedGlobal('footer', 1)()
 
   // Si el tipo de footer es footer1, renderizar el componente Footer1
