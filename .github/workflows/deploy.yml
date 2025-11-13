@@ -33,6 +33,7 @@ jobs:
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
           PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SKIP_BUILD_DB: "1"
         run: npm run build
       - name: Clean remote build dirs
         uses: appleboy/ssh-action@v1.2.0
