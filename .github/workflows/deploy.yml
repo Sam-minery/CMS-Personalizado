@@ -170,9 +170,16 @@ jobs:
                 git remote -v || true
                 git fetch --all --prune || true
                 BRANCH="${{ github.ref_name }}"
+                # Proteger .env y .env.local durante el checkout/clean
+                [ -f .env ] && cp -f .env .env.backup.ci || true
+                [ -f .env.local ] && cp -f .env.local .env.local.backup.ci || true
                 git checkout -q -B "$BRANCH" "origin/$BRANCH" || true
                 git reset --hard "origin/$BRANCH" || true
-                git clean -fdx || true
+                # Limpiar sin borrar .env, .env.local, .next ni public (artefactos recién desplegados)
+                git clean -fdx -e .env -e .env.local -e .next -e public || true
+                # Restaurar .env y .env.local si hiciera falta
+                [ -f .env.backup.ci ] && mv -f .env.backup.ci .env || true
+                [ -f .env.local.backup.ci ] && mv -f .env.local.backup.ci .env.local || true
               else
                 echo "Aviso: ${PWD} no es un repo git; omitiendo git pull."
               fi
