@@ -175,8 +175,8 @@ jobs:
                 [ -f .env.local ] && cp -f .env.local .env.local.backup.ci || true
                 git checkout -q -B "$BRANCH" "origin/$BRANCH" || true
                 git reset --hard "origin/$BRANCH" || true
-                # Limpiar sin borrar .env, .env.local, .next ni public (artefactos recién desplegados)
-                git clean -fdx -e .env -e .env.local -e .next -e public || true
+                # Limpiar sin borrar .env, .env.local, .next, public ni ecosystem.config.cjs
+                git clean -fdx -e .env -e .env.local -e .next -e public -e ecosystem.config.cjs || true
                 # Restaurar .env y .env.local si hiciera falta
                 [ -f .env.backup.ci ] && mv -f .env.backup.ci .env || true
                 [ -f .env.local.backup.ci ] && mv -f .env.local.backup.ci .env.local || true
@@ -201,25 +201,27 @@ jobs:
             # Migraciones (ignorar si no hay pendientes)
             npm run payload -- migrate || true
 
-            # Producción para el arranque
-            export NODE_ENV=production
-
-            mkdir -p logs
-
-            # Parar proceso previo (PID file o puerto 3000)
-            if [ -f run.pid ] && kill -0 "$(cat run.pid)" 2>/dev/null; then
-              kill "$(cat run.pid)" || true
-              sleep 2
-            fi
-            # Fallback: matar por puerto si sigue ocupado
-            if command -v lsof >/dev/null 2>&1; then
-              lsof -ti:3000 | xargs -r kill -9 || true
-            elif command -v fuser >/dev/null 2>&1; then
-              fuser -k 3000/tcp || true
+            # Crear/actualizar ecosystem.config.cjs desde Secret
+            if [ -n "${{ secrets.PM2_ECOSYSTEM }}" ]; then
+              printf '%s' "${{ secrets.PM2_ECOSYSTEM }}" > ecosystem.config.cjs
+              chmod 644 ecosystem.config.cjs
+            else
+              echo "PM2_ECOSYSTEM no definido; se usará el ecosystem.config.cjs existente si está presente." >&2
             fi
 
-            # Arrancar en background con npm
-            nohup npm start > logs/app.out.log 2>&1 & echo $! > run.pid
+            # Arrancar/reiniciar con PM2 usando el standalone
+            if ! command -v pm2 >/dev/null 2>&1; then
+              sudo npm i -g pm2
+            fi
+            # Asegurar que no hay proceso viejo en 3000
+            if command -v fuser >/dev/null 2>&1; then fuser -k 3000/tcp || true; fi
+            if [ -f ecosystem.config.cjs ]; then
+              pm2 start ecosystem.config.cjs --only herramienta-web-payload || pm2 restart herramienta-web-payload
+            else
+              echo "ERROR: ecosystem.config.cjs no encontrado" >&2
+              exit 1
+            fi
+            pm2 save
 
             # Recargar Nginx (si aplica)
             if command -v nginx >/dev/null 2>&1; then
