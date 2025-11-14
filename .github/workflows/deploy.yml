@@ -162,6 +162,24 @@ jobs:
             set -e
             cd "${{ secrets.REMOTE_PATH }}"
 
+            # Actualizar repo en el droplet a la rama del workflow
+            if command -v git >/dev/null 2>&1; then
+              mkdir -p ~/.ssh && touch ~/.ssh/known_hosts
+              ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null || true
+              if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+                git remote -v || true
+                git fetch --all --prune || true
+                BRANCH="${{ github.ref_name }}"
+                git checkout -q -B "$BRANCH" "origin/$BRANCH" || true
+                git reset --hard "origin/$BRANCH" || true
+                git clean -fdx || true
+              else
+                echo "Aviso: ${PWD} no es un repo git; omitiendo git pull."
+              fi
+            else
+              echo "git no está instalado, omitiendo actualización del repo."
+            fi
+
             # Cargar variables locales del servidor
             if [ -f .env ]; then set -o allexport; . ./.env; set +o allexport; fi
 
