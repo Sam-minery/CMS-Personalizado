@@ -132,8 +132,11 @@ jobs:
             set -e
             cd "${{ secrets.REMOTE_PATH }}"
             
-            # Limpiar .next completamente (no tiene montajes)
-            rm -rf .next
+            # Limpiar .next completamente (forzar permisos si hay archivos bloqueados)
+            if [ -d .next ]; then
+              chmod -R u+w .next 2>/dev/null || sudo chmod -R u+w .next || true
+              rm -rf .next || sudo rm -rf .next
+            fi
             mkdir -p .next
             
             # Extraer .next (incluye archivos ocultos como BUILD_ID)
