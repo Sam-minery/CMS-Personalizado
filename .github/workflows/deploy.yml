@@ -131,24 +131,38 @@ jobs:
           script: |
             set -e
             cd "${{ secrets.REMOTE_PATH }}"
-            rm -rf .next public
-            mkdir -p .next public
+            
+            # Limpiar .next completamente (no tiene montajes)
+            rm -rf .next
+            mkdir -p .next
+            
             # Extraer .next (incluye archivos ocultos como BUILD_ID)
             if [ -f next.tgz ]; then
               tar -xzf next.tgz -C .next
               rm -f next.tgz
             fi
-            # Extraer public (si tiene contenido)
-            if [ -s public.tgz ]; then
-              tar -xzf public.tgz -C public || true
-              rm -f public.tgz
-            fi
-            # Asegurar que no haya anidamientos .next/.next ni public/public
+            
+            # Asegurar que no haya anidamiento .next/.next
             if [ -d ".next/.next" ]; then
               cp -a .next/.next/. .next/ && rm -rf .next/.next
             fi
-            if [ -d "public/public" ]; then
-              cp -a public/public/. public/ && rm -rf public/public
+            
+            # Para public: extraer en temporal y copiar (sin tocar media)
+            mkdir -p public
+            if [ -s public.tgz ]; then
+              mkdir -p /tmp/public-ci-extract
+              tar -xzf public.tgz -C /tmp/public-ci-extract || true
+              rm -f public.tgz
+              
+              # Aplanar si hay anidamiento public/public
+              if [ -d "/tmp/public-ci-extract/public" ]; then
+                mv /tmp/public-ci-extract/public/* /tmp/public-ci-extract/ 2>/dev/null || true
+                rmdir /tmp/public-ci-extract/public 2>/dev/null || true
+              fi
+              
+              # Copiar todo EXCEPTO media (rsync preserva media si existe)
+              rsync -a --exclude='media' /tmp/public-ci-extract/ public/ || cp -a /tmp/public-ci-extract/* public/ 2>/dev/null || true
+              rm -rf /tmp/public-ci-extract
             fi
 
       - name: Run migrations and restart app (npm start en background)
