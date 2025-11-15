@@ -132,7 +132,15 @@ jobs:
             set -e
             cd "${{ secrets.REMOTE_PATH }}"
             
-            # Limpiar .next completamente (forzar permisos si hay archivos bloqueados)
+            # PASO 1: Desmontar gcsfuse para proteger el bucket durante el deploy
+            echo "Desmontando public/media (gcsfuse)..."
+            if mountpoint -q public/media 2>/dev/null; then
+              sudo systemctl stop gcsfuse-media || true
+              sleep 2
+              sudo fusermount -u public/media || sudo umount public/media || true
+            fi
+            
+            # PASO 2: Limpiar .next completamente (forzar permisos si hay archivos bloqueados)
             if [ -d .next ]; then
               chmod -R u+w .next 2>/dev/null || sudo chmod -R u+w .next || true
               rm -rf .next || sudo rm -rf .next
@@ -150,8 +158,13 @@ jobs:
               cp -a .next/.next/. .next/ && rm -rf .next/.next
             fi
             
-            # Para public: extraer en temporal y copiar (sin tocar media)
-            mkdir -p public
+            # PASO 3: Limpiar public (excepto media que está desmontado)
+            if [ -d public ]; then
+              find public -mindepth 1 -maxdepth 1 ! -name 'media' -exec rm -rf {} + 2>/dev/null || true
+            fi
+            mkdir -p public public/media
+            
+            # Extraer public
             if [ -s public.tgz ]; then
               mkdir -p /tmp/public-ci-extract
               tar -xzf public.tgz -C /tmp/public-ci-extract || true
@@ -163,9 +176,26 @@ jobs:
                 rmdir /tmp/public-ci-extract/public 2>/dev/null || true
               fi
               
-              # Copiar todo EXCEPTO media (rsync preserva media si existe)
-              rsync -a --exclude='media' /tmp/public-ci-extract/ public/ || cp -a /tmp/public-ci-extract/* public/ 2>/dev/null || true
+              # Eliminar media del extract si vino en el build (no queremos sobrescribir)
+              rm -rf /tmp/public-ci-extract/media 2>/dev/null || true
+              
+              # Copiar todo (media ya no está en el extract)
+              cp -a /tmp/public-ci-extract/* public/ 2>/dev/null || true
               rm -rf /tmp/public-ci-extract
+            fi
+            
+            # PASO 4: Remontar gcsfuse
+            echo "Remontando public/media (gcsfuse)..."
+            sudo systemctl start gcsfuse-media
+            sleep 3
+            
+            # Verificar que se montó correctamente
+            if mountpoint -q public/media; then
+              echo "✓ public/media montado correctamente"
+              ls -la public/media | head -5
+            else
+              echo "⚠ WARNING: public/media NO se montó. Revisa el servicio gcsfuse-media"
+              sudo systemctl status gcsfuse-media --no-pager
             fi
 
       - name: Run migrations and restart app (npm start en background)
