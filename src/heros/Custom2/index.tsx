@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image from 'next/image'
 import type { Page } from '@/payload-types'
-import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { CMSLink } from '@/components/Link'
 
@@ -15,6 +15,10 @@ export const Custom2Hero: React.FC<Page['hero']> = ({ links, media, richText }) 
       emailInput,
     })
   }
+
+  const imageUrl = media && typeof media === 'object' 
+    ? (media.url || (media as any).image?.url || '')
+    : ''
 
   return (
     <section className="relative min-h-screen">
@@ -65,12 +69,13 @@ export const Custom2Hero: React.FC<Page['hero']> = ({ links, media, richText }) 
 
         {/* Imagen del lado derecho - ocupa todo el espacio */}
         <div className="relative lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-          {media && typeof media === 'object' && (
-            <Media 
-              fill 
-              imgClassName="w-full h-full object-cover" 
-              priority 
-              resource={media} 
+          {imageUrl && (
+            <Image
+              src={imageUrl}
+              alt={media && typeof media === 'object' ? (media.alt || 'Hero image') : 'Hero image'}
+              fill
+              className="w-full h-full object-cover"
+              priority
             />
           )}
         </div>

@@ -1,13 +1,20 @@
 'use client'
 import React from 'react'
+import Image from 'next/image'
 
 import type { Page } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
-import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 
 export const Header1Hero: React.FC<Page['hero']> = ({ links, media, richText }) => {
+  const imageUrl = media && typeof media === 'object' 
+    ? (media.url || (media as any).image?.url || '')
+    : ''
+
+  const imageWidth = media && typeof media === 'object' ? (media.width || 800) : 800
+  const imageHeight = media && typeof media === 'object' ? (media.height || 600) : 600
+
   return (
     <section id="relume" className="px-[5%] py-16 md:py-24 lg:py-28">
       <div className="container">
@@ -35,10 +42,13 @@ export const Header1Hero: React.FC<Page['hero']> = ({ links, media, richText }) 
              )}
           </div>
           <div>
-            {media && typeof media === 'object' && (
-              <Media 
-                className="w-full object-cover" 
-                resource={media}
+            {imageUrl && (
+              <Image
+                src={imageUrl}
+                alt={media && typeof media === 'object' ? (media.alt || 'Hero image') : 'Hero image'}
+                width={imageWidth}
+                height={imageHeight}
+                className="w-full object-cover"
                 priority
               />
             )}

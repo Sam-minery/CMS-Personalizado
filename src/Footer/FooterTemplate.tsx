@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 import { Container } from "@/components/TemplatePro/containerTemplate";
 import { Subheading } from "@/components/TemplatePro/subheadingTemplate";
 import { Button } from "@/components/ui/buttonTemplate";
 import { CMSLink } from "@/components/Link";
-import { Media } from "@/components/Media";
 import {
   IconBrandInstagram,
   IconBrandLinkedin,
@@ -67,11 +67,29 @@ type Props = {
 };
 
 const LogoComponent: React.FC<LogoProps> = ({ image, text, link }) => {
+  const imageUrl = image && typeof image === 'object' 
+    ? (image.url || image.image?.url || '')
+    : ''
+
+  const imageWidth = image && typeof image === 'object' 
+    ? (image.width || image.image?.width || 40)
+    : 40
+
+  const imageHeight = image && typeof image === 'object' 
+    ? (image.height || image.image?.height || 40)
+    : 40
+
   const logoContent = (
     <div className="flex items-center gap-2">
-      {image && (
+      {imageUrl && (
         <div className="relative w-8 h-8 md:w-10 md:h-10">
-          <Media resource={image} className="w-full h-full" />
+          <Image
+            src={imageUrl}
+            alt={image && typeof image === 'object' ? (image.alt || 'Logo') : 'Logo'}
+            width={imageWidth}
+            height={imageHeight}
+            className="w-full h-full object-contain"
+          />
         </div>
       )}
       {text && (

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Button, Input } from "@relume_io/relume-ui";
 import type { ButtonProps } from "@relume_io/relume-ui";
 import { FaXTwitter } from "react-icons/fa6";
@@ -12,7 +13,6 @@ import {
 } from "react-icons/bi";
 
 import { CMSLink } from "@/components/Link";
-import { Media as MediaComponent } from "@/components/Media";
 
 import type { Media as MediaType } from '@/payload-types'
 
@@ -113,11 +113,15 @@ export const Footer1 = (props: Footer1Props) => {
         <div className="grid grid-cols-1 gap-x-[8vw] gap-y-12 pb-12 md:gap-y-16 md:pb-18 lg:grid-cols-[0.75fr_1fr] lg:gap-y-4 lg:pb-20">
           <div className="flex flex-col">
             <CMSLink {...logo.link} className="mb-5 md:mb-6">
-              <MediaComponent 
-                resource={logo.media} 
-                className="inline-block"
-                size="medium"
-              />
+              {logo.media && typeof logo.media === 'object' && logo.media.url && (
+                <Image
+                  src={logo.media.url}
+                  alt={logo.media.alt || 'Logo'}
+                  width={logo.media.width || 200}
+                  height={logo.media.height || 60}
+                  className="inline-block max-w-[200px] max-h-[60px] object-contain"
+                />
+              )}
             </CMSLink>
             <p className="mb-5 md:mb-6">{newsletterDescription}</p>
             <div className="w-full max-w-md">

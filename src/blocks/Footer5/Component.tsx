@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Button, Input } from "@relume_io/relume-ui";
 import type { ButtonProps } from "@relume_io/relume-ui";
 import { FaXTwitter } from "react-icons/fa6";
@@ -12,7 +13,6 @@ import {
 } from "react-icons/bi";
 
 import { CMSLink } from "@/components/Link";
-import { Media as MediaComponent } from "@/components/Media";
 
 import type { Media as MediaType } from '@/payload-types'
 
@@ -155,11 +155,15 @@ export const Footer5 = (props: Footer5Props) => {
         </div>
         <div className="rb-12 mb-12 grid grid-cols-1 items-start gap-x-8 gap-y-10 sm:grid-cols-3 md:mb-18 md:gap-y-12 lg:mb-20 lg:grid-cols-6">
           <CMSLink {...logo.link} className="sm:col-start-1 sm:col-end-4 sm:row-start-1 sm:row-end-2 lg:col-start-auto lg:col-end-auto lg:row-start-auto lg:row-end-auto">
-            <MediaComponent 
-              resource={logo.media} 
-              className="inline-block"
-              size="medium"
-            />
+            {logo.media && typeof logo.media === 'object' && logo.media.url && (
+              <Image
+                src={logo.media.url}
+                alt={logo.media.alt || 'Logo'}
+                width={logo.media.width || 200}
+                height={logo.media.height || 60}
+                className="inline-block max-w-[200px] max-h-[60px] object-contain"
+              />
+            )}
           </CMSLink>
           {columnLinks?.map((column, index) => (
             <div key={index} className="flex flex-col items-start justify-start">

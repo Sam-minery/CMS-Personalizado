@@ -8,7 +8,7 @@ export const SpeedTemplate: Block = {
       name: 'speedTemplateHeading',
       type: 'text',
       label: 'Heading',
-      defaultValue: 'Built for Speed <br /> Designed for Scale.',
+      defaultValue: 'Built for Speed <br /> Designed for Scale',
     },
     {
       name: 'speedTemplateSubheading',

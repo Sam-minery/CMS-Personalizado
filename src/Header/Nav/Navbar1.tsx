@@ -5,7 +5,6 @@ import { useMediaQuery } from "@relume_io/relume-ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { RxChevronDown } from "react-icons/rx";
 import { CMSLink } from "@/components/Link";
-import { Media } from "@/components/Media";
 import Image from "next/image";
 
 type ImageProps = {
@@ -70,8 +69,14 @@ export const Navbar1: React.FC<Navbar1Props> = (props) => {
       <div className="size-full lg:flex lg:items-center lg:justify-between">
         <div className="flex min-h-16 items-center justify-between px-[5%] md:min-h-18 lg:min-h-full lg:px-0">
           <a href={logo.url}>
-            {logo.useMedia && logo.media ? (
-              <Media resource={logo.media} />
+            {logo.useMedia && logo.media && typeof logo.media === 'object' ? (
+              <Image
+                src={logo.media.url || logo.media.image?.url || logo.src || ''}
+                alt={logo.media.alt || logo.alt || "Logo"}
+                width={logo.media.width || logo.media.image?.width || 150}
+                height={logo.media.height || logo.media.image?.height || 50}
+                className="max-w-[150px] max-h-[50px] object-contain"
+              />
             ) : (
               <Image src={logo.src} alt={logo.alt || "Logo"} width={150} height={50} />
             )}
