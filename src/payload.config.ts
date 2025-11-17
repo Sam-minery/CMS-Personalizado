@@ -1,5 +1,5 @@
-// storage-adapter-import-placeholder
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { gcsStorage } from '@payloadcms/storage-gcs'
 
 import sharp from 'sharp' // sharp-import
 import path from 'path'
@@ -80,7 +80,30 @@ export default buildConfig({
   globals: [Header, Footer],
   plugins: [
     ...plugins,
-    // storage-adapter-placeholder
+    // Plugin oficial de Google Cloud Storage para la colección de media
+    ...(process.env.GCS_BUCKET_NAME
+      ? [
+          gcsStorage({
+            collections: {
+              media: true,
+            },
+            bucket: process.env.GCS_BUCKET_NAME,
+            options: process.env.GCS_KEY_FILENAME
+              ? {
+                  keyFilename: process.env.GCS_KEY_FILENAME,
+                }
+              : process.env.GCS_PROJECT_ID && process.env.GCS_CLIENT_EMAIL && process.env.GCS_PRIVATE_KEY
+                ? {
+                    projectId: process.env.GCS_PROJECT_ID,
+                    credentials: {
+                      client_email: process.env.GCS_CLIENT_EMAIL,
+                      private_key: process.env.GCS_PRIVATE_KEY.replace(/\\n/g, '\n'),
+                    },
+                  }
+                : {},
+          }),
+        ]
+      : []),
   ],
   secret: process.env.PAYLOAD_SECRET,
   sharp,

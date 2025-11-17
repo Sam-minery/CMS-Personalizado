@@ -150,6 +150,13 @@ jobs:
               cp -a .next/.next/. .next/ && rm -rf .next/.next
             fi
             
+            # IMPORTANTE: Copiar .next/static dentro de .next/standalone/.next/static
+            # para que el servidor standalone pueda servir los archivos estáticos (CSS, JS)
+            if [ -d ".next/static" ] && [ -d ".next/standalone" ]; then
+              mkdir -p .next/standalone/.next
+              cp -a .next/static .next/standalone/.next/static
+            fi
+            
             mkdir -p public
             
             # Extraer public
