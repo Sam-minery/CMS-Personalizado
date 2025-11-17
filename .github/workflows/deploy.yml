@@ -171,10 +171,7 @@ jobs:
                 rmdir /tmp/public-ci-extract/public 2>/dev/null || true
               fi
               
-              # Eliminar media del extract si vino en el build (no queremos sobrescribir)
-              rm -rf /tmp/public-ci-extract/media 2>/dev/null || true
-              
-              # Copiar todo (media ya no está en el extract)
+              # Copiar todo el contenido extraído
               cp -a /tmp/public-ci-extract/* public/ 2>/dev/null || true
               rm -rf /tmp/public-ci-extract
             fi
