@@ -94,6 +94,10 @@ jobs:
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
           PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          GCS_BUCKET_NAME: ${{ secrets.GCS_BUCKET_NAME }}
+          GCS_PROJECT_ID: ${{ secrets.GCS_PROJECT_ID }}
+          GCS_CLIENT_EMAIL: ${{ secrets.GCS_CLIENT_EMAIL }}
+          GCS_PRIVATE_KEY: ${{ secrets.GCS_PRIVATE_KEY }}
         run: npm run build
 
       - name: Close SSH tunnel
