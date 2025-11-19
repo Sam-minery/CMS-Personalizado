@@ -118,8 +118,8 @@ export const Comparison1 = (props: Comparison1Props) => {
         <div className="mx-auto max-w-xl">
           <div className="grid grid-cols-2 border-b border-border-primary md:grid-cols-[1.5fr_1fr_1fr]">
             {/* Primera columna - Título de comparación */}
-            <div className="hidden h-full flex-col items-start justify-center py-4 pr-4 sm:py-6 sm:pr-6 md:flex lg:py-6 lg:pr-6 bg-gray-50">
-              <h2 className="text-md font-bold leading-[1.4] md:text-xl">
+            <div className="hidden h-full flex-col items-center justify-center py-4 px-6 sm:py-6 sm:px-8 md:flex lg:py-6 lg:px-8 bg-gray-50">
+              <h2 className="text-md font-bold leading-[1.4] text-center md:text-xl">
                 {comparisonTitle}
               </h2>
             </div>
@@ -210,7 +210,7 @@ const FeaturesSection = ({ features }: { features: Feature[] }) => {
             key={index}
             className="grid grid-cols-2 border-b border-border-primary md:grid-cols-[1.5fr_1fr_1fr]"
           >
-            <p className="col-span-3 row-span-1 border-b border-border-primary py-4 pr-4 md:col-span-1 md:border-none md:pr-6 bg-gray-50">
+            <p className="col-span-3 row-span-1 border-b border-border-primary py-4 px-6 text-center md:col-span-1 md:border-none md:px-8 bg-gray-50">
               {feature.text}
             </p>
             {feature.items.map((item, index) => (

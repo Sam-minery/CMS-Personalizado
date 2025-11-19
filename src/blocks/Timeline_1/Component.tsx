@@ -155,10 +155,10 @@ export const Timeline1Block: React.FC<{
           </div>
           <div className="absolute z-0 flex h-full w-8 flex-col items-center justify-self-start [grid-area:2/1/3/2] md:z-auto md:justify-self-center md:[grid-area:auto]">
             <div className="absolute z-10 h-16 w-1 bg-gradient-to-b from-background-primary to-transparent" />
-            <div className="sticky top-0 mt-[-50vh] h-[50vh] w-[3px] bg-neutral-black" />
+            <div className="sticky top-0 mt-[-25vh] h-[25vh] w-[3px] bg-neutral-black" />
             <div className="h-full w-[3px] bg-neutral-lighter" />
             <div className="absolute bottom-0 z-0 h-16 w-1 bg-gradient-to-b from-transparent to-background-primary" />
-            <div className="absolute top-[-50vh] h-[50vh] w-full bg-background-primary" />
+            <div className="absolute top-[-25vh] h-[25vh] w-full bg-background-primary" />
           </div>
           <div className="grid auto-cols-fr gap-x-12 gap-y-8 sm:gap-y-12 md:gap-x-20 md:gap-y-20">
             {timelines?.map((timeline, index) => (

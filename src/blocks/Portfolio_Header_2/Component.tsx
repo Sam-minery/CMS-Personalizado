@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Media } from '@/components/Media'
+import Image from 'next/image'
 import type { Media as MediaType } from '@/payload-types'
 
 type Tag = {
@@ -24,23 +24,41 @@ export const PortfolioHeader2 = (props: PortfolioHeader2Props) => {
     ...props,
   };
 
-  const getImageAlt = (image: string | MediaType): string => {
-    if (typeof image === 'object' && image?.alt) {
-      return image.alt
+  // Función para obtener la URL de la imagen desde el objeto Media
+  const getImageSrc = (imageItem: string | MediaType): string => {
+    if (typeof imageItem === 'string') {
+      return imageItem
+    }
+    if (typeof imageItem === 'object' && imageItem?.url) {
+      return imageItem.url
+    }
+    return ''
+  }
+
+  // Función para obtener el alt de la imagen
+  const getImageAlt = (imageItem: string | MediaType): string => {
+    if (typeof imageItem === 'object' && imageItem?.alt) {
+      return imageItem.alt
     }
     return 'Portfolio header background image'
   }
+
+  const imageSrc = getImageSrc(image)
+  const imageAlt = getImageAlt(image)
 
   return (
     <section id="relume">
       <div className="flex min-h-svh flex-col">
         <div className="relative flex-1">
-          <Media 
-            resource={image} 
-            alt={getImageAlt(image)}
-            className="absolute size-full object-cover"
-            imgClassName="absolute size-full object-cover"
-          />
+          {imageSrc && (
+            <Image
+              src={imageSrc}
+              alt={imageAlt}
+              fill
+              className="object-cover"
+              priority
+            />
+          )}
         </div>
         <div className="px-[5%]">
           <div className="mx-auto max-w-lg py-12 text-center md:py-16 lg:py-20">

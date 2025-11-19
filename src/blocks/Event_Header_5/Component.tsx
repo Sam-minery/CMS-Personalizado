@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import type { ButtonProps } from "@relume_io/relume-ui";
-import { Button, Dialog, DialogContent, DialogTrigger, VideoIframe } from "@relume_io/relume-ui";
+import { Button } from "@relume_io/relume-ui";
 import { FaCirclePlay } from "react-icons/fa6";
 import { MdAccessTime } from "react-icons/md";
 import { BiCalendarAlt } from "react-icons/bi";
+import { CgSpinner } from "react-icons/cg";
+import clsx from "clsx";
 import Image from "next/image";
 
 type ImageProps = {
@@ -53,6 +56,30 @@ export const EventHeader5 = (props: EventHeader5Props) => {
     ...props,
   };
 
+  const [isIframeLoaded, setIsIframeLoaded] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Función para convertir URLs de YouTube al formato embed correcto
+  const getVideoUrl = (url: string) => {
+    if (!url) return '';
+    
+    // Si ya es una URL de embed, la devolvemos tal como está
+    if (url.includes('youtube.com/embed/')) {
+      return url;
+    }
+    
+    // Si es una URL normal de YouTube, la convertimos a embed
+    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = url.match(youtubeRegex);
+    
+    if (match) {
+      return `https://www.youtube.com/embed/${match[1]}`;
+    }
+    
+    // Si no es YouTube, devolvemos la URL tal como está
+    return url;
+  };
+
   return (
     <section id="relume" className="px-[5%] py-16 md:py-24 lg:py-28">
       <div className="container">
@@ -64,25 +91,66 @@ export const EventHeader5 = (props: EventHeader5Props) => {
           </div>
         </div>
         <div className="mb-12 grid auto-cols-fr auto-rows-auto grid-cols-1 items-center gap-8 md:mb-18 md:gap-12 lg:mb-20 lg:grid-cols-2">
-          <Dialog>
-            <DialogTrigger className="relative flex w-full items-center justify-center">
-              <Image
-                src={typeof event.image === 'string' ? event.image : event.image?.url || event.image?.src || 'https://d22po4pjz3o32e.cloudfront.net/placeholder-video-thumbnail.svg'}
-                alt={typeof event.image === 'string' ? 'Event image' : event.image?.alt || 'Event image'}
-                width={600}
-                height={400}
-                className="aspect-[3/2] size-full object-cover"
-              />
-              <span className="absolute inset-0 z-10 bg-black/50" />
-              <p className="absolute left-4 top-4 z-20 bg-background-secondary px-2 py-1 text-sm font-semibold">
-                {event.category}
-              </p>
-              <FaCirclePlay className="absolute z-20 size-16 text-white" />
-            </DialogTrigger>
-            <DialogContent>
-              <VideoIframe video={event.video} />
-            </DialogContent>
-          </Dialog>
+          <button 
+            className="relative flex w-full items-center justify-center cursor-pointer"
+            onClick={() => setIsDialogOpen(true)}
+          >
+            <Image
+              src={typeof event.image === 'string' ? event.image : event.image?.url || event.image?.src || 'https://d22po4pjz3o32e.cloudfront.net/placeholder-video-thumbnail.svg'}
+              alt={typeof event.image === 'string' ? 'Event image' : event.image?.alt || 'Event image'}
+              width={600}
+              height={400}
+              className="aspect-[3/2] size-full object-cover"
+            />
+            <span className="absolute inset-0 z-10 bg-black/50" />
+            <p className="absolute left-4 top-4 z-20 bg-background-secondary px-2 py-1 text-sm font-semibold">
+              {event.category}
+            </p>
+            <FaCirclePlay className="absolute z-20 size-16 text-white" />
+          </button>
+          
+          {isDialogOpen && (
+            <div 
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+              onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                  setIsDialogOpen(false);
+                  setIsIframeLoaded(false);
+                }
+              }}
+            >
+              <div className="relative bg-white rounded-lg p-4 max-w-2xl w-full mx-4">
+                <button
+                  onClick={() => {
+                    setIsDialogOpen(false);
+                    setIsIframeLoaded(false);
+                  }}
+                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-3xl z-20 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md"
+                >
+                  ×
+                </button>
+                <div className="relative mt-8">
+                  {!isIframeLoaded && (
+                    <div className="flex items-center justify-center h-64">
+                      <CgSpinner className="size-12 animate-spin text-gray-500" />
+                    </div>
+                  )}
+                  <iframe
+                    className={clsx("w-full h-80 rounded", {
+                      visible: isIframeLoaded,
+                      hidden: !isIframeLoaded,
+                    })}
+                    src={getVideoUrl(event.video)}
+                    title="Video"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    onLoad={() => setIsIframeLoaded(true)}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
           <div className="flex flex-col items-start">
             <div className="flex w-full flex-col items-start justify-start">
               <div className="mb-3 flex items-center gap-2 text-sm md:mb-4">

@@ -1,10 +1,11 @@
 'use client'
 import React, { useState } from 'react'
+import Image from 'next/image'
+import type { Media } from '@/payload-types'
 
 import type { Layout5Block as Layout5BlockProps } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
-import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { Button } from '@relume_io/relume-ui'
 import { FaCirclePlay } from 'react-icons/fa6'
@@ -22,6 +23,29 @@ export const Layout5Block: React.FC<Layout5BlockProps> = ({
 }) => {
   const [isIframeLoaded, setIsIframeLoaded] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  // Función para obtener la URL de la imagen desde el objeto Media
+  const getImageSrc = (mediaItem: number | Media | null | undefined): string => {
+    if (!mediaItem) return ''
+    if (typeof mediaItem === 'number') return ''
+    if (typeof mediaItem === 'object' && mediaItem?.url) {
+      return mediaItem.url
+    }
+    return ''
+  }
+
+  // Función para obtener el alt de la imagen
+  const getImageAlt = (mediaItem: number | Media | null | undefined): string => {
+    if (!mediaItem) return 'Image'
+    if (typeof mediaItem === 'number') return 'Image'
+    if (typeof mediaItem === 'object' && mediaItem?.alt) {
+      return mediaItem.alt
+    }
+    return 'Image'
+  }
+
+  const imageSrc = getImageSrc(image)
+  const imageAlt = getImageAlt(image)
 
   // Función para convertir URLs de YouTube al formato embed correcto
   const getVideoUrl = (url: string) => {
@@ -101,13 +125,15 @@ export const Layout5Block: React.FC<Layout5BlockProps> = ({
                 className="relative flex w-full items-center justify-center cursor-pointer"
                 onClick={() => setIsDialogOpen(true)}
               >
-                {image && typeof image === 'object' && (
-                  <Media 
-                    resource={image}
+                {imageSrc ? (
+                  <Image
+                    src={imageSrc}
+                    alt={imageAlt}
+                    width={800}
+                    height={600}
                     className="size-full object-cover"
                   />
-                )}
-                {!image && (
+                ) : (
                   <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
                     <span className="text-gray-500">Imagen de portada</span>
                   </div>
@@ -160,10 +186,13 @@ export const Layout5Block: React.FC<Layout5BlockProps> = ({
               )}
             </>
           )}
-          {!video && image && (
+          {!video && imageSrc && (
             <div className="relative flex w-full items-center justify-center">
-              <Media 
-                resource={image}
+              <Image
+                src={imageSrc}
+                alt={imageAlt}
+                width={800}
+                height={600}
                 className="size-full object-cover"
               />
             </div>

@@ -1,10 +1,10 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image from 'next/image'
 import { Button } from "@relume_io/relume-ui";
 import type { ButtonProps } from "@relume_io/relume-ui";
 import { RxChevronRight, RxChevronDown } from "react-icons/rx";
-import { Media } from '@/components/Media'
 import type { Media as MediaType } from '@/payload-types'
 
 type ProjectProps = {
@@ -79,24 +79,42 @@ export const Portfolio1 = (props: Portfolio1Props) => {
 };
 
 const Project: React.FC<ProjectProps> = ({ title, description, image, url, button }) => {
-  const getImageAlt = (image: string | MediaType): string => {
-    if (typeof image === 'object' && image?.alt) {
-      return image.alt
+  // Función para obtener la URL de la imagen desde el objeto Media
+  const getImageSrc = (imageItem: string | MediaType): string => {
+    if (typeof imageItem === 'string') {
+      return imageItem
+    }
+    if (typeof imageItem === 'object' && imageItem?.url) {
+      return imageItem.url
+    }
+    return ''
+  }
+
+  // Función para obtener el alt de la imagen
+  const getImageAlt = (imageItem: string | MediaType): string => {
+    if (typeof imageItem === 'object' && imageItem?.alt) {
+      return imageItem.alt
     }
     return title || 'Project image'
   }
 
+  const imageSrc = getImageSrc(image)
+  const imageAlt = getImageAlt(image)
+
   return (
     <article className="max-w-6xl mx-auto">
       <div className="mb-12 text-center">
-        <a href={url}>
-          <Media 
-            resource={image} 
-            alt={getImageAlt(image)}
-            className="w-full max-h-[600px] lg:max-h-[700px] object-contain mx-auto"
-            imgClassName="w-full max-h-[600px] lg:max-h-[700px] object-contain mx-auto"
-          />
-        </a>
+        {imageSrc && (
+          <a href={url}>
+            <Image
+              src={imageSrc}
+              alt={imageAlt}
+              width={1200}
+              height={700}
+              className="w-full max-h-[600px] lg:max-h-[700px] object-contain mx-auto"
+            />
+          </a>
+        )}
       </div>
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
         <div className="w-full lg:w-2/3">

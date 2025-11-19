@@ -15,6 +15,29 @@ export const LongContent3Block: React.FC<LongContent3BlockProps> = (props) => {
 
   const [isIframeLoaded, setIsIframeLoaded] = useState<boolean>(false);
 
+  // Función para convertir URLs de YouTube al formato embed correcto
+  const getVideoUrl = (url: string | null | undefined) => {
+    if (!url) return ''
+    
+    // Si ya es una URL de embed, la devolvemos tal como está
+    if (typeof url === 'string' && url.includes('youtube.com/embed/')) {
+      return url
+    }
+    
+    // Si es una URL normal de YouTube, la convertimos a embed
+    if (typeof url === 'string') {
+      const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+      const match = url.match(youtubeRegex);
+      
+      if (match) {
+        return `https://www.youtube.com/embed/${match[1]}`;
+      }
+    }
+    
+    // Si no es YouTube, devolvemos la URL tal como está
+    return typeof url === 'string' ? url : ''
+  }
+
   if (!heading || !content || !image || !video) {
     return null
   }
@@ -62,8 +85,10 @@ export const LongContent3Block: React.FC<LongContent3BlockProps> = (props) => {
                     visible: isIframeLoaded,
                     hidden: !isIframeLoaded,
                   })}
-                  src={video}
-                  allow="autoplay; encrypted-media; picture-in-picture"
+                  src={getVideoUrl(video)}
+                  title="Video"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
                   onLoad={() => setIsIframeLoaded(true)}
                 ></iframe>

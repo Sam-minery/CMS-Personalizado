@@ -1,10 +1,10 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image from 'next/image'
 import { Button } from "@relume_io/relume-ui";
 import type { ButtonProps } from "@relume_io/relume-ui";
 import { RxChevronRight, RxChevronDown } from "react-icons/rx";
-import { Media } from '@/components/Media'
 import type { Media as MediaType } from '@/payload-types'
 
 type Tag = {
@@ -89,24 +89,42 @@ export const Portfolio5 = (props: Portfolio5Props) => {
 };
 
 const Project: React.FC<ProjectProps> = ({ title, description, image, url, button, tags }) => {
-  const getImageAlt = (image: string | MediaType): string => {
-    if (typeof image === 'object' && image?.alt) {
-      return image.alt
+  // Función para obtener la URL de la imagen desde el objeto Media
+  const getImageSrc = (imageItem: string | MediaType): string => {
+    if (typeof imageItem === 'string') {
+      return imageItem
+    }
+    if (typeof imageItem === 'object' && imageItem?.url) {
+      return imageItem.url
+    }
+    return ''
+  }
+
+  // Función para obtener el alt de la imagen
+  const getImageAlt = (imageItem: string | MediaType): string => {
+    if (typeof imageItem === 'object' && imageItem?.alt) {
+      return imageItem.alt
     }
     return title || 'Project image'
   }
 
+  const imageSrc = getImageSrc(image)
+  const imageAlt = getImageAlt(image)
+
   return (
     <article>
       <div className="mb-5 md:mb-6">
-        <a href={url}>
-          <Media 
-            resource={image} 
-            alt={getImageAlt(image)}
-            className="w-full h-64 object-cover"
-            imgClassName="w-full h-64 object-cover"
-          />
-        </a>
+        {imageSrc && (
+          <a href={url}>
+            <Image
+              src={imageSrc}
+              alt={imageAlt}
+              width={800}
+              height={256}
+              className="w-full h-64 object-cover"
+            />
+          </a>
+        )}
       </div>
       <h3 className="mb-2 text-xl font-bold md:text-2xl">
         <a href={url} className="hover:text-gray-600 transition-colors">{title}</a>

@@ -1,8 +1,9 @@
 'use client'
 
+import Image from 'next/image'
 import RichText from '@/components/RichText';
-import { Media } from '@/components/Media';
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical';
+import type { Media } from '@/payload-types';
 
 type Props = {
   quote: SerializedEditorState;
@@ -42,13 +43,36 @@ export const Testimonial1 = (props: Testimonial1BlockType) => {
     ...props,
   };
 
+  // Función para obtener la URL de la imagen desde el objeto Media
+  const getImageSrc = (mediaItem: any): string => {
+    if (!mediaItem) return ''
+    if (typeof mediaItem === 'string') return mediaItem
+    if (typeof mediaItem === 'object' && mediaItem?.url) {
+      return mediaItem.url
+    }
+    return ''
+  }
+
+  // Función para obtener el alt de la imagen
+  const getImageAlt = (mediaItem: any, fallbackAlt: string): string => {
+    if (typeof mediaItem === 'object' && mediaItem?.alt) {
+      return mediaItem.alt
+    }
+    return fallbackAlt
+  }
+
+  const logoSrc = getImageSrc(logo.media)
+  const logoAlt = getImageAlt(logo.media, logo.alt || 'Company logo')
+  const avatarSrc = getImageSrc(avatar.media)
+  const avatarAlt = getImageAlt(avatar.media, avatar.alt || 'Avatar')
+
   return (
     <section id="relume" className="px-[5%] py-16 md:py-24 lg:py-28">
       <div className="container w-full max-w-lg">
         <div className="flex flex-col items-center text-center">
           {/* Logo pequeño */}
           <div className="mb-8 md:mb-12">
-            {logo.media && (
+            {logoSrc && (
               <div style={{ 
                 height: '20px', 
                 maxWidth: '80px', 
@@ -57,10 +81,12 @@ export const Testimonial1 = (props: Testimonial1BlockType) => {
                 justifyContent: 'center',
                 margin: '0 auto'
               }}>
-                <Media
-                  resource={logo.media}
+                <Image
+                  src={logoSrc}
+                  alt={logoAlt}
+                  width={80}
+                  height={20}
                   className="max-h-full max-w-full object-contain"
-                  alt={logo.alt || ''}
                 />
               </div>
             )}
@@ -70,13 +96,13 @@ export const Testimonial1 = (props: Testimonial1BlockType) => {
           </blockquote>
           <div className="mt-6 flex flex-col items-center justify-center md:mt-8">
             <div className="mb-3 md:mb-4 flex items-center justify-center">
-              {avatar.media && (
+              {avatarSrc && (
                 <div className="relative w-16 h-16 rounded-full overflow-hidden">
-                  <Media
-                    resource={avatar.media}
-                    fill={true}
-                    imgClassName="object-cover"
-                    alt={avatar.alt || ''}
+                  <Image
+                    src={avatarSrc}
+                    alt={avatarAlt}
+                    fill
+                    className="object-cover"
                   />
                 </div>
               )}

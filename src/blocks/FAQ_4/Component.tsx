@@ -71,7 +71,7 @@ export const FAQ4 = (props: FAQ4Props) => {
           </h4>
           <p className="md:text-md">{footerDescription}</p>
           <div className="mt-6 md:mt-8">
-            <Button {...button} asChild>
+            <Button {...button} className="px-6 py-3" asChild>
               <a href={button.url}>{button.title}</a>
             </Button>
           </div>
