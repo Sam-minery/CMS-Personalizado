@@ -5,6 +5,7 @@ import sharp from 'sharp' // sharp-import
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
+import fs from 'fs'
 
 import { Categories } from './collections/Categories'
 import { ContactSubmissions } from './collections/ContactSubmissions'
@@ -21,6 +22,30 @@ import { getServerSideURL } from './utilities/getURL'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+// Determinar si estamos en desarrollo
+const isDevelopment = process.env.ENVIRONMENT === 'development'
+
+// Configurar SSL según el entorno
+const getSSLConfig = () => {
+  if (isDevelopment && process.env.DB_SSL_CA_PATH) {
+    // En desarrollo: usar el certificado CA
+    const caCert = fs.readFileSync(process.env.DB_SSL_CA_PATH, 'utf8')
+    return {
+      rejectUnauthorized: true,
+      ca: caCert,
+    }
+  } else if (isDevelopment) {
+    // En desarrollo sin certificado: permitir conexiones no autorizadas (solo para desarrollo local)
+    return {
+      rejectUnauthorized: false,
+    }
+  }
+  // En producción: usar SSL con rejectUnauthorized: false (el certificado se gestiona en Digital Ocean)
+  return {
+    rejectUnauthorized: false,
+  }
+}
 
 export default buildConfig({
   admin: {
@@ -66,9 +91,7 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      ssl: getSSLConfig(),
     },
     push: false, //cambiar a true si no funciona la migracion
   }),
