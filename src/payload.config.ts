@@ -1,3 +1,14 @@
+// Cargar variables de entorno desde .env (necesario para comandos CLI como migrate)
+import 'dotenv/config'
+
+// Configurar TLS para desarrollo: deshabilitar verificación de certificados self-signed
+// Solo en desarrollo cuando se requiere un certificado CA que tiene certificados self-signed en la cadena
+if (process.env.ENVIRONMENT === 'development' && process.env.DB_SSL_CA_PATH) {
+  // Deshabilitar la verificación TLS a nivel de Node.js para permitir certificados self-signed
+  // Esto es necesario porque el driver de PostgreSQL valida la cadena completa incluso con rejectUnauthorized: false
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+}
+
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { gcsStorage } from '@payloadcms/storage-gcs'
 
@@ -22,6 +33,8 @@ import { getServerSideURL } from './utilities/getURL'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+// Obtener la raíz del proyecto (un nivel arriba de src/)
+const projectRoot = path.resolve(dirname, '..')
 
 // Determinar si estamos en desarrollo
 const isDevelopment = process.env.ENVIRONMENT === 'development'
@@ -30,10 +43,35 @@ const isDevelopment = process.env.ENVIRONMENT === 'development'
 const getSSLConfig = () => {
   if (isDevelopment && process.env.DB_SSL_CA_PATH) {
     // En desarrollo: usar el certificado CA
-    const caCert = fs.readFileSync(process.env.DB_SSL_CA_PATH, 'utf8')
+    // Resolver la ruta de forma absoluta para evitar problemas con rutas relativas
+    const certPath = path.isAbsolute(process.env.DB_SSL_CA_PATH)
+      ? process.env.DB_SSL_CA_PATH
+      : path.resolve(projectRoot, process.env.DB_SSL_CA_PATH)
+    
+    // Verificar que el certificado existe antes de intentar leerlo
+    if (!fs.existsSync(certPath)) {
+      console.warn(`[SSL Config] Certificate file not found at: ${certPath}, falling back to rejectUnauthorized: false`)
+      return {
+        rejectUnauthorized: false,
+      }
+    }
+    
+    const caCert = fs.readFileSync(certPath, 'utf8').trim()
+    
+    // Proporcionar el certificado CA con rejectUnauthorized: false
+    // Según la documentación de pg (driver de PostgreSQL), cuando se proporciona el certificado CA
+    // pero hay certificados self-signed en la cadena, necesitamos también deshabilitar
+    // la verificación del nombre del servidor para evitar el error de "self-signed certificate in certificate chain"
     return {
-      rejectUnauthorized: true,
+      rejectUnauthorized: false,
       ca: caCert,
+      // Deshabilitar la verificación del nombre del servidor para permitir certificados self-signed en la cadena
+      // Esto es necesario cuando el certificado CA no puede validar toda la cadena completa
+      checkServerIdentity: () => {
+        // Retornar undefined deshabilita la verificación del nombre del servidor
+        // permitiendo que la conexión continúe incluso con certificados self-signed en la cadena
+        return undefined
+      },
     }
   } else if (isDevelopment) {
     // En desarrollo sin certificado: permitir conexiones no autorizadas (solo para desarrollo local)
