@@ -58,18 +58,13 @@ const getSSLConfig = () => {
     
     const caCert = fs.readFileSync(certPath, 'utf8').trim()
     
-    // Proporcionar el certificado CA con rejectUnauthorized: false
-    // Según la documentación de pg (driver de PostgreSQL), cuando se proporciona el certificado CA
-    // pero hay certificados self-signed en la cadena, necesitamos también deshabilitar
-    // la verificación del nombre del servidor para evitar el error de "self-signed certificate in certificate chain"
+    
     return {
       rejectUnauthorized: false,
       ca: caCert,
-      // Deshabilitar la verificación del nombre del servidor para permitir certificados self-signed en la cadena
-      // Esto es necesario cuando el certificado CA no puede validar toda la cadena completa
+      
       checkServerIdentity: () => {
-        // Retornar undefined deshabilita la verificación del nombre del servidor
-        // permitiendo que la conexión continúe incluso con certificados self-signed en la cadena
+       
         return undefined
       },
     }
