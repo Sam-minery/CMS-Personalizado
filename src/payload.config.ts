@@ -126,7 +126,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || '',
       ssl: getSSLConfig(),
     },
-    push: false, //cambiar a true si no funciona la migracion
+    push: true, //cambiar a true si no funciona la migracion
   }),
   collections: [Pages, Posts, Media, Categories, Users, ContactSubmissions, FormCustom2Submissions],
   cors: (() => {

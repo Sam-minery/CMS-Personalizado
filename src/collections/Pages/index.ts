@@ -94,6 +94,18 @@ import { Testimonial5Block } from '../../blocks/Testimonial5/config'
 import { Navbar5Block } from '../../blocks/Navbar5/config'
 import { Layout1Block } from '../../blocks/Layout1/config'
 import { Layout5Block } from '../../blocks/Layout5/config'
+import { Layout10Block } from '../../blocks/Layout10/config'
+import { Layout42Block } from '../../blocks/Layout42/config'
+import { Layout90Block } from '../../blocks/Layout90/config'
+import { Layout132Block } from '../../blocks/Layout132/config'
+import { Layout133Block } from '../../blocks/Layout133/config'
+import { Layout222Block } from '../../blocks/Layout222/config'
+import { Layout239Block } from '../../blocks/Layout239/config'
+import { Layout304Block } from '../../blocks/Layout304/config'
+import { Layout352Block } from '../../blocks/Layout352/config'
+import { Layout395Block } from '../../blocks/Layout395/config'
+import { Stats24Block } from '../../blocks/Stats24/config'
+import { CTA27Block } from '../../blocks/CTA27/config'
 import { Header44Block } from '../../blocks/Header44/config'
 import { Header48Block } from '../../blocks/Header48/config'
 import { AnimatedPin3DBlock } from '../../blocks/3D_Animated_Pin/Config'
@@ -229,6 +241,18 @@ export const Pages: CollectionConfig<'pages'> = {
                 Header48Block,
                 Layout1Block,
                 Layout5Block,
+                Layout10Block,
+                Layout42Block,
+                Layout90Block,
+                Layout132Block,
+                Layout133Block,
+                Layout222Block,
+                Layout239Block,
+                Layout304Block,
+                Layout352Block,
+                Layout395Block,
+                Stats24Block,
+                CTA27Block,
                 Links1,
                 Links4,
                 Logo1,

@@ -153,7 +153,16 @@ export interface Page {
   id: number;
   title: string;
   hero: {
-    type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact' | 'custom2' | 'header1' | 'header5' | 'heroTemplate';
+    type:
+      | 'none'
+      | 'highImpact'
+      | 'mediumImpact'
+      | 'lowImpact'
+      | 'custom2'
+      | 'header1'
+      | 'header5'
+      | 'header138'
+      | 'heroTemplate';
     richText?: {
       root: {
         type: string;
@@ -194,6 +203,38 @@ export interface Page {
         }[]
       | null;
     media?: (number | null) | Media;
+    header138Heading?: string | null;
+    header138Description?: string | null;
+    header138FirstImage?: {
+      useMedia?: boolean | null;
+      /**
+       * Seleccione una imagen existente o suba una nueva
+       */
+      mediaImage?: (number | null) | Media;
+      /**
+       * Ingrese la URL de la imagen principal
+       */
+      src?: string | null;
+      /**
+       * Texto alternativo para accesibilidad
+       */
+      alt?: string | null;
+    };
+    header138SecondImage?: {
+      useMedia?: boolean | null;
+      /**
+       * Seleccione una imagen existente o suba una nueva
+       */
+      mediaImage?: (number | null) | Media;
+      /**
+       * Ingrese la URL de la imagen secundaria
+       */
+      src?: string | null;
+      /**
+       * Texto alternativo para accesibilidad
+       */
+      alt?: string | null;
+    };
     heroTemplateHeading?: string | null;
     heroTemplateSubheading?: string | null;
     heroPrimBtn?: {
@@ -405,6 +446,18 @@ export interface Page {
     | Header48Block
     | Layout1Block
     | Layout5Block
+    | Layout10Block
+    | Layout42Block
+    | Layout90Block
+    | Layout132Block
+    | Layout133Block
+    | Layout222Block
+    | Layout239Block
+    | Layout304Block
+    | Layout352Block
+    | Layout395Block
+    | Stats24Block
+    | CTA27Block
     | Links1Block
     | Links4Block
     | Logo1Block
@@ -3575,6 +3628,752 @@ export interface Layout5Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout10Block".
+ */
+export interface Layout10Block {
+  tagline?: string | null;
+  heading: string;
+  description?: string | null;
+  image?: {
+    useMedia?: boolean | null;
+    /**
+     * Seleccione una imagen existente o suba una nueva
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * Ingrese la URL de la imagen
+     */
+    src?: string | null;
+    /**
+     * Texto alternativo para accesibilidad
+     */
+    alt?: string | null;
+  };
+  subHeadings?:
+    | {
+        icon?: {
+          useMedia?: boolean | null;
+          /**
+           * Seleccione una imagen existente o suba una nueva
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Ingrese la URL de la imagen del logo
+           */
+          src?: string | null;
+          /**
+           * Texto alternativo para accesibilidad
+           */
+          alt?: string | null;
+        };
+        title?: string | null;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  buttons?:
+    | {
+        /**
+         * Configure el enlace para este botón
+         */
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layout10';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout42Block".
+ */
+export interface Layout42Block {
+  heading: string;
+  description?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layout42';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout90Block".
+ */
+export interface Layout90Block {
+  heading: string;
+  description?: string | null;
+  image?: {
+    useMedia?: boolean | null;
+    /**
+     * Seleccione una imagen existente o suba una nueva
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * Ingrese la URL de la imagen
+     */
+    src?: string | null;
+    /**
+     * Texto alternativo para accesibilidad
+     */
+    alt?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layout90';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout132Block".
+ */
+export interface Layout132Block {
+  sections?:
+    | {
+        image?: {
+          useMedia?: boolean | null;
+          /**
+           * Seleccione una imagen existente o suba una nueva
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Ingrese la URL de la imagen
+           */
+          src?: string | null;
+          /**
+           * Texto alternativo para accesibilidad
+           */
+          alt?: string | null;
+        };
+        heading: string;
+        description?: string | null;
+        /**
+         * Configure el enlace para este botón
+         */
+        button: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layout132';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout133Block".
+ */
+export interface Layout133Block {
+  sections?:
+    | {
+        tagline?: string | null;
+        heading: string;
+        description?: string | null;
+        image?: {
+          useMedia?: boolean | null;
+          /**
+           * Seleccione una imagen existente o suba una nueva
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Ingrese la URL de la imagen
+           */
+          src?: string | null;
+          /**
+           * Texto alternativo para accesibilidad
+           */
+          alt?: string | null;
+        };
+        buttons?:
+          | {
+              /**
+               * Configure el enlace para este botón
+               */
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+                label: string;
+                /**
+                 * Choose how the link should be rendered.
+                 */
+                appearance?: ('default' | 'outline') | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layout133';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout222Block".
+ */
+export interface Layout222Block {
+  image?: {
+    useMedia?: boolean | null;
+    /**
+     * Seleccione una imagen existente o suba una nueva
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * Ingrese la URL de la imagen
+     */
+    src?: string | null;
+    /**
+     * Texto alternativo para accesibilidad
+     */
+    alt?: string | null;
+  };
+  features?:
+    | {
+        icon?: {
+          useMedia?: boolean | null;
+          /**
+           * Seleccione una imagen existente o suba una nueva
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Ingrese la URL de la imagen del logo
+           */
+          src?: string | null;
+          /**
+           * Texto alternativo para accesibilidad
+           */
+          alt?: string | null;
+        };
+        heading: string;
+        description?: string | null;
+        buttons?:
+          | {
+              /**
+               * Configure el enlace para este botón
+               */
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+                label: string;
+                /**
+                 * Choose how the link should be rendered.
+                 */
+                appearance?: ('default' | 'outline') | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layout222';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout239Block".
+ */
+export interface Layout239Block {
+  tagline?: string | null;
+  heading: string;
+  description?: string | null;
+  sections?:
+    | {
+        image?: {
+          useMedia?: boolean | null;
+          /**
+           * Seleccione una imagen existente o suba una nueva
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Ingrese la URL de la imagen
+           */
+          src?: string | null;
+          /**
+           * Texto alternativo para accesibilidad
+           */
+          alt?: string | null;
+        };
+        heading?: string | null;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  buttons?:
+    | {
+        /**
+         * Configure el enlace para este botón
+         */
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layout239';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout304Block".
+ */
+export interface Layout304Block {
+  tagline?: string | null;
+  heading: string;
+  description?: string | null;
+  sections?:
+    | {
+        icon?: {
+          useMedia?: boolean | null;
+          /**
+           * Seleccione una imagen existente o suba una nueva
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Ingrese la URL de la imagen del logo
+           */
+          src?: string | null;
+          /**
+           * Texto alternativo para accesibilidad
+           */
+          alt?: string | null;
+        };
+        heading?: string | null;
+        description?: string | null;
+        /**
+         * Active esta opción para hacer esta sección clickeable
+         */
+        enableLink?: boolean | null;
+        /**
+         * Configure el enlace para esta sección
+         */
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label?: string | null;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  buttons?:
+    | {
+        /**
+         * Configure el enlace para este botón
+         */
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layout304';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout352Block".
+ */
+export interface Layout352Block {
+  featureContent: {
+    tagline?: string | null;
+    heading: string;
+    description?: string | null;
+    buttons?:
+      | {
+          /**
+           * Configure el enlace para este botón
+           */
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            url?: string | null;
+            label?: string | null;
+            /**
+             * Choose how the link should be rendered.
+             */
+            appearance?: ('default' | 'outline') | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  timelineItems?:
+    | {
+        date: string;
+        description?: string | null;
+        image?: {
+          useMedia?: boolean | null;
+          /**
+           * Seleccione una imagen existente o suba una nueva
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Ingrese la URL de la imagen
+           */
+          src?: string | null;
+          /**
+           * Texto alternativo para accesibilidad
+           */
+          alt?: string | null;
+        };
+        timelineButtons?:
+          | {
+              /**
+               * Configure el enlace para este botón
+               */
+              link?: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+                label?: string | null;
+                /**
+                 * Choose how the link should be rendered.
+                 */
+                appearance?: ('default' | 'outline') | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  bottomContent: {
+    tagline?: string | null;
+    heading: string;
+    description?: string | null;
+    buttons?:
+      | {
+          /**
+           * Configure el enlace para este botón
+           */
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            url?: string | null;
+            label?: string | null;
+            /**
+             * Choose how the link should be rendered.
+             */
+            appearance?: ('default' | 'outline') | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layout352';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout395Block".
+ */
+export interface Layout395Block {
+  tagline?: string | null;
+  heading: string;
+  description?: string | null;
+  sections?:
+    | {
+        image?: {
+          useMedia?: boolean | null;
+          /**
+           * Seleccione una imagen existente o suba una nueva
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Ingrese la URL de la imagen
+           */
+          src?: string | null;
+          /**
+           * Texto alternativo para accesibilidad
+           */
+          alt?: string | null;
+        };
+        tagline?: string | null;
+        heading: string;
+        description?: string | null;
+        /**
+         * Configure el enlace para este botón
+         */
+        button: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layout395';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Stats24Block".
+ */
+export interface Stats24Block {
+  tagline?: string | null;
+  heading: string;
+  description?: string | null;
+  /**
+   * Valor del tab que se mostrará por defecto (ej: tab-1, tab-2, tab-3)
+   */
+  defaultTabValue?: string | null;
+  tabs?:
+    | {
+        /**
+         * Identificador único del tab (ej: tab-1, tab-2, tab-3)
+         */
+        value: string;
+        /**
+         * Texto de estadística (ej: 50%, 100%, etc.)
+         */
+        percentage?: string | null;
+        heading?: string | null;
+        description?: string | null;
+        useVideo?: boolean | null;
+        image?: {
+          useMedia?: boolean | null;
+          /**
+           * Seleccione una imagen existente o suba una nueva
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Ingrese la URL de la imagen
+           */
+          src?: string | null;
+          /**
+           * Texto alternativo para accesibilidad
+           */
+          alt?: string | null;
+        };
+        video?: {
+          image?: {
+            useMedia?: boolean | null;
+            /**
+             * Seleccione una imagen existente o suba una nueva
+             */
+            mediaImage?: (number | null) | Media;
+            /**
+             * Ingrese la URL de la imagen de miniatura
+             */
+            src?: string | null;
+            /**
+             * Texto alternativo para accesibilidad
+             */
+            alt?: string | null;
+          };
+          /**
+           * URL del video (YouTube embed o similar)
+           */
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'stats24';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTA27Block".
+ */
+export interface CTA27Block {
+  heading: string;
+  description?: string | null;
+  image?: {
+    useMedia?: boolean | null;
+    /**
+     * Seleccione una imagen existente o suba una nueva
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * Ingrese la URL de la imagen de fondo
+     */
+    src?: string | null;
+    /**
+     * Texto alternativo para accesibilidad
+     */
+    alt?: string | null;
+  };
+  buttons?:
+    | {
+        /**
+         * Configure el enlace para este botón
+         */
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta27';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Links1Block".
  */
 export interface Links1Block {
@@ -5414,6 +6213,24 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
             };
         media?: T;
+        header138Heading?: T;
+        header138Description?: T;
+        header138FirstImage?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              src?: T;
+              alt?: T;
+            };
+        header138SecondImage?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              src?: T;
+              alt?: T;
+            };
         heroTemplateHeading?: T;
         heroTemplateSubheading?: T;
         heroPrimBtn?:
@@ -5620,6 +6437,18 @@ export interface PagesSelect<T extends boolean = true> {
         header48?: T | Header48BlockSelect<T>;
         layout1?: T | Layout1BlockSelect<T>;
         layout5?: T | Layout5BlockSelect<T>;
+        layout10?: T | Layout10BlockSelect<T>;
+        layout42?: T | Layout42BlockSelect<T>;
+        layout90?: T | Layout90BlockSelect<T>;
+        layout132?: T | Layout132BlockSelect<T>;
+        layout133?: T | Layout133BlockSelect<T>;
+        layout222?: T | Layout222BlockSelect<T>;
+        layout239?: T | Layout239BlockSelect<T>;
+        layout304?: T | Layout304BlockSelect<T>;
+        layout352?: T | Layout352BlockSelect<T>;
+        layout395?: T | Layout395BlockSelect<T>;
+        stats24?: T | Stats24BlockSelect<T>;
+        cta27?: T | CTA27BlockSelect<T>;
         links1?: T | Links1BlockSelect<T>;
         links4?: T | Links4BlockSelect<T>;
         logo1?: T | Logo1BlockSelect<T>;
@@ -7728,6 +8557,489 @@ export interface Layout5BlockSelect<T extends boolean = true> {
       };
   video?: T;
   image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout10Block_select".
+ */
+export interface Layout10BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  image?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  subHeadings?:
+    | T
+    | {
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              src?: T;
+              alt?: T;
+            };
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout42Block_select".
+ */
+export interface Layout42BlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout90Block_select".
+ */
+export interface Layout90BlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  image?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout132Block_select".
+ */
+export interface Layout132BlockSelect<T extends boolean = true> {
+  sections?:
+    | T
+    | {
+        image?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              src?: T;
+              alt?: T;
+            };
+        heading?: T;
+        description?: T;
+        button?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout133Block_select".
+ */
+export interface Layout133BlockSelect<T extends boolean = true> {
+  sections?:
+    | T
+    | {
+        tagline?: T;
+        heading?: T;
+        description?: T;
+        image?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              src?: T;
+              alt?: T;
+            };
+        buttons?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    appearance?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout222Block_select".
+ */
+export interface Layout222BlockSelect<T extends boolean = true> {
+  image?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  features?:
+    | T
+    | {
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              src?: T;
+              alt?: T;
+            };
+        heading?: T;
+        description?: T;
+        buttons?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    appearance?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout239Block_select".
+ */
+export interface Layout239BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  sections?:
+    | T
+    | {
+        image?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              src?: T;
+              alt?: T;
+            };
+        heading?: T;
+        description?: T;
+        id?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout304Block_select".
+ */
+export interface Layout304BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  sections?:
+    | T
+    | {
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              src?: T;
+              alt?: T;
+            };
+        heading?: T;
+        description?: T;
+        enableLink?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout352Block_select".
+ */
+export interface Layout352BlockSelect<T extends boolean = true> {
+  featureContent?:
+    | T
+    | {
+        tagline?: T;
+        heading?: T;
+        description?: T;
+        buttons?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    appearance?: T;
+                  };
+              id?: T;
+            };
+      };
+  timelineItems?:
+    | T
+    | {
+        date?: T;
+        description?: T;
+        image?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              src?: T;
+              alt?: T;
+            };
+        timelineButtons?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    appearance?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  bottomContent?:
+    | T
+    | {
+        tagline?: T;
+        heading?: T;
+        description?: T;
+        buttons?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    appearance?: T;
+                  };
+              id?: T;
+            };
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout395Block_select".
+ */
+export interface Layout395BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  sections?:
+    | T
+    | {
+        image?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              src?: T;
+              alt?: T;
+            };
+        tagline?: T;
+        heading?: T;
+        description?: T;
+        button?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Stats24Block_select".
+ */
+export interface Stats24BlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  defaultTabValue?: T;
+  tabs?:
+    | T
+    | {
+        value?: T;
+        percentage?: T;
+        heading?: T;
+        description?: T;
+        useVideo?: T;
+        image?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              src?: T;
+              alt?: T;
+            };
+        video?:
+          | T
+          | {
+              image?:
+                | T
+                | {
+                    useMedia?: T;
+                    mediaImage?: T;
+                    src?: T;
+                    alt?: T;
+                  };
+              url?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTA27Block_select".
+ */
+export interface CTA27BlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  image?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }

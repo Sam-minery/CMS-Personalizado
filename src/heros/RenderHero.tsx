@@ -8,6 +8,7 @@ import { MediumImpactHero } from '@/heros/MediumImpact'
 import { Custom2Hero } from '@/heros/Custom2'
 import { Header1Hero } from '@/heros/Header1'
 import { Header5Hero } from '@/heros/Header5'
+import { Header138Hero } from '@/heros/Header138'
 import { HeroTemplate } from '@/heros/heroTemplate'
 
 const heroes = {
@@ -17,6 +18,7 @@ const heroes = {
   custom2: Custom2Hero,
   header1: Header1Hero,
   header5: Header5Hero,
+  header138: Header138Hero,
   heroTemplate: HeroTemplate,
 }
 

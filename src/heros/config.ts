@@ -48,6 +48,10 @@ export const hero: Field = {
           value: 'header5',
         },
         {
+          label: 'Header 138',
+          value: 'header138',
+        },
+        {
           label: 'Hero Template',
           value: 'heroTemplate',
         },
@@ -82,6 +86,111 @@ export const hero: Field = {
       },
       relationTo: 'media',
       required: true,
+    },
+    // Campos específicos para Header138
+    {
+      name: 'header138Heading',
+      type: 'text',
+      admin: {
+        condition: (_, { type } = {}) => type === 'header138',
+      },
+      defaultValue: 'Medium length hero heading goes here',
+      label: 'Heading',
+      required: true,
+    },
+    {
+      name: 'header138Description',
+      type: 'text',
+      admin: {
+        condition: (_, { type } = {}) => type === 'header138',
+      },
+      defaultValue:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.',
+      label: 'Description',
+    },
+    {
+      name: 'header138FirstImage',
+      type: 'group',
+      admin: {
+        condition: (_, { type } = {}) => type === 'header138',
+      },
+      fields: [
+        {
+          name: 'useMedia',
+          type: 'checkbox',
+          label: 'Usar imagen subida',
+          defaultValue: false,
+        },
+        {
+          name: 'mediaImage',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            condition: (_, siblingData) => siblingData?.useMedia === true,
+            description: 'Seleccione una imagen existente o suba una nueva',
+          },
+        },
+        {
+          name: 'src',
+          type: 'text',
+          defaultValue: 'https://d22po4pjz3o32e.cloudfront.net/placeholder-image.svg',
+          admin: {
+            condition: (_, siblingData) => siblingData?.useMedia === false,
+            description: 'Ingrese la URL de la imagen principal',
+          },
+        },
+        {
+          name: 'alt',
+          type: 'text',
+          defaultValue: 'Relume placeholder image 1',
+          admin: {
+            description: 'Texto alternativo para accesibilidad',
+          },
+        },
+      ],
+      label: 'First Image',
+    },
+    {
+      name: 'header138SecondImage',
+      type: 'group',
+      admin: {
+        condition: (_, { type } = {}) => type === 'header138',
+      },
+      fields: [
+        {
+          name: 'useMedia',
+          type: 'checkbox',
+          label: 'Usar imagen subida',
+          defaultValue: false,
+        },
+        {
+          name: 'mediaImage',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            condition: (_, siblingData) => siblingData?.useMedia === true,
+            description: 'Seleccione una imagen existente o suba una nueva',
+          },
+        },
+        {
+          name: 'src',
+          type: 'text',
+          defaultValue: 'https://d22po4pjz3o32e.cloudfront.net/placeholder-image-portrait-dim.png',
+          admin: {
+            condition: (_, siblingData) => siblingData?.useMedia === false,
+            description: 'Ingrese la URL de la imagen secundaria',
+          },
+        },
+        {
+          name: 'alt',
+          type: 'text',
+          defaultValue: 'Relume placeholder image 2',
+          admin: {
+            description: 'Texto alternativo para accesibilidad',
+          },
+        },
+      ],
+      label: 'Second Image',
     },
     // Campos específicos para HeroTemplate
     {

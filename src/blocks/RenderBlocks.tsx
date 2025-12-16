@@ -94,6 +94,18 @@ import { Testimonial5 } from '@/blocks/Testimonial5/Component'
 import { Navbar5 } from '@/blocks/Navbar5/Component'
 import { Layout1Block } from '@/blocks/Layout1/Component'
 import { Layout5Block } from '@/blocks/Layout5/Component'
+import { Layout10Block } from '@/blocks/Layout10/Component'
+import { Layout42Block } from '@/blocks/Layout42/Component'
+import { Layout90Block } from '@/blocks/Layout90/Component'
+import { Layout132Block } from '@/blocks/Layout132/Component'
+import { Layout133Block } from '@/blocks/Layout133/Component'
+import { Layout222Block } from '@/blocks/Layout222/Component'
+import { Layout239Block } from '@/blocks/Layout239/Component'
+import { Layout304Block } from '@/blocks/Layout304/Component'
+import { Layout352Block } from '@/blocks/Layout352/Component'
+import { Layout395Block } from '@/blocks/Layout395/Component'
+import { Stats24Block } from '@/blocks/Stats24/Component'
+import { CTA27Block } from '@/blocks/CTA27/Component'
 import { Header44Block } from '@/blocks/Header44/Component'
 import { Header48Block } from '@/blocks/Header48/Component'
 import { AnimatedPin3DBlock } from '@/blocks/3D_Animated_Pin/Component'
@@ -196,6 +208,18 @@ const blockComponents = {
   testimonial5: Testimonial5,
   layout1: Layout1Block,
   layout5: Layout5Block,
+  layout10: Layout10Block,
+  layout42: Layout42Block,
+  layout90: Layout90Block,
+  layout132: Layout132Block,
+  layout133: Layout133Block,
+  layout222: Layout222Block,
+  layout239: Layout239Block,
+  layout304: Layout304Block,
+  layout352: Layout352Block,
+  layout395: Layout395Block,
+  stats24: Stats24Block,
+  cta27: CTA27Block,
   header44: Header44Block,
   header48: Header48Block,
   pulseBeams: Pulse_Beams,
