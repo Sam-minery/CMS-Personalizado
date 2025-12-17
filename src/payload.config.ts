@@ -3,7 +3,12 @@ import 'dotenv/config'
 
 // Configurar TLS para desarrollo: deshabilitar verificación de certificados self-signed
 // Solo en desarrollo cuando se requiere un certificado CA que tiene certificados self-signed en la cadena
-if (process.env.ENVIRONMENT === 'development' && process.env.DB_SSL_CA_PATH) {
+// Nota: No verificamos NODE_ENV aquí porque durante 'npm run build' Next.js establece NODE_ENV=production
+// pero seguimos necesitando el certificado local para conectarnos a la DB de desarrollo
+if (
+  process.env.ENVIRONMENT === 'development' && 
+  process.env.DB_SSL_CA_PATH
+) {
   // Deshabilitar la verificación TLS a nivel de Node.js para permitir certificados self-signed
   // Esto es necesario porque el driver de PostgreSQL valida la cadena completa incluso con rejectUnauthorized: false
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
@@ -36,12 +41,17 @@ const dirname = path.dirname(filename)
 // Obtener la raíz del proyecto (un nivel arriba de src/)
 const projectRoot = path.resolve(dirname, '..')
 
-// Determinar si estamos en desarrollo
-const isDevelopment = process.env.ENVIRONMENT === 'development'
+// Determinar si estamos en desarrollo local
+// Usamos solo ENVIRONMENT porque NODE_ENV puede ser 'production' durante 'npm run build'
+// pero seguimos necesitando el certificado local para la DB de desarrollo
+// En producción real (CI/DigitalOcean), ENVIRONMENT no será 'development'
+const isLocalDevelopment = process.env.ENVIRONMENT === 'development'
 
 // Configurar SSL según el entorno
 const getSSLConfig = () => {
-  if (isDevelopment && process.env.DB_SSL_CA_PATH) {
+  // Usar certificado local si estamos en desarrollo local y el certificado está configurado
+  // Esto funciona tanto para 'npm run dev' como para 'npm run build' local
+  if (isLocalDevelopment && process.env.DB_SSL_CA_PATH) {
     // En desarrollo: usar el certificado CA
     // Resolver la ruta de forma absoluta para evitar problemas con rutas relativas
     const certPath = path.isAbsolute(process.env.DB_SSL_CA_PATH)
@@ -58,23 +68,18 @@ const getSSLConfig = () => {
     
     const caCert = fs.readFileSync(certPath, 'utf8').trim()
     
-    
     return {
       rejectUnauthorized: false,
       ca: caCert,
-      
       checkServerIdentity: () => {
-       
         return undefined
       },
     }
-  } else if (isDevelopment) {
-    // En desarrollo sin certificado: permitir conexiones no autorizadas (solo para desarrollo local)
-    return {
-      rejectUnauthorized: false,
-    }
   }
-  // En producción: usar SSL con rejectUnauthorized: false (el certificado se gestiona en Digital Ocean)
+  
+  // En producción o CI: Digital Ocean maneja SSL automáticamente
+  // El driver de PostgreSQL usará la configuración SSL de la URI (sslrootcert si está presente en CI)
+  // o simplemente rejectUnauthorized: false que es suficiente para DO en producción
   return {
     rejectUnauthorized: false,
   }
