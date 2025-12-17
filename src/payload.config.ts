@@ -49,6 +49,10 @@ const isLocalDevelopment = process.env.ENVIRONMENT === 'development'
 
 // Configurar SSL según el entorno
 const getSSLConfig = () => {
+  // Verificar si la URI ya incluye sslrootcert (caso de CI/GitHub Actions)
+  const databaseUri = process.env.DATABASE_URI || ''
+  const uriHasSSLRootCert = databaseUri.includes('sslrootcert=')
+  
   // Usar certificado local si estamos en desarrollo local y el certificado está configurado
   // Esto funciona tanto para 'npm run dev' como para 'npm run build' local
   if (isLocalDevelopment && process.env.DB_SSL_CA_PATH) {
@@ -77,9 +81,15 @@ const getSSLConfig = () => {
     }
   }
   
-  // En producción o CI: Digital Ocean maneja SSL automáticamente
-  // El driver de PostgreSQL usará la configuración SSL de la URI (sslrootcert si está presente en CI)
-  // o simplemente rejectUnauthorized: false que es suficiente para DO en producción
+  // En producción o CI: 
+  // Si la URI ya incluye sslrootcert (como en GitHub Actions), no pasar configuración SSL adicional
+  // El driver de PostgreSQL usará automáticamente el certificado de la URI
+  // Si no incluye sslrootcert, usar rejectUnauthorized: false (suficiente para DO en producción)
+  if (uriHasSSLRootCert) {
+    // No pasar configuración SSL cuando ya está en la URI para evitar conflictos
+    return undefined
+  }
+  
   return {
     rejectUnauthorized: false,
   }
