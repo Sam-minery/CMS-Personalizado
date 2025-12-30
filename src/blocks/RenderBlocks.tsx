@@ -113,6 +113,9 @@ import { Pulse_Beams } from '@/blocks/Pulse_Beams/Component'
 import { Background_Ripple_Effect } from '@/blocks/Background_Ripple_Effect/Component'
 import { Glowing_Background_Star_Card } from '@/blocks/Glowing_Background_Star_Card/Component'
 import { Text_Reveal_Card } from '@/blocks/Text_Reveal_Card/Component'
+import { StickyBannerDemo } from '@/blocks/Sticky_Banner/Component'
+import { FocusCardsDemo } from '@/blocks/Focus_Cards/Component'
+import { InfiniteMovingCardsDemo } from '@/blocks/Infinite_Moving_Cards/Component'
 
 const blockComponents = {
   animatedPin3D: AnimatedPin3DBlock,
@@ -226,6 +229,9 @@ const blockComponents = {
   backgroundRippleEffect: Background_Ripple_Effect,
   GlowingStarCard: Glowing_Background_Star_Card,
   TextRevealCard: Text_Reveal_Card,
+  stickyBanner: StickyBannerDemo,
+  focusCards: FocusCardsDemo,
+  infiniteMovingCards: InfiniteMovingCardsDemo,
 }
 
 export const RenderBlocks: React.FC<{

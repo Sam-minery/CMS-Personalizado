@@ -497,5 +497,23 @@ export const blockConfigs: BlockConfig[] = [
     selector: 'Links 4',
     imageUrl: 'https://cdn.prod.website-files.com/61789b489343c8242282a0ae/66833d6b1576e1b5e14cb2f7_QAManczCyFjSG2XzrmkczNyXoRPAZiLx70nUiRBIWHY.png',
     className: 'custom-links_4-preview'
+  },
+  {
+    name: 'Sticky Banner',
+    selector: 'Sticky Banner',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/sticky-banner.webp',
+    className: 'custom-sticky-banner-preview'
+  },
+  {
+    name: 'Focus Cards',
+    selector: 'Focus Cards',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/focus-cards.webp',
+    className: 'custom-focus-cards-preview'
+  },
+  {
+    name: 'Infinite Moving Cards',
+    selector: 'Infinite Moving Cards',
+    imageUrl: 'https://aceternity.com/cdn-cgi/image/width=2048/https://assets.aceternity.com/cloudinary_bkp/Infinite_Moving_Cards_evhzur.png',
+    className: 'custom-infinite-moving-cards-preview'
   }
 ]

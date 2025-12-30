@@ -410,7 +410,9 @@ export interface Page {
     | FAQ2Block
     | FAQ4Block
     | FAQ5Block
+    | FocusCardsBlock
     | Footer1Block
+    | InfiniteMovingCardsBlock
     | Footer5Block
     | FormBlock
     | Gallery6Block
@@ -444,6 +446,7 @@ export interface Page {
       }
     | Header44Block
     | Header48Block
+    | StickyBannerBlock
     | Layout1Block
     | Layout5Block
     | Layout10Block
@@ -2836,6 +2839,28 @@ export interface FAQ5Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FocusCardsBlock".
+ */
+export interface FocusCardsBlock {
+  cards?:
+    | {
+        /**
+         * Título que se muestra cuando se hace hover sobre la tarjeta
+         */
+        title: string;
+        /**
+         * Imagen de la tarjeta
+         */
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'focusCards';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Footer1Block".
  */
 export interface Footer1Block {
@@ -2938,6 +2963,33 @@ export interface Footer1Block {
   id?: string | null;
   blockName?: string | null;
   blockType: 'footer1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InfiniteMovingCardsBlock".
+ */
+export interface InfiniteMovingCardsBlock {
+  colorScheme?:
+    | ('slate' | 'blue' | 'red' | 'green' | 'purple' | 'pink' | 'orange' | 'emerald' | 'amber' | 'indigo')
+    | null;
+  height?: ('30rem' | '40rem' | '50rem' | '60rem') | null;
+  direction?: ('left' | 'right') | null;
+  speed?: ('fast' | 'normal' | 'slow') | null;
+  items?:
+    | {
+        /**
+         * Imagen opcional para la tarjeta
+         */
+        image?: (number | null) | Media;
+        quote: string;
+        name: string;
+        title: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'infiniteMovingCards';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3445,6 +3497,48 @@ export interface Header48Block {
   id?: string | null;
   blockName?: string | null;
   blockType: 'header48';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StickyBannerBlock".
+ */
+export interface StickyBannerBlock {
+  /**
+   * Texto principal que se mostrará en el banner
+   */
+  content: string;
+  /**
+   * Texto del enlace (opcional). Si se deja vacío, no se mostrará enlace.
+   */
+  linkText?: string | null;
+  /**
+   * Configura el enlace del banner (opcional)
+   */
+  link?: {
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null);
+    url?: string | null;
+  };
+  /**
+   * Selecciona el color del banner (gradiente)
+   */
+  bannerColor?: ('blue' | 'red' | 'green' | 'yellow') | null;
+  /**
+   * Si está activado, el banner se ocultará automáticamente al hacer scroll hacia abajo
+   */
+  hideOnScroll?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'stickyBanner';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -6404,7 +6498,9 @@ export interface PagesSelect<T extends boolean = true> {
         faq2?: T | FAQ2BlockSelect<T>;
         faq4?: T | FAQ4BlockSelect<T>;
         faq5?: T | FAQ5BlockSelect<T>;
+        focusCards?: T | FocusCardsBlockSelect<T>;
         footer1?: T | Footer1BlockSelect<T>;
+        infiniteMovingCards?: T | InfiniteMovingCardsBlockSelect<T>;
         footer5?: T | Footer5BlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         gallery6?: T | Gallery6BlockSelect<T>;
@@ -6435,6 +6531,7 @@ export interface PagesSelect<T extends boolean = true> {
             };
         header44?: T | Header44BlockSelect<T>;
         header48?: T | Header48BlockSelect<T>;
+        stickyBanner?: T | StickyBannerBlockSelect<T>;
         layout1?: T | Layout1BlockSelect<T>;
         layout5?: T | Layout5BlockSelect<T>;
         layout10?: T | Layout10BlockSelect<T>;
@@ -8224,6 +8321,21 @@ export interface FAQ5BlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FocusCardsBlock_select".
+ */
+export interface FocusCardsBlockSelect<T extends boolean = true> {
+  cards?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Footer1Block_select".
  */
 export interface Footer1BlockSelect<T extends boolean = true> {
@@ -8297,6 +8409,27 @@ export interface Footer1BlockSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
             };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InfiniteMovingCardsBlock_select".
+ */
+export interface InfiniteMovingCardsBlockSelect<T extends boolean = true> {
+  colorScheme?: T;
+  height?: T;
+  direction?: T;
+  speed?: T;
+  items?:
+    | T
+    | {
+        image?: T;
+        quote?: T;
+        name?: T;
+        title?: T;
         id?: T;
       };
   id?: T;
@@ -8495,6 +8628,26 @@ export interface Header48BlockSelect<T extends boolean = true> {
         variant?: T;
       };
   termsAndConditions?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StickyBannerBlock_select".
+ */
+export interface StickyBannerBlockSelect<T extends boolean = true> {
+  content?: T;
+  linkText?: T;
+  link?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+      };
+  bannerColor?: T;
+  hideOnScroll?: T;
   id?: T;
   blockName?: T;
 }

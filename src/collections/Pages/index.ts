@@ -109,10 +109,13 @@ import { CTA27Block } from '../../blocks/CTA27/config'
 import { Header44Block } from '../../blocks/Header44/config'
 import { Header48Block } from '../../blocks/Header48/config'
 import { AnimatedPin3DBlock } from '../../blocks/3D_Animated_Pin/Config'
+import { StickyBannerBlock } from '../../blocks/Sticky_Banner/config'
 import { Pulse_Beams } from '../../blocks/Pulse_Beams'
 import { Background_Ripple_Effect } from '../../blocks/Background_Ripple_Effect'
 import { Glowing_Background_Star_Card } from '../../blocks/Glowing_Background_Star_Card'
 import { Text_Reveal_Card } from '../../blocks/Text_Reveal_Card'
+import { FocusCardsBlock } from '../../blocks/Focus_Cards/config'
+import { InfiniteMovingCardsBlock } from '../../blocks/Infinite_Moving_Cards/config'
 import { hero } from '@/heros/config'
 import { slugField } from '@/fields/slug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -230,7 +233,9 @@ export const Pages: CollectionConfig<'pages'> = {
                 FAQ2,
                 FAQ4,
                 FAQ5Block,
+                FocusCardsBlock,
                 Footer1Block,
+                InfiniteMovingCardsBlock,
                 Footer5Block,
                 FormBlock,
                 Gallery6,
@@ -239,6 +244,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 Glowing_Background_Star_Card,
                 Header44Block,
                 Header48Block,
+                StickyBannerBlock,
                 Layout1Block,
                 Layout5Block,
                 Layout10Block,

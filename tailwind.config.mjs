@@ -53,6 +53,7 @@ const config = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         spotlight: 'spotlight 2s ease .75s 1 forwards',
+        scroll: 'scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite',
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -118,6 +119,14 @@ const config = {
           '100%': {
             opacity: '1',
             transform: 'translate(-50%,-40%) scale(1)',
+          },
+        },
+        scroll: {
+          '0%': {
+            transform: 'translateX(0)',
+          },
+          '100%': {
+            transform: 'translateX(var(--scroll-distance, -50%))',
           },
         },
       },
