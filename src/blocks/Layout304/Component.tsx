@@ -60,7 +60,7 @@ export const Layout304Block: React.FC<Layout304BlockProps> = ({
   const getIconSrc = (iconGroup: ImageGroup | null | undefined): string => {
     if (!iconGroup) return ''
     if (iconGroup.useMedia && iconGroup.mediaImage) {
-      if (typeof iconGroup.mediaImage === 'object' && iconGroup.mediaImage?.url) {
+      if (typeof iconGroup.mediaImage === 'object' && iconGroup.mediaImage !== null && iconGroup.mediaImage.url) {
         return iconGroup.mediaImage.url
       }
     }

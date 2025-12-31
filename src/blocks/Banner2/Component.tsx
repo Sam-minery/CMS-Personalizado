@@ -41,7 +41,7 @@ export const Banner2 = (props: Banner2Props) => {
         <div className="mb-4 mr-7 flex flex-1 items-start md:mb-0 md:mr-8 md:items-center">
           <a href={logo.useMedia ? '#' : logo.url}>
             <Image 
-              src={logo.useMedia ? logo.mediaImage?.url : logo.src} 
+              src={logo.useMedia && logo.mediaImage && typeof logo.mediaImage === 'object' && logo.mediaImage !== null ? logo.mediaImage.url : logo.src} 
               alt={logo.alt || "Logo"} 
               width={32} 
               height={32} 

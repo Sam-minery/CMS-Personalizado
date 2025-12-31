@@ -29,7 +29,7 @@ export const PortfolioHeader2 = (props: PortfolioHeader2Props) => {
     if (typeof imageItem === 'string') {
       return imageItem
     }
-    if (typeof imageItem === 'object' && imageItem?.url) {
+    if (typeof imageItem === 'object' && imageItem !== null && imageItem.url) {
       return imageItem.url
     }
     return ''

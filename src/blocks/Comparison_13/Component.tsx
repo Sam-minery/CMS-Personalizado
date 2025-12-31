@@ -72,8 +72,8 @@ export const Comparison13 = (props: Comparison13Props) => {
   const convertedProducts = products.map(product => ({
     ...product,
     icon: {
-      src: product.icon.url || product.icon.src,
-      alt: product.icon.alt
+      src: product.icon?.url || product.icon?.src || '',
+      alt: product.icon?.alt || ''
     },
     mainFeatures: product.mainFeatures.map(feature => ({
       ...feature,

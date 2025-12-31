@@ -16,9 +16,9 @@ export const Header138Hero: React.FC<Page['hero']> = ({
     if (!imageData) return ''
     
     // Si es un objeto Media
-    if (typeof imageData === 'object') {
+    if (typeof imageData === 'object' && imageData !== null) {
       if (imageData.useMedia && imageData.mediaImage) {
-        if (typeof imageData.mediaImage === 'object' && imageData.mediaImage?.url) {
+        if (typeof imageData.mediaImage === 'object' && imageData.mediaImage !== null && imageData.mediaImage.url) {
           return imageData.mediaImage.url
         }
       }

@@ -107,7 +107,7 @@ export const Stats3 = (props: Stats3Props) => {
       </div>
       <div className="absolute inset-0 z-0">
         {(() => {
-          const imageSrc = typeof image.src === 'object' && image.src?.url ? image.src.url : String(image.src || '');
+          const imageSrc = typeof image.src === 'object' && image.src !== null && image.src.url ? image.src.url : String(image.src || '');
           return imageSrc && imageSrc !== 'undefined' && imageSrc !== 'null' && (
             <Image 
               src={imageSrc} 

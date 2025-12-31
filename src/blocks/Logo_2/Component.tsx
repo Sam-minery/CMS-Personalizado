@@ -25,7 +25,7 @@ export const Logo2Block: React.FC<Logo2Props> = (props) => {
   // Función para obtener la URL de la imagen desde el objeto Media
   const getImageSrc = (mediaItem: MediaType | null | undefined): string => {
     if (!mediaItem) return ''
-    if (typeof mediaItem === 'object' && mediaItem?.url) {
+    if (typeof mediaItem === 'object' && mediaItem !== null && mediaItem.url) {
       return mediaItem.url
     }
     return ''

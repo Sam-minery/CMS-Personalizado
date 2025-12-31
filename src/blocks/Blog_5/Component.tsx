@@ -15,7 +15,7 @@ type ImageProps = {
 // Helper function to get image URL from upload field
 const getImageUrl = (image: string | Media | ImageProps): string => {
   if (typeof image === 'string') return image
-  if (image && typeof image === 'object' && 'url' in image) {
+  if (image && typeof image === 'object' && image !== null && 'url' in image) {
     return image.url || ''
   }
   return ''

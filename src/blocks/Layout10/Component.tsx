@@ -51,7 +51,7 @@ export const Layout10Block: React.FC<Layout10BlockProps> = ({
   const getImageSrc = (imageGroup: ImageGroup | null | undefined): string => {
     if (!imageGroup) return ''
     if (imageGroup.useMedia && imageGroup.mediaImage) {
-      if (typeof imageGroup.mediaImage === 'object' && imageGroup.mediaImage?.url) {
+      if (typeof imageGroup.mediaImage === 'object' && imageGroup.mediaImage !== null && imageGroup.mediaImage.url) {
         return imageGroup.mediaImage.url
       }
     }
@@ -69,7 +69,7 @@ export const Layout10Block: React.FC<Layout10BlockProps> = ({
     if (!subHeading || !subHeading.icon) return ''
     const icon = subHeading.icon
     if (icon.useMedia && icon.mediaImage) {
-      if (typeof icon.mediaImage === 'object' && icon.mediaImage?.url) {
+      if (typeof icon.mediaImage === 'object' && icon.mediaImage !== null && icon.mediaImage.url) {
         return icon.mediaImage.url
       }
     }

@@ -113,7 +113,7 @@ export const Footer1 = (props: Footer1Props) => {
         <div className="grid grid-cols-1 gap-x-[8vw] gap-y-12 pb-12 md:gap-y-16 md:pb-18 lg:grid-cols-[0.75fr_1fr] lg:gap-y-4 lg:pb-20">
           <div className="flex flex-col">
             <CMSLink {...logo.link} className="mb-5 md:mb-6">
-              {logo.media && typeof logo.media === 'object' && logo.media.url && (
+              {logo.media && typeof logo.media === 'object' && logo.media !== null && logo.media.url && (
                 <Image
                   src={logo.media.url}
                   alt={logo.media.alt || 'Logo'}

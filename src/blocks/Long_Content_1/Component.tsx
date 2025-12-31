@@ -25,7 +25,7 @@ export const LongContent1Block: React.FC<LongContent1BlockProps> = (props) => {
           </div>
           <div>
             {(() => {
-              const imageSrc = typeof image.src === 'object' && image.src?.url ? image.src.url : String(image.src);
+              const imageSrc = typeof image.src === 'object' && image.src !== null && image.src.url ? image.src.url : String(image.src);
               return imageSrc && imageSrc !== 'undefined' && imageSrc !== 'null' && (
                 <Image 
                   src={imageSrc} 

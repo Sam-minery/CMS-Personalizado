@@ -17,7 +17,7 @@ export const LongContent2Block: React.FC<LongContent2BlockProps> = (props) => {
         <div className="grid grid-cols-1 items-start gap-y-12 md:grid-cols-2 md:gap-x-12 lg:gap-x-20">
           <div>
             {(() => {
-              const imageSrc = typeof image.src === 'object' && image.src?.url ? image.src.url : String(image.src);
+              const imageSrc = typeof image.src === 'object' && image.src !== null && image.src.url ? image.src.url : String(image.src);
               return imageSrc && imageSrc !== 'undefined' && imageSrc !== 'null' && (
                 <Image 
                   src={imageSrc} 

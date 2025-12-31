@@ -41,7 +41,7 @@ export const Layout222Block: React.FC<Layout222BlockProps> = ({ image, features 
   const getImageSrc = (imageGroup: ImageGroup | null | undefined): string => {
     if (!imageGroup) return ''
     if (imageGroup.useMedia && imageGroup.mediaImage) {
-      if (typeof imageGroup.mediaImage === 'object' && imageGroup.mediaImage?.url) {
+      if (typeof imageGroup.mediaImage === 'object' && imageGroup.mediaImage !== null && imageGroup.mediaImage.url) {
         return imageGroup.mediaImage.url
       }
     }
@@ -58,7 +58,7 @@ export const Layout222Block: React.FC<Layout222BlockProps> = ({ image, features 
   const getIconSrc = (iconGroup: ImageGroup | null | undefined): string => {
     if (!iconGroup) return ''
     if (iconGroup.useMedia && iconGroup.mediaImage) {
-      if (typeof iconGroup.mediaImage === 'object' && iconGroup.mediaImage?.url) {
+      if (typeof iconGroup.mediaImage === 'object' && iconGroup.mediaImage !== null && iconGroup.mediaImage.url) {
         return iconGroup.mediaImage.url
       }
     }

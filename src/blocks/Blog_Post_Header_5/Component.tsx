@@ -67,7 +67,7 @@ export const BlogPostHeader5Block = (props: BlogPostHeader5Props) => {
         </div>
       </div>
       <div className="absolute inset-0 z-0">
-        {image.url && (
+        {image && image.url && (
           <Image 
             src={image.url} 
             alt={image.alt || 'Blog post image'} 

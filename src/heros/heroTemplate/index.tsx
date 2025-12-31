@@ -64,7 +64,7 @@ export const HeroTemplate: React.FC<HeroTemplateProps> = (props) => {
 
   // Helper function to get image source
   const getImageSrc = (imageType: 'upload' | 'url', imageUpload?: any, imageUrl?: string) => {
-    if (imageType === 'upload' && imageUpload && typeof imageUpload === 'object' && imageUpload.url) {
+    if (imageType === 'upload' && imageUpload && typeof imageUpload === 'object' && imageUpload !== null && imageUpload.url) {
       return imageUpload.url;
     }
     return imageUrl || '';

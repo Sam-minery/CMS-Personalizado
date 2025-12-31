@@ -27,7 +27,7 @@ export const Gallery19Block: React.FC<Gallery19BlockProps> = (props) => {
     if (typeof image === 'string') {
       return image
     }
-    return typeof image === 'object' && image?.url ? image.url : ''
+    return typeof image === 'object' && image !== null && image.url ? image.url : ''
   }
 
   const getImageAlt = (image: string | Media, fallbackAlt: string): string => {

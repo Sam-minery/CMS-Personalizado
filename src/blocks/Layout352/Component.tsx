@@ -113,7 +113,7 @@ const TimelineItemComponent: React.FC<TimelineItem> = ({ date, description, imag
   const getImageSrc = (imageGroup: ImageGroup | null | undefined): string => {
     if (!imageGroup) return ''
     if (imageGroup.useMedia && imageGroup.mediaImage) {
-      if (typeof imageGroup.mediaImage === 'object' && imageGroup.mediaImage?.url) {
+      if (typeof imageGroup.mediaImage === 'object' && imageGroup.mediaImage !== null && imageGroup.mediaImage.url) {
         return imageGroup.mediaImage.url
       }
     }

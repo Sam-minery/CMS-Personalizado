@@ -78,7 +78,7 @@ export const CTA4Block: React.FC<CTA4BlockProps> = ({
         </div>
       </div>
       <div className="absolute inset-0 z-0">
-        {image && typeof image === 'object' && image.url && (
+        {image && typeof image === 'object' && image !== null && image.url && (
           <Image 
             src={image.url} 
             alt={image.alt || image.filename || 'CTA background image'} 

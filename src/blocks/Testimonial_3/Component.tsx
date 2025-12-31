@@ -28,7 +28,7 @@ export type Testimonial3Props = React.ComponentPropsWithoutRef<'section'> & Part
 // Función helper para obtener la URL de la imagen
 const getImageUrl = (image: Media | string): string => {
   if (typeof image === 'string') return image
-  if (image && typeof image === 'object' && 'url' in image) return image.url || ''
+  if (image && typeof image === 'object' && image !== null && 'url' in image) return image.url || ''
   return ''
 }
 

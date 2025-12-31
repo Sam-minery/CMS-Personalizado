@@ -59,7 +59,7 @@ export const LongContent3Block: React.FC<LongContent3BlockProps> = (props) => {
               <DialogTrigger asChild>
                 <button className="relative flex w-full items-center justify-center">
                   {(() => {
-                    const imageSrc = typeof image.src === 'object' && image.src?.url ? image.src.url : String(image.src);
+                    const imageSrc = typeof image.src === 'object' && image.src !== null && image.src.url ? image.src.url : String(image.src);
                     return imageSrc && imageSrc !== 'undefined' && imageSrc !== 'null' && (
                       <Image 
                         src={imageSrc} 

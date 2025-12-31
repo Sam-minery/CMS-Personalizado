@@ -79,7 +79,7 @@ export const Pricing5Block: React.FC<{
                 <div className="mr-6 flex-none self-start">
                   {(() => {
                     // Manejar el objeto Media de Payload
-                    const iconSrc = typeof featureSection.icon.src === 'object' && featureSection.icon.src?.url 
+                    const iconSrc = typeof featureSection.icon.src === 'object' && featureSection.icon.src !== null && featureSection.icon.src.url 
                       ? featureSection.icon.src.url 
                       : featureSection.icon.src || featureSection.icon.url;
                     

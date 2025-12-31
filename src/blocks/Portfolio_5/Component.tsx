@@ -94,7 +94,7 @@ const Project: React.FC<ProjectProps> = ({ title, description, image, url, butto
     if (typeof imageItem === 'string') {
       return imageItem
     }
-    if (typeof imageItem === 'object' && imageItem?.url) {
+    if (typeof imageItem === 'object' && imageItem !== null && imageItem.url) {
       return imageItem.url
     }
     return ''

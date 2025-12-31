@@ -28,7 +28,7 @@ export const Layout5Block: React.FC<Layout5BlockProps> = ({
   const getImageSrc = (mediaItem: number | Media | null | undefined): string => {
     if (!mediaItem) return ''
     if (typeof mediaItem === 'number') return ''
-    if (typeof mediaItem === 'object' && mediaItem?.url) {
+    if (typeof mediaItem === 'object' && mediaItem !== null && mediaItem.url) {
       return mediaItem.url
     }
     return ''

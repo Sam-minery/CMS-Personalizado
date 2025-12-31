@@ -51,7 +51,7 @@ export const AnimatedPin3DBlock: React.FC<AnimatedPin3DBlockProps> = ({
             </span>
           </div>
           <div className="flex flex-1 w-full rounded-lg mt-4 overflow-hidden">
-            {media && typeof media === 'object' && media.url ? (
+            {media && typeof media === 'object' && media !== null && media.url ? (
               <img
                 src={media.url}
                 alt={media.alt || title}

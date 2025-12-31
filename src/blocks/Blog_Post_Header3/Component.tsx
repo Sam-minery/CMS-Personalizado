@@ -134,7 +134,7 @@ export const BlogPostHeader3 = (props: BlogPostHeader3Props) => {
           </div>
           <div className="mx-auto w-full overflow-hidden">
             <Image 
-              src={image.useMedia ? image.mediaImage?.url : image.src} 
+              src={image.useMedia && image.mediaImage && typeof image.mediaImage === 'object' && image.mediaImage !== null ? image.mediaImage.url : image.src} 
               alt={image.alt || "Blog post image"} 
               width={800}
               height={533}

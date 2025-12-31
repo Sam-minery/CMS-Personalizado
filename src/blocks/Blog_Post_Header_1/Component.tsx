@@ -140,7 +140,7 @@ export const BlogPostHeader1Block = (props: BlogPostHeader1Props) => {
           </div>
         </div>
         <div className="mx-auto w-full overflow-hidden">
-          {image.url && (
+          {image && image.url && (
             <Image 
               src={image.url} 
               alt={image.alt || 'Blog post image'} 

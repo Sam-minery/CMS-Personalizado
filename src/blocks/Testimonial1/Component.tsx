@@ -47,7 +47,7 @@ export const Testimonial1 = (props: Testimonial1BlockType) => {
   const getImageSrc = (mediaItem: any): string => {
     if (!mediaItem) return ''
     if (typeof mediaItem === 'string') return mediaItem
-    if (typeof mediaItem === 'object' && mediaItem?.url) {
+    if (typeof mediaItem === 'object' && mediaItem !== null && mediaItem.url) {
       return mediaItem.url
     }
     return ''

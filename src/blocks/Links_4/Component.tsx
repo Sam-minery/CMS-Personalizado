@@ -135,7 +135,7 @@ export const Links4 = (props: Links4Props) => {
             </div>
             <div className="relative z-0 flex aspect-square items-center justify-center object-cover">
               <div className="absolute -top-6 size-full h-[calc(100%+1.5rem)] w-screen md:top-0 md:size-full">
-                {typeof image === 'object' && image.url && (
+                {typeof image === 'object' && image !== null && image.url && (
                   <img 
                     src={getMediaUrl(image.url, image.updatedAt)} 
                     className="size-full object-cover" 

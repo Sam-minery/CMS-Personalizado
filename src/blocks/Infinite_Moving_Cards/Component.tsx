@@ -10,7 +10,7 @@ const getImageUrl = (media: string | MediaType | number | null | undefined): str
   if (!media) return ''
   if (typeof media === 'string') return media
   if (typeof media === 'number') return ''
-  if (media && typeof media === 'object' && 'url' in media) {
+  if (media && typeof media === 'object' && media !== null && 'url' in media) {
     return media.url || ''
   }
   return ''

@@ -65,7 +65,7 @@ export const Blog9Block = (props: Blog9Props) => {
   // Helper function to get image URL from Media object or string
   const getImageUrl = (image: string | Media | ImageProps): string => {
     if (typeof image === 'string') return image
-    if (image && typeof image === 'object' && 'url' in image) return image.url || ''
+    if (image && typeof image === 'object' && image !== null && 'url' in image) return image.url || ''
     return ''
   }
 

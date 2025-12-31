@@ -62,7 +62,7 @@ const Testimonial = ({ testimonial }: { testimonial: Testimonial }) => {
   const getImageSrc = (mediaItem: any): string => {
     if (!mediaItem) return ''
     if (typeof mediaItem === 'string') return mediaItem
-    if (typeof mediaItem === 'object' && mediaItem?.url) {
+    if (typeof mediaItem === 'object' && mediaItem !== null && mediaItem.url) {
       return mediaItem.url
     }
     return ''
