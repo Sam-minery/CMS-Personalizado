@@ -14,27 +14,33 @@ import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const pages = await payload.find({
-    collection: 'pages',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
-
-  const params = pages.docs
-    ?.filter((doc) => {
-      return doc.slug !== 'home'
-    })
-    .map(({ slug }) => {
-      return { slug }
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const pages = await payload.find({
+      collection: 'pages',
+      draft: false,
+      limit: 1000,
+      overrideAccess: false,
+      pagination: false,
+      select: {
+        slug: true,
+      },
     })
 
-  return params
+    const params = pages.docs
+      ?.filter((doc) => {
+        return doc.slug && doc.slug !== 'home'
+      })
+      .map(({ slug }) => {
+        return { slug: slug || '' }
+      })
+      .filter((param) => param.slug) // Filtrar slugs vacíos
+
+    return params || []
+  } catch (error) {
+    console.error('Error generating static params:', error)
+    return []
+  }
 }
 
 type Args = {
@@ -73,8 +79,8 @@ export default async function Page({ params: paramsPromise }: Args) {
 
       {draft && <LivePreviewListener />}
 
-      <RenderHero {...hero} />
-      <RenderBlocks blocks={layout} />
+      {hero && <RenderHero {...hero} />}
+      {layout && <RenderBlocks blocks={layout} />}
     </article>
   )
 }
@@ -82,6 +88,15 @@ export default async function Page({ params: paramsPromise }: Args) {
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = 'home' } = await paramsPromise
   const page = await queryPageBySlug({ slug })
+  
+  // Si la página no existe, retornar metadatos por defecto
+  if (!page) {
+    return {
+      title: 'Payload Website Template',
+      description: '',
+    }
+  }
+  
   return generateMeta({ doc: page })
 }
 
