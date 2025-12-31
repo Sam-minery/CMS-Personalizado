@@ -130,7 +130,7 @@ export const Navbar5: React.FC<Navbar5Props> = (props) => {
         <div className="lg:flex">
           <div className="flex min-h-16 items-center justify-between px-[5%] md:min-h-18 lg:min-h-full lg:px-0">
             <CMSLink {...logo.link}>
-              {logo.useMedia && logo.media && typeof logo.media === 'object' ? (
+              {logo.useMedia && logo.media && typeof logo.media === 'object' && logo.media !== null ? (
                 <Image
                   src={logo.media.url || logo.media.image?.url || logo.src || ''}
                   alt={logo.media.alt || logo.alt || "Logo"}

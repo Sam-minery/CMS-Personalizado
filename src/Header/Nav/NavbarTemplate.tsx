@@ -46,7 +46,7 @@ type Props = {
 };
 
 const LogoComponent: React.FC<LogoProps> = ({ image, text, link }) => {
-  const imageUrl = image && typeof image === 'object' 
+  const imageUrl = image && typeof image === 'object' && image !== null
     ? (image.url || image.image?.url || '')
     : ''
 

@@ -16,7 +16,7 @@ export const Custom2Hero: React.FC<Page['hero']> = ({ links, media, richText }) 
     })
   }
 
-  const imageUrl = media && typeof media === 'object' 
+  const imageUrl = media && typeof media === 'object' && media !== null
     ? (media.url || (media as any).image?.url || '')
     : ''
 

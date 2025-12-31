@@ -160,7 +160,7 @@ export const Stats24Block: React.FC<Stats24BlockProps> = ({
                           </DialogTrigger>
                           <DialogContent>
                             <DialogTitle className="sr-only">Reproductor de video</DialogTitle>
-                            <VideoIframe video={getVideoUrl(tab.video.url)} />
+                            <VideoIframe video={getVideoUrl(tab.video?.url)} />
                           </DialogContent>
                         </Dialog>
                       ) : (
