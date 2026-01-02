@@ -13,6 +13,7 @@ import { IconPlus } from "@tabler/icons-react";
 import { SkeletonOne } from "@/components/TemplatePro/features/skeletons/first";
 import { SkeletonThree } from "@/components/TemplatePro/features/skeletons/third";
 import { SkeletonTwo } from "@/components/TemplatePro/features/skeletons/second";
+import { sanitizeHTML } from "@/utilities/sanitizeHTML";
 import "@/components/TemplatePro/TemplateStyles.css";
 
 interface CardItem {
@@ -81,7 +82,7 @@ export const Feature1Template: React.FC<Feature1TemplateProps> = (props) => {
       <Container>
         <div className="flex xl:flex-row flex-col xl:items-baseline justify-between gap-10">
           <Heading className="text-center lg:text-left template-fade-in">
-            <span dangerouslySetInnerHTML={{ __html: feature1TemplateHeading || "" }} />
+            <span dangerouslySetInnerHTML={{ __html: sanitizeHTML(feature1TemplateHeading || "") }} />
           </Heading>
           <Subheading className="text-center lg:text-left mx-auto lg:mx-0">
             {feature1TemplateSubheading}

@@ -5,6 +5,7 @@ import { Subheading } from "@/components/TemplatePro/subheadingTemplate";
 import { LoopIcon, UsersIcon, LockIcon } from "@/icons";
 import { Button } from "@/components/ui/buttonTemplate";
 import { CMSLink } from "@/components/Link";
+import { sanitizeHTML } from "@/utilities/sanitizeHTML";
 import "@/components/TemplatePro/TemplateStyles.css";
 
 // Simple check icon component
@@ -154,7 +155,7 @@ export const PricingTemplate: React.FC<PricingTemplateProps> = (props) => {
             {pricingTemplateTopText}
           </Subheading>
           <Heading className="template-fade-in">
-            <span dangerouslySetInnerHTML={{ __html: pricingTemplateHeading || "" }} />
+            <span dangerouslySetInnerHTML={{ __html: sanitizeHTML(pricingTemplateHeading || "") }} />
           </Heading>
           <Subheading className="mt-4">
             {pricingTemplateSubheading}

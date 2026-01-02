@@ -7,6 +7,7 @@ import { CMSLink } from "@/components/Link";
 import { LandingImages } from "@/components/TemplatePro/landing-imagesTemplate";
 import { GradientDivider } from "@/components/TemplatePro/gradient-dividerTemplate";
 import type { Page } from '@/payload-types'
+import { sanitizeHTML } from "@/utilities/sanitizeHTML";
 import "@/components/TemplatePro/TemplateStyles.css";
 
 interface HeroTemplateProps {
@@ -122,7 +123,7 @@ export const HeroTemplate: React.FC<HeroTemplateProps> = (props) => {
       <Container>
         <div className="max-w-5xl mx-auto">
           <Heading as="h1" className="template-fade-in text-6xl md:text-8xl lg:text-9xl leading-tight tracking-tight">
-            <span dangerouslySetInnerHTML={{ __html: heroTemplateHeading || "Agents that do the work <br /> Approvals that keep you safe." }} />
+            <span dangerouslySetInnerHTML={{ __html: sanitizeHTML(heroTemplateHeading || "Agents that do the work <br /> Approvals that keep you safe.") }} />
           </Heading>
         </div>
 

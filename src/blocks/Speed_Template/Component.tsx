@@ -5,6 +5,7 @@ import { Subheading } from "@/components/TemplatePro/subheadingTemplate";
 import { LandingImages } from "@/components/TemplatePro/landing-imagesTemplate";
 import { GradientDivider } from "@/components/TemplatePro/gradient-dividerTemplate";
 import type { Page } from '@/payload-types'
+import { sanitizeHTML } from "@/utilities/sanitizeHTML";
 import "@/components/TemplatePro/TemplateStyles.css";
 
 interface SpeedTemplateProps {
@@ -95,7 +96,7 @@ export const SpeedTemplate: React.FC<SpeedTemplateProps> = (props) => {
       <Container>
         <div className="w-full md:w-1/3">
           <Heading as="h2" className="template-fade-in text-6xl md:text-8xl lg:text-9xl leading-tight tracking-tight">
-            <span dangerouslySetInnerHTML={{ __html: speedTemplateHeading || "Built for Speed <br /> Designed for Scale" }} />
+            <span dangerouslySetInnerHTML={{ __html: sanitizeHTML(speedTemplateHeading || "Built for Speed <br /> Designed for Scale") }} />
           </Heading>
 
           <Subheading className="py-8 template-slide-up text-base md:text-lg lg:text-xl leading-relaxed whitespace-normal">
