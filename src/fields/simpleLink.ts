@@ -1,6 +1,7 @@
-import type { Field, GroupField } from 'payload'
+import type { Field, GroupField, TextFieldSingleValidation } from 'payload'
 
 import deepMerge from '@/utilities/deepMerge'
+import { validateURLForCMS } from '@/utilities/validateURL'
 
 type SimpleLinkType = (options?: {
   overrides?: Partial<GroupField>
@@ -64,9 +65,18 @@ export const simpleLink: SimpleLinkType = ({ overrides = {} } = {}) => {
         type: 'text',
         admin: {
           condition: (_, siblingData) => siblingData?.type === 'custom',
+          description: 'Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.',
         },
         label: 'Custom URL',
         required: true,
+        validate: ((value) => {
+          // Validación opcional: solo muestra advertencia, no bloquea el guardado
+          const validation = validateURLForCMS(value)
+          if (validation === true) {
+            return true
+          }
+          return validation
+        }) as TextFieldSingleValidation,
       },
     ],
   }

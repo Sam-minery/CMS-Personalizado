@@ -192,6 +192,9 @@ export interface Page {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
             label: string;
             /**
@@ -435,6 +438,9 @@ export interface Page {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
         };
@@ -501,6 +507,9 @@ export interface Page {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         backgroundColor?: ('slate-950' | 'zinc-950' | 'gray-950' | 'neutral-950') | null;
@@ -1163,6 +1172,9 @@ export interface BlogPostHeader1BlockType {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         id?: string | null;
@@ -1208,6 +1220,9 @@ export interface BlogPostHeader2Block {
             relationTo: 'posts';
             value: number | Post;
           } | null);
+      /**
+       * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+       */
       url?: string | null;
     };
   };
@@ -1253,6 +1268,9 @@ export interface BlogPostHeader3Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         id?: string | null;
@@ -1333,6 +1351,9 @@ export interface CallToActionBlock {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
           label: string;
           /**
@@ -1381,6 +1402,9 @@ export interface Career5Block {
                       relationTo: 'posts';
                       value: number | Post;
                     } | null);
+                /**
+                 * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                 */
                 url?: string | null;
               };
               id?: string | null;
@@ -1426,6 +1450,9 @@ export interface Career6Block {
                       relationTo: 'posts';
                       value: number | Post;
                     } | null);
+                /**
+                 * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                 */
                 url?: string | null;
               };
               id?: string | null;
@@ -1523,6 +1550,9 @@ export interface Comparison1Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         iconRight?: boolean | null;
@@ -1720,6 +1750,9 @@ export interface ContentBlock {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
           label: string;
           /**
@@ -1773,6 +1806,9 @@ export interface CTA1Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         id?: string | null;
@@ -1867,6 +1903,9 @@ export interface CTA5Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         id?: string | null;
@@ -2379,6 +2418,9 @@ export interface EventItemHeader1Block {
             relationTo: 'posts';
             value: number | Post;
           } | null);
+      /**
+       * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+       */
       url?: string | null;
     };
   };
@@ -2452,6 +2494,9 @@ export interface EventItemHeader5Block {
             relationTo: 'posts';
             value: number | Post;
           } | null);
+      /**
+       * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+       */
       url?: string | null;
     };
   };
@@ -2524,6 +2569,9 @@ export interface EventItemHeader6Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         id?: string | null;
@@ -2549,6 +2597,9 @@ export interface EventItemHeader6Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         id?: string | null;
@@ -2600,6 +2651,9 @@ export interface EventItemHeader7Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         id?: string | null;
@@ -2690,6 +2744,9 @@ export interface FAQ1Block {
             relationTo: 'posts';
             value: number | Post;
           } | null);
+      /**
+       * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+       */
       url?: string | null;
     };
   };
@@ -2830,6 +2887,9 @@ export interface FAQ5Block {
             relationTo: 'posts';
             value: number | Post;
           } | null);
+      /**
+       * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+       */
       url?: string | null;
     };
   };
@@ -2881,6 +2941,9 @@ export interface Footer1Block {
             relationTo: 'posts';
             value: number | Post;
           } | null);
+      /**
+       * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+       */
       url?: string | null;
     };
   };
@@ -2908,6 +2971,9 @@ export interface Footer1Block {
             relationTo: 'posts';
             value: number | Post;
           } | null);
+      /**
+       * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+       */
       url?: string | null;
     };
     suffix?: string | null;
@@ -2930,6 +2996,9 @@ export interface Footer1Block {
                       relationTo: 'posts';
                       value: number | Post;
                     } | null);
+                /**
+                 * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                 */
                 url?: string | null;
               };
               icon?: ('facebook' | 'instagram' | 'x' | 'linkedin' | 'youtube') | null;
@@ -2955,6 +3024,9 @@ export interface Footer1Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         id?: string | null;
@@ -3013,6 +3085,9 @@ export interface Footer5Block {
             relationTo: 'posts';
             value: number | Post;
           } | null);
+      /**
+       * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+       */
       url?: string | null;
     };
   };
@@ -3041,6 +3116,9 @@ export interface Footer5Block {
             relationTo: 'posts';
             value: number | Post;
           } | null);
+      /**
+       * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+       */
       url?: string | null;
     };
     suffix?: string | null;
@@ -3063,6 +3141,9 @@ export interface Footer5Block {
                       relationTo: 'posts';
                       value: number | Post;
                     } | null);
+                /**
+                 * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                 */
                 url?: string | null;
               };
               id?: string | null;
@@ -3094,6 +3175,9 @@ export interface Footer5Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         id?: string | null;
@@ -3414,6 +3498,9 @@ export interface Header44Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
           label: string;
           /**
@@ -3526,6 +3613,9 @@ export interface StickyBannerBlock {
           relationTo: 'posts';
           value: number | Post;
         } | null);
+    /**
+     * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+     */
     url?: string | null;
   };
   /**
@@ -3602,6 +3692,9 @@ export interface Layout1Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
           label: string;
           /**
@@ -3698,6 +3791,9 @@ export interface Layout5Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
           label: string;
           /**
@@ -3782,6 +3878,9 @@ export interface Layout10Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
           label: string;
           /**
@@ -3872,6 +3971,9 @@ export interface Layout132Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
           label: string;
           /**
@@ -3928,6 +4030,9 @@ export interface Layout133Block {
                       relationTo: 'posts';
                       value: number | Post;
                     } | null);
+                /**
+                 * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                 */
                 url?: string | null;
                 label: string;
                 /**
@@ -4001,6 +4106,9 @@ export interface Layout222Block {
                       relationTo: 'posts';
                       value: number | Post;
                     } | null);
+                /**
+                 * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                 */
                 url?: string | null;
                 label: string;
                 /**
@@ -4065,6 +4173,9 @@ export interface Layout239Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
           label: string;
           /**
@@ -4152,6 +4263,9 @@ export interface Layout304Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
           label: string;
           /**
@@ -4331,6 +4445,9 @@ export interface Layout395Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
           label: string;
           /**
@@ -4452,6 +4569,9 @@ export interface CTA27Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
           label: string;
           /**
@@ -4496,6 +4616,9 @@ export interface Links1Block {
                       relationTo: 'posts';
                       value: number | Post;
                     } | null);
+                /**
+                 * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                 */
                 url?: string | null;
               };
               id?: string | null;
@@ -4545,6 +4668,9 @@ export interface Links1Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         id?: string | null;
@@ -4584,6 +4710,9 @@ export interface Links4Block {
                       relationTo: 'posts';
                       value: number | Post;
                     } | null);
+                /**
+                 * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                 */
                 url?: string | null;
               };
               id?: string | null;
@@ -4633,6 +4762,9 @@ export interface Links4Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         id?: string | null;
@@ -4815,6 +4947,9 @@ export interface Feature1TemplateBlock {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         id?: string | null;
@@ -5193,6 +5328,9 @@ export interface Navbar1Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         subMenuLinks?:
@@ -5210,6 +5348,9 @@ export interface Navbar1Block {
                       relationTo: 'posts';
                       value: number | Post;
                     } | null);
+                /**
+                 * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                 */
                 url?: string | null;
               };
               id?: string | null;
@@ -5233,6 +5374,9 @@ export interface Navbar1Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         size?: ('sm' | 'lg') | null;
@@ -5274,6 +5418,9 @@ export interface Navbar5Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         megaMenu: {
@@ -5294,6 +5441,9 @@ export interface Navbar5Block {
                               relationTo: 'posts';
                               value: number | Post;
                             } | null);
+                        /**
+                         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                         */
                         url?: string | null;
                       };
                       image: {
@@ -5329,6 +5479,9 @@ export interface Navbar5Block {
                           relationTo: 'posts';
                           value: number | Post;
                         } | null);
+                    /**
+                     * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                     */
                     url?: string | null;
                   };
                   image: {
@@ -5362,6 +5515,9 @@ export interface Navbar5Block {
                     relationTo: 'posts';
                     value: number | Post;
                   } | null);
+              /**
+               * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+               */
               url?: string | null;
             };
           };
@@ -5386,6 +5542,9 @@ export interface Navbar5Block {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
         };
         id?: string | null;
@@ -10888,6 +11047,9 @@ export interface Header {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
           label: string;
         };
@@ -10953,6 +11115,9 @@ export interface Header {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
           subMenuLinks?:
@@ -10970,6 +11135,9 @@ export interface Header {
                         relationTo: 'posts';
                         value: number | Post;
                       } | null);
+                  /**
+                   * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                   */
                   url?: string | null;
                 };
                 id?: string | null;
@@ -10993,6 +11161,9 @@ export interface Header {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
           size?: ('sm' | 'lg') | null;
@@ -11020,6 +11191,9 @@ export interface Header {
               relationTo: 'posts';
               value: number | Post;
             } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
         url?: string | null;
       };
     };
@@ -11038,6 +11212,9 @@ export interface Header {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
           megaMenu: {
@@ -11058,6 +11235,9 @@ export interface Header {
                                 relationTo: 'posts';
                                 value: number | Post;
                               } | null);
+                          /**
+                           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                           */
                           url?: string | null;
                         };
                         image: {
@@ -11093,6 +11273,9 @@ export interface Header {
                             relationTo: 'posts';
                             value: number | Post;
                           } | null);
+                      /**
+                       * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                       */
                       url?: string | null;
                     };
                     image: {
@@ -11126,6 +11309,9 @@ export interface Header {
                       relationTo: 'posts';
                       value: number | Post;
                     } | null);
+                /**
+                 * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                 */
                 url?: string | null;
               };
             };
@@ -11150,6 +11336,9 @@ export interface Header {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
           id?: string | null;
@@ -11172,6 +11361,9 @@ export interface Header {
               relationTo: 'posts';
               value: number | Post;
             } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
         url?: string | null;
       };
     };
@@ -11190,6 +11382,9 @@ export interface Header {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
           id?: string | null;
@@ -11209,6 +11404,9 @@ export interface Header {
               relationTo: 'posts';
               value: number | Post;
             } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
         url?: string | null;
       };
     };
@@ -11226,6 +11424,9 @@ export interface Header {
               relationTo: 'posts';
               value: number | Post;
             } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
         url?: string | null;
       };
     };
@@ -11257,6 +11458,9 @@ export interface Footer {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
           url?: string | null;
           label: string;
         };
@@ -11281,6 +11485,9 @@ export interface Footer {
               relationTo: 'posts';
               value: number | Post;
             } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
         url?: string | null;
       };
     };
@@ -11308,6 +11515,9 @@ export interface Footer {
               relationTo: 'posts';
               value: number | Post;
             } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
         url?: string | null;
       };
       suffix?: string | null;
@@ -11330,6 +11540,9 @@ export interface Footer {
                         relationTo: 'posts';
                         value: number | Post;
                       } | null);
+                  /**
+                   * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                   */
                   url?: string | null;
                 };
                 icon?: ('facebook' | 'instagram' | 'x' | 'linkedin' | 'youtube') | null;
@@ -11355,6 +11568,9 @@ export interface Footer {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
           id?: string | null;
@@ -11379,6 +11595,9 @@ export interface Footer {
               relationTo: 'posts';
               value: number | Post;
             } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
         url?: string | null;
       };
     };
@@ -11399,6 +11618,9 @@ export interface Footer {
                         relationTo: 'posts';
                         value: number | Post;
                       } | null);
+                  /**
+                   * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                   */
                   url?: string | null;
                 };
                 id?: string | null;
@@ -11421,6 +11643,9 @@ export interface Footer {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
           platform: 'facebook' | 'instagram' | 'twitter' | 'linkedin' | 'youtube';
@@ -11443,6 +11668,9 @@ export interface Footer {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
           id?: string | null;
@@ -11467,6 +11695,9 @@ export interface Footer {
               relationTo: 'posts';
               value: number | Post;
             } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
         url?: string | null;
       };
     };
@@ -11495,6 +11726,9 @@ export interface Footer {
               relationTo: 'posts';
               value: number | Post;
             } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
         url?: string | null;
       };
       suffix?: string | null;
@@ -11517,6 +11751,9 @@ export interface Footer {
                         relationTo: 'posts';
                         value: number | Post;
                       } | null);
+                  /**
+                   * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                   */
                   url?: string | null;
                 };
                 id?: string | null;
@@ -11539,6 +11776,9 @@ export interface Footer {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
           icon: 'facebook' | 'instagram' | 'x' | 'linkedin' | 'youtube';
@@ -11561,6 +11801,9 @@ export interface Footer {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
           id?: string | null;
@@ -11583,6 +11826,9 @@ export interface Footer {
               relationTo: 'posts';
               value: number | Post;
             } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
         url?: string | null;
       };
     };
@@ -11601,6 +11847,9 @@ export interface Footer {
               relationTo: 'posts';
               value: number | Post;
             } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
         url?: string | null;
       };
     };
@@ -11619,6 +11868,9 @@ export interface Footer {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
           id?: string | null;
@@ -11639,6 +11891,9 @@ export interface Footer {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
           id?: string | null;
@@ -11662,6 +11917,9 @@ export interface Footer {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
           id?: string | null;
@@ -11682,6 +11940,9 @@ export interface Footer {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
             url?: string | null;
           };
           id?: string | null;

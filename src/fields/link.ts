@@ -1,6 +1,7 @@
-import type { Field, GroupField } from 'payload'
+import type { Field, GroupField, TextFieldSingleValidation } from 'payload'
 
 import deepMerge from '@/utilities/deepMerge'
+import { validateURLForCMS } from '@/utilities/validateURL'
 
 export type LinkAppearances = 'default' | 'outline'
 
@@ -83,9 +84,22 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       type: 'text',
       admin: {
         condition: (_, siblingData) => siblingData?.type === 'custom',
+        description: 'Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.',
       },
       label: 'Custom URL',
       required: true,
+      validate: ((value) => {
+        // Validación opcional: solo muestra advertencia, no bloquea el guardado
+        // Esto permite que URLs existentes sigan funcionando mientras previene nuevas URLs peligrosas
+        const validation = validateURLForCMS(value)
+        if (validation === true) {
+          return true
+        }
+        // Retornar el mensaje de error como advertencia
+        // En producción, esto mostrará un warning pero permitirá guardar
+        // El frontend bloqueará URLs peligrosas de todas formas
+        return validation
+      }) as TextFieldSingleValidation,
     },
   ]
 

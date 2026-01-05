@@ -9,6 +9,8 @@ import {
   type LinkFields,
 } from '@payloadcms/richtext-lexical'
 
+import { validateURLForCMS } from '@/utilities/validateURL'
+
 export const defaultLexical = lexicalEditor({
   features: [
     ParagraphFeature(),
@@ -30,6 +32,7 @@ export const defaultLexical = lexicalEditor({
             type: 'text',
             admin: {
               condition: (_data, siblingData) => siblingData?.linkType !== 'internal',
+              description: 'Enter a valid URL (http://, https://, or relative path). Dangerous schemes like javascript: are not allowed.',
             },
             label: ({ t }) => t('fields:enterURL'),
             required: true,
@@ -37,7 +40,12 @@ export const defaultLexical = lexicalEditor({
               if ((options?.siblingData as LinkFields)?.linkType === 'internal') {
                 return true // no validation needed, as no url should exist for internal links
               }
-              return value ? true : 'URL is required'
+              if (!value) {
+                return 'URL is required'
+              }
+              // Validación de seguridad: muestra advertencia pero permite guardar
+              const validation = validateURLForCMS(value)
+              return validation
             }) as TextFieldSingleValidation,
           },
         ]

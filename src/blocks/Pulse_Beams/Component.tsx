@@ -3,6 +3,7 @@
 import { motion } from 'motion/react'
 import Link from 'next/link'
 import type { Block as BlockType } from 'payload'
+import { validateAndSanitizeURL } from '@/utilities/validateURL'
 
 
 type Props = BlockType & {
@@ -326,9 +327,24 @@ const ButtonContent = ({ buttonText, buttonLink, buttonSize = 'medium' }: { butt
   }
 
   if (buttonLink.type === 'custom' && buttonLink.url) {
+    // Validar y sanitizar la URL personalizada
+    const validatedUrl = validateAndSanitizeURL(buttonLink.url, {
+      allowRelative: true,
+      allowAbsolute: true,
+      logBlocked: process.env.NODE_ENV === 'development',
+    })
+
+    // Si la URL no pasa la validación, no renderizar el enlace (fallback seguro)
+    if (!validatedUrl) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('[Pulse_Beams] Invalid or dangerous URL blocked:', buttonLink.url)
+      }
+      return buttonElement
+    }
+
     return (
       <Link
-        href={buttonLink.url}
+        href={validatedUrl}
         target={buttonLink.newTab ? '_blank' : '_self'}
         rel={buttonLink.newTab ? 'noopener noreferrer' : undefined}
       >
@@ -339,6 +355,7 @@ const ButtonContent = ({ buttonText, buttonLink, buttonSize = 'medium' }: { butt
 
   if (buttonLink.type === 'reference' && buttonLink.reference) {
     // Construir la URL correctamente como en CMSLink
+    // Las referencias internas siempre son seguras, no necesitan validación
     const href = typeof buttonLink.reference.value === 'object' && buttonLink.reference.value.slug
       ? `${buttonLink.reference.relationTo !== 'pages' ? `/${buttonLink.reference.relationTo}` : ''}/${
           buttonLink.reference.value.slug
