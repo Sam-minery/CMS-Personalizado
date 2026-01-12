@@ -14,6 +14,7 @@ import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { validateSlug } from '@/utilities/sanitizeHTML'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -44,8 +45,15 @@ type Args = {
 export default async function Post({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { slug = '' } = await paramsPromise
-  const url = '/posts/' + slug
-  const post = await queryPostBySlug({ slug })
+  
+  // Validar el slug para prevenir inyección
+  const validatedSlug = validateSlug(slug)
+  if (!validatedSlug) {
+    return <PayloadRedirects url={'/posts/' + slug} />
+  }
+  
+  const url = '/posts/' + validatedSlug
+  const post = await queryPostBySlug({ slug: validatedSlug })
 
   if (!post) return <PayloadRedirects url={url} />
 
@@ -77,7 +85,14 @@ export default async function Post({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = '' } = await paramsPromise
-  const post = await queryPostBySlug({ slug })
+  const validatedSlug = validateSlug(slug)
+  if (!validatedSlug) {
+    return {
+      title: 'Post not found',
+      description: '',
+    }
+  }
+  const post = await queryPostBySlug({ slug: validatedSlug })
   return generateMeta({ doc: post })
 }
 

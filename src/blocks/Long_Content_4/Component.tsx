@@ -7,6 +7,7 @@ import { FaCirclePlay } from "react-icons/fa6";
 import { CgSpinner } from "react-icons/cg";
 import clsx from "clsx";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@relume_io/relume-ui";
+import { validateVideoURL } from '@/utilities/validateURL'
 
 import type { LongContent4Block as LongContent4BlockProps } from '@/payload-types'
 
@@ -16,26 +17,32 @@ export const LongContent4Block: React.FC<LongContent4BlockProps> = (props) => {
   const [isIframeLoaded, setIsIframeLoaded] = useState<boolean>(false);
 
   // Función para convertir URLs de YouTube al formato embed correcto
+  // Valida y sanitiza la URL para prevenir inyección
   const getVideoUrl = (url: string | null | undefined) => {
     if (!url) return ''
     
+    // Validar la URL primero
+    const validatedUrl = validateVideoURL(url)
+    if (!validatedUrl) {
+      console.warn('[Long_Content_4] Invalid or dangerous video URL blocked:', url)
+      return ''
+    }
+    
     // Si ya es una URL de embed, la devolvemos tal como está
-    if (typeof url === 'string' && url.includes('youtube.com/embed/')) {
-      return url
+    if (validatedUrl.includes('youtube.com/embed/')) {
+      return validatedUrl
     }
     
     // Si es una URL normal de YouTube, la convertimos a embed
-    if (typeof url === 'string') {
-      const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-      const match = url.match(youtubeRegex);
-      
-      if (match) {
-        return `https://www.youtube.com/embed/${match[1]}`;
-      }
+    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = validatedUrl.match(youtubeRegex);
+    
+    if (match) {
+      return `https://www.youtube.com/embed/${match[1]}`;
     }
     
-    // Si no es YouTube, devolvemos la URL tal como está
-    return typeof url === 'string' ? url : ''
+    // Si no es YouTube pero pasó la validación, devolvemos la URL validada
+    return validatedUrl
   }
 
   if (!heading || !content || !image || !video) {
@@ -91,7 +98,9 @@ export const LongContent4Block: React.FC<LongContent4BlockProps> = (props) => {
             </Dialog>
           </div>
           <div>
-            <h2 className="mb-5 text-5xl font-bold md:mb-6 md:text-7xl lg:text-8xl">{heading}</h2>
+            <h2 className="mb-5 text-5xl font-bold md:mb-6 md:text-7xl lg:text-8xl">
+              {heading}
+            </h2>
             <div className="prose">
               <RichText data={content} enableGutter={false} />
             </div>

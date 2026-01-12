@@ -12,6 +12,7 @@ import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { validateSlug } from '@/utilities/sanitizeHTML'
 
 export async function generateStaticParams() {
   try {
@@ -52,12 +53,19 @@ type Args = {
 export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { slug = 'home' } = await paramsPromise
-  const url = '/' + slug
+  
+  // Validar el slug para prevenir inyección (excepto 'home' que es especial)
+  const validatedSlug = slug === 'home' ? slug : validateSlug(slug)
+  if (!validatedSlug) {
+    return <PayloadRedirects url={'/' + slug} />
+  }
+  
+  const url = '/' + validatedSlug
 
   let page: RequiredDataFromCollectionSlug<'pages'> | null
 
   page = await queryPageBySlug({
-    slug,
+    slug: validatedSlug,
   })
 
   // Remove this code once your website is seeded

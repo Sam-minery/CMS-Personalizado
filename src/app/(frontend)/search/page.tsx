@@ -17,6 +17,12 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
   const { q: query } = await searchParamsPromise
   const payload = await getPayload({ config: configPromise })
 
+  // Sanitizar el parámetro de búsqueda para prevenir inyección
+  // Payload CMS usa consultas parametrizadas, pero es mejor sanitizar el input
+  const sanitizedQuery = query 
+    ? query.trim().slice(0, 200) // Limitar longitud y eliminar espacios
+    : undefined
+
   const posts = await payload.find({
     collection: 'search',
     depth: 1,
@@ -29,28 +35,28 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
     },
     // pagination: false reduces overhead if you don't need totalDocs
     pagination: false,
-    ...(query
+    ...(sanitizedQuery
       ? {
           where: {
             or: [
               {
                 title: {
-                  like: query,
+                  like: sanitizedQuery,
                 },
               },
               {
                 'meta.description': {
-                  like: query,
+                  like: sanitizedQuery,
                 },
               },
               {
                 'meta.title': {
-                  like: query,
+                  like: sanitizedQuery,
                 },
               },
               {
                 slug: {
-                  like: query,
+                  like: sanitizedQuery,
                 },
               },
             ],

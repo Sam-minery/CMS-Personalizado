@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { validateFormData } from '@/utilities/sanitizeHTML'
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,6 +21,15 @@ export async function POST(request: NextRequest) {
       acc[item.field] = item.value
       return acc
     }, {} as Record<string, string>)
+    
+    // Validar los datos del formulario (no sanitizar - Payload escapará al mostrar)
+    const validation = validateFormData(formData)
+    if (validation !== true) {
+      return NextResponse.json(
+        { error: validation },
+        { status: 400 }
+      )
+    }
 
     // Crear el envío del formulario en la collection ContactSubmissions
     const formSubmission = await payload.create({

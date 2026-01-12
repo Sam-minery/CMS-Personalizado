@@ -143,3 +143,38 @@ export const validateURLForCMS = (url: string | null | undefined): true | string
   return true
 }
 
+/**
+ * Valida una URL de video (especialmente YouTube) para prevenir inyección
+ * Solo permite URLs de YouTube válidas o URLs absolutas http/https
+ * 
+ * @param url - La URL del video a validar
+ * @returns URL validada o null si es peligrosa
+ */
+export const validateVideoURL = (url: string | null | undefined): string | null => {
+  if (!url || typeof url !== 'string') return null
+  
+  const trimmed = url.trim()
+  
+  // Primero validar contra esquemas peligrosos
+  const validated = validateAndSanitizeURL(trimmed, {
+    allowRelative: false, // No permitir URLs relativas para videos
+    allowAbsolute: true,
+    logBlocked: false,
+  })
+  
+  if (!validated) return null
+  
+  // Si es una URL de YouTube, validar formato
+  if (trimmed.includes('youtube.com') || trimmed.includes('youtu.be')) {
+    // Permitir URLs de YouTube válidas
+    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
+    if (youtubeRegex.test(trimmed)) {
+      return trimmed
+    }
+    return null
+  }
+  
+  // Para otras URLs, solo permitir http/https
+  return validated
+}
+
