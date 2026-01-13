@@ -3,12 +3,12 @@
 import Image from 'next/image'
 import { BiSolidStar } from "react-icons/bi";
 import RichText from '@/components/RichText';
-import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical';
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical';
 import type { Media } from '@/payload-types';
 
 type Testimonial = {
   numberOfStars: number;
-  quote: SerializedEditorState;
+  quote: DefaultTypedEditorState;
   avatar: {
     media: any;
     alt?: string;
@@ -22,14 +22,14 @@ type Testimonial = {
 };
 
 type Props = {
-  content?: SerializedEditorState;
+  content?: DefaultTypedEditorState;
   testimonials: Testimonial[];
 };
 
 export type Testimonial5BlockType = {
   blockName?: string
   blockType?: 'testimonial5'
-  content?: SerializedEditorState;
+  content?: DefaultTypedEditorState;
   testimonials: Testimonial[];
 }
 
@@ -141,7 +141,7 @@ export const Testimonial5Defaults: Props = {
   testimonials: [
     {
       numberOfStars: 5,
-      quote: {} as SerializedEditorState,
+      quote: {} as DefaultTypedEditorState,
       avatar: {
         media: undefined,
         alt: "Testimonial avatar 1",
@@ -155,7 +155,7 @@ export const Testimonial5Defaults: Props = {
     },
     {
       numberOfStars: 5,
-      quote: {} as SerializedEditorState,
+      quote: {} as DefaultTypedEditorState,
       avatar: {
         media: undefined,
         alt: "Testimonial avatar 2",

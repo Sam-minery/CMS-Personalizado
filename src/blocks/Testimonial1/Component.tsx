@@ -2,11 +2,11 @@
 
 import Image from 'next/image'
 import RichText from '@/components/RichText';
-import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical';
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical';
 import type { Media } from '@/payload-types';
 
 type Props = {
-  quote: SerializedEditorState;
+  quote: DefaultTypedEditorState;
   logo: {
     media: any;
     alt?: string;
@@ -23,7 +23,7 @@ type Props = {
 export type Testimonial1BlockType = {
   blockName?: string
   blockType?: 'testimonial1'
-  quote: SerializedEditorState;
+  quote: DefaultTypedEditorState;
   logo: {
     media: any;
     alt?: string;
@@ -121,7 +121,7 @@ export const Testimonial1 = (props: Testimonial1BlockType) => {
 };
 
 export const Testimonial1Defaults: Props = {
-  quote: {} as SerializedEditorState,
+  quote: {} as DefaultTypedEditorState,
   logo: { 
     media: undefined, 
     alt: "Logo de la empresa" 

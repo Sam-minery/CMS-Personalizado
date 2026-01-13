@@ -5,20 +5,20 @@ import { Checkbox } from "@/components/ui/checkbox";
 import type { ButtonProps } from "@relume_io/relume-ui";
 import React, { useState } from "react";
 import RichText from '@/components/RichText';
-import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical';
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical';
 
 type Props = {
-  content?: SerializedEditorState;
+  content?: DefaultTypedEditorState;
   button: ButtonProps;
-  terms?: SerializedEditorState;
+  terms?: DefaultTypedEditorState;
 };
 
 export type Contact1BlockType = {
   blockName?: string
   blockType?: 'contact1'
-  content?: SerializedEditorState;
+  content?: DefaultTypedEditorState;
   button: ButtonProps;
-  terms?: SerializedEditorState;
+  terms?: DefaultTypedEditorState;
 }
 
 export const Contact1 = (props: Contact1BlockType) => {

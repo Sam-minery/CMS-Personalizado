@@ -2,25 +2,25 @@
 
 
 import RichText from '@/components/RichText';
-import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical';
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical';
 
 type PricingPlan = {
-  plan?: SerializedEditorState;
-  features?: SerializedEditorState;
+  plan?: DefaultTypedEditorState;
+  features?: DefaultTypedEditorState;
   button: {
     title: string;
   };
 };
 
 type Props = {
-  content?: SerializedEditorState;
+  content?: DefaultTypedEditorState;
   pricingPlan: PricingPlan;
 };
 
 export type Pricing1BlockType = {
   blockName?: string
   blockType?: 'pricing1'
-  content?: SerializedEditorState;
+  content?: DefaultTypedEditorState;
   pricingPlan: PricingPlan;
 }
 

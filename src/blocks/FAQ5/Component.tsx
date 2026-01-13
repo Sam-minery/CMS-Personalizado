@@ -12,17 +12,17 @@ import type { ButtonProps } from "@relume_io/relume-ui";
 import { RxPlus } from "react-icons/rx";
 import RichText from '@/components/RichText';
 import { CMSLink } from '@/components/Link';
-import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical';
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical';
 
 type Question = {
   title: string;
-  answer: SerializedEditorState;
+  answer: DefaultTypedEditorState;
 };
 
 type Props = {
-  content?: SerializedEditorState;
+  content?: DefaultTypedEditorState;
   questions: Question[];
-  footerContent?: SerializedEditorState;
+  footerContent?: DefaultTypedEditorState;
   button: ButtonProps & {
     link: {
       type: 'reference' | 'custom';
@@ -36,9 +36,9 @@ type Props = {
 export type FAQ5BlockType = {
   blockName?: string
   blockType?: 'faq5'
-  content?: SerializedEditorState;
+  content?: DefaultTypedEditorState;
   questions: Question[];
-  footerContent?: SerializedEditorState;
+  footerContent?: DefaultTypedEditorState;
   button: ButtonProps & {
     link: {
       type: 'reference' | 'custom';
@@ -106,23 +106,23 @@ export const FAQ5Defaults: Props = {
   questions: [
     {
       title: "Question text goes here",
-      answer: {} as SerializedEditorState,
+      answer: {} as DefaultTypedEditorState,
     },
     {
       title: "Question text goes here", 
-      answer: {} as SerializedEditorState,
+      answer: {} as DefaultTypedEditorState,
     },
     {
       title: "Question text goes here",
-      answer: {} as SerializedEditorState,
+      answer: {} as DefaultTypedEditorState,
     },
     {
       title: "Question text goes here",
-      answer: {} as SerializedEditorState,
+      answer: {} as DefaultTypedEditorState,
     },
     {
       title: "Question text goes here",
-      answer: {} as SerializedEditorState,
+      answer: {} as DefaultTypedEditorState,
     },
   ],
   footerContent: undefined,

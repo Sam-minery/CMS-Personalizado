@@ -1,0 +1,185 @@
+import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
+
+export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+  await db.execute(sql`
+   CREATE TABLE "payload_kv" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"key" varchar NOT NULL,
+  	"data" jsonb NOT NULL
+  );
+  
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_payload_jobs_fk";
+  
+  DROP INDEX "pages_blocks_blog5_featured_blog_post_featured_blog_post_image_idx";
+  DROP INDEX "pages_blocks_blog5_featured_blog_post_featured_blog_post_avatar_idx";
+  DROP INDEX "pages_blocks_blog7_featured_blog_post_featured_blog_post_image_idx";
+  DROP INDEX "pages_blocks_blog7_featured_blog_post_featured_blog_post_avatar_idx";
+  DROP INDEX "pages_blocks_blog9_featured_blog_post_featured_blog_post_image_idx";
+  DROP INDEX "pages_blocks_blog9_featured_blog_post_featured_blog_post_avatar_idx";
+  DROP INDEX "pages_blocks_stats24_tabs_video_image_video_image_media_image_idx";
+  DROP INDEX "pages_blocks_speed_template_speed_imgs_speed_imgs_first_image_upload_idx";
+  DROP INDEX "pages_blocks_speed_template_speed_imgs_speed_imgs_second_image_upload_idx";
+  DROP INDEX "pages_blocks_testimonial5_testimonials_avatar_avatar_media_idx";
+  DROP INDEX "pages_hero_header138_first_image_hero_header138_first_image_media_image_idx";
+  DROP INDEX "pages_hero_header138_second_image_hero_header138_second_image_media_image_idx";
+  DROP INDEX "_pages_v_blocks_blog5_featured_blog_post_featured_blog_post_image_idx";
+  DROP INDEX "_pages_v_blocks_blog5_featured_blog_post_featured_blog_post_avatar_idx";
+  DROP INDEX "_pages_v_blocks_blog7_featured_blog_post_featured_blog_post_image_idx";
+  DROP INDEX "_pages_v_blocks_blog7_featured_blog_post_featured_blog_post_avatar_idx";
+  DROP INDEX "_pages_v_blocks_blog9_featured_blog_post_featured_blog_post_image_idx";
+  DROP INDEX "_pages_v_blocks_blog9_featured_blog_post_featured_blog_post_avatar_idx";
+  DROP INDEX "_pages_v_blocks_blog_post_header2_image_image_media_image_idx";
+  DROP INDEX "_pages_v_blocks_blog_post_header3_image_image_media_image_idx";
+  DROP INDEX "_pages_v_blocks_layout10_sub_headings_icon_icon_media_image_idx";
+  DROP INDEX "_pages_v_blocks_layout132_sections_image_image_media_image_idx";
+  DROP INDEX "_pages_v_blocks_layout133_sections_image_image_media_image_idx";
+  DROP INDEX "_pages_v_blocks_layout239_sections_image_image_media_image_idx";
+  DROP INDEX "_pages_v_blocks_layout395_sections_image_image_media_image_idx";
+  DROP INDEX "_pages_v_blocks_stats24_tabs_video_image_video_image_media_image_idx";
+  DROP INDEX "_pages_v_blocks_speed_template_speed_imgs_speed_imgs_first_image_upload_idx";
+  DROP INDEX "_pages_v_blocks_speed_template_speed_imgs_speed_imgs_second_image_upload_idx";
+  DROP INDEX "_pages_v_blocks_testimonial3_testimonials_image_image_src_idx";
+  DROP INDEX "_pages_v_blocks_testimonial3_testimonials_avatar_avatar_src_idx";
+  DROP INDEX "_pages_v_blocks_testimonial5_testimonials_avatar_avatar_media_idx";
+  DROP INDEX "_pages_v_blocks_testimonial5_testimonials_logo_logo_media_idx";
+  DROP INDEX "_pages_v_version_hero_header138_first_image_version_hero_header138_first_image_media_image_idx";
+  DROP INDEX "_pages_v_version_hero_header138_second_image_version_hero_header138_second_image_media_image_idx";
+  DROP INDEX "_pages_v_version_hero_hero_imgs_version_hero_hero_imgs_first_image_upload_idx";
+  DROP INDEX "_pages_v_version_hero_hero_imgs_version_hero_hero_imgs_second_image_upload_idx";
+  DROP INDEX "payload_locked_documents_rels_form_custom_2_submissions_id_idx";
+  DROP INDEX "payload_locked_documents_rels_payload_jobs_id_idx";
+  DROP INDEX "header_navbar11_config_nav_links_sub_menu_links_icon_icon_image_idx";
+  DROP INDEX "header_navbar_template_config_logo_navbar_template_config_logo_image_idx";
+  DROP INDEX "footer_footer_template_config_logo_footer_template_config_logo_image_idx";
+  CREATE UNIQUE INDEX "payload_kv_key_idx" ON "payload_kv" USING btree ("key");
+  CREATE INDEX "pages_blocks_blog5_featured_blog_post_featured_blog_post_idx" ON "pages_blocks_blog5" USING btree ("featured_blog_post_image_id");
+  CREATE INDEX "pages_blocks_blog5_featured_blog_post_featured_blog_po_1_idx" ON "pages_blocks_blog5" USING btree ("featured_blog_post_avatar_id");
+  CREATE INDEX "pages_blocks_blog7_featured_blog_post_featured_blog_post_idx" ON "pages_blocks_blog7" USING btree ("featured_blog_post_image_id");
+  CREATE INDEX "pages_blocks_blog7_featured_blog_post_featured_blog_po_1_idx" ON "pages_blocks_blog7" USING btree ("featured_blog_post_avatar_id");
+  CREATE INDEX "pages_blocks_blog9_featured_blog_post_featured_blog_post_idx" ON "pages_blocks_blog9" USING btree ("featured_blog_post_image_id");
+  CREATE INDEX "pages_blocks_blog9_featured_blog_post_featured_blog_po_1_idx" ON "pages_blocks_blog9" USING btree ("featured_blog_post_avatar_id");
+  CREATE INDEX "pages_blocks_stats24_tabs_video_image_video_image_media__idx" ON "pages_blocks_stats24_tabs" USING btree ("video_image_media_image_id");
+  CREATE INDEX "pages_blocks_speed_template_speed_imgs_speed_imgs_first__idx" ON "pages_blocks_speed_template" USING btree ("speed_imgs_first_image_upload_id");
+  CREATE INDEX "pages_blocks_speed_template_speed_imgs_speed_imgs_second_idx" ON "pages_blocks_speed_template" USING btree ("speed_imgs_second_image_upload_id");
+  CREATE INDEX "pages_blocks_testimonial5_testimonials_avatar_avatar_med_idx" ON "pages_blocks_testimonial5_testimonials" USING btree ("avatar_media_id");
+  CREATE INDEX "pages_hero_header138_first_image_hero_header138_first_im_idx" ON "pages" USING btree ("hero_header138_first_image_media_image_id");
+  CREATE INDEX "pages_hero_header138_second_image_hero_header138_second__idx" ON "pages" USING btree ("hero_header138_second_image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_blog5_featured_blog_post_featured_blog_p_idx" ON "_pages_v_blocks_blog5" USING btree ("featured_blog_post_image_id");
+  CREATE INDEX "_pages_v_blocks_blog5_featured_blog_post_featured_blog_1_idx" ON "_pages_v_blocks_blog5" USING btree ("featured_blog_post_avatar_id");
+  CREATE INDEX "_pages_v_blocks_blog7_featured_blog_post_featured_blog_p_idx" ON "_pages_v_blocks_blog7" USING btree ("featured_blog_post_image_id");
+  CREATE INDEX "_pages_v_blocks_blog7_featured_blog_post_featured_blog_1_idx" ON "_pages_v_blocks_blog7" USING btree ("featured_blog_post_avatar_id");
+  CREATE INDEX "_pages_v_blocks_blog9_featured_blog_post_featured_blog_p_idx" ON "_pages_v_blocks_blog9" USING btree ("featured_blog_post_image_id");
+  CREATE INDEX "_pages_v_blocks_blog9_featured_blog_post_featured_blog_1_idx" ON "_pages_v_blocks_blog9" USING btree ("featured_blog_post_avatar_id");
+  CREATE INDEX "_pages_v_blocks_blog_post_header2_image_image_media_imag_idx" ON "_pages_v_blocks_blog_post_header2" USING btree ("image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_blog_post_header3_image_image_media_imag_idx" ON "_pages_v_blocks_blog_post_header3" USING btree ("image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_layout10_sub_headings_icon_icon_media_im_idx" ON "_pages_v_blocks_layout10_sub_headings" USING btree ("icon_media_image_id");
+  CREATE INDEX "_pages_v_blocks_layout132_sections_image_image_media_ima_idx" ON "_pages_v_blocks_layout132_sections" USING btree ("image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_layout133_sections_image_image_media_ima_idx" ON "_pages_v_blocks_layout133_sections" USING btree ("image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_layout239_sections_image_image_media_ima_idx" ON "_pages_v_blocks_layout239_sections" USING btree ("image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_layout395_sections_image_image_media_ima_idx" ON "_pages_v_blocks_layout395_sections" USING btree ("image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_stats24_tabs_video_image_video_image_med_idx" ON "_pages_v_blocks_stats24_tabs" USING btree ("video_image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_speed_template_speed_imgs_speed_imgs_fir_idx" ON "_pages_v_blocks_speed_template" USING btree ("speed_imgs_first_image_upload_id");
+  CREATE INDEX "_pages_v_blocks_speed_template_speed_imgs_speed_imgs_sec_idx" ON "_pages_v_blocks_speed_template" USING btree ("speed_imgs_second_image_upload_id");
+  CREATE INDEX "_pages_v_blocks_testimonial3_testimonials_image_image_sr_idx" ON "_pages_v_blocks_testimonial3_testimonials" USING btree ("image_src_id");
+  CREATE INDEX "_pages_v_blocks_testimonial3_testimonials_avatar_avatar__idx" ON "_pages_v_blocks_testimonial3_testimonials" USING btree ("avatar_src_id");
+  CREATE INDEX "_pages_v_blocks_testimonial5_testimonials_avatar_avatar__idx" ON "_pages_v_blocks_testimonial5_testimonials" USING btree ("avatar_media_id");
+  CREATE INDEX "_pages_v_blocks_testimonial5_testimonials_logo_logo_medi_idx" ON "_pages_v_blocks_testimonial5_testimonials" USING btree ("logo_media_id");
+  CREATE INDEX "_pages_v_version_hero_header138_first_image_version_hero_idx" ON "_pages_v" USING btree ("version_hero_header138_first_image_media_image_id");
+  CREATE INDEX "_pages_v_version_hero_header138_second_image_version_her_idx" ON "_pages_v" USING btree ("version_hero_header138_second_image_media_image_id");
+  CREATE INDEX "_pages_v_version_hero_hero_imgs_version_hero_hero_imgs_f_idx" ON "_pages_v" USING btree ("version_hero_hero_imgs_first_image_upload_id");
+  CREATE INDEX "_pages_v_version_hero_hero_imgs_version_hero_hero_imgs_s_idx" ON "_pages_v" USING btree ("version_hero_hero_imgs_second_image_upload_id");
+  CREATE INDEX "payload_locked_documents_rels_form_custom_2_submissions__idx" ON "payload_locked_documents_rels" USING btree ("form_custom_2_submissions_id");
+  CREATE INDEX "header_navbar11_config_nav_links_sub_menu_links_icon_ico_idx" ON "header_navbar11_config_nav_links_sub_menu_links" USING btree ("icon_image_id");
+  CREATE INDEX "header_navbar_template_config_logo_navbar_template_confi_idx" ON "header" USING btree ("navbar_template_config_logo_image_id");
+  CREATE INDEX "footer_footer_template_config_logo_footer_template_confi_idx" ON "footer" USING btree ("footer_template_config_logo_image_id");
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "payload_jobs_id";`)
+}
+
+export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
+  await db.execute(sql`
+   ALTER TABLE "payload_kv" DISABLE ROW LEVEL SECURITY;
+  DROP TABLE "payload_kv" CASCADE;
+  DROP INDEX "pages_blocks_blog5_featured_blog_post_featured_blog_post_idx";
+  DROP INDEX "pages_blocks_blog5_featured_blog_post_featured_blog_po_1_idx";
+  DROP INDEX "pages_blocks_blog7_featured_blog_post_featured_blog_post_idx";
+  DROP INDEX "pages_blocks_blog7_featured_blog_post_featured_blog_po_1_idx";
+  DROP INDEX "pages_blocks_blog9_featured_blog_post_featured_blog_post_idx";
+  DROP INDEX "pages_blocks_blog9_featured_blog_post_featured_blog_po_1_idx";
+  DROP INDEX "pages_blocks_stats24_tabs_video_image_video_image_media__idx";
+  DROP INDEX "pages_blocks_speed_template_speed_imgs_speed_imgs_first__idx";
+  DROP INDEX "pages_blocks_speed_template_speed_imgs_speed_imgs_second_idx";
+  DROP INDEX "pages_blocks_testimonial5_testimonials_avatar_avatar_med_idx";
+  DROP INDEX "pages_hero_header138_first_image_hero_header138_first_im_idx";
+  DROP INDEX "pages_hero_header138_second_image_hero_header138_second__idx";
+  DROP INDEX "_pages_v_blocks_blog5_featured_blog_post_featured_blog_p_idx";
+  DROP INDEX "_pages_v_blocks_blog5_featured_blog_post_featured_blog_1_idx";
+  DROP INDEX "_pages_v_blocks_blog7_featured_blog_post_featured_blog_p_idx";
+  DROP INDEX "_pages_v_blocks_blog7_featured_blog_post_featured_blog_1_idx";
+  DROP INDEX "_pages_v_blocks_blog9_featured_blog_post_featured_blog_p_idx";
+  DROP INDEX "_pages_v_blocks_blog9_featured_blog_post_featured_blog_1_idx";
+  DROP INDEX "_pages_v_blocks_blog_post_header2_image_image_media_imag_idx";
+  DROP INDEX "_pages_v_blocks_blog_post_header3_image_image_media_imag_idx";
+  DROP INDEX "_pages_v_blocks_layout10_sub_headings_icon_icon_media_im_idx";
+  DROP INDEX "_pages_v_blocks_layout132_sections_image_image_media_ima_idx";
+  DROP INDEX "_pages_v_blocks_layout133_sections_image_image_media_ima_idx";
+  DROP INDEX "_pages_v_blocks_layout239_sections_image_image_media_ima_idx";
+  DROP INDEX "_pages_v_blocks_layout395_sections_image_image_media_ima_idx";
+  DROP INDEX "_pages_v_blocks_stats24_tabs_video_image_video_image_med_idx";
+  DROP INDEX "_pages_v_blocks_speed_template_speed_imgs_speed_imgs_fir_idx";
+  DROP INDEX "_pages_v_blocks_speed_template_speed_imgs_speed_imgs_sec_idx";
+  DROP INDEX "_pages_v_blocks_testimonial3_testimonials_image_image_sr_idx";
+  DROP INDEX "_pages_v_blocks_testimonial3_testimonials_avatar_avatar__idx";
+  DROP INDEX "_pages_v_blocks_testimonial5_testimonials_avatar_avatar__idx";
+  DROP INDEX "_pages_v_blocks_testimonial5_testimonials_logo_logo_medi_idx";
+  DROP INDEX "_pages_v_version_hero_header138_first_image_version_hero_idx";
+  DROP INDEX "_pages_v_version_hero_header138_second_image_version_her_idx";
+  DROP INDEX "_pages_v_version_hero_hero_imgs_version_hero_hero_imgs_f_idx";
+  DROP INDEX "_pages_v_version_hero_hero_imgs_version_hero_hero_imgs_s_idx";
+  DROP INDEX "payload_locked_documents_rels_form_custom_2_submissions__idx";
+  DROP INDEX "header_navbar11_config_nav_links_sub_menu_links_icon_ico_idx";
+  DROP INDEX "header_navbar_template_config_logo_navbar_template_confi_idx";
+  DROP INDEX "footer_footer_template_config_logo_footer_template_confi_idx";
+  ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "payload_jobs_id" integer;
+  ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_payload_jobs_fk" FOREIGN KEY ("payload_jobs_id") REFERENCES "public"."payload_jobs"("id") ON DELETE cascade ON UPDATE no action;
+  CREATE INDEX "pages_blocks_blog5_featured_blog_post_featured_blog_post_image_idx" ON "pages_blocks_blog5" USING btree ("featured_blog_post_image_id");
+  CREATE INDEX "pages_blocks_blog5_featured_blog_post_featured_blog_post_avatar_idx" ON "pages_blocks_blog5" USING btree ("featured_blog_post_avatar_id");
+  CREATE INDEX "pages_blocks_blog7_featured_blog_post_featured_blog_post_image_idx" ON "pages_blocks_blog7" USING btree ("featured_blog_post_image_id");
+  CREATE INDEX "pages_blocks_blog7_featured_blog_post_featured_blog_post_avatar_idx" ON "pages_blocks_blog7" USING btree ("featured_blog_post_avatar_id");
+  CREATE INDEX "pages_blocks_blog9_featured_blog_post_featured_blog_post_image_idx" ON "pages_blocks_blog9" USING btree ("featured_blog_post_image_id");
+  CREATE INDEX "pages_blocks_blog9_featured_blog_post_featured_blog_post_avatar_idx" ON "pages_blocks_blog9" USING btree ("featured_blog_post_avatar_id");
+  CREATE INDEX "pages_blocks_stats24_tabs_video_image_video_image_media_image_idx" ON "pages_blocks_stats24_tabs" USING btree ("video_image_media_image_id");
+  CREATE INDEX "pages_blocks_speed_template_speed_imgs_speed_imgs_first_image_upload_idx" ON "pages_blocks_speed_template" USING btree ("speed_imgs_first_image_upload_id");
+  CREATE INDEX "pages_blocks_speed_template_speed_imgs_speed_imgs_second_image_upload_idx" ON "pages_blocks_speed_template" USING btree ("speed_imgs_second_image_upload_id");
+  CREATE INDEX "pages_blocks_testimonial5_testimonials_avatar_avatar_media_idx" ON "pages_blocks_testimonial5_testimonials" USING btree ("avatar_media_id");
+  CREATE INDEX "pages_hero_header138_first_image_hero_header138_first_image_media_image_idx" ON "pages" USING btree ("hero_header138_first_image_media_image_id");
+  CREATE INDEX "pages_hero_header138_second_image_hero_header138_second_image_media_image_idx" ON "pages" USING btree ("hero_header138_second_image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_blog5_featured_blog_post_featured_blog_post_image_idx" ON "_pages_v_blocks_blog5" USING btree ("featured_blog_post_image_id");
+  CREATE INDEX "_pages_v_blocks_blog5_featured_blog_post_featured_blog_post_avatar_idx" ON "_pages_v_blocks_blog5" USING btree ("featured_blog_post_avatar_id");
+  CREATE INDEX "_pages_v_blocks_blog7_featured_blog_post_featured_blog_post_image_idx" ON "_pages_v_blocks_blog7" USING btree ("featured_blog_post_image_id");
+  CREATE INDEX "_pages_v_blocks_blog7_featured_blog_post_featured_blog_post_avatar_idx" ON "_pages_v_blocks_blog7" USING btree ("featured_blog_post_avatar_id");
+  CREATE INDEX "_pages_v_blocks_blog9_featured_blog_post_featured_blog_post_image_idx" ON "_pages_v_blocks_blog9" USING btree ("featured_blog_post_image_id");
+  CREATE INDEX "_pages_v_blocks_blog9_featured_blog_post_featured_blog_post_avatar_idx" ON "_pages_v_blocks_blog9" USING btree ("featured_blog_post_avatar_id");
+  CREATE INDEX "_pages_v_blocks_blog_post_header2_image_image_media_image_idx" ON "_pages_v_blocks_blog_post_header2" USING btree ("image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_blog_post_header3_image_image_media_image_idx" ON "_pages_v_blocks_blog_post_header3" USING btree ("image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_layout10_sub_headings_icon_icon_media_image_idx" ON "_pages_v_blocks_layout10_sub_headings" USING btree ("icon_media_image_id");
+  CREATE INDEX "_pages_v_blocks_layout132_sections_image_image_media_image_idx" ON "_pages_v_blocks_layout132_sections" USING btree ("image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_layout133_sections_image_image_media_image_idx" ON "_pages_v_blocks_layout133_sections" USING btree ("image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_layout239_sections_image_image_media_image_idx" ON "_pages_v_blocks_layout239_sections" USING btree ("image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_layout395_sections_image_image_media_image_idx" ON "_pages_v_blocks_layout395_sections" USING btree ("image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_stats24_tabs_video_image_video_image_media_image_idx" ON "_pages_v_blocks_stats24_tabs" USING btree ("video_image_media_image_id");
+  CREATE INDEX "_pages_v_blocks_speed_template_speed_imgs_speed_imgs_first_image_upload_idx" ON "_pages_v_blocks_speed_template" USING btree ("speed_imgs_first_image_upload_id");
+  CREATE INDEX "_pages_v_blocks_speed_template_speed_imgs_speed_imgs_second_image_upload_idx" ON "_pages_v_blocks_speed_template" USING btree ("speed_imgs_second_image_upload_id");
+  CREATE INDEX "_pages_v_blocks_testimonial3_testimonials_image_image_src_idx" ON "_pages_v_blocks_testimonial3_testimonials" USING btree ("image_src_id");
+  CREATE INDEX "_pages_v_blocks_testimonial3_testimonials_avatar_avatar_src_idx" ON "_pages_v_blocks_testimonial3_testimonials" USING btree ("avatar_src_id");
+  CREATE INDEX "_pages_v_blocks_testimonial5_testimonials_avatar_avatar_media_idx" ON "_pages_v_blocks_testimonial5_testimonials" USING btree ("avatar_media_id");
+  CREATE INDEX "_pages_v_blocks_testimonial5_testimonials_logo_logo_media_idx" ON "_pages_v_blocks_testimonial5_testimonials" USING btree ("logo_media_id");
+  CREATE INDEX "_pages_v_version_hero_header138_first_image_version_hero_header138_first_image_media_image_idx" ON "_pages_v" USING btree ("version_hero_header138_first_image_media_image_id");
+  CREATE INDEX "_pages_v_version_hero_header138_second_image_version_hero_header138_second_image_media_image_idx" ON "_pages_v" USING btree ("version_hero_header138_second_image_media_image_id");
+  CREATE INDEX "_pages_v_version_hero_hero_imgs_version_hero_hero_imgs_first_image_upload_idx" ON "_pages_v" USING btree ("version_hero_hero_imgs_first_image_upload_id");
+  CREATE INDEX "_pages_v_version_hero_hero_imgs_version_hero_hero_imgs_second_image_upload_idx" ON "_pages_v" USING btree ("version_hero_hero_imgs_second_image_upload_id");
+  CREATE INDEX "payload_locked_documents_rels_form_custom_2_submissions_id_idx" ON "payload_locked_documents_rels" USING btree ("form_custom_2_submissions_id");
+  CREATE INDEX "payload_locked_documents_rels_payload_jobs_id_idx" ON "payload_locked_documents_rels" USING btree ("payload_jobs_id");
+  CREATE INDEX "header_navbar11_config_nav_links_sub_menu_links_icon_icon_image_idx" ON "header_navbar11_config_nav_links_sub_menu_links" USING btree ("icon_image_id");
+  CREATE INDEX "header_navbar_template_config_logo_navbar_template_config_logo_image_idx" ON "header" USING btree ("navbar_template_config_logo_image_id");
+  CREATE INDEX "footer_footer_template_config_logo_footer_template_config_logo_image_idx" ON "footer" USING btree ("footer_template_config_logo_image_id");`)
+}
