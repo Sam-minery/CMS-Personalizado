@@ -39,10 +39,18 @@ jobs:
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa -f -N \
-            -L 5432:${{ secrets.DB_HOST }}:${{ secrets.DB_PORT || 25060 }} \
+          ssh \
+            -o StrictHostKeyChecking=no \
+            -o IdentitiesOnly=yes \
+            -o ServerAliveInterval=30 \
+            -o ServerAliveCountMax=10 \
+            -o TCPKeepAlive=yes \
+            -i ~/.ssh/id_rsa \
+            -f -N \
+            -L 127.0.0.1:5432:${{ secrets.DB_HOST }}:${{ secrets.DB_PORT || 25060 }} \
             -p "${{ secrets.SSH_PORT }}" \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+
 
       - name: Write DB CA cert
         run: |
