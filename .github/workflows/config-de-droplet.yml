@@ -41,7 +41,7 @@ jobs:
 
           ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa -f -N \
             -L 5432:${{ secrets.DB_HOST }}:${{ secrets.DB_PORT || 25060 }} \
-            -p "${{ secrets.SSH_PORT }} \
+            -p "${{ secrets.SSH_PORT }}" \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
 
       - name: Write DB CA cert
