@@ -47,7 +47,7 @@ jobs:
             -o TCPKeepAlive=yes \
             -i ~/.ssh/id_rsa \
             -f -N \
-            -L 127.0.0.1:5432:${{ secrets.DB_HOST }}:${{ secrets.DB_PORT || 25060 }} \
+            -L 127.0.0.1:5432:${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }} \
             -p "${{ secrets.SSH_PORT }}" \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
 
