@@ -1,0 +1,101 @@
+name: Build and Deploy Payload - Primera versión
+
+on:
+  push:
+    branches:
+      - deploy-new-vm
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-payload
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (Next.js + Payload)
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
+          GCS_BUCKET_NAME: ${{ secrets.GCS_BUCKET_NAME }}
+          GCS_PROJECT_ID: ${{ secrets.GCS_PROJECT_ID }}
+          GCS_CLIENT_EMAIL: ${{ secrets.GCS_CLIENT_EMAIL }}
+          GCS_PRIVATE_KEY: ${{ secrets.GCS_PRIVATE_KEY }}
+        run: npm run build
+
+      - name: Prepare artifacts
+        run: |
+          set -e
+
+          mkdir -p deploy/.next
+          cp -a .next/standalone deploy/.next/
+          cp -a .next/static deploy/.next/static
+
+          # Next standalone espera static en .next/standalone/.next/static
+          mkdir -p deploy/.next/standalone/.next
+          cp -a .next/static deploy/.next/standalone/.next/static
+
+          if [ -d public ]; then
+            cp -a public deploy/public
+          fi
+
+          if [ -f ecosystem.config.cjs ]; then
+            cp ecosystem.config.cjs deploy/
+          fi
+
+          tar -czf deploy.tgz -C deploy .
+
+      - name: Copy artifacts to droplet
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: deploy.tgz
+          target: ${{ secrets.REMOTE_PATH }}
+
+      - name: Deploy and restart (PM2)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            cd ${{ secrets.REMOTE_PATH }}
+
+            tar -xzf deploy.tgz
+            rm -f deploy.tgz
+
+            if ! command -v pm2 >/dev/null 2>&1; then
+              echo "PM2 no está instalado" >&2
+              exit 1
+            fi
+
+            pm2 start ecosystem.config.cjs --only herramienta-web-payload || \
+            pm2 restart herramienta-web-payload
+
+            pm2 save
+
+            if command -v nginx >/dev/null 2>&1; then
+              sudo systemctl reload nginx || true
+            fi
