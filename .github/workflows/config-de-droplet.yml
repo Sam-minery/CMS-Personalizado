@@ -31,21 +31,6 @@ jobs:
       # TÚNEL A POSTGRES (SOLO PARA BUILD)
       # ─────────────────────────────────────────────
 
-      - name: Sanity check secrets (DB tunnel)
-        shell: bash
-        run: |
-          # Verificar que DATABASE_URI_TUNNEL está definido
-          if [ -z "${{ secrets.DATABASE_URI_TUNNEL }}" ]; then
-            echo "ERROR: DATABASE_URI_TUNNEL no está definido en Secrets" >&2
-            exit 1
-          fi
-          # Verificar que DB_HOST está definido (destino del túnel)
-          if [ -z "${{ secrets.DB_HOST }}" ]; then
-            echo "ERROR: DB_HOST no está definido en Secrets" >&2
-            exit 1
-          fi
-          echo "Secrets de túnel presentes (valores ocultos por GitHub)."
-
       - name: Open SSH tunnel to DO Postgres via droplet
         shell: bash
         run: |
@@ -62,10 +47,18 @@ jobs:
           if [ -z "$DB_PORT" ]; then
             DB_PORT=25060
           fi
-          ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa -f -N \
-            -L 5432:${DB_HOST}:${DB_PORT} \
+          ssh \
+            -o StrictHostKeyChecking=no \
+            -o IdentitiesOnly=yes \
+            -o ServerAliveInterval=30 \
+            -o ServerAliveCountMax=10 \
+            -o TCPKeepAlive=yes \
+            -i ~/.ssh/id_rsa \
+            -f -N \
+            -L 127.0.0.1:5432:${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }} \
             -p "${{ secrets.SSH_PORT }}" \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+
 
       - name: Write CA cert (DO Postgres)
         run: |
