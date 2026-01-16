@@ -31,38 +31,64 @@ jobs:
       # TÚNEL A POSTGRES (SOLO PARA BUILD)
       # ─────────────────────────────────────────────
 
-      - name: Open SSH tunnel to DO Postgres
+      - name: Sanity check secrets (DB tunnel)
+        shell: bash
+        run: |
+          # Verificar que DATABASE_URI_TUNNEL está definido
+          if [ -z "${{ secrets.DATABASE_URI_TUNNEL }}" ]; then
+            echo "ERROR: DATABASE_URI_TUNNEL no está definido en Secrets" >&2
+            exit 1
+          fi
+          # Verificar que DB_HOST está definido (destino del túnel)
+          if [ -z "${{ secrets.DB_HOST }}" ]; then
+            echo "ERROR: DB_HOST no está definido en Secrets" >&2
+            exit 1
+          fi
+          echo "Secrets de túnel presentes (valores ocultos por GitHub)."
+
+      - name: Abrir túnel SSH a Postgres desde Droplet
         shell: bash
         run: |
           set -e
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-
-          ssh \
-            -o StrictHostKeyChecking=no \
-            -o IdentitiesOnly=yes \
-            -o ServerAliveInterval=30 \
-            -o ServerAliveCountMax=10 \
-            -o TCPKeepAlive=yes \
-            -i ~/.ssh/id_rsa \
-            -f -N \
-            -L 127.0.0.1:5432:${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }} \
+          DB_HOST="${{ secrets.DB_HOST }}"
+          DB_PORT="${{ secrets.DB_PORT }}"
+          if [ -z "$DB_HOST" ]; then
+            echo "ERROR: DB_HOST secret no definido" >&2
+            exit 1
+          fi
+          if [ -z "$DB_PORT" ]; then
+            DB_PORT=25060
+          fi
+          ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa -f -N \
+            -L 5432:${DB_HOST}:${DB_PORT} \
             -p "${{ secrets.SSH_PORT }}" \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
 
-
-      - name: Write DB CA cert
+      - name: Escribir certificado CA (Postgres de DO)
         run: |
+          set -e
+          if [ -z "${{ secrets.DB_CA_CERT }}" ]; then
+            echo "ERROR: DB_CA_CERT no está definido en Secrets" >&2
+            exit 1
+          fi
           echo "${{ secrets.DB_CA_CERT }}" > ca.crt
-
-      - name: Map DB host to localhost for TLS
+      - name: Map DB host to localhost for TLS SNI
         run: |
           echo "127.0.0.1 ${{ secrets.DB_HOST }}" | sudo tee -a /etc/hosts
 
-      - name: Export DATABASE_URI
+      - name: Componer DATABASE_URI con CA
         run: |
+          # compone DATABASE_URI a partir de DATABASE_URI_TUNNEL + sslrootcert
+          if [ -z "${{ secrets.DATABASE_URI_TUNNEL }}" ]; then
+            echo "ERROR: DATABASE_URI_TUNNEL no está definido en Secrets" >&2
+            exit 1
+          fi
           DB_URI="${{ secrets.DATABASE_URI_TUNNEL }}"
+          # Sustituir host 127.0.0.1 por el hostname real para que SNI/altname coincidan;
+          # la resolución apunta a 127.0.0.1 gracias a /etc/hosts
           DB_URI="${DB_URI/127.0.0.1/${{ secrets.DB_HOST }}}"
           echo "DATABASE_URI=${DB_URI}&sslrootcert=$GITHUB_WORKSPACE/ca.crt" >> $GITHUB_ENV
 
