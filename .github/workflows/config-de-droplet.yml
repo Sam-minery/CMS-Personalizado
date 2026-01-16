@@ -27,11 +27,47 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # ─────────────────────────────────────────────
+      # TÚNEL A POSTGRES (SOLO PARA BUILD)
+      # ─────────────────────────────────────────────
+
+      - name: Open SSH tunnel to DO Postgres
+        shell: bash
+        run: |
+          set -e
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa -f -N \
+            -L 5432:${{ secrets.DB_HOST }}:${{ secrets.DB_PORT || 25060 }} \
+            -p "${{ secrets.SSH_PORT }} \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
+
+      - name: Write DB CA cert
+        run: |
+          echo "${{ secrets.DB_CA_CERT }}" > ca.crt
+
+      - name: Map DB host to localhost for TLS
+        run: |
+          echo "127.0.0.1 ${{ secrets.DB_HOST }}" | sudo tee -a /etc/hosts
+
+      - name: Export DATABASE_URI
+        run: |
+          DB_URI="${{ secrets.DATABASE_URI_TUNNEL }}"
+          DB_URI="${DB_URI/127.0.0.1/${{ secrets.DB_HOST }}}"
+          echo "DATABASE_URI=${DB_URI}&sslrootcert=$GITHUB_WORKSPACE/ca.crt" >> $GITHUB_ENV
+
+      # ─────────────────────────────────────────────
+      # BUILD
+      # ─────────────────────────────────────────────
+
       - name: Build (Next.js + Payload)
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
-          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+          DATABASE_URI: ${{ env.DATABASE_URI }}
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
           PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
           GCS_BUCKET_NAME: ${{ secrets.GCS_BUCKET_NAME }}
@@ -39,6 +75,15 @@ jobs:
           GCS_CLIENT_EMAIL: ${{ secrets.GCS_CLIENT_EMAIL }}
           GCS_PRIVATE_KEY: ${{ secrets.GCS_PRIVATE_KEY }}
         run: npm run build
+
+      - name: Close SSH tunnel
+        if: always()
+        run: |
+          pkill -f "ssh.*-L 5432:" || true
+
+      # ─────────────────────────────────────────────
+      # PREPARAR ARTEFACTOS
+      # ─────────────────────────────────────────────
 
       - name: Prepare artifacts
         run: |
@@ -48,7 +93,7 @@ jobs:
           cp -a .next/standalone deploy/.next/
           cp -a .next/static deploy/.next/static
 
-          # Next standalone espera static en .next/standalone/.next/static
+          # Next standalone necesita static aquí:
           mkdir -p deploy/.next/standalone/.next
           cp -a .next/static deploy/.next/standalone/.next/static
 
@@ -61,6 +106,10 @@ jobs:
           fi
 
           tar -czf deploy.tgz -C deploy .
+
+      # ─────────────────────────────────────────────
+      # DEPLOY
+      # ─────────────────────────────────────────────
 
       - name: Copy artifacts to droplet
         uses: appleboy/scp-action@v0.1.7
@@ -87,7 +136,7 @@ jobs:
             rm -f deploy.tgz
 
             if ! command -v pm2 >/dev/null 2>&1; then
-              echo "PM2 no está instalado" >&2
+              echo "ERROR: PM2 no está instalado en el servidor" >&2
               exit 1
             fi
 
