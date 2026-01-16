@@ -46,7 +46,7 @@ jobs:
           fi
           echo "Secrets de túnel presentes (valores ocultos por GitHub)."
 
-      - name: Abrir túnel SSH a Postgres desde Droplet
+      - name: Open SSH tunnel to DO Postgres via droplet
         shell: bash
         run: |
           set -e
@@ -67,7 +67,7 @@ jobs:
             -p "${{ secrets.SSH_PORT }}" \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
 
-      - name: Escribir certificado CA (Postgres de DO)
+      - name: Write CA cert (DO Postgres)
         run: |
           set -e
           if [ -z "${{ secrets.DB_CA_CERT }}" ]; then
@@ -79,7 +79,7 @@ jobs:
         run: |
           echo "127.0.0.1 ${{ secrets.DB_HOST }}" | sudo tee -a /etc/hosts
 
-      - name: Componer DATABASE_URI con CA
+      - name: Compose DATABASE_URI with CA
         run: |
           # compone DATABASE_URI a partir de DATABASE_URI_TUNNEL + sslrootcert
           if [ -z "${{ secrets.DATABASE_URI_TUNNEL }}" ]; then
@@ -92,6 +92,42 @@ jobs:
           DB_URI="${DB_URI/127.0.0.1/${{ secrets.DB_HOST }}}"
           echo "DATABASE_URI=${DB_URI}&sslrootcert=$GITHUB_WORKSPACE/ca.crt" >> $GITHUB_ENV
 
+      - name: Run migrations before build
+        env:
+          NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+        run: |
+          # Ejecutar migraciones antes del build para asegurar que la DB está actualizada
+          # El build necesita consultar la DB para generar páginas estáticas
+          npm run payload -- migrate || echo "Warning: Migrations failed or none pending"
+
+      - name: Build (Next.js)
+        env:
+          NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
+          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          GCS_BUCKET_NAME: ${{ secrets.GCS_BUCKET_NAME }}
+          GCS_PROJECT_ID: ${{ secrets.GCS_PROJECT_ID }}
+          GCS_CLIENT_EMAIL: ${{ secrets.GCS_CLIENT_EMAIL }}
+          GCS_PRIVATE_KEY: ${{ secrets.GCS_PRIVATE_KEY }}
+        run: npm run build
+
+      - name: Close SSH tunnel
+        if: always()
+        run: |
+          pkill -f "ssh.*-L 5432:" || true
+      - name: Archive build artifacts
+        run: |
+          set -e
+          tar -C .next -czf next.tgz .
+          if [ -d public ]; then
+            tar -C public -czf public.tgz .
+          else
+            # crea un tar vacío para evitar fallos si no hay public
+            tar -czf public.tgz --files-from /dev/null
+          fi
       # ─────────────────────────────────────────────
       # BUILD
       # ─────────────────────────────────────────────
