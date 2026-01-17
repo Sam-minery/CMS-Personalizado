@@ -85,15 +85,6 @@ jobs:
           DB_URI="${DB_URI/127.0.0.1/${{ secrets.DB_HOST }}}"
           echo "DATABASE_URI=${DB_URI}&sslrootcert=$GITHUB_WORKSPACE/ca.crt" >> $GITHUB_ENV
 
-      - name: Run migrations before build
-        env:
-          NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
-          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
-        run: |
-          # Ejecutar migraciones antes del build para asegurar que la DB está actualizada
-          # El build necesita consultar la DB para generar páginas estáticas
-          npm run payload -- migrate || echo "Warning: Migrations failed or none pending"
-
       - name: Build (Next.js)
         env:
           NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
@@ -107,6 +98,16 @@ jobs:
           GCS_PRIVATE_KEY: ${{ secrets.GCS_PRIVATE_KEY }}
         run: npm run build
 
+      - name: Run migrations before build
+        env:
+          NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+        run: |
+          # Ejecutar migraciones antes del build para asegurar que la DB está actualizada
+          # El build necesita consultar la DB para generar páginas estáticas
+          npm run payload -- migrate || echo "Warning: Migrations failed or none pending"
+
+        
       - name: Close SSH tunnel
         if: always()
         run: |
