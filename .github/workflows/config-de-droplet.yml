@@ -98,17 +98,16 @@ jobs:
           GCS_PRIVATE_KEY: ${{ secrets.GCS_PRIVATE_KEY }}
         run: npm run build
 
-      - name: Run migrations before build
+      - name: Migrations 
         env:
           NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          PAYLOAD_NO_CONFIRMATION: "true"
         run: |
-          # Ejecutar migraciones antes del build para asegurar que la DB está actualizada
-          # El build necesita consultar la DB para generar páginas estáticas
           npm run payload -- migrate || echo "Warning: Migrations failed or none pending"
 
         
-      - name: Close SSH tunnel
+      - name: Cerrar túnel SSH
         if: always()
         run: |
           pkill -f "ssh.*-L 5432:" || true
