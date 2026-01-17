@@ -85,19 +85,6 @@ jobs:
           DB_URI="${DB_URI/127.0.0.1/${{ secrets.DB_HOST }}}"
           echo "DATABASE_URI=${DB_URI}&sslrootcert=$GITHUB_WORKSPACE/ca.crt" >> $GITHUB_ENV
 
-      - name: Build (Next.js)
-        env:
-          NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
-          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
-          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
-          PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
-          GCS_BUCKET_NAME: ${{ secrets.GCS_BUCKET_NAME }}
-          GCS_PROJECT_ID: ${{ secrets.GCS_PROJECT_ID }}
-          GCS_CLIENT_EMAIL: ${{ secrets.GCS_CLIENT_EMAIL }}
-          GCS_PRIVATE_KEY: ${{ secrets.GCS_PRIVATE_KEY }}
-        run: npm run build
-
       - name: Migrations 
         env:
           NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
