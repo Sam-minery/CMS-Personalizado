@@ -3,7 +3,7 @@ name: Build and Deploy Payload - Primera versión
 on:
   push:
     branches:
-      - deploy-new-vm
+      - deploy-do
   workflow_dispatch:
 
 concurrency:
