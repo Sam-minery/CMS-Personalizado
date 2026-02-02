@@ -2115,21 +2115,100 @@ export interface BlogPostHeader1BlockType {
         id?: string | null;
       }[]
     | null;
-  heading: string;
-  image: number | Media;
-  author: {
-    avatar: number | Media;
-    fullName: string;
-    date: string;
-    readTime: string;
+  /**
+   * Añade el título o contenido principal del encabezado con el editor rich text.
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  image?: (number | null) | Media;
+  author?: {
+    avatar?: (number | null) | Media;
+    fullName?: string | null;
+    date?: string | null;
+    readTime?: string | null;
   };
   socialMediaLinks?:
     | {
-        url: string;
         iconType: 'link' | 'linkedin' | 'twitter' | 'facebook';
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+        };
         id?: string | null;
       }[]
     | null;
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
+   */
+  boldTextColor?: string | null;
+  /**
+   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
+   */
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  /**
+   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
+   */
+  useCustomFont?: boolean | null;
+  /**
+   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
+   */
+  customFontFile?: (number | null) | Font;
+  /**
+   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
+   */
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'blogPostHeader1';
@@ -2139,8 +2218,8 @@ export interface BlogPostHeader1BlockType {
  * via the `definition` "BlogPostHeader2Block".
  */
 export interface BlogPostHeader2Block {
-  button: {
-    title: string;
+  button?: {
+    title?: string | null;
     variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
     size?: ('sm' | 'md' | 'lg' | 'link') | null;
     link?: {
@@ -2161,24 +2240,86 @@ export interface BlogPostHeader2Block {
       url?: string | null;
     };
   };
-  category: string;
-  readTime: string;
-  heading: string;
-  image?: {
-    useMedia?: boolean | null;
-    mediaImage?: (number | null) | Media;
-    src?: string | null;
-    alt?: string | null;
+  category?: string | null;
+  readTime?: string | null;
+  /**
+   * Añade el título o contenido principal del encabezado con el editor rich text.
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
   };
-  authorName: string;
-  publishedDate: string;
+  image?: (number | null) | Media;
+  authorName?: string | null;
+  publishedDate?: string | null;
   socialMediaLinks?:
     | {
         platform: 'link' | 'linkedin' | 'twitter' | 'facebook';
-        url: string;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+        };
         id?: string | null;
       }[]
     | null;
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal.
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita.
+   */
+  boldTextColor?: string | null;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'blogPostHeader2';
@@ -2211,25 +2352,105 @@ export interface BlogPostHeader3Block {
         id?: string | null;
       }[]
     | null;
-  heading: string;
-  image?: {
-    useMedia?: boolean | null;
-    mediaImage?: (number | null) | Media;
-    src?: string | null;
-    alt?: string | null;
+  /**
+   * Añade el título o contenido principal del encabezado con el editor rich text.
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
   };
-  author: {
-    fullName: string;
-    date: string;
-    readTime: string;
+  image?: (number | null) | Media;
+  author?: {
+    fullName?: string | null;
+    date?: string | null;
+    readTime?: string | null;
   };
+  /**
+   * Texto que aparece encima de los iconos de redes sociales (ej: "Share this post"). Editable desde el panel de administración.
+   */
+  shareLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   socialMediaLinks?:
     | {
         platform: 'link' | 'linkedin' | 'twitter' | 'facebook';
-        url: string;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+        };
         id?: string | null;
       }[]
     | null;
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal.
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita.
+   */
+  boldTextColor?: string | null;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'blogPostHeader3';
@@ -2239,15 +2460,67 @@ export interface BlogPostHeader3Block {
  * via the `definition` "BlogPostHeader5BlockType".
  */
 export interface BlogPostHeader5BlockType {
-  category: string;
-  heading: string;
-  image: number | Media;
-  author: {
-    avatar: number | Media;
-    fullName: string;
-    date: string;
-    readTime: string;
+  category?: string | null;
+  /**
+   * Añade el título o contenido principal del encabezado con el editor rich text.
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
   };
+  image?: (number | null) | Media;
+  author?: {
+    avatar?: (number | null) | Media;
+    fullName?: string | null;
+    date?: string | null;
+    readTime?: string | null;
+  };
+  socialMediaLinks?:
+    | {
+        iconType: 'link' | 'linkedin' | 'twitter' | 'facebook';
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, rgba(0,0,0,0.5), etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal (ej: #FFFFFF, #333333, etc.)
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, etc.)
+   */
+  boldTextColor?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'blogPostHeader5';
@@ -8228,7 +8501,7 @@ export interface BlogPostHeader1BlockTypeSelect<T extends boolean = true> {
             };
         id?: T;
       };
-  heading?: T;
+  content?: T;
   image?: T;
   author?:
     | T
@@ -8241,10 +8514,24 @@ export interface BlogPostHeader1BlockTypeSelect<T extends boolean = true> {
   socialMediaLinks?:
     | T
     | {
-        url?: T;
         iconType?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
         id?: T;
       };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
@@ -8270,24 +8557,31 @@ export interface BlogPostHeader2BlockSelect<T extends boolean = true> {
       };
   category?: T;
   readTime?: T;
-  heading?: T;
-  image?:
-    | T
-    | {
-        useMedia?: T;
-        mediaImage?: T;
-        src?: T;
-        alt?: T;
-      };
+  content?: T;
+  image?: T;
   authorName?: T;
   publishedDate?: T;
   socialMediaLinks?:
     | T
     | {
         platform?: T;
-        url?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
         id?: T;
       };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
@@ -8310,15 +8604,8 @@ export interface BlogPostHeader3BlockSelect<T extends boolean = true> {
             };
         id?: T;
       };
-  heading?: T;
-  image?:
-    | T
-    | {
-        useMedia?: T;
-        mediaImage?: T;
-        src?: T;
-        alt?: T;
-      };
+  content?: T;
+  image?: T;
   author?:
     | T
     | {
@@ -8326,13 +8613,28 @@ export interface BlogPostHeader3BlockSelect<T extends boolean = true> {
         date?: T;
         readTime?: T;
       };
+  shareLabel?: T;
   socialMediaLinks?:
     | T
     | {
         platform?: T;
-        url?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
         id?: T;
       };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
@@ -8342,7 +8644,7 @@ export interface BlogPostHeader3BlockSelect<T extends boolean = true> {
  */
 export interface BlogPostHeader5BlockTypeSelect<T extends boolean = true> {
   category?: T;
-  heading?: T;
+  content?: T;
   image?: T;
   author?:
     | T
@@ -8352,6 +8654,23 @@ export interface BlogPostHeader5BlockTypeSelect<T extends boolean = true> {
         date?: T;
         readTime?: T;
       };
+  socialMediaLinks?:
+    | T
+    | {
+        iconType?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        id?: T;
+      };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
   id?: T;
   blockName?: T;
 }
