@@ -17,6 +17,7 @@ type CMSLinkType = {
     value: Page | Post | string | number
   } | null
   size?: ButtonProps['size'] | null
+  style?: React.CSSProperties
   type?: 'custom' | 'reference' | null
   url?: string | null
 }
@@ -31,6 +32,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     newTab,
     reference,
     size: sizeFromProps,
+    style,
     url,
   } = props
 
@@ -75,7 +77,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   }
 
   return (
-    <Button asChild className={className} size={size} variant={appearance}>
+    <Button asChild className={className} size={size} style={style} variant={appearance}>
       <Link className={cn(className)} href={href} {...newTabProps}>
         {label && label}
         {children && children}

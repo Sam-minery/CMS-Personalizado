@@ -70,6 +70,7 @@ export interface Config {
     pages: Page;
     posts: Post;
     media: Media;
+    fonts: Font;
     categories: Category;
     users: User;
     'contact-submissions': ContactSubmission;
@@ -89,6 +90,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    fonts: FontsSelect<false> | FontsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'contact-submissions': ContactSubmissionsSelect<false> | ContactSubmissionsSelect<true>;
@@ -858,8 +860,24 @@ export interface ArchiveBlock {
  * via the `definition` "Banner1Block".
  */
 export interface Banner1Block {
-  heading: string;
-  description: string;
+  /**
+   * Add main content with heading and description as needed
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
   /**
    * Selecciona una imagen para el logo desde la biblioteca de medios
    */
@@ -870,33 +888,214 @@ export interface Banner1Block {
   logoUrl?: string | null;
   inputPlaceholder: string;
   button: {
-    title: string;
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null);
+    /**
+     * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+     */
+    url?: string | null;
+    label: string;
     size?: ('sm' | 'md' | 'lg') | null;
     variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
+    /**
+     * Si está marcado, el botón enviará el formulario de email. Si no está marcado, el botón actuará como enlace (interno o externo) con el texto y estilo configurados arriba.
+     */
+    buttonSubmitsForm?: boolean | null;
   };
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
+   */
+  boldTextColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el fondo del botón (ej: #007BFF, #28A745, rgb(0,123,255), etc.)
+   */
+  buttonBackgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto del botón (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  buttonTextColor?: string | null;
+  /**
+   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
+   */
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  /**
+   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
+   */
+  useCustomFont?: boolean | null;
+  /**
+   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
+   */
+  customFontFile?: (number | null) | Font;
+  /**
+   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
+   */
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'banner1';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fonts".
+ */
+export interface Font {
+  id: number;
+  /**
+   * Nombre descriptivo de la fuente (ej: "Mi Fuente Personalizada")
+   */
+  name?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Banner2Block".
  */
 export interface Banner2Block {
-  heading: string;
-  description: string;
-  logo?: {
-    useMedia?: boolean | null;
-    mediaImage?: (number | null) | Media;
-    url?: string | null;
-    src?: string | null;
-    alt?: string | null;
+  /**
+   * Añade el contenido principal con título y descripción según necesites
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
   };
+  /**
+   * Selecciona una imagen para el logo desde la biblioteca de medios
+   */
+  logo?: (number | null) | Media;
+  /**
+   * URL personalizada para el logo (si no se selecciona una imagen)
+   */
+  logoUrl?: string | null;
   button: {
-    title: string;
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null);
+    /**
+     * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+     */
+    url?: string | null;
+    label: string;
     size?: ('sm' | 'md' | 'lg') | null;
     variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
   };
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
+   */
+  boldTextColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el fondo del botón (ej: #007BFF, #28A745, rgb(0,123,255), etc.)
+   */
+  buttonBackgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto del botón (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  buttonTextColor?: string | null;
+  /**
+   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
+   */
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  /**
+   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
+   */
+  useCustomFont?: boolean | null;
+  /**
+   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
+   */
+  customFontFile?: (number | null) | Font;
+  /**
+   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
+   */
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'banner2';
@@ -906,27 +1105,109 @@ export interface Banner2Block {
  * via the `definition` "Banner3Block".
  */
 export interface Banner3Block {
-  heading: string;
-  description: string;
-  logo?: {
-    useMedia?: boolean | null;
-    mediaImage?: (number | null) | Media;
-    url?: string | null;
-    src?: string | null;
-    alt?: string | null;
+  /**
+   * Añade el contenido principal con título y descripción según necesites
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
   };
+  /**
+   * Selecciona una imagen para el logo desde la biblioteca de medios
+   */
+  logo?: (number | null) | Media;
+  /**
+   * URL personalizada para el logo (si no se selecciona una imagen)
+   */
+  logoUrl?: string | null;
   buttons?:
     | {
-        title: string;
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
+        url?: string | null;
+        label: string;
         size?: ('sm' | 'md' | 'lg') | null;
         variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
-        /**
-         * URL a la que debe redirigir el botón
-         */
-        url: string;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
+   */
+  boldTextColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el fondo de los botones (ej: #007BFF, #28A745, rgb(0,123,255), etc.)
+   */
+  buttonBackgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto de los botones (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  buttonTextColor?: string | null;
+  /**
+   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
+   */
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  /**
+   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
+   */
+  useCustomFont?: boolean | null;
+  /**
+   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
+   */
+  customFontFile?: (number | null) | Font;
+  /**
+   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
+   */
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'banner3';
@@ -936,20 +1217,102 @@ export interface Banner3Block {
  * via the `definition` "Banner4Block".
  */
 export interface Banner4Block {
-  heading: string;
-  description: string;
+  /**
+   * Añade el contenido principal con título y descripción según necesites
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Selecciona una imagen para el logo desde la biblioteca de medios
+   */
   logo: number | Media;
   /**
-   * URL de enlace para el logo (opcional)
+   * URL de enlace para el logo (si no se rellena, el logo no enlazará)
    */
   logoUrl?: string | null;
+  /**
+   * Cada enlace puede ser una URL personalizada o un enlace interno (página o post).
+   */
   socialMediaLinks?:
     | {
-        url: string;
         platform: 'facebook' | 'instagram' | 'twitter' | 'linkedin';
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
+        url?: string | null;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
+   */
+  boldTextColor?: string | null;
+  /**
+   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
+   */
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  /**
+   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
+   */
+  useCustomFont?: boolean | null;
+  /**
+   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
+   */
+  customFontFile?: (number | null) | Font;
+  /**
+   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
+   */
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'banner4';
@@ -959,20 +1322,102 @@ export interface Banner4Block {
  * via the `definition` "Banner9Block".
  */
 export interface Banner9Block {
-  heading: string;
-  description: string;
+  /**
+   * Añade el contenido principal con título y descripción según necesites
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Selecciona una imagen para el logo desde la biblioteca de medios
+   */
   logo: number | Media;
   /**
-   * URL de enlace para el logo (opcional)
+   * URL de enlace para el logo (si no se rellena, el logo no enlazará)
    */
   logoUrl?: string | null;
+  /**
+   * Cada enlace puede ser una URL personalizada o un enlace interno (página o post).
+   */
   socialMediaLinks?:
     | {
-        url: string;
         platform: 'facebook' | 'instagram' | 'twitter' | 'linkedin';
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
+        url?: string | null;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
+   */
+  boldTextColor?: string | null;
+  /**
+   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
+   */
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  /**
+   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
+   */
+  useCustomFont?: boolean | null;
+  /**
+   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
+   */
+  customFontFile?: (number | null) | Font;
+  /**
+   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
+   */
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'banner9';
@@ -983,8 +1428,24 @@ export interface Banner9Block {
  */
 export interface Blog1BlockType {
   tagline?: string | null;
-  heading?: string | null;
-  description?: string | null;
+  /**
+   * Añade el contenido principal con título y descripción según necesites.
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
   defaultValue?: string | null;
   tabs?:
     | {
@@ -992,22 +1453,97 @@ export interface Blog1BlockType {
         trigger: string;
         content?:
           | {
-              url: string;
+              type?: ('reference' | 'custom') | null;
+              newTab?: boolean | null;
+              reference?:
+                | ({
+                    relationTo: 'pages';
+                    value: number | Page;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: number | Post;
+                  } | null);
+              /**
+               * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+               */
+              url?: string | null;
               image: number | Media;
-              category: string;
-              title: string;
-              description: string;
+              category?: string | null;
+              /**
+               * Contenido del post (título y descripción en un solo richtext).
+               */
+              postContent: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
               avatar: number | Media;
-              fullName: string;
-              date: string;
-              readTime: string;
+              fullName?: string | null;
+              date?: string | null;
+              readTime?: string | null;
               id?: string | null;
             }[]
           | null;
         id?: string | null;
       }[]
     | null;
-  categoryLink?: string | null;
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
+   */
+  boldTextColor?: string | null;
+  /**
+   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
+   */
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  /**
+   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
+   */
+  useCustomFont?: boolean | null;
+  /**
+   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
+   */
+  customFontFile?: (number | null) | Font;
+  /**
+   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
+   */
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'blog1';
@@ -1018,42 +1554,163 @@ export interface Blog1BlockType {
  */
 export interface Blog5BlockType {
   tagline?: string | null;
-  heading?: string | null;
-  description?: string | null;
+  /**
+   * Añade el contenido principal con título y descripción según necesites.
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
   defaultValue?: string | null;
+  featuredBlogPost: {
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null);
+    /**
+     * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+     */
+    url?: string | null;
+    image: number | Media;
+    category?: string | null;
+    /**
+     * Contenido del post destacado (título y descripción en un solo richtext).
+     */
+    postContent: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    avatar: number | Media;
+    fullName?: string | null;
+    date?: string | null;
+    readTime?: string | null;
+  };
   tabs?:
     | {
         value: string;
         trigger: string;
         content?:
           | {
-              url: string;
+              type?: ('reference' | 'custom') | null;
+              newTab?: boolean | null;
+              reference?:
+                | ({
+                    relationTo: 'pages';
+                    value: number | Page;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: number | Post;
+                  } | null);
+              /**
+               * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+               */
+              url?: string | null;
               image: number | Media;
-              category: string;
-              title: string;
-              description: string;
+              category?: string | null;
+              /**
+               * Contenido del post (título y descripción en un solo richtext).
+               */
+              postContent: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
               avatar: number | Media;
-              fullName: string;
-              date: string;
-              readTime: string;
+              fullName?: string | null;
+              date?: string | null;
+              readTime?: string | null;
               id?: string | null;
             }[]
           | null;
         id?: string | null;
       }[]
     | null;
-  categoryLink?: string | null;
-  featuredBlogPost: {
-    url: string;
-    image: number | Media;
-    category: string;
-    title: string;
-    description: string;
-    avatar: number | Media;
-    fullName: string;
-    date: string;
-    readTime: string;
-  };
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
+   */
+  boldTextColor?: string | null;
+  /**
+   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
+   */
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  /**
+   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
+   */
+  useCustomFont?: boolean | null;
+  /**
+   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
+   */
+  customFontFile?: (number | null) | Font;
+  /**
+   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
+   */
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'blog5';
@@ -1064,18 +1721,64 @@ export interface Blog5BlockType {
  */
 export interface Blog7BlockType {
   tagline?: string | null;
-  heading?: string | null;
-  description?: string | null;
+  /**
+   * Añade el contenido principal con título y descripción según necesites.
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
   featuredBlogPost: {
-    url: string;
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null);
+    /**
+     * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+     */
+    url?: string | null;
     image: number | Media;
-    category: string;
-    title: string;
-    description: string;
+    category?: string | null;
+    /**
+     * Contenido del post destacado (título y descripción en un solo richtext).
+     */
+    postContent: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
     avatar: number | Media;
-    fullName: string;
-    date: string;
-    readTime: string;
+    fullName?: string | null;
+    date?: string | null;
+    readTime?: string | null;
   };
   defaultValue?: string | null;
   tabs?:
@@ -1084,21 +1787,97 @@ export interface Blog7BlockType {
         trigger: string;
         content?:
           | {
-              url: string;
+              type?: ('reference' | 'custom') | null;
+              newTab?: boolean | null;
+              reference?:
+                | ({
+                    relationTo: 'pages';
+                    value: number | Page;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: number | Post;
+                  } | null);
+              /**
+               * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+               */
+              url?: string | null;
               image: number | Media;
-              category: string;
-              title: string;
-              description: string;
+              category?: string | null;
+              /**
+               * Contenido del post (título y descripción en un solo richtext).
+               */
+              postContent: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
               avatar: number | Media;
-              fullName: string;
-              date: string;
-              readTime: string;
+              fullName?: string | null;
+              date?: string | null;
+              readTime?: string | null;
               id?: string | null;
             }[]
           | null;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
+   */
+  boldTextColor?: string | null;
+  /**
+   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
+   */
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  /**
+   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
+   */
+  useCustomFont?: boolean | null;
+  /**
+   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
+   */
+  customFontFile?: (number | null) | Font;
+  /**
+   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
+   */
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'blog7';
@@ -1109,48 +1888,201 @@ export interface Blog7BlockType {
  */
 export interface Blog9BlockType {
   tagline?: string | null;
-  heading?: string | null;
-  description?: string | null;
+  /**
+   * Añade el contenido principal con título y descripción según necesites.
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
   featuredBlogIitle?: string | null;
   featuredBlogPost: {
-    url: string;
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null);
+    /**
+     * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+     */
+    url?: string | null;
     image: number | Media;
-    category: string;
-    title: string;
-    description: string;
+    category?: string | null;
+    /**
+     * Contenido del post destacado (título y descripción en un solo richtext).
+     */
+    postContent: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
     avatar: number | Media;
-    fullName: string;
-    date: string;
-    readTime: string;
+    fullName?: string | null;
+    date?: string | null;
+    readTime?: string | null;
   };
   smallFeaturedBlogPosts?:
     | {
-        url: string;
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
+        url?: string | null;
         image: number | Media;
-        category: string;
-        title: string;
+        category?: string | null;
+        /**
+         * Contenido del post pequeño destacado (título y/o texto breve en un solo richtext).
+         */
+        postContent: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
         avatar: number | Media;
-        fullName: string;
-        date: string;
-        readTime: string;
+        fullName?: string | null;
+        date?: string | null;
+        readTime?: string | null;
         id?: string | null;
       }[]
     | null;
   latestBlogTitle?: string | null;
   blogPosts?:
     | {
-        url: string;
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
+        url?: string | null;
         image: number | Media;
-        category: string;
-        title: string;
-        description: string;
+        category?: string | null;
+        /**
+         * Contenido del post (título y descripción en un solo richtext).
+         */
+        postContent: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
         avatar: number | Media;
-        fullName: string;
-        date: string;
-        readTime: string;
+        fullName?: string | null;
+        date?: string | null;
+        readTime?: string | null;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
+   */
+  boldTextColor?: string | null;
+  /**
+   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
+   */
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  /**
+   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
+   */
+  useCustomFont?: boolean | null;
+  /**
+   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
+   */
+  customFontFile?: (number | null) | Font;
+  /**
+   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
+   */
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'blog9';
@@ -6382,6 +7314,10 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
+        relationTo: 'fonts';
+        value: number | Font;
+      } | null)
+    | ({
         relationTo: 'categories';
         value: number | Category;
       } | null)
@@ -6907,18 +7843,31 @@ export interface ArchiveBlockSelect<T extends boolean = true> {
  * via the `definition` "Banner1Block_select".
  */
 export interface Banner1BlockSelect<T extends boolean = true> {
-  heading?: T;
-  description?: T;
+  content?: T;
   logo?: T;
   logoUrl?: T;
   inputPlaceholder?: T;
   button?:
     | T
     | {
-        title?: T;
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
         size?: T;
         variant?: T;
+        buttonSubmitsForm?: T;
       };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  buttonBackgroundColor?: T;
+  buttonTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
@@ -6927,24 +7876,29 @@ export interface Banner1BlockSelect<T extends boolean = true> {
  * via the `definition` "Banner2Block_select".
  */
 export interface Banner2BlockSelect<T extends boolean = true> {
-  heading?: T;
-  description?: T;
-  logo?:
-    | T
-    | {
-        useMedia?: T;
-        mediaImage?: T;
-        url?: T;
-        src?: T;
-        alt?: T;
-      };
+  content?: T;
+  logo?: T;
+  logoUrl?: T;
   button?:
     | T
     | {
-        title?: T;
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
         size?: T;
         variant?: T;
       };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  buttonBackgroundColor?: T;
+  buttonTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
@@ -6953,26 +7907,30 @@ export interface Banner2BlockSelect<T extends boolean = true> {
  * via the `definition` "Banner3Block_select".
  */
 export interface Banner3BlockSelect<T extends boolean = true> {
-  heading?: T;
-  description?: T;
-  logo?:
-    | T
-    | {
-        useMedia?: T;
-        mediaImage?: T;
-        url?: T;
-        src?: T;
-        alt?: T;
-      };
+  content?: T;
+  logo?: T;
+  logoUrl?: T;
   buttons?:
     | T
     | {
-        title?: T;
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
         size?: T;
         variant?: T;
-        url?: T;
         id?: T;
       };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  buttonBackgroundColor?: T;
+  buttonTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
@@ -6981,17 +7939,26 @@ export interface Banner3BlockSelect<T extends boolean = true> {
  * via the `definition` "Banner4Block_select".
  */
 export interface Banner4BlockSelect<T extends boolean = true> {
-  heading?: T;
-  description?: T;
+  content?: T;
   logo?: T;
   logoUrl?: T;
   socialMediaLinks?:
     | T
     | {
-        url?: T;
         platform?: T;
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
         id?: T;
       };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
@@ -7000,17 +7967,26 @@ export interface Banner4BlockSelect<T extends boolean = true> {
  * via the `definition` "Banner9Block_select".
  */
 export interface Banner9BlockSelect<T extends boolean = true> {
-  heading?: T;
-  description?: T;
+  content?: T;
   logo?: T;
   logoUrl?: T;
   socialMediaLinks?:
     | T
     | {
-        url?: T;
         platform?: T;
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
         id?: T;
       };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
@@ -7020,8 +7996,7 @@ export interface Banner9BlockSelect<T extends boolean = true> {
  */
 export interface Blog1BlockTypeSelect<T extends boolean = true> {
   tagline?: T;
-  heading?: T;
-  description?: T;
+  content?: T;
   defaultValue?: T;
   tabs?:
     | T
@@ -7031,11 +8006,13 @@ export interface Blog1BlockTypeSelect<T extends boolean = true> {
         content?:
           | T
           | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
               url?: T;
               image?: T;
               category?: T;
-              title?: T;
-              description?: T;
+              postContent?: T;
               avatar?: T;
               fullName?: T;
               date?: T;
@@ -7044,7 +8021,13 @@ export interface Blog1BlockTypeSelect<T extends boolean = true> {
             };
         id?: T;
       };
-  categoryLink?: T;
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
@@ -7054,9 +8037,23 @@ export interface Blog1BlockTypeSelect<T extends boolean = true> {
  */
 export interface Blog5BlockTypeSelect<T extends boolean = true> {
   tagline?: T;
-  heading?: T;
-  description?: T;
+  content?: T;
   defaultValue?: T;
+  featuredBlogPost?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        image?: T;
+        category?: T;
+        postContent?: T;
+        avatar?: T;
+        fullName?: T;
+        date?: T;
+        readTime?: T;
+      };
   tabs?:
     | T
     | {
@@ -7065,11 +8062,13 @@ export interface Blog5BlockTypeSelect<T extends boolean = true> {
         content?:
           | T
           | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
               url?: T;
               image?: T;
               category?: T;
-              title?: T;
-              description?: T;
+              postContent?: T;
               avatar?: T;
               fullName?: T;
               date?: T;
@@ -7078,20 +8077,13 @@ export interface Blog5BlockTypeSelect<T extends boolean = true> {
             };
         id?: T;
       };
-  categoryLink?: T;
-  featuredBlogPost?:
-    | T
-    | {
-        url?: T;
-        image?: T;
-        category?: T;
-        title?: T;
-        description?: T;
-        avatar?: T;
-        fullName?: T;
-        date?: T;
-        readTime?: T;
-      };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
@@ -7101,16 +8093,17 @@ export interface Blog5BlockTypeSelect<T extends boolean = true> {
  */
 export interface Blog7BlockTypeSelect<T extends boolean = true> {
   tagline?: T;
-  heading?: T;
-  description?: T;
+  content?: T;
   featuredBlogPost?:
     | T
     | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
         url?: T;
         image?: T;
         category?: T;
-        title?: T;
-        description?: T;
+        postContent?: T;
         avatar?: T;
         fullName?: T;
         date?: T;
@@ -7125,11 +8118,13 @@ export interface Blog7BlockTypeSelect<T extends boolean = true> {
         content?:
           | T
           | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
               url?: T;
               image?: T;
               category?: T;
-              title?: T;
-              description?: T;
+              postContent?: T;
               avatar?: T;
               fullName?: T;
               date?: T;
@@ -7138,6 +8133,13 @@ export interface Blog7BlockTypeSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
@@ -7147,17 +8149,18 @@ export interface Blog7BlockTypeSelect<T extends boolean = true> {
  */
 export interface Blog9BlockTypeSelect<T extends boolean = true> {
   tagline?: T;
-  heading?: T;
-  description?: T;
+  content?: T;
   featuredBlogIitle?: T;
   featuredBlogPost?:
     | T
     | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
         url?: T;
         image?: T;
         category?: T;
-        title?: T;
-        description?: T;
+        postContent?: T;
         avatar?: T;
         fullName?: T;
         date?: T;
@@ -7166,10 +8169,13 @@ export interface Blog9BlockTypeSelect<T extends boolean = true> {
   smallFeaturedBlogPosts?:
     | T
     | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
         url?: T;
         image?: T;
         category?: T;
-        title?: T;
+        postContent?: T;
         avatar?: T;
         fullName?: T;
         date?: T;
@@ -7180,17 +8186,26 @@ export interface Blog9BlockTypeSelect<T extends boolean = true> {
   blogPosts?:
     | T
     | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
         url?: T;
         image?: T;
         category?: T;
-        title?: T;
-        description?: T;
+        postContent?: T;
         avatar?: T;
         fullName?: T;
         date?: T;
         readTime?: T;
         id?: T;
       };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
@@ -10702,6 +11717,24 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fonts_select".
+ */
+export interface FontsSelect<T extends boolean = true> {
+  name?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

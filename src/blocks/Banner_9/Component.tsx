@@ -4,26 +4,49 @@ import React, { useState } from "react";
 import { FaXTwitter } from "react-icons/fa6";
 import { BiLogoFacebook, BiLogoInstagram, BiLogoLinkedinSquare } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
+import Image from "next/image";
+import RichText from '@/components/RichText';
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical';
+import type { Page, Post } from '@/payload-types';
+import { CMSLink } from '@/components/Link';
+import { getMediaUrl } from '@/utilities/getMediaUrl';
+import { useGoogleFont } from '@/utilities/useGoogleFont';
 
-type Media = {
+type MediaImage = {
   id: string;
   url: string;
   alt?: string;
   filename?: string;
 };
 
-type SocialMediaLink = {
+type FontFile = {
+  id: string | number;
   url: string;
-  platform: string;
+  filename?: string;
+  name?: string;
+};
+
+type SocialMediaLink = {
+  platform: 'facebook' | 'instagram' | 'twitter' | 'linkedin';
+  type?: 'reference' | 'custom' | null;
+  newTab?: boolean | null;
+  reference?: { relationTo: 'pages' | 'posts'; value: Page | Post | number } | null;
+  url?: string | null;
 };
 
 type Props = {
-  heading: string;
-  description: string;
-  logo: Media;
+  content?: DefaultTypedEditorState;
+  logo?: MediaImage;
   logoUrl?: string;
-  socialMediaLinks: SocialMediaLink[];
+  socialMediaLinks?: SocialMediaLink[];
   disableInnerContainer?: boolean;
+  backgroundColor?: string;
+  textColor?: string;
+  boldTextColor?: string;
+  fontFamily?: string;
+  useCustomFont?: boolean;
+  customFontFile?: FontFile;
+  customFontName?: string;
 };
 
 export type Banner9Props = React.ComponentPropsWithoutRef<"section"> & Partial<Props>;
@@ -44,46 +67,153 @@ const getSocialIcon = (platform: string) => {
 };
 
 export const Banner9 = (props: Banner9Props) => {
-  const { heading, description, logo, logoUrl, socialMediaLinks, disableInnerContainer } = {
+  const { content, logo, logoUrl, socialMediaLinks, backgroundColor, textColor, boldTextColor, fontFamily, useCustomFont, customFontFile, customFontName } = {
     ...Banner9Defaults,
     ...props,
   };
 
   const [isVisible, setIsVisible] = useState(true);
 
+  const contentId = React.useId();
+  const uniqueId = `banner9-bold-${contentId}`;
+
+  const getFontFamily = () => {
+    if (useCustomFont && customFontName) {
+      return `"${customFontName}"`;
+    }
+    if (fontFamily && fontFamily !== 'default') {
+      return fontFamily;
+    }
+    return undefined;
+  };
+
+  const selectedFontFamily = getFontFamily();
+  useGoogleFont(selectedFontFamily);
+
+  const fontFileUrl = customFontFile?.url
+    ? getMediaUrl(customFontFile.url).replace(/([^:]\/)\/+/g, "$1")
+    : null;
+
+  const isValidFontFile = fontFileUrl && customFontFile?.filename &&
+    /\.(woff|woff2|ttf|otf)$/i.test(customFontFile.filename);
+
   if (!isVisible) {
     return null;
   }
 
+  const buildStyles = () => {
+    const styles: string[] = [];
+
+    if (useCustomFont && fontFileUrl && customFontName && isValidFontFile) {
+      styles.push(`
+        @font-face {
+          font-family: "${customFontName.replace(/"/g, '\\"')}";
+          src: url("${fontFileUrl}") format("woff2"),
+               url("${fontFileUrl}") format("woff");
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }
+      `);
+    }
+
+    const containerRules: string[] = [];
+    if (useCustomFont && customFontName && isValidFontFile) {
+      containerRules.push(`font-family: "${customFontName.replace(/"/g, '\\"')}" !important;`);
+    } else if (selectedFontFamily && !useCustomFont) {
+      containerRules.push(`font-family: ${selectedFontFamily} !important;`);
+    }
+    if (containerRules.length > 0) {
+      styles.push(`
+        #${uniqueId} {
+          ${containerRules.join('\n          ')}
+        }
+      `);
+    }
+
+    if (textColor) {
+      styles.push(`
+        #${uniqueId},
+        #${uniqueId} p,
+        #${uniqueId} h1,
+        #${uniqueId} h2,
+        #${uniqueId} h3,
+        #${uniqueId} h4,
+        #${uniqueId} h5,
+        #${uniqueId} h6,
+        #${uniqueId} span:not(strong):not(b),
+        #${uniqueId} div:not([class*="RichText"]),
+        #${uniqueId} li,
+        #${uniqueId} a {
+          color: ${textColor} !important;
+        }
+      `);
+    }
+
+    if (boldTextColor) {
+      styles.push(`
+        #${uniqueId} strong,
+        #${uniqueId} b {
+          color: ${boldTextColor} !important;
+        }
+      `);
+    }
+
+    return styles.length > 0 ? styles.join('\n') : '';
+  };
+
+  const combinedStyles = buildStyles();
+  const linksList = socialMediaLinks?.length ? socialMediaLinks : Banner9Defaults.socialMediaLinks ?? [];
+  const logoImageSrc = logo?.url ? getMediaUrl(logo.url).replace(/([^:]\/)\/+/g, '$1') : '';
+
   return (
-    <section
-      id="relume"
-      className="relative border-b border-border-primary  bg-neutral-white px-[5%]"
-    >
-      <div className="flex flex-col justify-start py-4 md:flex-row md:items-center md:py-3">
+    <section id="relume" className="relative border-b border-border-primary px-[5%]">
+      {combinedStyles && (
+        <style>{combinedStyles}</style>
+      )}
+      <div
+        className="flex flex-col justify-start py-4 md:flex-row md:items-center md:py-3"
+        style={backgroundColor ? { backgroundColor } : undefined}
+      >
         <div className="mb-4 mr-7 flex flex-1 items-start md:mb-0 md:mr-8 md:items-center">
-          {logo && (
+          {logo && logoImageSrc ? (
             <a href={logoUrl || '#'}>
-              <img 
-                src={logo.url} 
-                alt={logo.alt || logo.filename || 'Logo'} 
-                className="mr-4 hidden size-8 lg:block" 
+              <Image
+                src={logoImageSrc}
+                alt={logo.alt || logo.filename || 'Logo'}
+                width={32}
+                height={32}
+                className="mr-4 hidden size-8 lg:block"
               />
             </a>
-          )}
-          <div>
-            <h2 className="font-semibold">{heading}</h2>
-            <p className="text-sm">{description}</p>
+          ) : null}
+          <div id={uniqueId}>
+            {content && <RichText data={content} />}
           </div>
         </div>
         <div className="flex items-center gap-3">
-          {socialMediaLinks.map((link, index) => (
-            <a key={index} href={link.url}>
-              {getSocialIcon(link.platform)}
-            </a>
-          ))}
+          {linksList.map((link, index) => {
+            const hasValidLink = (link.type === 'reference' && link.reference) || (link.type === 'custom' && link.url);
+            const icon = getSocialIcon(link.platform);
+            return hasValidLink ? (
+              <CMSLink
+                key={index}
+                type={link.type ?? undefined}
+                reference={link.reference ?? undefined}
+                url={link.url ?? undefined}
+                newTab={link.newTab ?? undefined}
+                appearance="inline"
+              >
+                {icon}
+              </CMSLink>
+            ) : (
+              <span key={index} className="inline-flex items-center text-muted-foreground" aria-hidden>
+                {icon}
+              </span>
+            );
+          })}
         </div>
-        <button className="absolute right-2 top-2 ml-4 md:static">
+        <button className="absolute right-2 top-2 ml-4 md:static" type="button">
           <RxCross2 className="size-8 p-1" onClick={() => setIsVisible(false)} />
         </button>
       </div>
@@ -92,19 +222,13 @@ export const Banner9 = (props: Banner9Props) => {
 };
 
 export const Banner9Defaults: Props = {
-  heading: "Medium length banner heading goes here",
-  description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  logo: {
-    id: "",
-    url: "https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg",
-    alt: "Relume logo",
-    filename: "relume-icon.svg",
-  },
-  logoUrl: "#",
+  content: undefined,
+  logo: undefined,
+  logoUrl: '#',
   socialMediaLinks: [
-    { url: "#", platform: "facebook" },
-    { url: "#", platform: "instagram" },
-    { url: "#", platform: "twitter" },
-    { url: "#", platform: "linkedin" },
+    { platform: 'facebook' },
+    { platform: 'instagram' },
+    { platform: 'twitter' },
+    { platform: 'linkedin' },
   ],
 };

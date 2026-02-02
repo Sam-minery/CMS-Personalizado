@@ -26,6 +26,7 @@ import fs from 'fs'
 import { Categories } from './collections/Categories'
 import { ContactSubmissions } from './collections/ContactSubmissions'
 import { FormCustom2Submissions } from './collections/FormCustom2Submissions'
+import { Fonts } from './collections/Fonts'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
@@ -141,9 +142,9 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || '',
       ssl: getSSLConfig(),
     },
-    push: false, //cambiar a true para npm run dev en desarrollo
+    push: true, //cambiar a true para npm run dev en desarrollo
   }),
-  collections: [Pages, Posts, Media, Categories, Users, ContactSubmissions, FormCustom2Submissions],
+  collections: [Pages, Posts, Media, Fonts, Categories, Users, ContactSubmissions, FormCustom2Submissions],
   cors: (() => {
     const serverURL = getServerSideURL()
     return serverURL ? [serverURL] : []
@@ -157,7 +158,8 @@ export default buildConfig({
           gcsStorage({
             collections: {
               media: true,
-            },
+              fonts: true,
+            } as any,
             bucket: process.env.GCS_BUCKET_NAME,
             options: process.env.GCS_KEY_FILENAME
               ? {
