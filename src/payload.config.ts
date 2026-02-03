@@ -142,7 +142,8 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || '',
       ssl: getSSLConfig(),
     },
-    push: true, //cambiar a true para npm run dev en desarrollo
+    // Desactivar push solo cuando se ejecuta migrate:one o fix:career3-title
+    push: process.env.PAYLOAD_DISABLE_PUSH !== '1',
   }),
   collections: [Pages, Posts, Media, Fonts, Categories, Users, ContactSubmissions, FormCustom2Submissions],
   cors: (() => {

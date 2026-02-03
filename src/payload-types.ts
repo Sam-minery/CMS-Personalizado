@@ -334,29 +334,131 @@ export interface Page {
     | BlogPostHeader5BlockType
     | CallToActionBlock
     | {
-        tagline: string;
-        heading: string;
-        description: string;
+        tagline?: string | null;
+        /**
+         * Añade el título y descripción del bloque con el editor rich text.
+         */
+        content: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
         depts3?:
           | {
-              title: string;
+              /**
+               * Título del departamento (ej: "Job Department") con formato rich text.
+               */
+              title?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
               jobs?:
                 | {
-                    title: string;
-                    location: string;
-                    description: string;
-                    url: string;
-                    button: {
-                      title: string;
-                      variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
-                      size?: ('sm' | 'default' | 'lg') | null;
-                    };
+                    /**
+                     * Contenido del puesto: título, ubicación y descripción en un solo rich text.
+                     */
+                    jobContent?: {
+                      root: {
+                        type: string;
+                        children: {
+                          type: any;
+                          version: number;
+                          [k: string]: unknown;
+                        }[];
+                        direction: ('ltr' | 'rtl') | null;
+                        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                        indent: number;
+                        version: number;
+                      };
+                      [k: string]: unknown;
+                    } | null;
+                    type?: ('reference' | 'custom') | null;
+                    newTab?: boolean | null;
+                    reference?:
+                      | ({
+                          relationTo: 'pages';
+                          value: number | Page;
+                        } | null)
+                      | ({
+                          relationTo: 'posts';
+                          value: number | Post;
+                        } | null);
+                    /**
+                     * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                     */
+                    url?: string | null;
+                    buttonTitle?: string | null;
+                    variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                    size?: ('sm' | 'md' | 'lg') | null;
                     id?: string | null;
                   }[]
                 | null;
               id?: string | null;
             }[]
           | null;
+        /**
+         * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+         */
+        backgroundColor?: string | null;
+        /**
+         * Introduce un código de color HTML para el texto principal.
+         */
+        textColor?: string | null;
+        /**
+         * Introduce un código de color HTML para el texto en negrita.
+         */
+        boldTextColor?: string | null;
+        /**
+         * Color de fondo de los botones "Apply" (ej: #007BFF, #28A745, etc.)
+         */
+        buttonBackgroundColor?: string | null;
+        /**
+         * Color del texto de los botones "Apply" (ej: #FFFFFF, #000000, etc.)
+         */
+        buttonTextColor?: string | null;
+        fontFamily?:
+          | (
+              | 'default'
+              | 'Arial, sans-serif'
+              | '"Times New Roman", serif'
+              | 'Georgia, serif'
+              | 'Verdana, sans-serif'
+              | 'Helvetica, Arial, sans-serif'
+              | '"Courier New", monospace'
+              | '"Roboto", sans-serif'
+              | '"Open Sans", sans-serif'
+              | '"Lato", sans-serif'
+              | '"Montserrat", sans-serif'
+              | '"Playfair Display", serif'
+              | '"Inter", sans-serif'
+              | '"Poppins", sans-serif'
+              | '"Raleway", sans-serif'
+            )
+          | null;
+        useCustomFont?: boolean | null;
+        customFontFile?: (number | null) | Font;
+        customFontName?: string | null;
         id?: string | null;
         blockName?: string | null;
         blockType: 'career3';
@@ -7795,8 +7897,7 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               tagline?: T;
-              heading?: T;
-              description?: T;
+              content?: T;
               depts3?:
                 | T
                 | {
@@ -7804,21 +7905,27 @@ export interface PagesSelect<T extends boolean = true> {
                     jobs?:
                       | T
                       | {
-                          title?: T;
-                          location?: T;
-                          description?: T;
+                          jobContent?: T;
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
                           url?: T;
-                          button?:
-                            | T
-                            | {
-                                title?: T;
-                                variant?: T;
-                                size?: T;
-                              };
+                          buttonTitle?: T;
+                          variant?: T;
+                          size?: T;
                           id?: T;
                         };
                     id?: T;
                   };
+              backgroundColor?: T;
+              textColor?: T;
+              boldTextColor?: T;
+              buttonBackgroundColor?: T;
+              buttonTextColor?: T;
+              fontFamily?: T;
+              useCustomFont?: T;
+              customFontFile?: T;
+              customFontName?: T;
               id?: T;
               blockName?: T;
             };
