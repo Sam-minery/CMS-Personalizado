@@ -137,8 +137,12 @@ export const Career3: React.FC<Career3Props> = (props) => {
         #${uniqueId} span:not(strong):not(b), #${uniqueId} a,
         .career3-dept-title,
         .career3-dept-title p, .career3-dept-title h1, .career3-dept-title h2, .career3-dept-title h3,
+        .career3-dept-title h4, .career3-dept-title h5, .career3-dept-title h6,
+        .career3-dept-title span:not(strong):not(b), .career3-dept-title a,
         .career3-job-content,
-        .career3-job-content p, .career3-job-content h1, .career3-job-content h2, .career3-job-content h3 {
+        .career3-job-content p, .career3-job-content h1, .career3-job-content h2, .career3-job-content h3,
+        .career3-job-content h4, .career3-job-content h5, .career3-job-content h6,
+        .career3-job-content span:not(strong):not(b), .career3-job-content a {
           color: ${textColor} !important;
         }
       `)
@@ -147,7 +151,11 @@ export const Career3: React.FC<Career3Props> = (props) => {
       styles.push(`
         #${uniqueId} strong, #${uniqueId} b,
         .career3-dept-title strong, .career3-dept-title b,
-        .career3-job-content strong, .career3-job-content b {
+        .career3-dept-title h1, .career3-dept-title h2, .career3-dept-title h3,
+        .career3-dept-title h4, .career3-dept-title h5, .career3-dept-title h6,
+        .career3-job-content strong, .career3-job-content b,
+        .career3-job-content h1, .career3-job-content h2, .career3-job-content h3,
+        .career3-job-content h4, .career3-job-content h5, .career3-job-content h6 {
           color: ${boldTextColor} !important;
         }
       `)
@@ -225,7 +233,10 @@ export const Career3: React.FC<Career3Props> = (props) => {
                                 }
                                 label={job.buttonTitle ?? 'Apply Now'}
                                 appearance={(job.variant as 'default' | 'secondary' | 'outline' | 'ghost') ?? 'secondary'}
-                                size={job.size === 'md' ? 'default' : (job.size ?? 'sm')}
+                                size={
+                                  (job.size === 'md' ? 'default' : (job.size ?? 'sm')) as
+                                    'clear' | 'sm' | 'default' | 'icon' | 'lg'
+                                }
                                 style={{
                                   ...(buttonBackgroundColor && { backgroundColor: buttonBackgroundColor }),
                                   ...(buttonTextColor && { color: buttonTextColor }),
