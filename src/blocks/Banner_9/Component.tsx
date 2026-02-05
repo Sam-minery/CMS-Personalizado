@@ -164,7 +164,7 @@ export const Banner9 = (props: Banner9Props) => {
 
   const combinedStyles = buildStyles();
   const linksList = socialMediaLinks?.length ? socialMediaLinks : Banner9Defaults.socialMediaLinks ?? [];
-  const logoImageSrc = logo?.url ? getMediaUrl(logo.url).replace(/([^:]\/)\/+/g, '$1') : '';
+  const logoImageSrc = logo?.url ?? '';
 
   return (
     <section id="relume" className="relative border-b border-border-primary px-[5%]">

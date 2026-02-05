@@ -85,8 +85,7 @@ function getHrefFromPostLink(link: PostLink | null | undefined): string {
 const getImageUrl = (image: string | Media | ImageProps): string => {
   if (typeof image === 'string') return image
   if (image && typeof image === 'object' && image !== null && 'url' in image) {
-    const url = image.url || ''
-    return url ? getMediaUrl(url).replace(/([^:]\/)\/+/g, '$1') : ''
+    return image.url || ''
   }
   return ''
 }

@@ -7,7 +7,6 @@ import { BiLinkAlt, BiLogoLinkedinSquare, BiLogoFacebookCircle } from 'react-ico
 import RichText from '@/components/RichText'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import type { Media, Page, Post } from '@/payload-types'
-import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { validateAndSanitizeURL } from '@/utilities/validateURL'
 
 type ImageProps = {
@@ -70,8 +69,7 @@ const getImageUrl = (image: string | Media | ImageProps | null | undefined): str
   if (!image) return ''
   if (typeof image === 'string') return image
   if (typeof image === 'object' && image !== null && 'url' in image) {
-    const url = image.url || ''
-    return url ? getMediaUrl(url).replace(/([^:]\/)\/+/g, '$1') : ''
+    return image.url || ''
   }
   return ''
 }

@@ -208,9 +208,7 @@ export const Banner1 = (props: Banner1Props) => {
   };
 
   const combinedStyles = buildStyles();
-  const logoImageSrc = logo?.url
-    ? getMediaUrl(logo.url).replace(/([^:]\/)\/+/g, '$1')
-    : (logoUrl || "https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg");
+  const logoImageSrc = logo?.url ?? (logoUrl || "https://d22po4pjz3o32e.cloudfront.net/relume-icon.svg");
 
   return (
     <section id="relume" className="px-[5%]">
