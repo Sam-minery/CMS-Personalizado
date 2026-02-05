@@ -464,20 +464,81 @@ export interface Page {
         blockType: 'career3';
       }
     | {
-        tagline: string;
-        heading: string;
-        description: string;
+        /**
+         * Añade el título y descripción del bloque con el editor rich text.
+         */
+        content: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
         depts4?:
           | {
-              title: string;
+              /**
+               * Título del departamento con formato rich text.
+               */
+              title?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
               jobs?:
                 | {
-                    title: string;
-                    location: string;
-                    description: string;
-                    url: string;
-                    button: {
-                      title: string;
+                    /**
+                     * Título del trabajo, ubicación y descripción en un solo rich text.
+                     */
+                    jobContent?: {
+                      root: {
+                        type: string;
+                        children: {
+                          type: any;
+                          version: number;
+                          [k: string]: unknown;
+                        }[];
+                        direction: ('ltr' | 'rtl') | null;
+                        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                        indent: number;
+                        version: number;
+                      };
+                      [k: string]: unknown;
+                    } | null;
+                    type?: ('reference' | 'custom') | null;
+                    newTab?: boolean | null;
+                    reference?:
+                      | ({
+                          relationTo: 'pages';
+                          value: number | Page;
+                        } | null)
+                      | ({
+                          relationTo: 'posts';
+                          value: number | Post;
+                        } | null);
+                    /**
+                     * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                     */
+                    url?: string | null;
+                    button?: {
+                      title?: string | null;
                       variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
                       size?: ('sm' | 'default' | 'lg') | null;
                     };
@@ -487,6 +548,48 @@ export interface Page {
               id?: string | null;
             }[]
           | null;
+        /**
+         * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+         */
+        backgroundColor?: string | null;
+        /**
+         * Introduce un código de color HTML para el texto principal.
+         */
+        textColor?: string | null;
+        /**
+         * Introduce un código de color HTML para el texto en negrita.
+         */
+        boldTextColor?: string | null;
+        /**
+         * Color de fondo de los botones (ej: #007BFF, #28A745, etc.)
+         */
+        buttonBackgroundColor?: string | null;
+        /**
+         * Color del texto de los botones (ej: #FFFFFF, #000000, etc.)
+         */
+        buttonTextColor?: string | null;
+        fontFamily?:
+          | (
+              | 'default'
+              | 'Arial, sans-serif'
+              | '"Times New Roman", serif'
+              | 'Georgia, serif'
+              | 'Verdana, sans-serif'
+              | 'Helvetica, Arial, sans-serif'
+              | '"Courier New", monospace'
+              | '"Roboto", sans-serif'
+              | '"Open Sans", sans-serif'
+              | '"Lato", sans-serif'
+              | '"Montserrat", sans-serif'
+              | '"Playfair Display", serif'
+              | '"Inter", sans-serif'
+              | '"Poppins", sans-serif'
+              | '"Raleway", sans-serif'
+            )
+          | null;
+        useCustomFont?: boolean | null;
+        customFontFile?: (number | null) | Font;
+        customFontName?: string | null;
         id?: string | null;
         blockName?: string | null;
         blockType: 'career4';
@@ -2683,23 +2786,65 @@ export interface CallToActionBlock {
  * via the `definition` "Career5Block".
  */
 export interface Career5Block {
-  tagline: string;
-  heading: string;
-  description: string;
-  sectionTitle: string;
+  /**
+   * Añade el título y descripción del bloque con el editor rich text.
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  sectionTitle?: string | null;
   jobDepartments?:
     | {
-        title: string;
+        /**
+         * Título del departamento con formato rich text.
+         */
+        title?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         jobs?:
           | {
-              title: string;
-              location: string;
-              description: string;
-              button: {
-                title: string;
-                variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
-                size?: ('sm' | 'default' | 'lg') | null;
-              };
+              /**
+               * Título del trabajo, ubicación y descripción en un solo rich text.
+               */
+              jobContent?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
               link?: {
                 type?: ('reference' | 'custom') | null;
                 newTab?: boolean | null;
@@ -2717,12 +2862,53 @@ export interface Career5Block {
                  */
                 url?: string | null;
               };
+              button?: {
+                title?: string | null;
+                variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                size?: ('sm' | 'default' | 'lg') | null;
+              };
               id?: string | null;
             }[]
           | null;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, #000000, etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal.
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita.
+   */
+  boldTextColor?: string | null;
+  buttonBackgroundColor?: string | null;
+  buttonTextColor?: string | null;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'career5';
@@ -2732,22 +2918,64 @@ export interface Career5Block {
  * via the `definition` "Career6Block".
  */
 export interface Career6Block {
-  tagline: string;
-  heading: string;
-  description: string;
+  /**
+   * Añade el título y descripción del bloque con el editor rich text.
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
   jobDepartments?:
     | {
-        title: string;
+        /**
+         * Título del departamento con formato rich text.
+         */
+        title?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         jobs?:
           | {
-              title: string;
-              location: string;
-              description: string;
-              button: {
-                title: string;
-                variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
-                size?: ('sm' | 'default' | 'lg') | null;
-              };
+              /**
+               * Título del trabajo, ubicación y descripción en un solo rich text.
+               */
+              jobContent?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
               link?: {
                 type?: ('reference' | 'custom') | null;
                 newTab?: boolean | null;
@@ -2765,35 +2993,8 @@ export interface Career6Block {
                  */
                 url?: string | null;
               };
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'career6';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CareerSection1Block".
- */
-export interface CareerSection1Block {
-  tagline: string;
-  heading: string;
-  description: string;
-  jobDepartments?:
-    | {
-        title: string;
-        jobs?:
-          | {
-              title: string;
-              location: string;
-              description: string;
-              url: string;
-              button: {
-                title: string;
+              button?: {
+                title?: string | null;
                 variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
                 size?: ('sm' | 'default' | 'lg') | null;
               };
@@ -2803,6 +3004,155 @@ export interface CareerSection1Block {
         id?: string | null;
       }[]
     | null;
+  backgroundColor?: string | null;
+  textColor?: string | null;
+  boldTextColor?: string | null;
+  buttonBackgroundColor?: string | null;
+  buttonTextColor?: string | null;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'career6';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareerSection1Block".
+ */
+export interface CareerSection1Block {
+  /**
+   * Añade el título y descripción del bloque con el editor rich text.
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  jobDepartments?:
+    | {
+        /**
+         * Título del departamento con formato rich text.
+         */
+        title?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        jobs?:
+          | {
+              /**
+               * Título del trabajo, ubicación y descripción en un solo rich text.
+               */
+              jobContent?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
+              link?: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                /**
+                 * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                 */
+                url?: string | null;
+              };
+              button?: {
+                title?: string | null;
+                variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                size?: ('sm' | 'default' | 'lg') | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  backgroundColor?: string | null;
+  textColor?: string | null;
+  boldTextColor?: string | null;
+  buttonBackgroundColor?: string | null;
+  buttonTextColor?: string | null;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'careerSection1';
@@ -7932,9 +8282,7 @@ export interface PagesSelect<T extends boolean = true> {
         career4?:
           | T
           | {
-              tagline?: T;
-              heading?: T;
-              description?: T;
+              content?: T;
               depts4?:
                 | T
                 | {
@@ -7942,9 +8290,10 @@ export interface PagesSelect<T extends boolean = true> {
                     jobs?:
                       | T
                       | {
-                          title?: T;
-                          location?: T;
-                          description?: T;
+                          jobContent?: T;
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
                           url?: T;
                           button?:
                             | T
@@ -7957,6 +8306,15 @@ export interface PagesSelect<T extends boolean = true> {
                         };
                     id?: T;
                   };
+              backgroundColor?: T;
+              textColor?: T;
+              boldTextColor?: T;
+              buttonBackgroundColor?: T;
+              buttonTextColor?: T;
+              fontFamily?: T;
+              useCustomFont?: T;
+              customFontFile?: T;
+              customFontName?: T;
               id?: T;
               blockName?: T;
             };
@@ -8810,9 +9168,7 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
  * via the `definition` "Career5Block_select".
  */
 export interface Career5BlockSelect<T extends boolean = true> {
-  tagline?: T;
-  heading?: T;
-  description?: T;
+  content?: T;
   sectionTitle?: T;
   jobDepartments?:
     | T
@@ -8821,16 +9177,7 @@ export interface Career5BlockSelect<T extends boolean = true> {
         jobs?:
           | T
           | {
-              title?: T;
-              location?: T;
-              description?: T;
-              button?:
-                | T
-                | {
-                    title?: T;
-                    variant?: T;
-                    size?: T;
-                  };
+              jobContent?: T;
               link?:
                 | T
                 | {
@@ -8839,10 +9186,26 @@ export interface Career5BlockSelect<T extends boolean = true> {
                     reference?: T;
                     url?: T;
                   };
+              button?:
+                | T
+                | {
+                    title?: T;
+                    variant?: T;
+                    size?: T;
+                  };
               id?: T;
             };
         id?: T;
       };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  buttonBackgroundColor?: T;
+  buttonTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
@@ -8851,9 +9214,7 @@ export interface Career5BlockSelect<T extends boolean = true> {
  * via the `definition` "Career6Block_select".
  */
 export interface Career6BlockSelect<T extends boolean = true> {
-  tagline?: T;
-  heading?: T;
-  description?: T;
+  content?: T;
   jobDepartments?:
     | T
     | {
@@ -8861,16 +9222,7 @@ export interface Career6BlockSelect<T extends boolean = true> {
         jobs?:
           | T
           | {
-              title?: T;
-              location?: T;
-              description?: T;
-              button?:
-                | T
-                | {
-                    title?: T;
-                    variant?: T;
-                    size?: T;
-                  };
+              jobContent?: T;
               link?:
                 | T
                 | {
@@ -8879,32 +9231,6 @@ export interface Career6BlockSelect<T extends boolean = true> {
                     reference?: T;
                     url?: T;
                   };
-              id?: T;
-            };
-        id?: T;
-      };
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CareerSection1Block_select".
- */
-export interface CareerSection1BlockSelect<T extends boolean = true> {
-  tagline?: T;
-  heading?: T;
-  description?: T;
-  jobDepartments?:
-    | T
-    | {
-        title?: T;
-        jobs?:
-          | T
-          | {
-              title?: T;
-              location?: T;
-              description?: T;
-              url?: T;
               button?:
                 | T
                 | {
@@ -8916,6 +9242,60 @@ export interface CareerSection1BlockSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  buttonBackgroundColor?: T;
+  buttonTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareerSection1Block_select".
+ */
+export interface CareerSection1BlockSelect<T extends boolean = true> {
+  content?: T;
+  jobDepartments?:
+    | T
+    | {
+        title?: T;
+        jobs?:
+          | T
+          | {
+              jobContent?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              button?:
+                | T
+                | {
+                    title?: T;
+                    variant?: T;
+                    size?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  buttonBackgroundColor?: T;
+  buttonTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }

@@ -1,31 +1,41 @@
 import type { Block } from 'payload'
 
-import { simpleLink } from '@/fields/simpleLink'
+import {
+  AlignFeature,
+  FixedToolbarFeature,
+  HeadingFeature,
+  InlineToolbarFeature,
+  ParagraphFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
+
+import { link } from '@/fields/link'
+
+const richTextEditor = () =>
+  lexicalEditor({
+    features: ({ rootFeatures }) => [
+      ...rootFeatures,
+      ParagraphFeature(),
+      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
+      AlignFeature(),
+      FixedToolbarFeature(),
+      InlineToolbarFeature(),
+    ],
+  })
 
 export const Career6: Block = {
   slug: 'career6',
   interfaceName: 'Career6Block',
   fields: [
     {
-      name: 'tagline',
-      type: 'text',
+      name: 'content',
+      type: 'richText',
+      editor: richTextEditor(),
+      label: 'Contenido principal (título y descripción)',
       required: true,
-      label: 'Tagline',
-      defaultValue: 'Tagline',
-    },
-    {
-      name: 'heading',
-      type: 'text',
-      required: true,
-      label: 'Título Principal',
-      defaultValue: 'Job Openings',
-    },
-    {
-      name: 'description',
-      type: 'textarea',
-      required: true,
-      label: 'Descripción',
-      defaultValue: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.',
+      admin: {
+        description: 'Añade el título y descripción del bloque con el editor rich text.',
+      },
     },
     {
       name: 'jobDepartments',
@@ -36,10 +46,13 @@ export const Career6: Block = {
       fields: [
         {
           name: 'title',
-          type: 'text',
-          required: true,
+          type: 'richText',
+          editor: richTextEditor(),
           label: 'Título del Departamento',
-          defaultValue: 'Job Department',
+          required: false,
+          admin: {
+            description: 'Título del departamento con formato rich text.',
+          },
         },
         {
           name: 'jobs',
@@ -49,26 +62,16 @@ export const Career6: Block = {
           dbName: 'career6_jobs',
           fields: [
             {
-              name: 'title',
-              type: 'text',
-              required: true,
-              label: 'Título del Trabajo',
-              defaultValue: 'Job Title',
+              name: 'jobContent',
+              type: 'richText',
+              editor: richTextEditor(),
+              label: 'Contenido del puesto (título, ubicación y descripción)',
+              required: false,
+              admin: {
+                description: 'Título del trabajo, ubicación y descripción en un solo rich text.',
+              },
             },
-            {
-              name: 'location',
-              type: 'text',
-              required: true,
-              label: 'Ubicación',
-              defaultValue: 'Location',
-            },
-            {
-              name: 'description',
-              type: 'textarea',
-              required: true,
-              label: 'Descripción del Trabajo',
-              defaultValue: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat. Aenean faucibus nibh et justo cursus id rutrum lorem imperdiet. Nunc ut sem vitae risus tristique posuere.',
-            },
+            link({ appearances: false, disableLabel: true }),
             {
               name: 'button',
               type: 'group',
@@ -77,7 +80,7 @@ export const Career6: Block = {
                 {
                   name: 'title',
                   type: 'text',
-                  required: true,
+                  required: false,
                   label: 'Texto del Botón',
                   defaultValue: 'Apply Now',
                 },
@@ -108,15 +111,84 @@ export const Career6: Block = {
                 },
               ],
             },
-            simpleLink({
-              overrides: {
-                name: 'link',
-                label: 'Enlace de Aplicación',
-              },
-            }),
           ],
         },
       ],
+    },
+    {
+      name: 'backgroundColor',
+      type: 'text',
+      label: 'Color de fondo del bloque',
+    },
+    {
+      name: 'textColor',
+      type: 'text',
+      label: 'Color del texto principal',
+    },
+    {
+      name: 'boldTextColor',
+      type: 'text',
+      label: 'Color del texto en negrita',
+    },
+    {
+      name: 'buttonBackgroundColor',
+      type: 'text',
+      label: 'Color de fondo del botón',
+    },
+    {
+      name: 'buttonTextColor',
+      type: 'text',
+      label: 'Color del texto del botón',
+    },
+    {
+      name: 'fontFamily',
+      type: 'select',
+      label: 'Tipografía del texto',
+      admin: {
+        condition: (_, siblingData) => !siblingData?.useCustomFont,
+      },
+      options: [
+        { label: 'Por defecto (Geist Sans)', value: 'default' },
+        { label: 'Arial (Sistema)', value: 'Arial, sans-serif' },
+        { label: 'Times New Roman (Sistema)', value: '"Times New Roman", serif' },
+        { label: 'Georgia (Sistema)', value: 'Georgia, serif' },
+        { label: 'Verdana (Sistema)', value: 'Verdana, sans-serif' },
+        { label: 'Helvetica (Sistema)', value: 'Helvetica, Arial, sans-serif' },
+        { label: 'Courier New (Sistema)', value: '"Courier New", monospace' },
+        { label: 'Roboto (Google Fonts)', value: '"Roboto", sans-serif' },
+        { label: 'Open Sans (Google Fonts)', value: '"Open Sans", sans-serif' },
+        { label: 'Lato (Google Fonts)', value: '"Lato", sans-serif' },
+        { label: 'Montserrat (Google Fonts)', value: '"Montserrat", sans-serif' },
+        { label: 'Playfair Display (Google Fonts)', value: '"Playfair Display", serif' },
+        { label: 'Inter (Google Fonts)', value: '"Inter", sans-serif' },
+        { label: 'Poppins (Google Fonts)', value: '"Poppins", sans-serif' },
+        { label: 'Raleway (Google Fonts)', value: '"Raleway", sans-serif' },
+      ],
+      defaultValue: 'default',
+    },
+    {
+      name: 'useCustomFont',
+      type: 'checkbox',
+      label: 'Usar fuente personalizada',
+      defaultValue: false,
+    },
+    {
+      name: 'customFontFile',
+      type: 'upload',
+      relationTo: 'fonts',
+      label: 'Archivo de fuente personalizada',
+      required: false,
+      admin: {
+        condition: (_, siblingData) => siblingData?.useCustomFont === true,
+      },
+    },
+    {
+      name: 'customFontName',
+      type: 'text',
+      label: 'Nombre de la fuente personalizada',
+      admin: {
+        condition: (_, siblingData) => siblingData?.useCustomFont === true,
+      },
     },
   ],
   labels: {
