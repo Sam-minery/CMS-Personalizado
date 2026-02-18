@@ -8,6 +8,8 @@
     "prebuild": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --no-warnings\" next build",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
+    "generate:enabled-blocks": "tsx scripts/generate-enabled-blocks.ts",
+    "predev": "npm run generate:enabled-blocks",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
     "dev:prod": "cross-env NODE_OPTIONS=--no-deprecation rm -rf .next && pnpm build && pnpm start",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",

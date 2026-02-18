@@ -9,7 +9,7 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
-import { link } from '@/fields/link'
+import { link } from '../../fields/link'
 
 export const Banner4: Block = {
   slug: 'banner4',

@@ -6,7 +6,7 @@ import {
   ParagraphFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
-import { simpleLink } from '@/fields/simpleLink'
+import { simpleLink } from '../../fields/simpleLink'
 
 export const Comparison1: Block = {
   slug: 'comparison1',
