@@ -1,0 +1,548 @@
+"use client";
+
+import React, { useState, useEffect, useRef } from "react";
+import { useMediaQuery } from "@relume_io/relume-ui";
+import { AnimatePresence, motion } from "framer-motion";
+import { RxChevronDown } from "react-icons/rx";
+import { CMSLink } from "@/components/Link";
+import Image from "next/image";
+import { useGoogleFont } from "@/utilities/useGoogleFont";
+import { getMediaUrl } from "@/utilities/getMediaUrl";
+import { sanitizeSVG } from "@/utilities/sanitizeHTML";
+
+type ImageProps = {
+  useMedia?: boolean;
+  media?: any;
+  url?: string;
+  src: string;
+  alt?: string;
+};
+
+type NavLink = {
+  title: string;
+  link: {
+    type?: 'custom' | 'reference' | null;
+    url?: string | null;
+    reference?: {
+      relationTo: 'pages' | 'posts';
+      value: any;
+    } | null;
+    newTab?: boolean | null;
+  };
+  subMenuLinks?: NavLink[];
+};
+
+type ButtonWithLink = {
+  title: string;
+  link: {
+    type?: 'custom' | 'reference' | null;
+    url?: string | null;
+    reference?: {
+      relationTo: 'pages' | 'posts';
+      value: any;
+    } | null;
+    newTab?: boolean | null;
+  };
+  size?: 'sm' | 'lg';
+  variant?: 'default' | 'secondary' | 'ghost' | 'link';
+  /** Código SVG opcional para mostrar a la derecha del texto del botón */
+  iconSVG?: string | null;
+};
+
+type FontFile = {
+  id?: string | number;
+  url?: string;
+  filename?: string;
+  name?: string;
+};
+
+type Props = {
+  logo: ImageProps;
+  navLinks: NavLink[];
+  buttons: ButtonWithLink[];
+  backgroundColor?: string;
+  textColor?: string;
+  boldTextColor?: string;
+  buttonBackgroundColor?: string;
+  buttonTextColor?: string;
+  fontFamily?: string;
+  useCustomFont?: boolean;
+  customFontFile?: FontFile | null;
+  customFontName?: string | null;
+};
+
+export type Navbar_SENDAProps = React.ComponentPropsWithoutRef<"section"> & Partial<Props>;
+
+const STICKY_SCROLL_THRESHOLD = 24;
+
+export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
+  const {
+    logo,
+    navLinks,
+    buttons,
+    backgroundColor,
+    textColor,
+    boldTextColor,
+    buttonBackgroundColor,
+    buttonTextColor,
+    fontFamily,
+    useCustomFont,
+    customFontFile,
+    customFontName,
+  } = {
+    ...Navbar_SENDADefaults,
+    ...props,
+  };
+
+  const uniqueId = React.useId().replace(/:/g, "-");
+  const styleId = `navbar-senda-${uniqueId}`;
+
+  const getFontFamily = () => {
+    if (useCustomFont && customFontName) return `"${customFontName}"`;
+    if (fontFamily && fontFamily !== "default") return fontFamily;
+    return undefined;
+  };
+  const selectedFontFamily = getFontFamily();
+  useGoogleFont(selectedFontFamily);
+
+  const fontFileUrl = customFontFile?.url ? getMediaUrl(customFontFile.url).replace(/([^:]\/)\/+/g, "$1") : null;
+  const isValidFontFile =
+    fontFileUrl &&
+    customFontFile?.filename &&
+    /\.(woff|woff2|ttf|otf)$/i.test(customFontFile.filename);
+
+  const buildStyles = () => {
+    const styles: string[] = [];
+    if (useCustomFont && fontFileUrl && customFontName && isValidFontFile) {
+      styles.push(`
+        @font-face {
+          font-family: "${customFontName.replace(/"/g, '\\"')}";
+          src: url("${fontFileUrl}") format("woff2"), url("${fontFileUrl}") format("woff");
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }
+      `);
+    }
+    const containerRules: string[] = [];
+    if (useCustomFont && customFontName && isValidFontFile) {
+      containerRules.push(`font-family: "${customFontName.replace(/"/g, '\\"')}" !important;`);
+    } else if (selectedFontFamily && !useCustomFont) {
+      containerRules.push(`font-family: ${selectedFontFamily} !important;`);
+    }
+    if (containerRules.length > 0) {
+      const fontValue = useCustomFont && customFontName && isValidFontFile
+        ? `"${customFontName.replace(/"/g, '\\"')}"`
+        : selectedFontFamily && !useCustomFont
+          ? selectedFontFamily
+          : "";
+      if (fontValue) {
+        styles.push(
+          `#${styleId}, #${styleId} *, #${styleId} a, #${styleId} button, #${styleId} span { font-family: ${fontValue} !important; }`
+        );
+        styles.push(
+          `.navbar-senda-font-root, .navbar-senda-font-root *, .navbar-senda-font-root a, .navbar-senda-font-root button { font-family: ${fontValue} !important; }`
+        );
+      }
+    }
+    if (textColor) {
+      styles.push(
+        `[data-navbar-senda-font="${styleId}"], [data-navbar-senda-font="${styleId}"] a, [data-navbar-senda-font="${styleId}"] button, [data-navbar-senda-font="${styleId}"] span { color: ${textColor} !important; }`
+      );
+    }
+    if (boldTextColor) {
+      styles.push(`[data-navbar-senda-font="${styleId}"] .font-bold, [data-navbar-senda-font="${styleId}"] strong, [data-navbar-senda-font="${styleId}"] b { color: ${boldTextColor} !important; }`);
+    }
+    if (buttonBackgroundColor || buttonTextColor) {
+      const btnBaseRules: string[] = ["border-radius: 0.75rem !important;"];
+      if (buttonBackgroundColor) btnBaseRules.push(`background-color: ${buttonBackgroundColor} !important;`);
+      if (buttonTextColor) {
+        styles.push(
+          `[data-navbar-senda-font="${styleId}"] .navbar-senda-btn-default, [data-navbar-senda-font="${styleId}"] .navbar-senda-btn-default * { color: ${buttonTextColor} !important; }`
+        );
+      }
+      styles.push(`[data-navbar-senda-font="${styleId}"] .navbar-senda-btn-default { ${btnBaseRules.join(" ")} }`);
+    } else {
+      styles.push(`[data-navbar-senda-font="${styleId}"] .navbar-senda-btn-default { border-radius: 0.75rem !important; }`);
+    }
+    return styles.length > 0 ? styles.join("\n") : "";
+  };
+
+  const combinedStyles = buildStyles();
+
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isFixed, setIsFixed] = useState(false);
+  const [navbarHeight, setNavbarHeight] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useMediaQuery("(max-width: 991px)");
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      if (isMobile) {
+        setIsFixed(true);
+      } else {
+        const rect = el.getBoundingClientRect();
+        setIsFixed(window.scrollY > 0 && rect.top <= 0);
+      }
+    };
+    const measureHeight = () => {
+      const el = containerRef.current;
+      if (el) setNavbarHeight(el.offsetHeight);
+    };
+    measureHeight();
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", measureHeight);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", measureHeight);
+    };
+  }, [isMobile, isMobileMenuOpen]);
+
+  const firstNavLink = navLinks[0];
+  const firstButton = buttons[0];
+
+  const navBorder = "border-[1px] border-white";
+  const showMobileTopBarItems = isMobile && !isMobileMenuOpen;
+  const isMenuExpanded = isMobile && isMobileMenuOpen;
+
+  const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined;
+
+  const spacerHeight = isFixed ? (navbarHeight || (isMobile ? 80 : 0)) : 0;
+
+  return (
+    <>
+      {combinedStyles && <style>{combinedStyles}</style>}
+      {isFixed && spacerHeight > 0 && <div style={{ height: spacerHeight }} aria-hidden />}
+      <div className={!isMobile && !isFixed ? "pt-6 lg:pt-8" : ""}>
+        <section
+          id="navbar-senda"
+          ref={containerRef}
+          data-navbar-senda-font={styleId}
+          className={`navbar-senda-font-root z-[999] flex justify-center ${isFixed ? "fixed top-0 left-0 right-0" : ""}`}
+          style={fontStyle}
+        >
+        <nav
+          id={styleId}
+          className={`
+            flex items-center ${navBorder}
+            ${isMenuExpanded ? "bg-white border-b-0 rounded-b-none" : backgroundColor ? "" : "bg-white"}
+            ${isMobile ? `w-full px-3 py-3 lg:px-4 lg:py-4 rounded-t-none ${isMenuExpanded ? "rounded-b-none" : "rounded-b-xl"}` : "w-max px-4 py-2 lg:px-5 lg:py-2.5 rounded-3xl"}
+          `}
+          style={
+            isMenuExpanded
+              ? { backgroundColor: "white" }
+              : backgroundColor
+                ? { backgroundColor, ["--navbar-senda-bg" as string]: backgroundColor }
+                : undefined
+          }
+        >
+        <div className="navbar-senda-font-inherit size-full flex items-center justify-between gap-4 lg:gap-6" style={fontStyle}>
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <a href={logo.url}>
+              {logo.useMedia && logo.media && typeof logo.media === "object" && logo.media !== null ? (
+                <Image
+                  src={logo.media.url || logo.media.image?.url || logo.src || ""}
+                  alt={logo.media.alt || logo.media.image?.alt || logo.alt || "Logo"}
+                  width={logo.media.width || logo.media.image?.width || 150}
+                  height={logo.media.height || logo.media.image?.height || 50}
+                  className="max-w-[150px] max-h-[50px] object-contain"
+                />
+              ) : (
+                <Image src={logo.src} alt={logo.alt || "Logo"} width={150} height={50} className="max-w-[150px] max-h-[50px] object-contain" />
+              )}
+            </a>
+          </div>
+
+          {/* Desktop: todos los nav links + botones */}
+          {!isMobile && (
+            <div className="flex items-center">
+              {navLinks.map((navLink, index) =>
+                navLink.subMenuLinks && navLink.subMenuLinks.length > 0 ? (
+                  <SubMenu key={index} navLink={navLink} isMobile={false} dropdownBgColor={backgroundColor} linkFontStyle={fontStyle} />
+                ) : (
+                  <CMSLink
+                    key={index}
+                    {...navLink.link}
+                    className="block py-3 px-4 py-2 text-base"
+                    style={fontStyle}
+                  >
+                    {fontStyle ? <span style={fontStyle}>{navLink.title}</span> : navLink.title}
+                  </CMSLink>
+                )
+              )}
+              <div className="ml-4 flex items-center gap-2">
+                {buttons.map((button, index) => (
+                  <CMSLink
+                    key={index}
+                    {...button.link}
+                    size={button.size}
+                    appearance={button.variant}
+                    className={button.variant === "default" ? "navbar-senda-btn-default" : undefined}
+                    style={fontStyle}
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      {fontStyle ? <span style={fontStyle}>{button.title}</span> : button.title}
+                      {button.iconSVG ? (
+                        <span
+                          className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                          dangerouslySetInnerHTML={{ __html: sanitizeSVG(button.iconSVG) }}
+                          aria-hidden
+                        />
+                      ) : null}
+                    </span>
+                  </CMSLink>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Mobile: solo primer botón cuando menú cerrado; hamburger siempre */}
+          {isMobile && (
+            <>
+              <div className="flex items-center gap-3 flex-1 justify-end">
+                {showMobileTopBarItems && firstButton && (
+                  <CMSLink
+                    {...firstButton.link}
+                    size={firstButton.size}
+                    appearance={firstButton.variant}
+                    className={firstButton.variant === "default" ? "navbar-senda-btn-default" : undefined}
+                    style={fontStyle}
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      {fontStyle ? <span style={fontStyle}>{firstButton.title}</span> : firstButton.title}
+                      {firstButton.iconSVG ? (
+                        <span
+                          className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                          dangerouslySetInnerHTML={{ __html: sanitizeSVG(firstButton.iconSVG) }}
+                          aria-hidden
+                        />
+                      ) : null}
+                    </span>
+                  </CMSLink>
+                )}
+                <button
+                  className="-mr-2 flex size-12 flex-col items-center justify-center"
+                  onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                  aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+                >
+                  <motion.span
+                    className="my-[3px] h-0.5 w-6 bg-black"
+                    animate={isMobileMenuOpen ? ["open", "rotatePhase"] : "closed"}
+                    variants={topLineVariants}
+                  />
+                  <motion.span
+                    className="my-[3px] h-0.5 w-6 bg-black"
+                    animate={isMobileMenuOpen ? "open" : "closed"}
+                    variants={middleLineVariants}
+                  />
+                  <motion.span
+                    className="my-[3px] h-0.5 w-6 bg-black"
+                    animate={isMobileMenuOpen ? ["open", "rotatePhase"] : "closed"}
+                    variants={bottomLineVariants}
+                  />
+                </button>
+              </div>
+
+              <div
+                className="absolute left-0 right-0 top-full lg:hidden rounded-b-xl border-x border-b border-[1px] border-white border-t-0 transition-[max-height] duration-300 ease-in-out overflow-hidden"
+                style={{
+                  backgroundColor: "white",
+                  boxShadow: "none",
+                  maxHeight: isMobileMenuOpen ? "80vh" : "0",
+                }}
+              >
+                <div className="navbar-senda-font-inherit px-3 py-4 lg:px-4 lg:py-4" style={fontStyle}>
+                  {navLinks.map((navLink, index) => (
+                    <div key={index}>
+                      {index > 0 && <hr className="border-t border-gray-200 my-3" aria-hidden />}
+                      {navLink.subMenuLinks && navLink.subMenuLinks.length > 0 ? (
+                            <SubMenu navLink={navLink} isMobile={true} dropdownBgColor={isMobileMenuOpen ? undefined : backgroundColor} linkFontStyle={fontStyle} />
+                          ) : (
+                            <div onClick={() => setIsMobileMenuOpen(false)}>
+                              <CMSLink {...navLink.link} className="block py-2 text-base" style={fontStyle}>
+                                {fontStyle ? <span style={fontStyle}>{navLink.title}</span> : navLink.title}
+                              </CMSLink>
+                            </div>
+                          )}
+                    </div>
+                  ))}
+                      {firstButton && (
+                        <div className="mt-6 pt-6 border-t border-gray-200" onClick={() => setIsMobileMenuOpen(false)}>
+                          <CMSLink
+                            {...firstButton.link}
+                            size={firstButton.size}
+                            appearance={firstButton.variant}
+                            className={firstButton.variant === "default" ? "navbar-senda-btn-default w-full" : "w-full"}
+                            style={fontStyle}
+                          >
+                            <span className="inline-flex items-center gap-1.5">
+                              {fontStyle ? <span style={fontStyle}>{firstButton.title}</span> : firstButton.title}
+                              {firstButton.iconSVG ? (
+                                <span
+                                  className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                                  dangerouslySetInnerHTML={{ __html: sanitizeSVG(firstButton.iconSVG) }}
+                                  aria-hidden
+                                />
+                              ) : null}
+                            </span>
+                          </CMSLink>
+                        </div>
+                      )}
+                      {buttons.length > 1 && (
+                        <div className="mt-2 flex flex-col gap-2">
+                          {buttons.slice(1).map((button, index) => (
+                            <div key={index} onClick={() => setIsMobileMenuOpen(false)}>
+                              <CMSLink
+                                {...button.link}
+                                size={button.size}
+                                appearance={button.variant}
+                                className={button.variant === "default" ? "navbar-senda-btn-default w-full" : "w-full"}
+                                style={fontStyle}
+                              >
+                                <span className="inline-flex items-center gap-1.5">
+                                  {fontStyle ? <span style={fontStyle}>{button.title}</span> : button.title}
+                                  {button.iconSVG ? (
+                                    <span
+                                      className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                                      dangerouslySetInnerHTML={{ __html: sanitizeSVG(button.iconSVG) }}
+                                      aria-hidden
+                                    />
+                                  ) : null}
+                                </span>
+                              </CMSLink>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </nav>
+    </section>
+    </div>
+    </>
+  );
+};
+
+const SubMenu = ({
+  navLink,
+  isMobile,
+  dropdownBgColor,
+  linkFontStyle,
+}: {
+  navLink: NavLink;
+  isMobile: boolean;
+  dropdownBgColor?: string;
+  linkFontStyle?: React.CSSProperties;
+}) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => !isMobile && setIsDropdownOpen(true)}
+      onMouseLeave={() => !isMobile && setIsDropdownOpen(false)}
+    >
+      <button
+        className="flex w-full items-center justify-between gap-2 py-3 text-left text-md lg:flex-none lg:justify-start lg:px-4 lg:py-2 lg:text-base"
+        onClick={() => setIsDropdownOpen((prev) => !prev)}
+        style={linkFontStyle}
+      >
+        <span style={linkFontStyle}>{navLink.title}</span>
+        <motion.span
+          variants={{ rotated: { rotate: 180 }, initial: { rotate: 0 } }}
+          animate={isDropdownOpen ? "rotated" : "initial"}
+          transition={{ duration: 0.3 }}
+        >
+          <RxChevronDown />
+        </motion.span>
+      </button>
+      {isDropdownOpen && (
+        <AnimatePresence>
+          <motion.nav
+            variants={{
+              open: { visibility: "visible", opacity: 1, y: 0 },
+              close: { visibility: "hidden", opacity: 0, y: "25%" },
+            }}
+            animate={isDropdownOpen ? "open" : "close"}
+            initial="close"
+            exit="close"
+            transition={{ duration: 0.2 }}
+            className="lg:absolute lg:left-0 lg:z-50 lg:min-w-[180px] lg:rounded-lg lg:border lg:border-gray-200 lg:p-2 lg:shadow-md"
+            style={dropdownBgColor ? { backgroundColor: dropdownBgColor } : { backgroundColor: "white" }}
+          >
+            {navLink.subMenuLinks?.map((subLink, index) => (
+              <CMSLink
+                key={index}
+                {...subLink.link}
+                className="block py-3 pl-[5%] text-md lg:px-4 lg:py-2 lg:text-base"
+                style={linkFontStyle}
+              >
+                {linkFontStyle ? <span style={linkFontStyle}>{subLink.title}</span> : subLink.title}
+              </CMSLink>
+            ))}
+          </motion.nav>
+        </AnimatePresence>
+      )}
+    </div>
+  );
+};
+
+const topLineVariants = {
+  open: { translateY: 8, transition: { delay: 0.1 } },
+  rotatePhase: { rotate: -45, transition: { delay: 0.2 } },
+  closed: { translateY: 0, rotate: 0, transition: { duration: 0.2 } },
+};
+
+const middleLineVariants = {
+  open: { width: 0, transition: { duration: 0.1 } },
+  closed: { width: "1.5rem", transition: { delay: 0.3, duration: 0.2 } },
+};
+
+const bottomLineVariants = {
+  open: { translateY: -8, transition: { delay: 0.1 } },
+  rotatePhase: { rotate: 45, transition: { delay: 0.2 } },
+  closed: { translateY: 0, rotate: 0, transition: { duration: 0.2 } },
+};
+
+export const Navbar_SENDADefaults: Props = {
+  logo: {
+    useMedia: false,
+    url: "#",
+    src: "https://d22po4pjz3o32e.cloudfront.net/logo-image.svg",
+    alt: "Logo image",
+  },
+  navLinks: [
+    { title: "Link One", link: { type: "custom", url: "#" } },
+    { title: "Link Two", link: { type: "custom", url: "#" } },
+    { title: "Link Three", link: { type: "custom", url: "#" } },
+    {
+      title: "Link Four",
+      link: { type: "custom", url: "#" },
+      subMenuLinks: [
+        { title: "Link Five", link: { type: "custom", url: "#" } },
+        { title: "Link Six", link: { type: "custom", url: "#" } },
+        { title: "Link Seven", link: { type: "custom", url: "#" } },
+      ],
+    },
+  ],
+  buttons: [
+    { title: "Button", link: { type: "custom", url: "#" }, variant: "secondary", size: "sm" },
+    { title: "Button", link: { type: "custom", url: "#" }, variant: "default", size: "sm" },
+  ],
+  backgroundColor: undefined,
+  textColor: undefined,
+  boldTextColor: undefined,
+  buttonBackgroundColor: undefined,
+  buttonTextColor: undefined,
+  fontFamily: undefined,
+  useCustomFont: false,
+  customFontFile: undefined,
+  customFontName: undefined,
+};

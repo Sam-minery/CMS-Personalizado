@@ -12,6 +12,7 @@ import { Navbar1 } from './Nav/Navbar1'
 import { Navbar5 } from './Nav/Navbar5'
 import { Navbar11 } from './Nav/Navbar11'
 import { NavbarTemplate } from './Nav/NavbarTemplate'
+import { Navbar_SENDA } from './Nav/Navbar_SENDA'
 
 interface HeaderClientProps {
   data: Header
@@ -213,6 +214,57 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
             title: data.navbarTemplateConfig.signupButton?.title || 'Signup',
             link: data.navbarTemplateConfig.signupButton?.link || { type: 'custom', url: '/signup' },
           }}
+        />
+      </div>
+    )
+  }
+
+  // Si el tipo de navbar es navbar_senda, renderizar Navbar SENDA
+  if (data?.navbarType === 'navbar_senda' && data?.navbar_senda_config) {
+    const c = data.navbar_senda_config
+    return (
+      <div {...(theme ? { 'data-theme': theme } : {})}>
+        <Navbar_SENDA
+          logo={{
+            useMedia: c.logo?.useMedia ?? true,
+            media: c.logo?.media,
+            url: c.logo?.url ?? '#',
+            src: c.logo?.src ?? 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg',
+            alt: c.logo?.alt ?? 'Logo',
+          }}
+          navLinks={c.navLinks?.map(link => ({
+            title: link.title ?? '',
+            link: link.link ?? { type: 'custom', url: '#' },
+            subMenuLinks: link.subMenuLinks?.map(sub => ({
+              title: sub.title ?? '',
+              link: sub.link ?? { type: 'custom', url: '#' },
+            })),
+          })) ?? []}
+          buttons={c.buttons?.map(btn => ({
+            title: btn.title ?? '',
+            link: btn.link ?? { type: 'custom', url: '#' },
+            size: (btn.size as 'sm' | 'lg') ?? 'lg',
+            variant: (btn.variant as 'default' | 'secondary' | 'ghost' | 'link') ?? 'default',
+            iconSVG: btn.iconSVG ?? null,
+          })) ?? []}
+          backgroundColor={c.backgroundColor ?? undefined}
+          textColor={c.textColor ?? undefined}
+          boldTextColor={c.boldTextColor ?? undefined}
+          buttonBackgroundColor={c.buttonBackgroundColor ?? undefined}
+          buttonTextColor={c.buttonTextColor ?? undefined}
+          fontFamily={c.fontFamily ?? undefined}
+          useCustomFont={c.useCustomFont ?? false}
+          customFontFile={
+            c.customFontFile && typeof c.customFontFile === 'object'
+              ? {
+                  id: c.customFontFile.id,
+                  url: c.customFontFile.url ?? undefined,
+                  filename: c.customFontFile.filename ?? undefined,
+                  name: c.customFontFile.name ?? undefined,
+                }
+              : null
+          }
+          customFontName={c.customFontName ?? undefined}
         />
       </div>
     )

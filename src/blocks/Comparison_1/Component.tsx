@@ -1,9 +1,11 @@
+import type { DefaultTypedEditorState } from "@payloadcms/richtext-lexical";
 import { Button, ButtonProps } from "@relume_io/relume-ui";
 import clsx from "clsx";
 import Image from "next/image";
 import React from "react";
 import { BiCheck, BiX } from "react-icons/bi";
 import { RxChevronRight } from "react-icons/rx";
+import RichText from "@/components/RichText";
 import { CMSLink } from "@/components/Link";
 
 type Feature = {
@@ -39,9 +41,12 @@ type ButtonWithLink = ButtonProps & {
 };
 
 type Props = {
-  tagline: string;
-  heading: string;
-  description: string;
+  content?: DefaultTypedEditorState | null;
+  background_color?: string | null;
+  text_color?: string | null;
+  bold_text_color?: string | null;
+  button_background_color?: string | null;
+  button_text_color?: string | null;
   comparisonTitle: string;
   comparisonProducts: ComparisonProducts[];
   features: Feature[];
@@ -85,17 +90,28 @@ const convertFeatureItems = (items: unknown[]): React.ReactNode[] => {
 };
 
 export const Comparison1 = (props: Comparison1Props) => {
-  const { tagline, heading, description, comparisonTitle, buttons, comparisonProducts, features } = {
+  const {
+    content,
+    background_color,
+    text_color,
+    bold_text_color,
+    button_background_color,
+    button_text_color,
+    comparisonTitle,
+    buttons,
+    comparisonProducts,
+    features,
+  } = {
     ...Comparison1Defaults,
     ...props,
   };
-  
+
   // Convert features to the expected format
   const convertedFeatures = (features || []).map(feature => ({
     ...feature,
-    items: convertFeatureItems(feature.items || [])
+    items: convertFeatureItems(feature.items || []),
   }));
-  
+
   // Convert comparison products to handle media uploads
   const convertedComparisonProducts = (comparisonProducts || []).map(comparison => ({
     ...comparison,
@@ -103,17 +119,23 @@ export const Comparison1 = (props: Comparison1Props) => {
       ...product,
       icon: {
         src: product.icon?.url || product.icon?.src || '',
-        alt: product.icon?.alt || ''
-      }
-    }))
+        alt: product.icon?.alt || '',
+      },
+    })),
   }));
+
+  const sectionStyle: React.CSSProperties = {
+    ...(background_color && { backgroundColor: background_color }),
+    ...(text_color && { color: text_color }),
+  };
+
   return (
-    <section id="relume" className="px-[5%] py-16 md:py-24 lg:py-28">
+    <section id="relume" className="px-[5%] py-16 md:py-24 lg:py-28" style={sectionStyle}>
       <div className="container">
         <div className="mx-auto mb-12 max-w-lg text-center md:mb-18 lg:mb-20">
-          <p className="mb-3 font-semibold md:mb-4">{tagline}</p>
-          <h1 className="mb-5 text-5xl font-bold md:mb-6 md:text-7xl lg:text-8xl">{heading}</h1>
-          <p className="md:text-md">{description}</p>
+          {content && typeof content === 'object' && 'root' in content && (
+            <RichText data={content} enableGutter={false} />
+          )}
         </div>
         <div className="mx-auto max-w-xl">
           <div className="grid grid-cols-2 border-b border-border-primary md:grid-cols-[1.5fr_1fr_1fr]">
@@ -135,16 +157,26 @@ export const Comparison1 = (props: Comparison1Props) => {
             ))}
           </div>
           <FeaturesSection features={convertedFeatures} />
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-4 md:mt-18 lg:mt-20">
+          <div
+            className="mt-12 flex flex-wrap items-center justify-center gap-4 md:mt-18 lg:mt-20"
+            style={{
+              ...(button_background_color && { ['--button-bg' as string]: button_background_color }),
+              ...(button_text_color && { ['--button-text' as string]: button_text_color }),
+            }}
+          >
             {(buttons || []).map((button, index) => {
               if (!button) return null;
-              
+              const btnStyle: React.CSSProperties = {
+                ...(button_background_color && { backgroundColor: button_background_color }),
+                ...(button_text_color && { color: button_text_color }),
+              };
               return (
                 <CMSLink
                   key={index}
                   {...button.link}
                   appearance="default"
                   size="default"
+                  style={Object.keys(btnStyle).length ? btnStyle : undefined}
                 >
                   {button.title || 'Button'}
                   {button.iconRight && <RxChevronRight className="ml-2" />}
@@ -232,13 +264,10 @@ const FeaturesSection = ({ features }: { features: Feature[] }) => {
 };
 
 export const Comparison1Defaults: Props = {
-  tagline: "Tagline",
-  heading: "Short heading goes here",
-  description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+  content: undefined,
   comparisonTitle: "Product comparison",
   comparisonProducts: [
     {
-      title: "Product comparison",
       products: [
         {
           icon: {

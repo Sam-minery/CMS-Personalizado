@@ -3162,13 +3162,32 @@ export interface CareerSection1Block {
  * via the `definition` "Comparison1Block".
  */
 export interface Comparison1Block {
-  tagline: string;
-  heading: string;
-  description: string;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Ej: #ffffff, rgb(255,255,255)
+   */
+  background_color?: string | null;
+  text_color?: string | null;
+  bold_text_color?: string | null;
+  button_background_color?: string | null;
+  button_text_color?: string | null;
   comparisonTitle: string;
   comparisonProducts?:
     | {
-        title?: string | null;
         products?:
           | {
               icon?: (number | null) | Media;
@@ -9304,14 +9323,16 @@ export interface CareerSection1BlockSelect<T extends boolean = true> {
  * via the `definition` "Comparison1Block_select".
  */
 export interface Comparison1BlockSelect<T extends boolean = true> {
-  tagline?: T;
-  heading?: T;
-  description?: T;
+  content?: T;
+  background_color?: T;
+  text_color?: T;
+  bold_text_color?: T;
+  button_background_color?: T;
+  button_text_color?: T;
   comparisonTitle?: T;
   comparisonProducts?:
     | T
     | {
-        title?: T;
         products?:
           | T
           | {
@@ -12895,7 +12916,7 @@ export interface Header {
   /**
    * Selecciona el tipo de navbar a usar
    */
-  navbarType?: ('default' | 'navbar1' | 'navbar5' | 'navbar11' | 'navbarTemplate') | null;
+  navbarType?: ('default' | 'navbar1' | 'navbar5' | 'navbar11' | 'navbarTemplate' | 'navbar_senda') | null;
   navItems?:
     | {
         link: {
@@ -13293,6 +13314,120 @@ export interface Header {
         url?: string | null;
       };
     };
+  };
+  navbar_senda_config?: {
+    logo?: {
+      useMedia?: boolean | null;
+      media?: (number | null) | Media;
+      url?: string | null;
+      src?: string | null;
+      alt?: string | null;
+    };
+    /**
+     * Ej: #ffffff o transparent
+     */
+    backgroundColor?: string | null;
+    textColor?: string | null;
+    boldTextColor?: string | null;
+    buttonBackgroundColor?: string | null;
+    buttonTextColor?: string | null;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+    navLinks?:
+      | {
+          title: string;
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
+            url?: string | null;
+          };
+          subMenuLinks?:
+            | {
+                title: string;
+                link?: {
+                  type?: ('reference' | 'custom') | null;
+                  newTab?: boolean | null;
+                  reference?:
+                    | ({
+                        relationTo: 'pages';
+                        value: number | Page;
+                      } | null)
+                    | ({
+                        relationTo: 'posts';
+                        value: number | Post;
+                      } | null);
+                  /**
+                   * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                   */
+                  url?: string | null;
+                };
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    buttons?:
+      | {
+          title: string;
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
+            url?: string | null;
+          };
+          size?: ('sm' | 'lg') | null;
+          variant?: ('default' | 'secondary' | 'ghost' | 'link') | null;
+          /**
+           * Pega aquí el código SVG del icono
+           */
+          iconSVG?: string | null;
+          id?: string | null;
+        }[]
+      | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -14127,6 +14262,73 @@ export interface HeaderSelect<T extends boolean = true> {
                     reference?: T;
                     url?: T;
                   };
+            };
+      };
+  navbar_senda_config?:
+    | T
+    | {
+        logo?:
+          | T
+          | {
+              useMedia?: T;
+              media?: T;
+              url?: T;
+              src?: T;
+              alt?: T;
+            };
+        backgroundColor?: T;
+        textColor?: T;
+        boldTextColor?: T;
+        buttonBackgroundColor?: T;
+        buttonTextColor?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+        navLinks?:
+          | T
+          | {
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              subMenuLinks?:
+                | T
+                | {
+                    title?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+            };
+        buttons?:
+          | T
+          | {
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              size?: T;
+              variant?: T;
+              iconSVG?: T;
+              id?: T;
             };
       };
   updatedAt?: T;

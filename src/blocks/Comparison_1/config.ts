@@ -1,4 +1,11 @@
 import type { Block } from 'payload'
+import {
+  FixedToolbarFeature,
+  HeadingFeature,
+  InlineToolbarFeature,
+  ParagraphFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
 import { simpleLink } from '@/fields/simpleLink'
 
 export const Comparison1: Block = {
@@ -11,25 +18,44 @@ export const Comparison1: Block = {
   },
   fields: [
     {
-      name: 'tagline',
-      type: 'text',
-      required: true,
-      label: 'Tagline',
-      defaultValue: 'Tagline',
+      name: 'content',
+      type: 'richText',
+      label: 'Contenido principal',
+      editor: lexicalEditor({
+        features: ({ rootFeatures }) => [
+          ...rootFeatures,
+          ParagraphFeature(),
+          HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
+          FixedToolbarFeature(),
+          InlineToolbarFeature(),
+        ],
+      }),
     },
     {
-      name: 'heading',
+      name: 'background_color',
       type: 'text',
-      required: true,
-      label: 'Título Principal',
-      defaultValue: 'Short heading goes here',
+      label: 'Color de fondo',
+      admin: { description: 'Ej: #ffffff, rgb(255,255,255)' },
     },
     {
-      name: 'description',
-      type: 'textarea',
-      required: true,
-      label: 'Descripción',
-      defaultValue: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      name: 'text_color',
+      type: 'text',
+      label: 'Color del texto',
+    },
+    {
+      name: 'bold_text_color',
+      type: 'text',
+      label: 'Color del texto en negrita',
+    },
+    {
+      name: 'button_background_color',
+      type: 'text',
+      label: 'Color de fondo de botones',
+    },
+    {
+      name: 'button_text_color',
+      type: 'text',
+      label: 'Color del texto de botones',
     },
     {
       name: 'comparisonTitle',
@@ -45,12 +71,6 @@ export const Comparison1: Block = {
       minRows: 1,
       maxRows: 1,
       fields: [
-        {
-          name: 'title',
-          type: 'text',
-          label: 'Título de la Comparación',
-          defaultValue: 'Product comparison',
-        },
         {
           name: 'products',
           type: 'array',

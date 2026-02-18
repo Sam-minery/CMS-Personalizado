@@ -131,6 +131,51 @@ export const sanitizeFormData = (data: unknown): unknown => {
 }
 
 /**
+ * Sanitiza SVG para uso seguro con dangerouslySetInnerHTML (iconos en navbar, etc.).
+ * Permite elementos y atributos SVG seguros; elimina scripts, event handlers y URLs peligrosas.
+ *
+ * @param svg - El string SVG a sanitizar (puede ser un fragmento o <svg> completo)
+ * @returns SVG sanitizado seguro para renderizar
+ */
+export const sanitizeSVG = (svg: string | null | undefined): string => {
+  if (!svg || typeof svg !== 'string') return ''
+
+  return sanitizeHtml(svg, {
+    allowedTags: [
+      'svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'ellipse',
+      'g', 'defs', 'use', 'symbol', 'clipPath', 'mask', 'pattern', 'linearGradient',
+      'radialGradient', 'stop', 'title', 'desc',
+    ],
+    allowedAttributes: {
+      svg: ['viewBox', 'width', 'height', 'xmlns', 'fill', 'stroke', 'class', 'aria-hidden'],
+      path: ['d', 'fill', 'stroke', 'strokeWidth', 'strokeLinecap', 'strokeLinejoin', 'transform', 'class'],
+      circle: ['cx', 'cy', 'r', 'fill', 'stroke', 'strokeWidth', 'class'],
+      rect: ['x', 'y', 'width', 'height', 'rx', 'ry', 'fill', 'stroke', 'transform', 'class'],
+      line: ['x1', 'y1', 'x2', 'y2', 'stroke', 'strokeWidth', 'class'],
+      polyline: ['points', 'fill', 'stroke', 'strokeWidth', 'class'],
+      polygon: ['points', 'fill', 'stroke', 'strokeWidth', 'class'],
+      ellipse: ['cx', 'cy', 'rx', 'ry', 'fill', 'stroke', 'class'],
+      g: ['transform', 'class', 'fill', 'stroke'],
+      use: ['href', 'x', 'y', 'width', 'height'],
+      defs: [],
+      symbol: ['id', 'viewBox'],
+      clipPath: ['id'],
+      mask: ['id'],
+      pattern: ['id', 'x', 'y', 'width', 'height', 'patternUnits', 'patternTransform'],
+      linearGradient: ['id', 'x1', 'y1', 'x2', 'y2', 'gradientUnits'],
+      radialGradient: ['id', 'cx', 'cy', 'r', 'gradientUnits'],
+      stop: ['offset', 'stop-color', 'stop-opacity'],
+      title: [],
+      desc: [],
+    },
+    // No permitir javascript:, data: etc.; vacío '' permite href="#id" (referencias internas)
+    allowedSchemes: [''],
+    disallowedTagsMode: 'discard',
+    enforceHtmlBoundary: true,
+  })
+}
+
+/**
  * Valida y sanitiza un slug para prevenir inyección de código
  * Solo permite caracteres alfanuméricos, guiones y guiones bajos
  * 

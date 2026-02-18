@@ -33,6 +33,10 @@ export const Header: GlobalConfig = {
           label: 'Navbar Template',
           value: 'navbarTemplate',
         },
+        {
+          label: 'Navbar SENDA',
+          value: 'navbar_senda',
+        },
       ],
       defaultValue: 'default',
       admin: {
@@ -741,6 +745,212 @@ export const Header: GlobalConfig = {
       ],
       admin: {
         condition: (_, { navbarType }) => navbarType === 'navbarTemplate',
+      },
+    },
+    {
+      name: 'navbar_senda_config',
+      type: 'group',
+      label: 'Config Navbar SENDA',
+      fields: [
+        {
+          name: 'logo',
+          type: 'group',
+          fields: [
+            {
+              name: 'useMedia',
+              type: 'checkbox',
+              label: 'Usar imagen subida',
+              defaultValue: true,
+            },
+            {
+              name: 'media',
+              type: 'upload',
+              relationTo: 'media',
+              admin: {
+                condition: (_, siblingData) => siblingData?.useMedia === true,
+              },
+            },
+            {
+              name: 'url',
+              type: 'text',
+              defaultValue: '#',
+              admin: {
+                condition: (_, siblingData) => siblingData?.useMedia !== true,
+              },
+            },
+            {
+              name: 'src',
+              type: 'text',
+              defaultValue: 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg',
+              admin: {
+                condition: (_, siblingData) => siblingData?.useMedia !== true,
+              },
+            },
+            {
+              name: 'alt',
+              type: 'text',
+              defaultValue: 'Logo image',
+              admin: {
+                condition: (_, siblingData) => siblingData?.useMedia !== true,
+              },
+            },
+          ],
+        },
+        {
+          name: 'backgroundColor',
+          type: 'text',
+          label: 'Color de fondo',
+          admin: { description: 'Ej: #ffffff o transparent' },
+        },
+        {
+          name: 'textColor',
+          type: 'text',
+          label: 'Color del texto',
+        },
+        {
+          name: 'boldTextColor',
+          type: 'text',
+          label: 'Color del texto en negrita',
+        },
+        {
+          name: 'buttonBackgroundColor',
+          type: 'text',
+          label: 'Color de fondo de botones',
+        },
+        {
+          name: 'buttonTextColor',
+          type: 'text',
+          label: 'Color del texto de botones',
+        },
+        {
+          name: 'fontFamily',
+          type: 'select',
+          label: 'Familia de fuente',
+          defaultValue: 'default',
+          options: [
+            { label: 'Por defecto', value: 'default' },
+            { label: 'Arial, sans-serif', value: 'Arial, sans-serif' },
+            { label: 'Times New Roman, serif', value: '"Times New Roman", serif' },
+            { label: 'Georgia, serif', value: 'Georgia, serif' },
+            { label: 'Verdana, sans-serif', value: 'Verdana, sans-serif' },
+            { label: 'Helvetica, Arial, sans-serif', value: 'Helvetica, Arial, sans-serif' },
+            { label: 'Courier New, monospace', value: '"Courier New", monospace' },
+            { label: 'Roboto', value: '"Roboto", sans-serif' },
+            { label: 'Open Sans', value: '"Open Sans", sans-serif' },
+            { label: 'Lato', value: '"Lato", sans-serif' },
+            { label: 'Montserrat', value: '"Montserrat", sans-serif' },
+            { label: 'Playfair Display', value: '"Playfair Display", serif' },
+            { label: 'Inter', value: '"Inter", sans-serif' },
+            { label: 'Poppins', value: '"Poppins", sans-serif' },
+            { label: 'Raleway', value: '"Raleway", sans-serif' },
+          ],
+        },
+        {
+          name: 'useCustomFont',
+          type: 'checkbox',
+          label: 'Usar fuente personalizada',
+          defaultValue: false,
+        },
+        {
+          name: 'customFontFile',
+          type: 'upload',
+          relationTo: 'fonts',
+          label: 'Archivo de fuente',
+          admin: {
+            condition: (_, siblingData) => siblingData?.useCustomFont === true,
+          },
+        },
+        {
+          name: 'customFontName',
+          type: 'text',
+          label: 'Nombre de la fuente personalizada',
+          admin: {
+            condition: (_, siblingData) => siblingData?.useCustomFont === true,
+          },
+        },
+        {
+          name: 'navLinks',
+          type: 'array',
+          dbName: 'senda_nav',
+          label: 'Enlaces de navegación',
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              required: true,
+              defaultValue: 'home',
+            },
+            link({
+              appearances: false,
+              disableLabel: true,
+            }),
+            {
+              name: 'subMenuLinks',
+              type: 'array',
+              dbName: 'senda_sub',
+              label: 'Submenú',
+              fields: [
+                {
+                  name: 'title',
+                  type: 'text',
+                  required: true,
+                  defaultValue: 'google',
+                },
+                link({
+                  appearances: false,
+                  disableLabel: true,
+                }),
+              ],
+            },
+          ],
+        },
+        {
+          name: 'buttons',
+          type: 'array',
+          dbName: 'senda_btns',
+          label: 'Botones',
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              required: true,
+              defaultValue: 'youtube',
+            },
+            link({
+              appearances: false,
+              disableLabel: true,
+            }),
+            {
+              name: 'size',
+              type: 'select',
+              options: [
+                { label: 'Small', value: 'sm' },
+                { label: 'Large', value: 'lg' },
+              ],
+              defaultValue: 'lg',
+            },
+            {
+              name: 'variant',
+              type: 'select',
+              options: [
+                { label: 'Default', value: 'default' },
+                { label: 'Secondary', value: 'secondary' },
+                { label: 'Ghost', value: 'ghost' },
+                { label: 'Link', value: 'link' },
+              ],
+              defaultValue: 'default',
+            },
+            {
+              name: 'iconSVG',
+              type: 'textarea',
+              label: 'Icono SVG (código seguro)',
+              admin: { description: 'Pega aquí el código SVG del icono' },
+            },
+          ],
+        },
+      ],
+      admin: {
+        condition: (_, { navbarType }) => navbarType === 'navbar_senda',
       },
     },
   ],
