@@ -1,10 +1,18 @@
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import React from 'react'
-import { Button } from '@relume_io/relume-ui'
-import type { ButtonProps } from '@relume_io/relume-ui'
 
-import type { CTA5Block as CTA5BlockProps } from '@/payload-types'
 import { CMSLink } from '@/components/Link'
 import RichText from '@/components/RichText'
+
+type CTA5BlockProps = {
+  content?: DefaultTypedEditorState
+  buttons?: Array<{
+    title?: string
+    variant?: string
+    link?: { type?: 'custom' | 'reference' | null; url?: string; label?: string; newTab?: boolean; doc?: unknown }
+  }>
+  video?: { youtubeUrl?: string }
+}
 
 export const CTA5Block: React.FC<CTA5BlockProps> = ({ content, buttons, video }) => {
   // Función para extraer el ID del video de YouTube de la URL
@@ -27,7 +35,7 @@ export const CTA5Block: React.FC<CTA5BlockProps> = ({ content, buttons, video })
       <div className="container relative z-10">
         <div className="w-full max-w-lg">
           <div className="mb-5 md:mb-6 text-white [&_p]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_h4]:text-white [&_h5]:text-white [&_h6]:text-white [&_span]:text-white [&_div]:text-white [&_strong]:text-white [&_em]:text-white [&_a]:text-white [&_ul]:text-white [&_ol]:text-white [&_li]:text-white">
-            <RichText data={content} enableGutter={false} />
+            {content && <RichText data={content} enableGutter={false} />}
           </div>
           <div className="mt-6 flex flex-wrap gap-4 md:mt-8">
             {buttons?.map((button, index) => {

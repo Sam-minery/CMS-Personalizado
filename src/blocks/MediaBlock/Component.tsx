@@ -1,14 +1,16 @@
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import type { StaticImageData } from 'next/image'
+
+import type { Media as MediaType } from '@/payload-types'
 
 import { cn } from '@/utilities/ui'
 import React from 'react'
 import RichText from '@/components/RichText'
 
-import type { MediaBlock as MediaBlockProps } from '@/payload-types'
-
 import { Media } from '../../components/Media'
 
-type Props = MediaBlockProps & {
+type Props = {
+  media?: MediaType | number | null
   breakout?: boolean
   captionClassName?: string
   className?: string
@@ -29,8 +31,8 @@ export const MediaBlock: React.FC<Props> = (props) => {
     disableInnerContainer,
   } = props
 
-  let caption
-  if (media && typeof media === 'object') caption = media.caption
+  let caption: string | DefaultTypedEditorState | undefined
+  if (media && typeof media === 'object') caption = media.caption as string | DefaultTypedEditorState | undefined
 
   return (
     <div
@@ -49,7 +51,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
           src={staticImage}
         />
       )}
-      {caption && (
+      {caption != null && (
         <div
           className={cn(
             'mt-6',
@@ -59,7 +61,11 @@ export const MediaBlock: React.FC<Props> = (props) => {
             captionClassName,
           )}
         >
-          <RichText data={caption} enableGutter={false} />
+          {typeof caption === 'string' ? (
+            <p className="text-sm text-muted-foreground">{caption}</p>
+          ) : (
+            <RichText data={caption} enableGutter={false} />
+          )}
         </div>
       )}
     </div>

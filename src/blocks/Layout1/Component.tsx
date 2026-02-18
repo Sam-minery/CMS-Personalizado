@@ -3,10 +3,16 @@ import React from 'react'
 import Image from 'next/image'
 import type { Media } from '@/payload-types'
 
-import type { Layout1Block as Layout1BlockProps } from '@/payload-types'
-
 import { CMSLink } from '@/components/Link'
 import RichText from '@/components/RichText'
+
+type Layout1BlockProps = {
+  tagline?: string
+  heading?: import('@payloadcms/richtext-lexical').DefaultTypedEditorState
+  description?: import('@payloadcms/richtext-lexical').DefaultTypedEditorState
+  links?: Array<{ link: { url?: string; label?: string; newTab?: boolean; doc?: unknown } }>
+  media?: Media | number | null
+}
 
 export const Layout1Block: React.FC<Layout1BlockProps> = ({ 
   tagline, 

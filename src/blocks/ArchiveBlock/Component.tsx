@@ -1,4 +1,5 @@
-import type { Post, ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
+import type { Post } from '@/payload-types'
 
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
@@ -7,11 +8,17 @@ import RichText from '@/components/RichText'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
 
-export const ArchiveBlock: React.FC<
-  ArchiveBlockProps & {
-    id?: string
-  }
-> = async (props) => {
+/** Tipo local: Archive no está en enabledBlockSlugs, por eso no se genera en payload-types */
+type ArchiveBlockProps = {
+  id?: string
+  introContent?: DefaultTypedEditorState
+  populateBy?: 'collection' | 'selection'
+  categories?: Array<{ id: string } | string>
+  limit?: number
+  selectedDocs?: Array<{ value: Post }>
+}
+
+export const ArchiveBlock: React.FC<ArchiveBlockProps> = async (props) => {
   const { id, categories, introContent, limit: limitFromProps, populateBy, selectedDocs } = props
 
   const limit = limitFromProps || 3
@@ -54,11 +61,11 @@ export const ArchiveBlock: React.FC<
 
   return (
     <div className="my-16" id={`block-${id}`}>
-      {introContent && (
+      {introContent != null ? (
         <div className="container mb-16">
           <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
         </div>
-      )}
+      ) : null}
       <CollectionArchive posts={posts} />
     </div>
   )

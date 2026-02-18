@@ -1,9 +1,14 @@
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import React from 'react'
-
-import type { CallToActionBlock as CTABlockProps } from '@/payload-types'
 
 import RichText from '@/components/RichText'
 import { CMSLink } from '@/components/Link'
+
+/** Tipo local: solo los bloques en enabledBlockSlugs tienen tipo en payload-types. */
+type CTABlockProps = {
+  richText?: DefaultTypedEditorState
+  links?: Array<{ link: { type?: 'custom' | 'reference' | null; url?: string; label?: string; newTab?: boolean; doc?: unknown } }>
+}
 
 export const CallToActionBlock: React.FC<CTABlockProps> = ({ links, richText }) => {
   return (

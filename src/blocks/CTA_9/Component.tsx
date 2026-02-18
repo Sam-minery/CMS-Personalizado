@@ -1,6 +1,13 @@
+import type { Media } from '@/payload-types'
 import React from 'react'
 import Image from 'next/image'
-import type { CTA9Block as CTA9BlockProps } from '@/payload-types'
+
+type CTA9BlockProps = {
+  heading?: string
+  description?: string
+  buttons?: Array<{ title?: string; variant?: string; url?: string }>
+  image?: Media | number | null
+}
 
 export const CTA9Block: React.FC<CTA9BlockProps> = ({ 
   heading = "Medium length heading goes here", 

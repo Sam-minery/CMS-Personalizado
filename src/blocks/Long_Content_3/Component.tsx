@@ -9,7 +9,12 @@ import clsx from "clsx";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@relume_io/relume-ui";
 import { validateVideoURL } from '@/utilities/validateURL'
 
-import type { LongContent3Block as LongContent3BlockProps } from '@/payload-types'
+type LongContent3BlockProps = {
+  heading?: string
+  content?: import('@payloadcms/richtext-lexical').DefaultTypedEditorState
+  image?: { src?: { url?: string } | number; alt?: string }
+  video?: string | null
+}
 
 export const LongContent3Block: React.FC<LongContent3BlockProps> = (props) => {
   const { heading, content, image, video } = props

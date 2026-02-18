@@ -671,5 +671,5 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
       title: 'Payload Website Template',
     },
     title: 'Home',
-  }
+  } as unknown as RequiredDataFromCollectionSlug<'pages'>
 }

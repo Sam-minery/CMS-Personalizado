@@ -13,4 +13,5 @@ export const enabledBlockSlugs: string[] | null = [
   'comparison1',
   'blogPostHeader1',
   'blogPostHeader5',
+  'blog5',
 ]

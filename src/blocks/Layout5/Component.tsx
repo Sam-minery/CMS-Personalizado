@@ -3,14 +3,22 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import type { Media } from '@/payload-types'
 
-import type { Layout5Block as Layout5BlockProps } from '@/payload-types'
-
 import { CMSLink } from '@/components/Link'
 import RichText from '@/components/RichText'
 import { Button } from '@relume_io/relume-ui'
 import { FaCirclePlay } from 'react-icons/fa6'
 import { CgSpinner } from 'react-icons/cg'
 import clsx from 'clsx'
+
+type Layout5BlockProps = {
+  tagline?: string
+  heading?: import('@payloadcms/richtext-lexical').DefaultTypedEditorState
+  description?: import('@payloadcms/richtext-lexical').DefaultTypedEditorState
+  subHeadings?: Array<{ title?: string; description?: string; icon?: Media | number }>
+  buttons?: Array<{ title?: string; variant?: string; link?: { url?: string } }>
+  video?: string | null
+  image?: Media | number | null
+}
 
 export const Layout5Block: React.FC<Layout5BlockProps> = ({ 
   tagline, 

@@ -1,8 +1,13 @@
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import React from 'react'
 import Image from 'next/image'
 import RichText from '@/components/RichText'
 
-import type { LongContent2Block as LongContent2BlockProps } from '@/payload-types'
+type LongContent2BlockProps = {
+  heading?: string
+  content?: DefaultTypedEditorState
+  image?: { src?: { url?: string } | number; alt?: string }
+}
 
 export const LongContent2Block: React.FC<LongContent2BlockProps> = (props) => {
   const { heading, content, image } = props

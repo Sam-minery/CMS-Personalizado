@@ -3,11 +3,10 @@
 import React from "react"
 import Link from 'next/link'
 import type { Block as BlockType } from 'payload'
-import type { StickyBannerBlock as StickyBannerBlockType } from '@/payload-types'
 import { StickyBanner } from "@/components/ui/sticky-banner"
 import { cn } from "@/utilities/ui"
 
-type Props = BlockType & StickyBannerBlockType & {
+type Props = BlockType & {
   content?: string | null
   linkText?: string | null
   link?: {

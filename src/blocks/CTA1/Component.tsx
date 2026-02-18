@@ -1,11 +1,23 @@
+import type { Media as MediaType } from '@/payload-types'
 import React from 'react'
 import { Button } from '@relume_io/relume-ui'
 import type { ButtonProps } from '@relume_io/relume-ui'
 
-import type { CTA1Block as CTA1BlockProps } from '@/payload-types'
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
+
+type ButtonVariant = NonNullable<ButtonProps['variant']>
+
+type CTA1BlockProps = {
+  content?: import('@payloadcms/richtext-lexical').DefaultTypedEditorState
+  buttons?: Array<{
+    title?: string
+    variant?: ButtonVariant
+    link?: { type?: 'custom' | 'reference' | null; url?: string; label?: string; newTab?: boolean; doc?: unknown }
+  }>
+  image?: { media?: MediaType | number | null; alt?: string }
+}
 
 export const CTA1Block: React.FC<CTA1BlockProps> = ({ content, buttons, image }) => {
   return (
@@ -14,18 +26,18 @@ export const CTA1Block: React.FC<CTA1BlockProps> = ({ content, buttons, image })
         <div className="grid grid-cols-1 gap-x-20 gap-y-12 md:gap-y-16 lg:grid-cols-2 lg:items-center">
           <div>
             <div className="mb-5 md:mb-6">
-              <RichText data={content} enableGutter={false} />
+              {content && <RichText data={content} enableGutter={false} />}
             </div>
             <div className="mt-6 flex flex-wrap gap-4 md:mt-8">
               {buttons?.map((button, index) => {
                 const buttonProps: ButtonProps = {
-                  variant: button.variant || 'primary',
+                  variant: (button.variant || 'primary') as ButtonVariant,
                 }
 
                 return (
-                  <CMSLink key={index} {...button.link}>
+                  <CMSLink key={index} {...(button.link ?? {})}>
                     <Button {...buttonProps}>
-                      {button.title}
+                      {button.title ?? ''}
                     </Button>
                   </CMSLink>
                 )
@@ -33,11 +45,11 @@ export const CTA1Block: React.FC<CTA1BlockProps> = ({ content, buttons, image })
             </div>
           </div>
           <div>
-            {image?.media && (
+            {image?.media != null && (
               <Media
                 resource={image.media}
                 className="w-full object-cover"
-                alt={image.alt || ''}
+                alt={image.alt ?? ''}
               />
             )}
           </div>

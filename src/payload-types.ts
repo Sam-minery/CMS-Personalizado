@@ -296,6 +296,7 @@ export interface Page {
     | Comparison1Block
     | BlogPostHeader1BlockType
     | BlogPostHeader5BlockType
+    | Blog5BlockType
   )[];
   meta?: {
     title?: string | null;
@@ -1051,6 +1052,173 @@ export interface BlogPostHeader5BlockType {
   blockType: 'blogPostHeader5';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Blog5BlockType".
+ */
+export interface Blog5BlockType {
+  tagline?: string | null;
+  /**
+   * Añade el contenido principal con título y descripción según necesites.
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  defaultValue?: string | null;
+  featuredBlogPost: {
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null);
+    /**
+     * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+     */
+    url?: string | null;
+    image: number | Media;
+    category?: string | null;
+    /**
+     * Contenido del post destacado (título y descripción en un solo richtext).
+     */
+    postContent: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    avatar: number | Media;
+    fullName?: string | null;
+    date?: string | null;
+    readTime?: string | null;
+  };
+  tabs?:
+    | {
+        value: string;
+        trigger: string;
+        content?:
+          | {
+              type?: ('reference' | 'custom') | null;
+              newTab?: boolean | null;
+              reference?:
+                | ({
+                    relationTo: 'pages';
+                    value: number | Page;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: number | Post;
+                  } | null);
+              /**
+               * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+               */
+              url?: string | null;
+              image: number | Media;
+              category?: string | null;
+              /**
+               * Contenido del post (título y descripción en un solo richtext).
+               */
+              postContent: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
+              avatar: number | Media;
+              fullName?: string | null;
+              date?: string | null;
+              readTime?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   */
+  backgroundColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
+   */
+  textColor?: string | null;
+  /**
+   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
+   */
+  boldTextColor?: string | null;
+  /**
+   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
+   */
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  /**
+   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
+   */
+  useCustomFont?: boolean | null;
+  /**
+   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
+   */
+  customFontFile?: (number | null) | Font;
+  /**
+   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
+   */
+  customFontName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'blog5';
+}
+/**
  * Envíos del formulario de Contact Section 2
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1657,6 +1825,7 @@ export interface PagesSelect<T extends boolean = true> {
         comparison1?: T | Comparison1BlockSelect<T>;
         blogPostHeader1?: T | BlogPostHeader1BlockTypeSelect<T>;
         blogPostHeader5?: T | BlogPostHeader5BlockTypeSelect<T>;
+        blog5?: T | Blog5BlockTypeSelect<T>;
       };
   meta?:
     | T
@@ -1911,6 +2080,62 @@ export interface BlogPostHeader5BlockTypeSelect<T extends boolean = true> {
   backgroundColor?: T;
   textColor?: T;
   boldTextColor?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Blog5BlockType_select".
+ */
+export interface Blog5BlockTypeSelect<T extends boolean = true> {
+  tagline?: T;
+  content?: T;
+  defaultValue?: T;
+  featuredBlogPost?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        image?: T;
+        category?: T;
+        postContent?: T;
+        avatar?: T;
+        fullName?: T;
+        date?: T;
+        readTime?: T;
+      };
+  tabs?:
+    | T
+    | {
+        value?: T;
+        trigger?: T;
+        content?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              image?: T;
+              category?: T;
+              postContent?: T;
+              avatar?: T;
+              fullName?: T;
+              date?: T;
+              readTime?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }

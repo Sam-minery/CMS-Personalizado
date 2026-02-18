@@ -1,10 +1,16 @@
 'use client'
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import React from 'react'
-
-import type { Header44Block as Header44BlockProps } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
 import RichText from '@/components/RichText'
+
+type Header44BlockProps = {
+  tagline?: string
+  heading?: DefaultTypedEditorState
+  description?: DefaultTypedEditorState
+  links?: Array<{ link?: { url?: string; label?: string; newTab?: boolean; doc?: unknown } }>
+}
 
 export const Header44Block: React.FC<Header44BlockProps> = ({ tagline, heading, description, links }) => {
   return (
