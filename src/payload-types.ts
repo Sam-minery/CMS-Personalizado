@@ -167,7 +167,8 @@ export interface Page {
       | 'header1'
       | 'header5'
       | 'header138'
-      | 'heroTemplate';
+      | 'heroTemplate'
+      | 'heroSenda';
     richText?: {
       root: {
         type: string;
@@ -211,6 +212,132 @@ export interface Page {
         }[]
       | null;
     media?: (number | null) | Media;
+    /**
+     * Imagen a la derecha. Puede ser subida (Media) o URL externa.
+     */
+    heroSendaImage?: {
+      useMedia?: boolean | null;
+      media?: (number | null) | Media;
+      /**
+       * URL de la imagen (si no usas Media)
+       */
+      url?: string | null;
+      alt?: string | null;
+    };
+    /**
+     * Dos botones debajo del texto (izquierda). Permite título, enlace, variante, tamaño e icono SVG.
+     */
+    heroSendaLeftButtons?:
+      | {
+          link: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
+            url?: string | null;
+            label: string;
+          };
+          appearance?: ('default' | 'secondary') | null;
+          size?: ('sm' | 'lg') | null;
+          /**
+           * Código SVG para mostrar a la derecha del texto. Solo se aplica a botones con estilo default para colores personalizados.
+           */
+          iconSVG?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    heroSendaImageButton?: {
+      link: {
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        /**
+         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+         */
+        url?: string | null;
+        label: string;
+      };
+      iconSVG?: string | null;
+    };
+    /**
+     * Ej: #ffffff, rgb(255,255,255), transparent
+     */
+    heroSendaBackgroundColor?: string | null;
+    /**
+     * Color del texto principal
+     */
+    heroSendaTextColor?: string | null;
+    /**
+     * Color del texto en negrita
+     */
+    heroSendaBoldTextColor?: string | null;
+    /**
+     * Solo aplica a botones con estilo "Default (relleno)"
+     */
+    heroSendaButtonBackgroundColor?: string | null;
+    /**
+     * Solo aplica a botones con estilo "Default (relleno)"
+     */
+    heroSendaButtonTextColor?: string | null;
+    /**
+     * Botón 2 (izquierda, estilo Secondary)
+     */
+    heroSendaButton2BackgroundColor?: string | null;
+    /**
+     * Botón 2 (izquierda, estilo Secondary)
+     */
+    heroSendaButton2TextColor?: string | null;
+    /**
+     * Botón debajo de la imagen
+     */
+    heroSendaButton3BackgroundColor?: string | null;
+    /**
+     * Botón debajo de la imagen
+     */
+    heroSendaButton3TextColor?: string | null;
+    /**
+     * Selecciona una tipografía. Se ignora si usas fuente personalizada.
+     */
+    heroSendaFontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    heroSendaUseCustomFont?: boolean | null;
+    heroSendaCustomFontFile?: (number | null) | Media;
+    heroSendaCustomFontName?: string | null;
     header138Heading?: string | null;
     header138Description?: string | null;
     header138FirstImage?: {
@@ -1758,6 +1885,58 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
             };
         media?: T;
+        heroSendaImage?:
+          | T
+          | {
+              useMedia?: T;
+              media?: T;
+              url?: T;
+              alt?: T;
+            };
+        heroSendaLeftButtons?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              appearance?: T;
+              size?: T;
+              iconSVG?: T;
+              id?: T;
+            };
+        heroSendaImageButton?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              iconSVG?: T;
+            };
+        heroSendaBackgroundColor?: T;
+        heroSendaTextColor?: T;
+        heroSendaBoldTextColor?: T;
+        heroSendaButtonBackgroundColor?: T;
+        heroSendaButtonTextColor?: T;
+        heroSendaButton2BackgroundColor?: T;
+        heroSendaButton2TextColor?: T;
+        heroSendaButton3BackgroundColor?: T;
+        heroSendaButton3TextColor?: T;
+        heroSendaFontFamily?: T;
+        heroSendaUseCustomFont?: T;
+        heroSendaCustomFontFile?: T;
+        heroSendaCustomFontName?: T;
         header138Heading?: T;
         header138Description?: T;
         header138FirstImage?:

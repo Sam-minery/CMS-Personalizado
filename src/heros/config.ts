@@ -1,12 +1,21 @@
 import type { Field } from 'payload'
 
 import {
+  AlignFeature,
+  BlockquoteFeature,
+  ChecklistFeature,
   FixedToolbarFeature,
   HeadingFeature,
+  HorizontalRuleFeature,
+  IndentFeature,
   InlineToolbarFeature,
   lexicalEditor,
+  OrderedListFeature,
+  ParagraphFeature,
+  UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
+import { link } from '@/fields/link'
 import { linkGroup } from '@/fields/linkGroup'
 
 export const hero: Field = {
@@ -55,6 +64,10 @@ export const hero: Field = {
           label: 'Hero Template',
           value: 'heroTemplate',
         },
+        {
+          label: 'Hero SENDA',
+          value: 'heroSenda',
+        },
       ],
       required: true,
     },
@@ -65,7 +78,15 @@ export const hero: Field = {
         features: ({ rootFeatures }) => {
           return [
             ...rootFeatures,
+            ParagraphFeature(),
             HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+            AlignFeature(),
+            IndentFeature(),
+            UnorderedListFeature(),
+            OrderedListFeature(),
+            ChecklistFeature(),
+            BlockquoteFeature(),
+            HorizontalRuleFeature(),
             FixedToolbarFeature(),
             InlineToolbarFeature(),
           ]
@@ -86,6 +107,203 @@ export const hero: Field = {
       },
       relationTo: 'media',
       required: true,
+    },
+    // Campos específicos para Hero SENDA
+    {
+      name: 'heroSendaImage',
+      type: 'group',
+      admin: {
+        condition: (_, { type } = {}) => type === 'heroSenda',
+        description: 'Imagen a la derecha. Puede ser subida (Media) o URL externa.',
+      },
+      label: 'Imagen del hero (derecha)',
+      fields: [
+        {
+          name: 'useMedia',
+          type: 'checkbox',
+          label: 'Usar imagen subida',
+          defaultValue: true,
+        },
+        {
+          name: 'media',
+          type: 'upload',
+          relationTo: 'media',
+          admin: { condition: (_, siblingData) => siblingData?.useMedia === true },
+          label: 'Imagen',
+        },
+        {
+          name: 'url',
+          type: 'text',
+          admin: {
+            condition: (_, siblingData) => siblingData?.useMedia === false,
+            description: 'URL de la imagen (si no usas Media)',
+          },
+          label: 'URL de imagen',
+        },
+        {
+          name: 'alt',
+          type: 'text',
+          label: 'Texto alternativo',
+        },
+      ],
+    },
+    {
+      name: 'heroSendaLeftButtons',
+      type: 'array',
+      dbName: 'hs_left_btns',
+      admin: { condition: (_, { type } = {}) => type === 'heroSenda', description: 'Dos botones debajo del texto (izquierda). Permite título, enlace, variante, tamaño e icono SVG.' },
+      label: 'Botones izquierda (Hero SENDA)',
+      maxRows: 2,
+      fields: [
+        link({ appearances: false }),
+        {
+          name: 'appearance',
+          type: 'select',
+          dbName: 'app',
+          label: 'Estilo',
+          defaultValue: 'default',
+          options: [
+            { label: 'Default (relleno)', value: 'default' },
+            { label: 'Secondary (outline)', value: 'secondary' },
+          ],
+        },
+        {
+          name: 'size',
+          type: 'select',
+          dbName: 'sz',
+          label: 'Tamaño',
+          defaultValue: 'sm',
+          options: [
+            { label: 'Pequeño', value: 'sm' },
+            { label: 'Grande', value: 'lg' },
+          ],
+        },
+        {
+          name: 'iconSVG',
+          type: 'textarea',
+          label: 'Icono SVG (opcional)',
+          admin: { description: 'Código SVG para mostrar a la derecha del texto. Solo se aplica a botones con estilo default para colores personalizados.' },
+        },
+      ],
+    },
+    {
+      name: 'heroSendaImageButton',
+      type: 'group',
+      admin: { condition: (_, { type } = {}) => type === 'heroSenda' },
+      label: 'Botón debajo de la imagen',
+      fields: [
+        link({ appearances: false }),
+        {
+          name: 'iconSVG',
+          type: 'textarea',
+          label: 'Icono SVG (opcional)',
+        },
+      ],
+    },
+    {
+      name: 'heroSendaBackgroundColor',
+      type: 'text',
+      admin: { condition: (_, { type } = {}) => type === 'heroSenda', description: 'Ej: #ffffff, rgb(255,255,255), transparent' },
+      label: 'Color de fondo (Hero SENDA)',
+    },
+    {
+      name: 'heroSendaTextColor',
+      type: 'text',
+      admin: { condition: (_, { type } = {}) => type === 'heroSenda', description: 'Color del texto principal' },
+      label: 'Color de texto (Hero SENDA)',
+    },
+    {
+      name: 'heroSendaBoldTextColor',
+      type: 'text',
+      admin: { condition: (_, { type } = {}) => type === 'heroSenda', description: 'Color del texto en negrita' },
+      label: 'Color texto negrita (Hero SENDA)',
+    },
+    {
+      name: 'heroSendaButtonBackgroundColor',
+      type: 'text',
+      admin: { condition: (_, { type } = {}) => type === 'heroSenda', description: 'Solo aplica a botones con estilo "Default (relleno)"' },
+      label: 'Color de fondo botón (Hero SENDA)',
+    },
+    {
+      name: 'heroSendaButtonTextColor',
+      type: 'text',
+      admin: { condition: (_, { type } = {}) => type === 'heroSenda', description: 'Solo aplica a botones con estilo "Default (relleno)"' },
+      label: 'Color de texto del botón (Hero SENDA)',
+    },
+    {
+      name: 'heroSendaButton2BackgroundColor',
+      type: 'text',
+      admin: { condition: (_, { type } = {}) => type === 'heroSenda', description: 'Botón 2 (izquierda, estilo Secondary)' },
+      label: 'Color de fondo botón 2 (Hero SENDA)',
+    },
+    {
+      name: 'heroSendaButton2TextColor',
+      type: 'text',
+      admin: { condition: (_, { type } = {}) => type === 'heroSenda', description: 'Botón 2 (izquierda, estilo Secondary)' },
+      label: 'Color de texto botón 2 (Hero SENDA)',
+    },
+    {
+      name: 'heroSendaButton3BackgroundColor',
+      type: 'text',
+      admin: { condition: (_, { type } = {}) => type === 'heroSenda', description: 'Botón debajo de la imagen' },
+      label: 'Color de fondo botón 3 (Hero SENDA)',
+    },
+    {
+      name: 'heroSendaButton3TextColor',
+      type: 'text',
+      admin: { condition: (_, { type } = {}) => type === 'heroSenda', description: 'Botón debajo de la imagen' },
+      label: 'Color de texto botón 3 (Hero SENDA)',
+    },
+    {
+      name: 'heroSendaFontFamily',
+      type: 'select',
+      label: 'Tipografía (Hero SENDA)',
+      admin: {
+        condition: (_, { type } = {}) => type === 'heroSenda',
+        description: 'Selecciona una tipografía. Se ignora si usas fuente personalizada.',
+      },
+      options: [
+        { label: 'Por defecto', value: 'default' },
+        { label: 'Arial (Sistema)', value: 'Arial, sans-serif' },
+        { label: 'Times New Roman (Sistema)', value: '"Times New Roman", serif' },
+        { label: 'Georgia (Sistema)', value: 'Georgia, serif' },
+        { label: 'Verdana (Sistema)', value: 'Verdana, sans-serif' },
+        { label: 'Helvetica (Sistema)', value: 'Helvetica, Arial, sans-serif' },
+        { label: 'Courier New (Sistema)', value: '"Courier New", monospace' },
+        { label: 'Roboto (Google Fonts)', value: '"Roboto", sans-serif' },
+        { label: 'Open Sans (Google Fonts)', value: '"Open Sans", sans-serif' },
+        { label: 'Lato (Google Fonts)', value: '"Lato", sans-serif' },
+        { label: 'Montserrat (Google Fonts)', value: '"Montserrat", sans-serif' },
+        { label: 'Playfair Display (Google Fonts)', value: '"Playfair Display", serif' },
+        { label: 'Inter (Google Fonts)', value: '"Inter", sans-serif' },
+        { label: 'Poppins (Google Fonts)', value: '"Poppins", sans-serif' },
+        { label: 'Raleway (Google Fonts)', value: '"Raleway", sans-serif' },
+      ],
+      defaultValue: 'default',
+    },
+    {
+      name: 'heroSendaUseCustomFont',
+      type: 'checkbox',
+      label: 'Usar fuente personalizada (Hero SENDA)',
+      admin: { condition: (_, { type } = {}) => type === 'heroSenda' },
+      defaultValue: false,
+    },
+    {
+      name: 'heroSendaCustomFontFile',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Archivo de fuente (Hero SENDA)',
+      admin: {
+        condition: (_, siblingData) => siblingData?.type === 'heroSenda' && siblingData?.heroSendaUseCustomFont === true,
+      },
+    },
+    {
+      name: 'heroSendaCustomFontName',
+      type: 'text',
+      label: 'Nombre de la fuente (Hero SENDA)',
+      admin: {
+        condition: (_, siblingData) => siblingData?.type === 'heroSenda' && siblingData?.heroSendaUseCustomFont === true,
+      },
     },
     // Campos específicos para Header138
     {

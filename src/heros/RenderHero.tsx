@@ -10,6 +10,7 @@ import { Header1Hero } from '@/heros/Header1'
 import { Header5Hero } from '@/heros/Header5'
 import { Header138Hero } from '@/heros/Header138'
 import { HeroTemplate } from '@/heros/heroTemplate'
+import { Hero_SENDA } from '@/heros/Hero_SENDA'
 
 const heroes = {
   highImpact: HighImpactHero,
@@ -20,6 +21,7 @@ const heroes = {
   header5: Header5Hero,
   header138: Header138Hero,
   heroTemplate: HeroTemplate,
+  heroSenda: Hero_SENDA,
 }
 
 export const RenderHero: React.FC<Page['hero']> = (props) => {
@@ -31,5 +33,13 @@ export const RenderHero: React.FC<Page['hero']> = (props) => {
 
   if (!HeroToRender) return null
 
-  return <HeroToRender {...props} />
+  const { richText, links, ...rest } = props
+  const heroProps = {
+    ...rest,
+    richText: richText ?? undefined,
+    links: links ?? undefined,
+  }
+  // Payload permite null en hero; los componentes esperan undefined. Normalizamos en runtime; aseveración para compatibilidad de tipos.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return <HeroToRender {...(heroProps as any)} />
 }
