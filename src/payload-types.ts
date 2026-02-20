@@ -336,7 +336,7 @@ export interface Page {
         )
       | null;
     heroSendaUseCustomFont?: boolean | null;
-    heroSendaCustomFontFile?: (number | null) | Media;
+    heroSendaCustomFontFile?: (number | null) | Font;
     heroSendaCustomFontName?: string | null;
     header138Heading?: string | null;
     header138Description?: string | null;
@@ -421,6 +421,7 @@ export interface Page {
     | Banner1Block
     | Portfolio1Block
     | Comparison1Block
+    | LayoutSendaBlock
     | BlogPostHeader1BlockType
     | BlogPostHeader5BlockType
     | Blog5BlockType
@@ -627,6 +628,28 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fonts".
+ */
+export interface Font {
+  id: number;
+  /**
+   * Nombre descriptivo de la fuente (ej: "Mi Fuente Personalizada")
+   */
+  name?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Banner4Block".
  */
 export interface Banner4Block {
@@ -729,28 +752,6 @@ export interface Banner4Block {
   id?: string | null;
   blockName?: string | null;
   blockType: 'banner4';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "fonts".
- */
-export interface Font {
-  id: number;
-  /**
-   * Nombre descriptivo de la fuente (ej: "Mi Fuente Personalizada")
-   */
-  name?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -981,6 +982,128 @@ export interface Comparison1Block {
   id?: string | null;
   blockName?: string | null;
   blockType: 'comparison1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LayoutSendaBlock".
+ */
+export interface LayoutSendaBlock {
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: {
+    useMedia?: boolean | null;
+    /**
+     * Seleccione una imagen de la libreria
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * URL de la imagen cuando no se usa media subida
+     */
+    src?: string | null;
+    alt?: string | null;
+  };
+  subHeadings?:
+    | {
+        icon?: {
+          useMedia?: boolean | null;
+          /**
+           * Seleccione una imagen para el icono
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Codigo SVG del icono del subheading
+           */
+          iconSVG?: string | null;
+          alt?: string | null;
+        };
+        content?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  buttons?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+          label: string;
+        };
+        appearance?: ('default' | 'secondary' | 'outline' | 'link') | null;
+        size?: ('sm' | 'lg' | 'clear') | null;
+        iconSVG?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  invertLayout?: boolean | null;
+  backgroundColor?: string | null;
+  textColor?: string | null;
+  boldTextColor?: string | null;
+  buttonBackgroundColor?: string | null;
+  buttonTextColor?: string | null;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layoutSenda';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2002,6 +2125,7 @@ export interface PagesSelect<T extends boolean = true> {
         banner1?: T | Banner1BlockSelect<T>;
         portfolio1?: T | Portfolio1BlockSelect<T>;
         comparison1?: T | Comparison1BlockSelect<T>;
+        layoutSenda?: T | LayoutSendaBlockSelect<T>;
         blogPostHeader1?: T | BlogPostHeader1BlockTypeSelect<T>;
         blogPostHeader5?: T | BlogPostHeader5BlockTypeSelect<T>;
         blog5?: T | Blog5BlockTypeSelect<T>;
@@ -2170,6 +2294,64 @@ export interface Comparison1BlockSelect<T extends boolean = true> {
         iconRight?: T;
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LayoutSendaBlock_select".
+ */
+export interface LayoutSendaBlockSelect<T extends boolean = true> {
+  richText?: T;
+  image?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  subHeadings?:
+    | T
+    | {
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+        content?: T;
+        id?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        appearance?: T;
+        size?: T;
+        iconSVG?: T;
+        id?: T;
+      };
+  invertLayout?: T;
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  buttonBackgroundColor?: T;
+  buttonTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }

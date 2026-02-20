@@ -82,6 +82,7 @@ export const ALL_BLOCK_SLUGS_ORDERED: string[] = [
   'layout1',
   'layout5',
   'layout10',
+  'layoutSenda',
   'layout42',
   'layout90',
   'layout132',

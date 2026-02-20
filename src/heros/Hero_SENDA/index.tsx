@@ -63,7 +63,7 @@ type Props = {
   heroSendaButton3TextColor?: string | null
   heroSendaFontFamily?: string | null
   heroSendaUseCustomFont?: boolean
-  heroSendaCustomFontFile?: FontFile | null
+  heroSendaCustomFontFile?: FontFile | number | null
   heroSendaCustomFontName?: string | null
 }
 
@@ -92,28 +92,37 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
   const uniqueId = React.useId().replace(/:/g, '-')
   const styleId = `hero-senda-${uniqueId}`
 
+  const customFontFileObj =
+    heroSendaCustomFontFile && typeof heroSendaCustomFontFile === 'object'
+      ? heroSendaCustomFontFile
+      : null
+  const customFontFamilyName =
+    heroSendaCustomFontName?.trim() ||
+    customFontFileObj?.name?.trim() ||
+    (customFontFileObj?.filename ? customFontFileObj.filename.replace(/\.[^.]+$/, '') : undefined)
+
   const getFontFamily = () => {
-    if (heroSendaUseCustomFont && heroSendaCustomFontName) return `"${heroSendaCustomFontName}"`
+    if (heroSendaUseCustomFont && customFontFamilyName) return `"${customFontFamilyName}"`
     if (heroSendaFontFamily && heroSendaFontFamily !== 'default') return heroSendaFontFamily
     return undefined
   }
   const selectedFontFamily = getFontFamily()
   useGoogleFont(selectedFontFamily)
 
-  const fontFileUrl = heroSendaCustomFontFile?.url
-    ? getMediaUrl(heroSendaCustomFontFile.url).replace(/([^:]\/)\/+/g, '$1')
+  const fontFileUrl = customFontFileObj?.url
+    ? getMediaUrl(customFontFileObj.url).replace(/([^:]\/)\/+/g, '$1')
     : null
+  const fontFileNameOrUrl = customFontFileObj?.filename || customFontFileObj?.url || ''
   const isValidFontFile =
     fontFileUrl &&
-    heroSendaCustomFontFile?.filename &&
-    /\.(woff|woff2|ttf|otf)$/i.test(heroSendaCustomFontFile.filename)
+    /\.(woff|woff2|ttf|otf)(\?.*)?$/i.test(fontFileNameOrUrl)
 
   const buildStyles = () => {
     const styles: string[] = []
-    if (heroSendaUseCustomFont && fontFileUrl && heroSendaCustomFontName && isValidFontFile) {
+    if (heroSendaUseCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
       styles.push(`
         @font-face {
-          font-family: "${heroSendaCustomFontName.replace(/"/g, '\\"')}";
+          font-family: "${customFontFamilyName.replace(/"/g, '\\"')}";
           src: url("${fontFileUrl}") format("woff2"), url("${fontFileUrl}") format("woff");
           font-weight: normal;
           font-style: normal;
@@ -122,15 +131,15 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
       `)
     }
     const containerRules: string[] = []
-    if (heroSendaUseCustomFont && heroSendaCustomFontName && isValidFontFile) {
-      containerRules.push(`font-family: "${heroSendaCustomFontName.replace(/"/g, '\\"')}" !important;`)
+    if (heroSendaUseCustomFont && customFontFamilyName && isValidFontFile) {
+      containerRules.push(`font-family: "${customFontFamilyName.replace(/"/g, '\\"')}" !important;`)
     } else if (selectedFontFamily && !heroSendaUseCustomFont) {
       containerRules.push(`font-family: ${selectedFontFamily} !important;`)
     }
     if (containerRules.length > 0) {
       const fontValue =
-        heroSendaUseCustomFont && heroSendaCustomFontName && isValidFontFile
-          ? `"${heroSendaCustomFontName.replace(/"/g, '\\"')}"`
+        heroSendaUseCustomFont && customFontFamilyName && isValidFontFile
+          ? `"${customFontFamilyName.replace(/"/g, '\\"')}"`
           : selectedFontFamily && !heroSendaUseCustomFont
             ? selectedFontFamily
             : ''

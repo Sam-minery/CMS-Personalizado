@@ -291,7 +291,7 @@ export const hero: Field = {
     {
       name: 'heroSendaCustomFontFile',
       type: 'upload',
-      relationTo: 'media',
+      relationTo: 'fonts',
       label: 'Archivo de fuente (Hero SENDA)',
       admin: {
         condition: (_, siblingData) => siblingData?.type === 'heroSenda' && siblingData?.heroSendaUseCustomFont === true,
