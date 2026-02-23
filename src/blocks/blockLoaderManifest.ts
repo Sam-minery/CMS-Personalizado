@@ -72,6 +72,7 @@ export const BLOCK_LOADER_MANIFEST: Record<
   layout10: { path: './Layout10/config', exportName: 'Layout10Block' },
   layoutSenda: { path: './Layout_SENDA/config', exportName: 'LayoutSendaBlock' },
   layoutSendaSections: { path: './Layout_SENDA_Sections/config', exportName: 'LayoutSendaSectionsBlock' },
+  pricingSenda: { path: './Pricing_SENDA/config', exportName: 'PricingSendaBlock' },
   layout42: { path: './Layout42/config', exportName: 'Layout42Block' },
   layout90: { path: './Layout90/config', exportName: 'Layout90Block' },
   layout132: { path: './Layout132/config', exportName: 'Layout132Block' },

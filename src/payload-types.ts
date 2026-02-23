@@ -423,6 +423,7 @@ export interface Page {
     | Comparison1Block
     | LayoutSendaBlock
     | LayoutSendaSectionsBlock
+    | PricingSendaBlock
     | BlogPostHeader1BlockType
     | BlogPostHeader5BlockType
     | Blog5BlockType
@@ -1252,6 +1253,118 @@ export interface LayoutSendaSectionsBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'layoutSendaSections';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PricingSendaBlock".
+ */
+export interface PricingSendaBlock {
+  /**
+   * ID para enlaces ancla. Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  richText: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  plans?:
+    | {
+        richText?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        planElements?:
+          | {
+              /**
+               * Código SVG del icono
+               */
+              iconSVG?: string | null;
+              text?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        backgroundColor?: string | null;
+        textColor?: string | null;
+        boldTextColor?: string | null;
+        /**
+         * Active para hacer este plan clickeable (enlace interno o externo)
+         */
+        enableLink?: boolean | null;
+        /**
+         * Configure el enlace para este plan
+         */
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label?: string | null;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  backgroundColor?: string | null;
+  textColor?: string | null;
+  boldTextColor?: string | null;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'pricingSenda';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2275,6 +2388,7 @@ export interface PagesSelect<T extends boolean = true> {
         comparison1?: T | Comparison1BlockSelect<T>;
         layoutSenda?: T | LayoutSendaBlockSelect<T>;
         layoutSendaSections?: T | LayoutSendaSectionsBlockSelect<T>;
+        pricingSenda?: T | PricingSendaBlockSelect<T>;
         blogPostHeader1?: T | BlogPostHeader1BlockTypeSelect<T>;
         blogPostHeader5?: T | BlogPostHeader5BlockTypeSelect<T>;
         blog5?: T | Blog5BlockTypeSelect<T>;
@@ -2557,6 +2671,50 @@ export interface LayoutSendaSectionsBlockSelect<T extends boolean = true> {
   boldTextColor?: T;
   buttonBackgroundColor?: T;
   buttonTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PricingSendaBlock_select".
+ */
+export interface PricingSendaBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  richText?: T;
+  plans?:
+    | T
+    | {
+        richText?: T;
+        planElements?:
+          | T
+          | {
+              iconSVG?: T;
+              text?: T;
+              id?: T;
+            };
+        backgroundColor?: T;
+        textColor?: T;
+        boldTextColor?: T;
+        enableLink?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
   fontFamily?: T;
   useCustomFont?: T;
   customFontFile?: T;

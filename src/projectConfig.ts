@@ -13,6 +13,7 @@ export const enabledBlockSlugs: string[] | null = [
   'comparison1',
   'layoutSenda',
   'layoutSendaSections',
+  'pricingSenda',
   'blogPostHeader1',
   'blogPostHeader5',
   'blog5',
