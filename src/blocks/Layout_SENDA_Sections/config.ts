@@ -35,12 +35,12 @@ const richTextEditor = () =>
     ],
   })
 
-export const LayoutSendaBlock: Block = {
-  slug: 'layoutSenda',
-  interfaceName: 'LayoutSendaBlock',
+export const LayoutSendaSectionsBlock: Block = {
+  slug: 'layoutSendaSections',
+  interfaceName: 'LayoutSendaSectionsBlock',
   labels: {
-    singular: 'Layout SENDA',
-    plural: 'Layout SENDA Blocks',
+    singular: 'Layout SENDA Sections',
+    plural: 'Layout SENDA Sections Blocks',
   },
   fields: [
     {
@@ -56,50 +56,14 @@ export const LayoutSendaBlock: Block = {
       type: 'richText',
       editor: richTextEditor(),
       label: 'Contenido principal (RichText)',
-      required: false,
+      required: true,
     },
     {
-      name: 'image',
-      type: 'group',
-      label: 'Imagen principal',
-      fields: [
-        {
-          name: 'useMedia',
-          type: 'checkbox',
-          label: 'Usar imagen subida',
-          defaultValue: true,
-        },
-        {
-          name: 'mediaImage',
-          type: 'upload',
-          relationTo: 'media',
-          admin: {
-            condition: (_, siblingData) => siblingData?.useMedia === true,
-            description: 'Seleccione una imagen de la libreria',
-          },
-        },
-        {
-          name: 'src',
-          type: 'text',
-          admin: {
-            condition: (_, siblingData) => siblingData?.useMedia === false,
-            description: 'URL de la imagen cuando no se usa media subida',
-          },
-        },
-        {
-          name: 'alt',
-          type: 'text',
-          label: 'Texto alternativo',
-          defaultValue: 'Layout SENDA image',
-        },
-      ],
-    },
-    {
-      name: 'subHeadings',
+      name: 'sections',
       type: 'array',
-      dbName: 'ls_sub',
-      label: 'Subheadings',
-      maxRows: 2,
+      dbName: 'lss_sections',
+      label: 'Secciones',
+      maxRows: 4,
       fields: [
         {
           name: 'icon',
@@ -127,71 +91,132 @@ export const LayoutSendaBlock: Block = {
               label: 'Icono SVG',
               admin: {
                 condition: (_, siblingData) => siblingData?.useMedia !== true,
-                description: 'Codigo SVG del icono del subheading',
+                description: 'Código SVG del icono de la sección',
               },
             },
             {
               name: 'alt',
               type: 'text',
               label: 'Alt del icono',
-              defaultValue: 'Subheading icon',
+              defaultValue: 'Section icon',
             },
           ],
         },
         {
-          name: 'content',
+          name: 'richText',
           type: 'richText',
           editor: richTextEditor(),
-          label: 'Contenido del subheading (RichText)',
-          required: false,
+          label: 'Contenido de la sección (RichText)',
+          required: true,
+        },
+        {
+          name: 'enableLink',
+          type: 'checkbox',
+          label: 'Convertir en enlace',
+          defaultValue: false,
+          admin: {
+            description: 'Active esta opción para hacer esta sección clickeable',
+          },
+        },
+        {
+          name: 'link',
+          type: 'group',
+          admin: {
+            hideGutter: true,
+            condition: (_, siblingData) => siblingData?.enableLink === true,
+            description: 'Configure el enlace para esta sección',
+          },
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'type',
+                  type: 'radio',
+                  admin: {
+                    layout: 'horizontal',
+                    width: '50%',
+                  },
+                  defaultValue: 'reference',
+                  options: [
+                    { label: 'Internal link', value: 'reference' },
+                    { label: 'Custom URL', value: 'custom' },
+                  ],
+                },
+                {
+                  name: 'newTab',
+                  type: 'checkbox',
+                  admin: {
+                    style: { alignSelf: 'flex-end' },
+                    width: '50%',
+                  },
+                  label: 'Open in new tab',
+                },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'reference',
+                  type: 'relationship',
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.type === 'reference',
+                    width: '50%',
+                  },
+                  label: 'Document to link to',
+                  relationTo: ['pages', 'posts'],
+                  required: true,
+                },
+                {
+                  name: 'url',
+                  type: 'text',
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.type === 'custom',
+                    width: '50%',
+                  },
+                  label: 'Custom URL',
+                  required: true,
+                },
+                {
+                  name: 'label',
+                  type: 'text',
+                  admin: { width: '50%' },
+                  label: 'Label',
+                  required: false,
+                },
+              ],
+            },
+            {
+              name: 'appearance',
+              type: 'select',
+              admin: { description: 'Choose how the link should be rendered.' },
+              defaultValue: 'default',
+              options: [
+                { label: 'Default', value: 'default' },
+                { label: 'Outline', value: 'outline' },
+              ],
+            },
+          ],
         },
       ],
     },
     {
       name: 'buttons',
       type: 'array',
-      dbName: 'ls_btns',
+      dbName: 'lss_btns',
       label: 'Botones',
+      required: false,
       maxRows: 2,
       fields: [
-        link({ appearances: false }),
-        {
-          name: 'appearance',
-          type: 'select',
-          dbName: 'app',
-          label: 'Estilo del boton',
-          defaultValue: 'secondary',
-          options: [
-            { label: 'Default', value: 'default' },
-            { label: 'Secondary', value: 'secondary' },
-            { label: 'Outline', value: 'outline' },
-            { label: 'Link', value: 'link' },
-          ],
-        },
-        {
-          name: 'size',
-          type: 'select',
-          dbName: 'sz',
-          label: 'Tamano del boton',
-          defaultValue: 'sm',
-          options: [
-            { label: 'Small', value: 'sm' },
-            { label: 'Large', value: 'lg' },
-            { label: 'Clear', value: 'clear' },
-          ],
-        },
-        {
-          name: 'iconSVG',
-          type: 'textarea',
-          label: 'Icono SVG del boton (opcional)',
-        },
+        link({
+          overrides: {
+            admin: {
+              description: 'Configure el enlace para este botón',
+            },
+          },
+        }),
       ],
-    },
-    {
-      name: 'invertLayout',
-      type: 'checkbox',
-      label: 'Invertir disposicion',
-      defaultValue: false,
     },
     {
       name: 'backgroundColor',
@@ -221,7 +246,7 @@ export const LayoutSendaBlock: Block = {
     {
       name: 'fontFamily',
       type: 'select',
-      label: 'Tipografia',
+      label: 'Tipografía',
       admin: {
         condition: (_, siblingData) => !siblingData?.useCustomFont,
       },

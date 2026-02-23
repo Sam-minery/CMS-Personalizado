@@ -101,6 +101,9 @@ const allBlockComponents: Record<string, React.ComponentType<any>> = {
   layout5: dynamic(() => import('@/blocks/Layout5/Component').then((m) => m.Layout5Block)),
   layout10: dynamic(() => import('@/blocks/Layout10/Component').then((m) => m.Layout10Block)),
   layoutSenda: dynamic(() => import('@/blocks/Layout_SENDA/Component').then((m) => m.LayoutSendaBlock)),
+  layoutSendaSections: dynamic(() =>
+    import('@/blocks/Layout_SENDA_Sections/Component').then((m) => m.LayoutSendaSectionsBlock),
+  ),
   layout42: dynamic(() => import('@/blocks/Layout42/Component').then((m) => m.Layout42Block)),
   layout90: dynamic(() => import('@/blocks/Layout90/Component').then((m) => m.Layout90Block)),
   layout132: dynamic(() => import('@/blocks/Layout132/Component').then((m) => m.Layout132Block)),

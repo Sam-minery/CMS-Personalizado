@@ -45,7 +45,13 @@ type SubHeading = {
   content?: DefaultTypedEditorState | null
 }
 
+function sanitizeAnchorId(value: string | null | undefined): string {
+  const s = (value || '').trim().replace(/[^a-zA-Z0-9_-]/g, '')
+  return s || 'layout-senda'
+}
+
 type LayoutSendaProps = {
+  anchorId?: string | null
   richText?: DefaultTypedEditorState | null
   image?: ImageGroup | null
   subHeadings?: SubHeading[] | null
@@ -95,6 +101,7 @@ const getIconAlt = (subHeading: SubHeading | null | undefined): string => {
 
 export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
   const {
+    anchorId,
     richText,
     image,
     subHeadings,
@@ -215,7 +222,7 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
       <section
-        id="layout-senda"
+        id={sanitizeAnchorId(anchorId)}
         data-layout-senda-font={styleId}
         className="px-[5%] py-16 md:py-24 lg:py-28"
         style={backgroundColor ? { backgroundColor } : undefined}

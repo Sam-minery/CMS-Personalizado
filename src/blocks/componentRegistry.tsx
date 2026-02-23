@@ -105,6 +105,7 @@ import { Layout1Block } from '@/blocks/Layout1/Component'
 import { Layout5Block } from '@/blocks/Layout5/Component'
 import { Layout10Block } from '@/blocks/Layout10/Component'
 import { LayoutSendaBlock } from '@/blocks/Layout_SENDA/Component'
+import { LayoutSendaSectionsBlock } from '@/blocks/Layout_SENDA_Sections/Component'
 import { Layout42Block } from '@/blocks/Layout42/Component'
 import { Layout90Block } from '@/blocks/Layout90/Component'
 import { Layout132Block } from '@/blocks/Layout132/Component'
@@ -224,6 +225,7 @@ const BLOCK_COMPONENTS: BlockComponentMap = {
   layout5: Layout5Block,
   layout10: Layout10Block,
   layoutSenda: LayoutSendaBlock,
+  layoutSendaSections: LayoutSendaSectionsBlock,
   layout42: Layout42Block,
   layout90: Layout90Block,
   layout132: Layout132Block,

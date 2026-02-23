@@ -880,10 +880,67 @@ export const Header: GlobalConfig = {
               required: true,
               defaultValue: 'home',
             },
-            link({
-              appearances: false,
-              disableLabel: true,
-            }),
+            {
+              name: 'link',
+              type: 'group',
+              admin: { hideGutter: true },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'type',
+                      type: 'radio',
+                      admin: { layout: 'horizontal', width: '50%' },
+                      defaultValue: 'reference',
+                      options: [
+                        { label: 'Internal link', value: 'reference' },
+                        { label: 'Custom URL', value: 'custom' },
+                        { label: 'Id ancla (misma página)', value: 'anchor' },
+                      ],
+                    },
+                    {
+                      name: 'newTab',
+                      type: 'checkbox',
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.type !== 'anchor',
+                        style: { alignSelf: 'flex-end' },
+                        width: '50%',
+                      },
+                      label: 'Open in new tab',
+                    },
+                  ],
+                },
+                {
+                  name: 'reference',
+                  type: 'relationship',
+                  relationTo: ['pages', 'posts'],
+                  admin: { condition: (_, siblingData) => siblingData?.type === 'reference' },
+                  label: 'Document to link to',
+                  required: true,
+                },
+                {
+                  name: 'url',
+                  type: 'text',
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.type === 'custom',
+                    description: 'URL (http://, https:// o ruta relativa).',
+                  },
+                  label: 'Custom URL',
+                  required: true,
+                },
+                {
+                  name: 'anchorId',
+                  type: 'text',
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.type === 'anchor',
+                    description: 'ID del bloque de destino (ej: mi-seccion). Debe coincidir con el "ID ancla" del bloque.',
+                  },
+                  label: 'ID ancla',
+                  required: true,
+                },
+              ],
+            },
             {
               name: 'subMenuLinks',
               type: 'array',
@@ -896,10 +953,67 @@ export const Header: GlobalConfig = {
                   required: true,
                   defaultValue: 'google',
                 },
-                link({
-                  appearances: false,
-                  disableLabel: true,
-                }),
+                {
+                  name: 'link',
+                  type: 'group',
+                  admin: { hideGutter: true },
+                  fields: [
+                    {
+                      type: 'row',
+                      fields: [
+                        {
+                          name: 'type',
+                          type: 'radio',
+                          admin: { layout: 'horizontal', width: '50%' },
+                          defaultValue: 'reference',
+                          options: [
+                            { label: 'Internal link', value: 'reference' },
+                            { label: 'Custom URL', value: 'custom' },
+                            { label: 'Id ancla (misma página)', value: 'anchor' },
+                          ],
+                        },
+                        {
+                          name: 'newTab',
+                          type: 'checkbox',
+                          admin: {
+                            condition: (_, siblingData) => siblingData?.type !== 'anchor',
+                            style: { alignSelf: 'flex-end' },
+                            width: '50%',
+                          },
+                          label: 'Open in new tab',
+                        },
+                      ],
+                    },
+                    {
+                      name: 'reference',
+                      type: 'relationship',
+                      relationTo: ['pages', 'posts'],
+                      admin: { condition: (_, siblingData) => siblingData?.type === 'reference' },
+                      label: 'Document to link to',
+                      required: true,
+                    },
+                    {
+                      name: 'url',
+                      type: 'text',
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.type === 'custom',
+                        description: 'URL (http://, https:// o ruta relativa).',
+                      },
+                      label: 'Custom URL',
+                      required: true,
+                    },
+                    {
+                      name: 'anchorId',
+                      type: 'text',
+                      required: true,
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.type === 'anchor',
+                        description: 'ID del bloque de destino. Debe coincidir con el "ID ancla" del bloque.',
+                      },
+                      label: 'ID ancla',
+                    },
+                  ],
+                },
               ],
             },
           ],
@@ -916,10 +1030,67 @@ export const Header: GlobalConfig = {
               required: true,
               defaultValue: 'youtube',
             },
-            link({
-              appearances: false,
-              disableLabel: true,
-            }),
+            {
+              name: 'link',
+              type: 'group',
+              admin: { hideGutter: true },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'type',
+                      type: 'radio',
+                      admin: { layout: 'horizontal', width: '50%' },
+                      defaultValue: 'reference',
+                      options: [
+                        { label: 'Internal link', value: 'reference' },
+                        { label: 'Custom URL', value: 'custom' },
+                        { label: 'Id ancla (misma página)', value: 'anchor' },
+                      ],
+                    },
+                    {
+                      name: 'newTab',
+                      type: 'checkbox',
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.type !== 'anchor',
+                        style: { alignSelf: 'flex-end' },
+                        width: '50%',
+                      },
+                      label: 'Open in new tab',
+                    },
+                  ],
+                },
+                {
+                  name: 'reference',
+                  type: 'relationship',
+                  relationTo: ['pages', 'posts'],
+                  admin: { condition: (_, siblingData) => siblingData?.type === 'reference' },
+                  label: 'Document to link to',
+                  required: true,
+                },
+                {
+                  name: 'url',
+                  type: 'text',
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.type === 'custom',
+                    description: 'URL (http://, https:// o ruta relativa).',
+                  },
+                  label: 'Custom URL',
+                  required: true,
+                },
+                {
+                  name: 'anchorId',
+                  type: 'text',
+                  required: true,
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.type === 'anchor',
+                    description: 'ID del bloque de destino. Debe coincidir con el "ID ancla" del bloque.',
+                  },
+                  label: 'ID ancla',
+                },
+              ],
+            },
             {
               name: 'size',
               type: 'select',

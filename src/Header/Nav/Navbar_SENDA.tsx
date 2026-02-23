@@ -5,6 +5,7 @@ import { useMediaQuery } from "@relume_io/relume-ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { RxChevronDown } from "react-icons/rx";
 import { CMSLink } from "@/components/Link";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useGoogleFont } from "@/utilities/useGoogleFont";
 import { getMediaUrl } from "@/utilities/getMediaUrl";
@@ -21,13 +22,14 @@ type ImageProps = {
 type NavLink = {
   title: string;
   link: {
-    type?: 'custom' | 'reference' | null;
+    type?: 'custom' | 'reference' | 'anchor' | null;
     url?: string | null;
     reference?: {
       relationTo: 'pages' | 'posts';
       value: any;
     } | null;
     newTab?: boolean | null;
+    anchorId?: string | null;
   };
   subMenuLinks?: NavLink[];
 };
@@ -35,13 +37,14 @@ type NavLink = {
 type ButtonWithLink = {
   title: string;
   link: {
-    type?: 'custom' | 'reference' | null;
+    type?: 'custom' | 'reference' | 'anchor' | null;
     url?: string | null;
     reference?: {
       relationTo: 'pages' | 'posts';
       value: any;
     } | null;
     newTab?: boolean | null;
+    anchorId?: string | null;
   };
   size?: 'sm' | 'lg';
   variant?: 'default' | 'secondary' | 'ghost' | 'link';
@@ -74,6 +77,14 @@ type Props = {
 export type Navbar_SENDAProps = React.ComponentPropsWithoutRef<"section"> & Partial<Props>;
 
 const STICKY_SCROLL_THRESHOLD = 24;
+
+function scrollToAnchor(id: string) {
+  if (!id || typeof document === "undefined") return;
+  const el = document.getElementById(id.trim());
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+}
 
 export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
   const {
@@ -263,10 +274,20 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
               {navLinks.map((navLink, index) =>
                 navLink.subMenuLinks && navLink.subMenuLinks.length > 0 ? (
                   <SubMenu key={index} navLink={navLink} isMobile={false} dropdownBgColor={backgroundColor} linkFontStyle={fontStyle} />
+                ) : navLink.link?.type === "anchor" && navLink.link?.anchorId ? (
+                  <button
+                    key={index}
+                    type="button"
+                    className="block py-3 px-4 py-2 text-base cursor-pointer bg-transparent border-0"
+                    style={fontStyle}
+                    onClick={() => scrollToAnchor(navLink.link!.anchorId!)}
+                  >
+                    {fontStyle ? <span style={fontStyle}>{navLink.title}</span> : navLink.title}
+                  </button>
                 ) : (
                   <CMSLink
                     key={index}
-                    {...navLink.link}
+                    {...(navLink.link as React.ComponentProps<typeof CMSLink>)}
                     className="block py-3 px-4 py-2 text-base"
                     style={fontStyle}
                   >
@@ -275,27 +296,49 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                 )
               )}
               <div className="ml-4 flex items-center gap-2">
-                {buttons.map((button, index) => (
-                  <CMSLink
-                    key={index}
-                    {...button.link}
-                    size={button.size}
-                    appearance={button.variant}
-                    className={button.variant === "default" ? "navbar-senda-btn-default" : undefined}
-                    style={fontStyle}
-                  >
-                    <span className="inline-flex items-center gap-1.5">
-                      {fontStyle ? <span style={fontStyle}>{button.title}</span> : button.title}
-                      {button.iconSVG ? (
-                        <span
-                          className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                          dangerouslySetInnerHTML={{ __html: sanitizeSVG(button.iconSVG) }}
-                          aria-hidden
-                        />
-                      ) : null}
-                    </span>
-                  </CMSLink>
-                ))}
+                {buttons.map((button, index) =>
+                  button.link?.type === "anchor" && button.link?.anchorId ? (
+                    <Button
+                      key={index}
+                      size={button.size}
+                      variant={button.variant}
+                      className={button.variant === "default" ? "navbar-senda-btn-default" : undefined}
+                      style={fontStyle}
+                      onClick={() => scrollToAnchor(button.link!.anchorId!)}
+                    >
+                      <span className="inline-flex items-center gap-1.5">
+                        {fontStyle ? <span style={fontStyle}>{button.title}</span> : button.title}
+                        {button.iconSVG ? (
+                          <span
+                            className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                            dangerouslySetInnerHTML={{ __html: sanitizeSVG(button.iconSVG) }}
+                            aria-hidden
+                          />
+                        ) : null}
+                      </span>
+                    </Button>
+                  ) : (
+                    <CMSLink
+                      key={index}
+                      {...(button.link as React.ComponentProps<typeof CMSLink>)}
+                      size={button.size}
+                      appearance={button.variant}
+                      className={button.variant === "default" ? "navbar-senda-btn-default" : undefined}
+                      style={fontStyle}
+                    >
+                      <span className="inline-flex items-center gap-1.5">
+                        {fontStyle ? <span style={fontStyle}>{button.title}</span> : button.title}
+                        {button.iconSVG ? (
+                          <span
+                            className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                            dangerouslySetInnerHTML={{ __html: sanitizeSVG(button.iconSVG) }}
+                            aria-hidden
+                          />
+                        ) : null}
+                      </span>
+                    </CMSLink>
+                  )
+                )}
               </div>
             </div>
           )}
@@ -304,25 +347,46 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
           {isMobile && (
             <>
               <div className="flex items-center gap-3 flex-1 justify-end">
-                {showMobileTopBarItems && firstButton && (
-                  <CMSLink
-                    {...firstButton.link}
-                    size={firstButton.size}
-                    appearance={firstButton.variant}
-                    className={firstButton.variant === "default" ? "navbar-senda-btn-default" : undefined}
-                    style={fontStyle}
-                  >
-                    <span className="inline-flex items-center gap-1.5">
-                      {fontStyle ? <span style={fontStyle}>{firstButton.title}</span> : firstButton.title}
-                      {firstButton.iconSVG ? (
-                        <span
-                          className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                          dangerouslySetInnerHTML={{ __html: sanitizeSVG(firstButton.iconSVG) }}
-                          aria-hidden
-                        />
-                      ) : null}
-                    </span>
-                  </CMSLink>
+                {showMobileTopBarItems && firstButton &&
+                  (firstButton.link?.type === "anchor" && firstButton.link?.anchorId ? (
+                    <Button
+                      size={firstButton.size}
+                      variant={firstButton.variant}
+                      className={firstButton.variant === "default" ? "navbar-senda-btn-default" : undefined}
+                      style={fontStyle}
+                      onClick={() => scrollToAnchor(firstButton!.link!.anchorId!)}
+                    >
+                      <span className="inline-flex items-center gap-1.5">
+                        {fontStyle ? <span style={fontStyle}>{firstButton.title}</span> : firstButton.title}
+                        {firstButton.iconSVG ? (
+                          <span
+                            className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                            dangerouslySetInnerHTML={{ __html: sanitizeSVG(firstButton.iconSVG) }}
+                            aria-hidden
+                          />
+                        ) : null}
+                      </span>
+                    </Button>
+                  ) : (
+                    <CMSLink
+                      {...(firstButton.link as React.ComponentProps<typeof CMSLink>)}
+                      size={firstButton.size}
+                      appearance={firstButton.variant}
+                      className={firstButton.variant === "default" ? "navbar-senda-btn-default" : undefined}
+                      style={fontStyle}
+                    >
+                      <span className="inline-flex items-center gap-1.5">
+                        {fontStyle ? <span style={fontStyle}>{firstButton.title}</span> : firstButton.title}
+                        {firstButton.iconSVG ? (
+                          <span
+                            className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                            dangerouslySetInnerHTML={{ __html: sanitizeSVG(firstButton.iconSVG) }}
+                            aria-hidden
+                          />
+                        ) : null}
+                      </span>
+                    </CMSLink>
+                  )
                 )}
                 <button
                   className="-mr-2 flex size-12 flex-col items-center justify-center"
@@ -360,10 +424,24 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                     <div key={index}>
                       {index > 0 && <hr className="border-t border-gray-200 my-3" aria-hidden />}
                       {navLink.subMenuLinks && navLink.subMenuLinks.length > 0 ? (
-                            <SubMenu navLink={navLink} isMobile={true} dropdownBgColor={isMobileMenuOpen ? undefined : backgroundColor} linkFontStyle={fontStyle} />
+                            <SubMenu navLink={navLink} isMobile={true} dropdownBgColor={isMobileMenuOpen ? undefined : backgroundColor} linkFontStyle={fontStyle} onCloseMenu={() => setIsMobileMenuOpen(false)} />
+                          ) : navLink.link?.type === "anchor" && navLink.link?.anchorId ? (
+                            <div>
+                              <button
+                                type="button"
+                                className="block w-full py-2 text-left text-base cursor-pointer bg-transparent border-0"
+                                style={fontStyle}
+                                onClick={() => {
+                                  scrollToAnchor(navLink.link!.anchorId!);
+                                  setIsMobileMenuOpen(false);
+                                }}
+                              >
+                                {fontStyle ? <span style={fontStyle}>{navLink.title}</span> : navLink.title}
+                              </button>
+                            </div>
                           ) : (
                             <div onClick={() => setIsMobileMenuOpen(false)}>
-                              <CMSLink {...navLink.link} className="block py-2 text-base" style={fontStyle}>
+                              <CMSLink {...(navLink.link as React.ComponentProps<typeof CMSLink>)} className="block py-2 text-base" style={fontStyle}>
                                 {fontStyle ? <span style={fontStyle}>{navLink.title}</span> : navLink.title}
                               </CMSLink>
                             </div>
@@ -371,37 +449,67 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                     </div>
                   ))}
                       {firstButton && (
-                        <div className="mt-6 pt-6 border-t border-gray-200" onClick={() => setIsMobileMenuOpen(false)}>
-                          <CMSLink
-                            {...firstButton.link}
-                            size={firstButton.size}
-                            appearance={firstButton.variant}
-                            className={firstButton.variant === "default" ? "navbar-senda-btn-default w-full" : "w-full"}
-                            style={fontStyle}
-                          >
-                            <span className="inline-flex items-center gap-1.5">
-                              {fontStyle ? <span style={fontStyle}>{firstButton.title}</span> : firstButton.title}
-                              {firstButton.iconSVG ? (
-                                <span
-                                  className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                                  dangerouslySetInnerHTML={{ __html: sanitizeSVG(firstButton.iconSVG) }}
-                                  aria-hidden
-                                />
-                              ) : null}
-                            </span>
-                          </CMSLink>
+                        <div className="mt-6 pt-6 border-t border-gray-200">
+                          {firstButton.link?.type === "anchor" && firstButton.link?.anchorId ? (
+                            <Button
+                              size={firstButton.size}
+                              variant={firstButton.variant}
+                              className={firstButton.variant === "default" ? "navbar-senda-btn-default w-full" : "w-full"}
+                              style={fontStyle}
+                              onClick={() => {
+                                scrollToAnchor(firstButton!.link!.anchorId!);
+                                setIsMobileMenuOpen(false);
+                              }}
+                            >
+                              <span className="inline-flex items-center gap-1.5">
+                                {fontStyle ? <span style={fontStyle}>{firstButton.title}</span> : firstButton.title}
+                                {firstButton.iconSVG ? (
+                                  <span
+                                    className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                                    dangerouslySetInnerHTML={{ __html: sanitizeSVG(firstButton.iconSVG) }}
+                                    aria-hidden
+                                  />
+                                ) : null}
+                              </span>
+                            </Button>
+                          ) : (
+                            <div onClick={() => setIsMobileMenuOpen(false)}>
+                              <CMSLink
+                                {...(firstButton.link as React.ComponentProps<typeof CMSLink>)}
+                                size={firstButton.size}
+                                appearance={firstButton.variant}
+                                className={firstButton.variant === "default" ? "navbar-senda-btn-default w-full" : "w-full"}
+                                style={fontStyle}
+                              >
+                                <span className="inline-flex items-center gap-1.5">
+                                  {fontStyle ? <span style={fontStyle}>{firstButton.title}</span> : firstButton.title}
+                                  {firstButton.iconSVG ? (
+                                    <span
+                                      className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                                      dangerouslySetInnerHTML={{ __html: sanitizeSVG(firstButton.iconSVG) }}
+                                      aria-hidden
+                                    />
+                                  ) : null}
+                                </span>
+                              </CMSLink>
+                            </div>
+                          )}
                         </div>
                       )}
                       {buttons.length > 1 && (
                         <div className="mt-2 flex flex-col gap-2">
-                          {buttons.slice(1).map((button, index) => (
-                            <div key={index} onClick={() => setIsMobileMenuOpen(false)}>
-                              <CMSLink
-                                {...button.link}
+                          {buttons.slice(1).map((button, index) =>
+                            button.link?.type === "anchor" && button.link?.anchorId ? (
+                              <Button
+                                key={index}
                                 size={button.size}
-                                appearance={button.variant}
+                                variant={button.variant}
                                 className={button.variant === "default" ? "navbar-senda-btn-default w-full" : "w-full"}
                                 style={fontStyle}
+                                onClick={() => {
+                                  scrollToAnchor(button.link!.anchorId!);
+                                  setIsMobileMenuOpen(false);
+                                }}
                               >
                                 <span className="inline-flex items-center gap-1.5">
                                   {fontStyle ? <span style={fontStyle}>{button.title}</span> : button.title}
@@ -413,9 +521,30 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                                     />
                                   ) : null}
                                 </span>
-                              </CMSLink>
-                            </div>
-                          ))}
+                              </Button>
+                            ) : (
+                              <div key={index} onClick={() => setIsMobileMenuOpen(false)}>
+                                <CMSLink
+                                  {...(button.link as React.ComponentProps<typeof CMSLink>)}
+                                  size={button.size}
+                                  appearance={button.variant}
+                                  className={button.variant === "default" ? "navbar-senda-btn-default w-full" : "w-full"}
+                                  style={fontStyle}
+                                >
+                                  <span className="inline-flex items-center gap-1.5">
+                                    {fontStyle ? <span style={fontStyle}>{button.title}</span> : button.title}
+                                    {button.iconSVG ? (
+                                      <span
+                                        className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                                        dangerouslySetInnerHTML={{ __html: sanitizeSVG(button.iconSVG) }}
+                                        aria-hidden
+                                      />
+                                    ) : null}
+                                  </span>
+                                </CMSLink>
+                              </div>
+                            )
+                          )}
                         </div>
                       )}
                 </div>
@@ -435,13 +564,23 @@ const SubMenu = ({
   isMobile,
   dropdownBgColor,
   linkFontStyle,
+  onCloseMenu,
 }: {
   navLink: NavLink;
   isMobile: boolean;
   dropdownBgColor?: string;
   linkFontStyle?: React.CSSProperties;
+  onCloseMenu?: () => void;
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const handleSubLinkClick = (subLink: NavLink) => {
+    if (subLink.link?.type === "anchor" && subLink.link?.anchorId) {
+      scrollToAnchor(subLink.link.anchorId);
+      onCloseMenu?.();
+    }
+    if (isMobile) setIsDropdownOpen(false);
+  };
 
   return (
     <div
@@ -477,16 +616,29 @@ const SubMenu = ({
             className="lg:absolute lg:left-0 lg:z-50 lg:min-w-[180px] lg:rounded-lg lg:border lg:border-gray-200 lg:p-2 lg:shadow-md"
             style={dropdownBgColor ? { backgroundColor: dropdownBgColor } : { backgroundColor: "white" }}
           >
-            {navLink.subMenuLinks?.map((subLink, index) => (
-              <CMSLink
-                key={index}
-                {...subLink.link}
-                className="block py-3 pl-[5%] text-md lg:px-4 lg:py-2 lg:text-base"
-                style={linkFontStyle}
-              >
-                {linkFontStyle ? <span style={linkFontStyle}>{subLink.title}</span> : subLink.title}
-              </CMSLink>
-            ))}
+            {navLink.subMenuLinks?.map((subLink, index) =>
+              subLink.link?.type === "anchor" && subLink.link?.anchorId ? (
+                <button
+                  key={index}
+                  type="button"
+                  className="block w-full py-3 pl-[5%] text-left text-md cursor-pointer bg-transparent border-0 lg:px-4 lg:py-2 lg:text-base"
+                  style={linkFontStyle}
+                  onClick={() => handleSubLinkClick(subLink)}
+                >
+                  {linkFontStyle ? <span style={linkFontStyle}>{subLink.title}</span> : subLink.title}
+                </button>
+              ) : (
+                <div key={index} onClick={() => isMobile && onCloseMenu?.()}>
+                  <CMSLink
+                    {...(subLink.link as React.ComponentProps<typeof CMSLink>)}
+                    className="block py-3 pl-[5%] text-md lg:px-4 lg:py-2 lg:text-base"
+                    style={linkFontStyle}
+                  >
+                    {linkFontStyle ? <span style={linkFontStyle}>{subLink.title}</span> : subLink.title}
+                  </CMSLink>
+                </div>
+              )
+            )}
           </motion.nav>
         </AnimatePresence>
       )}

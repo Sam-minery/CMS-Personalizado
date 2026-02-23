@@ -422,6 +422,7 @@ export interface Page {
     | Portfolio1Block
     | Comparison1Block
     | LayoutSendaBlock
+    | LayoutSendaSectionsBlock
     | BlogPostHeader1BlockType
     | BlogPostHeader5BlockType
     | Blog5BlockType
@@ -988,6 +989,10 @@ export interface Comparison1Block {
  * via the `definition` "LayoutSendaBlock".
  */
 export interface LayoutSendaBlock {
+  /**
+   * ID para enlaces ancla (ej: mi-seccion). Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
   richText?: {
     root: {
       type: string;
@@ -1104,6 +1109,149 @@ export interface LayoutSendaBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'layoutSenda';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LayoutSendaSectionsBlock".
+ */
+export interface LayoutSendaSectionsBlock {
+  /**
+   * ID para enlaces ancla (ej: mi-seccion). Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  richText: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  sections?:
+    | {
+        icon?: {
+          useMedia?: boolean | null;
+          /**
+           * Seleccione una imagen para el icono
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Código SVG del icono de la sección
+           */
+          iconSVG?: string | null;
+          alt?: string | null;
+        };
+        richText: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Active esta opción para hacer esta sección clickeable
+         */
+        enableLink?: boolean | null;
+        /**
+         * Configure el enlace para esta sección
+         */
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label?: string | null;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  buttons?:
+    | {
+        /**
+         * Configure el enlace para este botón
+         */
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  backgroundColor?: string | null;
+  textColor?: string | null;
+  boldTextColor?: string | null;
+  buttonBackgroundColor?: string | null;
+  buttonTextColor?: string | null;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layoutSendaSections';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2126,6 +2274,7 @@ export interface PagesSelect<T extends boolean = true> {
         portfolio1?: T | Portfolio1BlockSelect<T>;
         comparison1?: T | Comparison1BlockSelect<T>;
         layoutSenda?: T | LayoutSendaBlockSelect<T>;
+        layoutSendaSections?: T | LayoutSendaSectionsBlockSelect<T>;
         blogPostHeader1?: T | BlogPostHeader1BlockTypeSelect<T>;
         blogPostHeader5?: T | BlogPostHeader5BlockTypeSelect<T>;
         blog5?: T | Blog5BlockTypeSelect<T>;
@@ -2302,6 +2451,7 @@ export interface Comparison1BlockSelect<T extends boolean = true> {
  * via the `definition` "LayoutSendaBlock_select".
  */
 export interface LayoutSendaBlockSelect<T extends boolean = true> {
+  anchorId?: T;
   richText?: T;
   image?:
     | T
@@ -2343,6 +2493,65 @@ export interface LayoutSendaBlockSelect<T extends boolean = true> {
         id?: T;
       };
   invertLayout?: T;
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  buttonBackgroundColor?: T;
+  buttonTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LayoutSendaSectionsBlock_select".
+ */
+export interface LayoutSendaSectionsBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  richText?: T;
+  sections?:
+    | T
+    | {
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+        richText?: T;
+        enableLink?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
   backgroundColor?: T;
   textColor?: T;
   boldTextColor?: T;
@@ -3436,7 +3645,7 @@ export interface Header {
       | {
           title: string;
           link?: {
-            type?: ('reference' | 'custom') | null;
+            type?: ('reference' | 'custom' | 'anchor') | null;
             newTab?: boolean | null;
             reference?:
               | ({
@@ -3448,15 +3657,19 @@ export interface Header {
                   value: number | Post;
                 } | null);
             /**
-             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             * URL (http://, https:// o ruta relativa).
              */
             url?: string | null;
+            /**
+             * ID del bloque de destino (ej: mi-seccion). Debe coincidir con el "ID ancla" del bloque.
+             */
+            anchorId?: string | null;
           };
           subMenuLinks?:
             | {
                 title: string;
                 link?: {
-                  type?: ('reference' | 'custom') | null;
+                  type?: ('reference' | 'custom' | 'anchor') | null;
                   newTab?: boolean | null;
                   reference?:
                     | ({
@@ -3468,9 +3681,13 @@ export interface Header {
                         value: number | Post;
                       } | null);
                   /**
-                   * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+                   * URL (http://, https:// o ruta relativa).
                    */
                   url?: string | null;
+                  /**
+                   * ID del bloque de destino. Debe coincidir con el "ID ancla" del bloque.
+                   */
+                  anchorId?: string | null;
                 };
                 id?: string | null;
               }[]
@@ -3482,7 +3699,7 @@ export interface Header {
       | {
           title: string;
           link?: {
-            type?: ('reference' | 'custom') | null;
+            type?: ('reference' | 'custom' | 'anchor') | null;
             newTab?: boolean | null;
             reference?:
               | ({
@@ -3494,9 +3711,13 @@ export interface Header {
                   value: number | Post;
                 } | null);
             /**
-             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             * URL (http://, https:// o ruta relativa).
              */
             url?: string | null;
+            /**
+             * ID del bloque de destino. Debe coincidir con el "ID ancla" del bloque.
+             */
+            anchorId?: string | null;
           };
           size?: ('sm' | 'lg') | null;
           variant?: ('default' | 'secondary' | 'ghost' | 'link') | null;
@@ -4375,6 +4596,7 @@ export interface HeaderSelect<T extends boolean = true> {
                     newTab?: T;
                     reference?: T;
                     url?: T;
+                    anchorId?: T;
                   };
               subMenuLinks?:
                 | T
@@ -4387,6 +4609,7 @@ export interface HeaderSelect<T extends boolean = true> {
                           newTab?: T;
                           reference?: T;
                           url?: T;
+                          anchorId?: T;
                         };
                     id?: T;
                   };
@@ -4403,6 +4626,7 @@ export interface HeaderSelect<T extends boolean = true> {
                     newTab?: T;
                     reference?: T;
                     url?: T;
+                    anchorId?: T;
                   };
               size?: T;
               variant?: T;
