@@ -146,7 +146,14 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
     }
 
     styles.push(
-      `[data-ps-font="${styleId}"] h4 { font-weight: 700 !important; letter-spacing: 0.02em; }`,
+      `[data-ps-font="${styleId}"] .pricing-senda-main-richtext h1, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h2, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h3, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h4, [data-ps-font="${styleId}"] .pricing-senda-plan h1, [data-ps-font="${styleId}"] .pricing-senda-plan h2, [data-ps-font="${styleId}"] .pricing-senda-plan h3, [data-ps-font="${styleId}"] .pricing-senda-plan h4 { font-weight: 800 !important; letter-spacing: 0.02em; }`,
+    )
+    styles.push(
+      `[data-ps-font="${styleId}"] .pricing-senda-main-richtext h4, [data-ps-font="${styleId}"] .pricing-senda-plan h4 { font-weight: 900 !important; }`,
+    )
+    /* sub/sup como “texto secundario” en la misma línea: estilo tipo h4, sin bajar/subir */
+    styles.push(
+      `[data-ps-font="${styleId}"] sub, [data-ps-font="${styleId}"] sup { font-weight: 700 !important; vertical-align: baseline !important; font-size: 0.75em; line-height: 1.2; }`,
     )
 
     styles.push(

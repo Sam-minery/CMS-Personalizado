@@ -12,6 +12,7 @@ import { Comparison1 } from './Comparison_1/config'
 import { LayoutSendaBlock } from './Layout_SENDA/config'
 import { LayoutSendaSectionsBlock } from './Layout_SENDA_Sections/config'
 import { PricingSendaBlock } from './Pricing_SENDA/config'
+import { FAQSendaBlock } from './FAQ_SENDA/config'
 import { BlogPostHeader1 } from './Blog_Post_Header_1/config'
 import { BlogPostHeader5 } from './Blog_Post_Header_5/config'
 import { Blog5 } from './Blog_5/config'
@@ -24,6 +25,7 @@ export const ENABLED_BLOCKS_BY_SLUG: Record<string, Block> = {
   "layoutSenda": LayoutSendaBlock,
   "layoutSendaSections": LayoutSendaSectionsBlock,
   "pricingSenda": PricingSendaBlock,
+  "faqSenda": FAQSendaBlock,
   "blogPostHeader1": BlogPostHeader1,
   "blogPostHeader5": BlogPostHeader5,
   "blog5": Blog5,

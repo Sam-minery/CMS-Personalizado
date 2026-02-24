@@ -55,6 +55,7 @@ export const BLOCK_LOADER_MANIFEST: Record<
   faq2: { path: './FAQ_2/config', exportName: 'FAQ2' },
   faq4: { path: './FAQ_4/config', exportName: 'FAQ4' },
   faq5: { path: './FAQ5/config', exportName: 'FAQ5Block' },
+  faqSenda: { path: './FAQ_SENDA/config', exportName: 'FAQSendaBlock' },
   focusCards: { path: './Focus_Cards/config', exportName: 'FocusCardsBlock' },
   footer1: { path: './Footer1/config', exportName: 'Footer1Block' },
   infiniteMovingCards: { path: './Infinite_Moving_Cards/config', exportName: 'InfiniteMovingCardsBlock' },

@@ -12,6 +12,7 @@ import {
   lexicalEditor,
   OrderedListFeature,
   ParagraphFeature,
+  SubscriptFeature,
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
@@ -28,6 +29,7 @@ const richTextEditor = () =>
       ChecklistFeature(),
       BlockquoteFeature(),
       HorizontalRuleFeature(),
+      SubscriptFeature(),
       FixedToolbarFeature(),
       InlineToolbarFeature(),
     ],

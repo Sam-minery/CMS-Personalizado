@@ -75,6 +75,7 @@ import { Portfolio1 as Portfolio1Block } from '@/blocks/Portfolio_1/Component'
 import { Portfolio5 as Portfolio5Block } from '@/blocks/Portfolio_5/Component'
 import { FAQ2 as FAQ2Block } from '@/blocks/FAQ_2/Component'
 import { FAQ4 as FAQ4Block } from '@/blocks/FAQ_4/Component'
+import { FAQSendaBlock as FAQSendaBlockComponent } from '@/blocks/FAQ_SENDA/Component'
 import { PortfolioHeader1 as PortfolioHeader1Block } from '@/blocks/Portfolio_Header_1/Component'
 import { PortfolioHeader2 as PortfolioHeader2Block } from '@/blocks/Portfolio_Header_2/Component'
 import { EventItemHeader1 as EventItemHeader1Block } from '@/blocks/Event_Item_Header_1/Component'
@@ -196,6 +197,7 @@ const BLOCK_COMPONENTS: BlockComponentMap = {
   portfolio5: Portfolio5Block,
   faq2: FAQ2Block,
   faq4: FAQ4Block,
+  faqSenda: FAQSendaBlockComponent,
   portfolioHeader1: PortfolioHeader1Block,
   portfolioHeader2: PortfolioHeader2Block,
   eventItemHdr1: EventItemHeader1Block,

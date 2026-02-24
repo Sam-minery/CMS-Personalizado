@@ -72,6 +72,9 @@ const allBlockComponents: Record<string, React.ComponentType<any>> = {
   faq2: dynamic(() => import('@/blocks/FAQ_2/Component').then((m) => m.FAQ2)),
   faq4: dynamic(() => import('@/blocks/FAQ_4/Component').then((m) => m.FAQ4)),
   faq5: dynamic(() => import('@/blocks/FAQ5/Component').then((m) => m.FAQ5)),
+  faqSenda: dynamic(() =>
+    import('@/blocks/FAQ_SENDA/Component').then((m) => m.FAQSendaBlock),
+  ),
   faqTemplate: dynamic(() => import('@/blocks/FAQ_Template/Component').then((m) => m.FAQTemplate)),
   feature1Template: dynamic(() =>
     import('@/blocks/Feature1_Template/Component').then((m) => m.Feature1Template),

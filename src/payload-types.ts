@@ -424,6 +424,7 @@ export interface Page {
     | LayoutSendaBlock
     | LayoutSendaSectionsBlock
     | PricingSendaBlock
+    | FAQSendaBlock
     | BlogPostHeader1BlockType
     | BlogPostHeader5BlockType
     | Blog5BlockType
@@ -1365,6 +1366,100 @@ export interface PricingSendaBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'pricingSenda';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQSendaBlock".
+ */
+export interface FAQSendaBlock {
+  /**
+   * ID para enlaces ancla. Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  richText: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  questions?:
+    | {
+        questionRichText: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        answerRichText: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Código SVG del icono. Al abrir la pregunta, el icono girará 180°.
+         */
+        iconSVG?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  backgroundColor?: string | null;
+  questionsSectionBackgroundColor?: string | null;
+  questionsSectionBorderColor?: string | null;
+  textColor?: string | null;
+  boldTextColor?: string | null;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faqSenda';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2389,6 +2484,7 @@ export interface PagesSelect<T extends boolean = true> {
         layoutSenda?: T | LayoutSendaBlockSelect<T>;
         layoutSendaSections?: T | LayoutSendaSectionsBlockSelect<T>;
         pricingSenda?: T | PricingSendaBlockSelect<T>;
+        faqSenda?: T | FAQSendaBlockSelect<T>;
         blogPostHeader1?: T | BlogPostHeader1BlockTypeSelect<T>;
         blogPostHeader5?: T | BlogPostHeader5BlockTypeSelect<T>;
         blog5?: T | Blog5BlockTypeSelect<T>;
@@ -2713,6 +2809,33 @@ export interface PricingSendaBlockSelect<T extends boolean = true> {
         id?: T;
       };
   backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQSendaBlock_select".
+ */
+export interface FAQSendaBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  richText?: T;
+  questions?:
+    | T
+    | {
+        questionRichText?: T;
+        answerRichText?: T;
+        iconSVG?: T;
+        id?: T;
+      };
+  backgroundColor?: T;
+  questionsSectionBackgroundColor?: T;
+  questionsSectionBorderColor?: T;
   textColor?: T;
   boldTextColor?: T;
   fontFamily?: T;
