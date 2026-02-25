@@ -18,10 +18,11 @@ import { Footer4 } from './Footer4'
 import { Footer1 } from '@/blocks/Footer1/Component'
 import { Footer5 } from '@/blocks/Footer5/Component'
 import { FooterTemplate } from './FooterTemplate'
-import { mapPayloadLinkToComponentLink, mapPayloadMediaToComponentMedia, mapPayloadButtonToComponentButton, createDefaultMedia } from './utils'
+import { mapPayloadLinkToComponentLink, mapPayloadMediaToComponentMedia, mapPayloadButtonToComponentButton, createDefaultMedia, mapFooterSendaLink, resolveMediaUrlForServer } from './utils'
+import { Footer_SENDA } from './Footer_SENDA'
 
 export async function Footer() {
-  const footerData: Footer = await getCachedGlobal('footer', 1)()
+  const footerData: Footer = await getCachedGlobal('footer', 2)()
 
   // Si el tipo de footer es footer1, renderizar el componente Footer1
   if (footerData?.footerType === 'footer1' && footerData?.footer1Config) {
@@ -89,6 +90,46 @@ export async function Footer() {
           title: link.title,
           link: mapPayloadLinkToComponentLink(link.link)
         })) || []}
+      />
+    )
+  }
+
+  // Si el tipo de footer es footerSenda, renderizar el componente Footer_SENDA
+  const footerSendaConfig = (footerData as { footerType?: string; footerSendaConfig?: any })?.footerSendaConfig
+  if ((footerData as { footerType?: string })?.footerType === 'footerSenda' && footerSendaConfig) {
+    const logoMedia = mapPayloadMediaToComponentMedia(footerSendaConfig.logo?.media)
+    // URL del logo resuelta en servidor (como en Navbar_SENDA/Hero_SENDA) para evitar hydration mismatch y funcionar igual en producción
+    const logoUrl = logoMedia?.url ? resolveMediaUrlForServer(logoMedia.url) : undefined
+    return (
+      <Footer_SENDA
+        logo={{
+          media: logoMedia ? { url: logoUrl ?? undefined, alt: logoMedia.alt ?? undefined } : undefined,
+          link: mapFooterSendaLink(footerSendaConfig.logo?.link),
+        }}
+        columnLinks={footerSendaConfig.columnLinks?.map((col: any) => ({
+          links: col.links?.map((item: any) => ({
+            titleRichText: item.titleRichText,
+            link: mapFooterSendaLink(item.link),
+          })),
+        }))}
+        socialMediaLinks={footerSendaConfig.socialMediaLinks?.map((s: any) => ({
+          titleRichText: s.titleRichText,
+          link: mapFooterSendaLink(s.link),
+          platform: s.platform,
+          iconSVG: s.iconSVG,
+        }))}
+        footerText={footerSendaConfig.footerText}
+        footerLinks={footerSendaConfig.footerLinks?.map((item: any) => ({
+          titleRichText: item.titleRichText,
+          link: mapFooterSendaLink(item.link),
+        }))}
+        backgroundColor={footerSendaConfig.backgroundColor}
+        textColor={footerSendaConfig.textColor}
+        boldTextColor={footerSendaConfig.boldTextColor}
+        fontFamily={footerSendaConfig.fontFamily}
+        useCustomFont={footerSendaConfig.useCustomFont}
+        customFontFile={footerSendaConfig.customFontFile}
+        customFontName={footerSendaConfig.customFontName}
       />
     )
   }

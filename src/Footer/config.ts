@@ -1,8 +1,108 @@
-import type { GlobalConfig } from 'payload'
+import type { Field, GlobalConfig, GroupField } from 'payload'
 
+import {
+  AlignFeature,
+  BlockquoteFeature,
+  ChecklistFeature,
+  FixedToolbarFeature,
+  HeadingFeature,
+  HorizontalRuleFeature,
+  IndentFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+  OrderedListFeature,
+  ParagraphFeature,
+  SubscriptFeature,
+  UnorderedListFeature,
+} from '@payloadcms/richtext-lexical'
 import { link } from '@/fields/link'
 import { simpleLink } from '@/fields/simpleLink'
 import { revalidateFooter } from './hooks/revalidateFooter'
+
+const footerSendaRichTextEditor = () =>
+  lexicalEditor({
+    features: ({ rootFeatures }) => [
+      ...rootFeatures,
+      ParagraphFeature(),
+      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+      AlignFeature(),
+      IndentFeature(),
+      UnorderedListFeature(),
+      OrderedListFeature(),
+      ChecklistFeature(),
+      BlockquoteFeature(),
+      HorizontalRuleFeature(),
+      SubscriptFeature(),
+      FixedToolbarFeature(),
+      InlineToolbarFeature(),
+    ],
+  })
+
+/** Grupo link con opción ancla (reference | custom | anchor) para Footer SENDA */
+function footerSendaLinkGroup(): GroupField {
+  type Sibling = { type?: string }
+  return {
+    name: 'link',
+    type: 'group',
+    admin: { hideGutter: true },
+    fields: [
+      {
+        type: 'row',
+        fields: [
+          {
+            name: 'type',
+            type: 'radio',
+            admin: { layout: 'horizontal', width: '50%' },
+            defaultValue: 'reference',
+            options: [
+              { label: 'Internal link', value: 'reference' },
+              { label: 'Custom URL', value: 'custom' },
+              { label: 'Id ancla (misma página)', value: 'anchor' },
+            ],
+          },
+          {
+            name: 'newTab',
+            type: 'checkbox',
+            admin: {
+              condition: (_: unknown, siblingData: Sibling) => siblingData?.type !== 'anchor',
+              style: { alignSelf: 'flex-end' },
+              width: '50%',
+            },
+            label: 'Open in new tab',
+          },
+        ],
+      },
+      {
+        name: 'reference',
+        type: 'relationship',
+        relationTo: ['pages', 'posts'],
+        admin: { condition: (_: unknown, siblingData: Sibling) => siblingData?.type === 'reference' },
+        label: 'Document to link to',
+        required: true,
+      },
+      {
+        name: 'url',
+        type: 'text',
+        admin: {
+          condition: (_: unknown, siblingData: Sibling) => siblingData?.type === 'custom',
+          description: 'URL (http://, https:// o ruta relativa).',
+        },
+        label: 'Custom URL',
+        required: true,
+      },
+      {
+        name: 'anchorId',
+        type: 'text',
+        admin: {
+          condition: (_: unknown, siblingData: Sibling) => siblingData?.type === 'anchor',
+          description: 'ID del bloque de destino. Debe coincidir con el "ID ancla" del bloque.',
+        },
+        label: 'ID ancla',
+        required: true,
+      },
+    ],
+  }
+}
 
 export const Footer: GlobalConfig = {
   slug: 'footer',
@@ -33,6 +133,10 @@ export const Footer: GlobalConfig = {
         {
           label: 'Footer Template',
           value: 'footerTemplate',
+        },
+        {
+          label: 'Footer SENDA',
+          value: 'footerSenda',
         },
       ],
       defaultValue: 'default',
@@ -723,6 +827,162 @@ export const Footer: GlobalConfig = {
       ],
       admin: {
         condition: (_, { footerType }) => footerType === 'footerTemplate',
+      },
+    },
+    {
+      name: 'footerSendaConfig',
+      type: 'group',
+      fields: [
+        {
+          name: 'logo',
+          type: 'group',
+          fields: [
+            {
+              name: 'media',
+              type: 'upload',
+              relationTo: 'media',
+              required: true,
+              admin: { description: 'Sube la imagen del logo' },
+            },
+            footerSendaLinkGroup(),
+          ],
+        },
+        {
+          name: 'columnLinks',
+          type: 'array',
+          label: 'Columnas de enlaces',
+          fields: [
+            {
+              name: 'links',
+              type: 'array',
+              label: 'Enlaces',
+              fields: [
+                {
+                  name: 'titleRichText',
+                  type: 'richText',
+                  editor: footerSendaRichTextEditor(),
+                  label: 'Título (RichText)',
+                  required: true,
+                },
+                footerSendaLinkGroup(),
+              ],
+            },
+          ],
+        },
+        {
+          name: 'socialMediaLinks',
+          type: 'array',
+          label: 'Redes sociales',
+          fields: [
+            {
+              name: 'titleRichText',
+              type: 'richText',
+              editor: footerSendaRichTextEditor(),
+              label: 'Título (RichText)',
+            },
+            footerSendaLinkGroup(),
+            {
+              name: 'platform',
+              type: 'select',
+              label: 'Icono por defecto',
+              options: [
+                { label: 'Facebook', value: 'facebook' },
+                { label: 'Instagram', value: 'instagram' },
+                { label: 'Twitter/X', value: 'twitter' },
+                { label: 'LinkedIn', value: 'linkedin' },
+                { label: 'YouTube', value: 'youtube' },
+              ],
+            },
+            {
+              name: 'iconSVG',
+              type: 'textarea',
+              label: 'Icono SVG personalizado',
+              admin: { description: 'Código SVG. Si se rellena, se usa en lugar del icono por defecto.' },
+            },
+          ],
+        },
+        {
+          name: 'footerText',
+          type: 'richText',
+          editor: footerSendaRichTextEditor(),
+          label: 'Texto del footer (RichText)',
+        },
+        {
+          name: 'footerLinks',
+          type: 'array',
+          label: 'Enlaces del footer',
+          fields: [
+            {
+              name: 'titleRichText',
+              type: 'richText',
+              editor: footerSendaRichTextEditor(),
+              label: 'Título (RichText)',
+              required: true,
+            },
+            footerSendaLinkGroup(),
+          ],
+        },
+        {
+          name: 'backgroundColor',
+          type: 'text',
+          label: 'Color de fondo del footer',
+        },
+        {
+          name: 'textColor',
+          type: 'text',
+          label: 'Color del texto principal',
+        },
+        {
+          name: 'boldTextColor',
+          type: 'text',
+          label: 'Color del texto en negrita',
+        },
+        {
+          name: 'fontFamily',
+          type: 'select',
+          label: 'Tipografía',
+          admin: { condition: (_, siblingData) => !siblingData?.useCustomFont },
+          options: [
+            { label: 'Por defecto', value: 'default' },
+            { label: 'Arial', value: 'Arial, sans-serif' },
+            { label: 'Times New Roman', value: '"Times New Roman", serif' },
+            { label: 'Georgia', value: 'Georgia, serif' },
+            { label: 'Verdana', value: 'Verdana, sans-serif' },
+            { label: 'Helvetica', value: 'Helvetica, Arial, sans-serif' },
+            { label: 'Courier New', value: '"Courier New", monospace' },
+            { label: 'Roboto', value: '"Roboto", sans-serif' },
+            { label: 'Open Sans', value: '"Open Sans", sans-serif' },
+            { label: 'Lato', value: '"Lato", sans-serif' },
+            { label: 'Montserrat', value: '"Montserrat", sans-serif' },
+            { label: 'Playfair Display', value: '"Playfair Display", serif' },
+            { label: 'Inter', value: '"Inter", sans-serif' },
+            { label: 'Poppins', value: '"Poppins", sans-serif' },
+            { label: 'Raleway', value: '"Raleway", sans-serif' },
+          ],
+          defaultValue: 'default',
+        },
+        {
+          name: 'useCustomFont',
+          type: 'checkbox',
+          label: 'Usar fuente personalizada',
+          defaultValue: false,
+        },
+        {
+          name: 'customFontFile',
+          type: 'upload',
+          relationTo: 'fonts',
+          label: 'Archivo de fuente',
+          admin: { condition: (_, siblingData) => siblingData?.useCustomFont === true },
+        },
+        {
+          name: 'customFontName',
+          type: 'text',
+          label: 'Nombre de la fuente personalizada',
+          admin: { condition: (_, siblingData) => siblingData?.useCustomFont === true },
+        },
+      ],
+      admin: {
+        condition: (_, { footerType }) => footerType === 'footerSenda',
       },
     },
   ],

@@ -1,7 +1,8 @@
 import { getClientSideURL } from '@/utilities/getURL'
 
 /**
- * Processes media resource URL to ensure proper formatting
+ * Processes media resource URL to ensure proper formatting.
+ * Normaliza base + path para evitar doble barra (//) y que servidor y cliente generen la misma URL (evita hydration mismatch).
  * @param url The original URL from the resource
  * @param cacheTag Optional cache tag to append to the URL
  * @returns Properly formatted URL with cache tag if provided
@@ -14,7 +15,9 @@ export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | 
     return cacheTag ? `${url}?${cacheTag}` : url
   }
 
-  // Otherwise prepend client-side URL
-  const baseUrl = getClientSideURL()
-  return cacheTag ? `${baseUrl}${url}?${cacheTag}` : `${baseUrl}${url}`
+  // Otherwise prepend base URL: quitar barra final del base y asegurar una sola barra entre base y path
+  const base = getClientSideURL().replace(/\/+$/, '')
+  const path = url.startsWith('/') ? url : `/${url}`
+  const full = `${base}${path}`
+  return cacheTag ? `${full}?${cacheTag}` : full
 }

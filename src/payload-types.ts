@@ -4022,7 +4022,7 @@ export interface Footer {
   /**
    * Selecciona el tipo de footer a usar
    */
-  footerType?: ('default' | 'footer1' | 'footer4' | 'footer5' | 'footerTemplate') | null;
+  footerType?: ('default' | 'footer1' | 'footer4' | 'footer5' | 'footerTemplate' | 'footerSenda') | null;
   navItems?:
     | {
         link: {
@@ -4527,6 +4527,208 @@ export interface Footer {
           id?: string | null;
         }[]
       | null;
+  };
+  footerSendaConfig?: {
+    logo: {
+      /**
+       * Sube la imagen del logo
+       */
+      media: number | Media;
+      link?: {
+        type?: ('reference' | 'custom' | 'anchor') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        /**
+         * URL (http://, https:// o ruta relativa).
+         */
+        url?: string | null;
+        /**
+         * ID del bloque de destino. Debe coincidir con el "ID ancla" del bloque.
+         */
+        anchorId?: string | null;
+      };
+    };
+    columnLinks?:
+      | {
+          links?:
+            | {
+                titleRichText: {
+                  root: {
+                    type: string;
+                    children: {
+                      type: any;
+                      version: number;
+                      [k: string]: unknown;
+                    }[];
+                    direction: ('ltr' | 'rtl') | null;
+                    format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                    indent: number;
+                    version: number;
+                  };
+                  [k: string]: unknown;
+                };
+                link?: {
+                  type?: ('reference' | 'custom' | 'anchor') | null;
+                  newTab?: boolean | null;
+                  reference?:
+                    | ({
+                        relationTo: 'pages';
+                        value: number | Page;
+                      } | null)
+                    | ({
+                        relationTo: 'posts';
+                        value: number | Post;
+                      } | null);
+                  /**
+                   * URL (http://, https:// o ruta relativa).
+                   */
+                  url?: string | null;
+                  /**
+                   * ID del bloque de destino. Debe coincidir con el "ID ancla" del bloque.
+                   */
+                  anchorId?: string | null;
+                };
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    socialMediaLinks?:
+      | {
+          titleRichText?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          link?: {
+            type?: ('reference' | 'custom' | 'anchor') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            /**
+             * URL (http://, https:// o ruta relativa).
+             */
+            url?: string | null;
+            /**
+             * ID del bloque de destino. Debe coincidir con el "ID ancla" del bloque.
+             */
+            anchorId?: string | null;
+          };
+          platform?: ('facebook' | 'instagram' | 'twitter' | 'linkedin' | 'youtube') | null;
+          /**
+           * Código SVG. Si se rellena, se usa en lugar del icono por defecto.
+           */
+          iconSVG?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    footerText?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    footerLinks?:
+      | {
+          titleRichText: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          link?: {
+            type?: ('reference' | 'custom' | 'anchor') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            /**
+             * URL (http://, https:// o ruta relativa).
+             */
+            url?: string | null;
+            /**
+             * ID del bloque de destino. Debe coincidir con el "ID ancla" del bloque.
+             */
+            anchorId?: string | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+    backgroundColor?: string | null;
+    textColor?: string | null;
+    boldTextColor?: string | null;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -5260,6 +5462,84 @@ export interface FooterSelect<T extends boolean = true> {
                   };
               id?: T;
             };
+      };
+  footerSendaConfig?:
+    | T
+    | {
+        logo?:
+          | T
+          | {
+              media?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    anchorId?: T;
+                  };
+            };
+        columnLinks?:
+          | T
+          | {
+              links?:
+                | T
+                | {
+                    titleRichText?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                          anchorId?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+            };
+        socialMediaLinks?:
+          | T
+          | {
+              titleRichText?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    anchorId?: T;
+                  };
+              platform?: T;
+              iconSVG?: T;
+              id?: T;
+            };
+        footerText?: T;
+        footerLinks?:
+          | T
+          | {
+              titleRichText?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    anchorId?: T;
+                  };
+              id?: T;
+            };
+        backgroundColor?: T;
+        textColor?: T;
+        boldTextColor?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
       };
   updatedAt?: T;
   createdAt?: T;
