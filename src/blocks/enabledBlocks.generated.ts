@@ -10,6 +10,7 @@ import { Banner1Block } from './Banner1/config'
 import { Portfolio1 } from './Portfolio_1/config'
 import { Comparison1 } from './Comparison_1/config'
 import { CTA2SendaBlock } from './CTA2_SENDA/config'
+import { SendaCardsBlockConfig } from './Cards_SENDA/config'
 import { LayoutSendaBlock } from './Layout_SENDA/config'
 import { LayoutSendaSectionsBlock } from './Layout_SENDA_Sections/config'
 import { PricingSendaBlock } from './Pricing_SENDA/config'
@@ -24,6 +25,7 @@ export const ENABLED_BLOCKS_BY_SLUG: Record<string, Block> = {
   "portfolio1": Portfolio1,
   "comparison1": Comparison1,
   "cta2Senda": CTA2SendaBlock,
+  "cardsSenda": SendaCardsBlockConfig,
   "layoutSenda": LayoutSendaBlock,
   "layoutSendaSections": LayoutSendaSectionsBlock,
   "pricingSenda": PricingSendaBlock,

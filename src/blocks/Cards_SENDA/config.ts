@@ -1,0 +1,353 @@
+import type { Block } from 'payload'
+
+import {
+  AlignFeature,
+  FixedToolbarFeature,
+  HeadingFeature,
+  InlineToolbarFeature,
+  OrderedListFeature,
+  UnorderedListFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
+
+export const SendaCardsBlockConfig: Block = {
+  slug: 'cardsSenda',
+  interfaceName: 'CardsSendaBlock',
+  labels: {
+    singular: 'Cards SENDA',
+    plural: 'Cards SENDA',
+  },
+  fields: [
+    {
+      name: 'anchorId',
+      type: 'text',
+      label: 'ID ancla',
+      admin: {
+        description: 'ID para enlaces ancla (ej: cards-servicios). Usar el mismo valor en el navbar en "Id ancla (misma página)".',
+      },
+    },
+    {
+      name: 'headerContent',
+      type: 'richText',
+      label: 'Título y descripción',
+      required: true,
+      admin: {
+        description: 'Contenido del encabezado del bloque (título, descripción, etc.). Un solo campo para todo el texto.',
+      },
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => {
+          return [
+            ...defaultFeatures,
+            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+            AlignFeature(),
+            OrderedListFeature(),
+            UnorderedListFeature(),
+            FixedToolbarFeature(),
+            InlineToolbarFeature(),
+          ]
+        },
+      }),
+    },
+    {
+      name: 'headerContentColor',
+      type: 'text',
+      label: 'Color del texto del encabezado',
+      admin: {
+        description: 'Cualquier color CSS válido: hexadecimal (#000), rgb(), rgba(), hsl() o nombres (black, white, etc.)',
+        placeholder: '#000000, rgb(0,0,0), rgba(0,0,0,0.5), black',
+      },
+    },
+    {
+      name: 'backgroundColor',
+      type: 'text',
+      label: 'Color de fondo',
+      defaultValue: 'transparent',
+      admin: {
+        description:
+          'Color de fondo del bloque. Acepta cualquier formato CSS válido: hexadecimal (#ffffff), RGB (rgb(0, 0, 0)), RGBA (rgba(0, 0, 0, 0.5)), HSL (hsl(0, 0%, 0%)), o nombres de color (black, white, etc.)',
+        placeholder: '#ffffff, rgb(0, 0, 0), rgba(0, 0, 0, 0.5), hsl(0, 0%, 0%), black, etc.',
+      },
+    },
+    {
+      name: 'boldTextColor',
+      type: 'text',
+      label: 'Color del texto en negrita',
+    },
+    {
+      name: 'fontFamily',
+      type: 'select',
+      label: 'Tipografía',
+      admin: {
+        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) => !siblingData?.useCustomFont,
+      },
+      options: [
+        { label: 'Por defecto', value: 'default' },
+        { label: 'Arial', value: 'Arial, sans-serif' },
+        { label: 'Times New Roman', value: '"Times New Roman", serif' },
+        { label: 'Georgia', value: 'Georgia, serif' },
+        { label: 'Verdana', value: 'Verdana, sans-serif' },
+        { label: 'Helvetica', value: 'Helvetica, Arial, sans-serif' },
+        { label: 'Courier New', value: '"Courier New", monospace' },
+        { label: 'Roboto', value: '"Roboto", sans-serif' },
+        { label: 'Open Sans', value: '"Open Sans", sans-serif' },
+        { label: 'Lato', value: '"Lato", sans-serif' },
+        { label: 'Montserrat', value: '"Montserrat", sans-serif' },
+        { label: 'Playfair Display', value: '"Playfair Display", serif' },
+        { label: 'Inter', value: '"Inter", sans-serif' },
+        { label: 'Poppins', value: '"Poppins", sans-serif' },
+        { label: 'Raleway', value: '"Raleway", sans-serif' },
+      ],
+      defaultValue: 'default',
+    },
+    {
+      name: 'useCustomFont',
+      type: 'checkbox',
+      label: 'Usar fuente personalizada',
+      defaultValue: false,
+    },
+    {
+      name: 'customFontFile',
+      type: 'upload',
+      relationTo: 'fonts',
+      label: 'Archivo de fuente',
+      admin: {
+        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) => siblingData?.useCustomFont === true,
+      },
+    },
+    {
+      name: 'customFontName',
+      type: 'text',
+      label: 'Nombre de la fuente personalizada',
+      admin: {
+        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) => siblingData?.useCustomFont === true,
+      },
+    },
+    {
+      name: 'cardsGap',
+      type: 'select',
+      label: 'Espaciado entre cards',
+      defaultValue: 'medium',
+      admin: {
+        description: 'Selecciona el espacio entre las cards',
+      },
+      options: [
+        {
+          label: 'Muy pequeño (1rem / 16px)',
+          value: 'xs',
+        },
+        {
+          label: 'Pequeño (1.5rem / 24px)',
+          value: 'sm',
+        },
+        {
+          label: 'Mediano (2rem / 32px)',
+          value: 'medium',
+        },
+        {
+          label: 'Grande (3rem / 48px)',
+          value: 'lg',
+        },
+        {
+          label: 'Muy grande (4rem / 64px)',
+          value: 'xl',
+        },
+        {
+          label: 'Personalizado',
+          value: 'custom',
+        },
+      ],
+    },
+    {
+      name: 'customGap',
+      type: 'text',
+      label: 'Espaciado personalizado',
+      admin: {
+        description:
+          'Espaciado personalizado en formato CSS (ej: 2.5rem, 40px, 1.5rem 2rem). Solo se usa si "Espaciado entre cards" está en "Personalizado"',
+        placeholder: '2.5rem, 40px, etc.',
+        condition: (_: unknown, siblingData: { cardsGap?: string }) => siblingData?.cardsGap === 'custom',
+      },
+    },
+    {
+      name: 'cardSize',
+      type: 'select',
+      label: 'Tamaño de las cards',
+      defaultValue: 'md',
+      admin: {
+        description: 'Selecciona el tamaño de las cards (siempre delgadas y alargadas)',
+      },
+      options: [
+        {
+          label: 'Pequeñas',
+          value: 'sm',
+        },
+        {
+          label: 'Medianas',
+          value: 'md',
+        },
+        {
+          label: 'Grandes',
+          value: 'lg',
+        },
+        {
+          label: 'Personalizado (rem)',
+          value: 'custom',
+        },
+      ],
+    },
+    {
+      name: 'customCardWidth',
+      type: 'text',
+      label: 'Ancho personalizado (rem)',
+      admin: {
+        description: 'Ancho de la card en rem (ej: 18rem). Solo se usa si el tamaño es \"Personalizado\"',
+        placeholder: '18rem',
+        condition: (_: unknown, siblingData: { cardSize?: string }) => siblingData?.cardSize === 'custom',
+      },
+    },
+    {
+      name: 'customCardHeight',
+      type: 'text',
+      label: 'Altura personalizada (rem)',
+      admin: {
+        description: 'Altura de la card en rem (ej: 32rem). Solo se usa si el tamaño es \"Personalizado\"',
+        placeholder: '32rem',
+        condition: (_: unknown, siblingData: { cardSize?: string }) => siblingData?.cardSize === 'custom',
+      },
+    },
+    {
+      name: 'cards',
+      type: 'array',
+      label: 'Cards',
+      labels: {
+        singular: 'Card',
+        plural: 'Cards',
+      },
+      minRows: 1,
+      maxRows: 4,
+      admin: {
+        description: 'Máximo 4 cards permitidas',
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          name: 'title',
+          type: 'richText',
+          label: 'Título de la card',
+          required: true,
+          editor: lexicalEditor({
+            features: ({ defaultFeatures }) => {
+              return [
+                ...defaultFeatures,
+                HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+                AlignFeature(),
+                OrderedListFeature(),
+                UnorderedListFeature(),
+                FixedToolbarFeature(),
+                InlineToolbarFeature(),
+              ]
+            },
+          }),
+        },
+        {
+          name: 'titleColor',
+          type: 'text',
+          label: 'Color del título de la card',
+          admin: {
+            description: 'Cualquier color CSS válido: hexadecimal, rgb(), rgba(), hsl() o nombres (black, white, etc.)',
+            placeholder: '#000000, rgb(0,0,0), rgba(0,0,0,0.5), black',
+          },
+        },
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Imagen de fondo',
+          admin: {
+            description: 'Imagen de fondo de la card (opcional)',
+          },
+        },
+        {
+          name: 'expandedContent',
+          type: 'richText',
+          label: 'Contenido expandible',
+          required: false,
+          admin: {
+            description:
+              'Contenido que se mostrará al hacer clic en el botón "+".',
+          },
+          editor: lexicalEditor({
+            features: ({ defaultFeatures }) => {
+              return [
+                ...defaultFeatures,
+                HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+                AlignFeature(),
+                OrderedListFeature(),
+                UnorderedListFeature(),
+                FixedToolbarFeature(),
+                InlineToolbarFeature(),
+              ]
+            },
+          }),
+        },
+        {
+          name: 'expandedContentColor',
+          type: 'text',
+          label: 'Color del contenido expandible',
+          admin: {
+            description: 'Cualquier color CSS válido: hexadecimal, rgb(), rgba(), hsl() o nombres (black, white, etc.)',
+            placeholder: '#000000, rgb(0,0,0), rgba(0,0,0,0.5), black',
+          },
+        },
+        {
+          name: 'backContent',
+          type: 'richText',
+          label: 'Contenido del reverso',
+          admin: {
+            description:
+              'Texto que se mostrará en la cara trasera de la tarjeta cuando se dé la vuelta.',
+          },
+          editor: lexicalEditor({
+            features: ({ defaultFeatures }) => {
+              return [
+                ...defaultFeatures,
+                HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+                AlignFeature(),
+                OrderedListFeature(),
+                UnorderedListFeature(),
+                FixedToolbarFeature(),
+                InlineToolbarFeature(),
+              ]
+            },
+          }),
+        },
+        {
+          name: 'backBackgroundColor',
+          type: 'text',
+          label: 'Color de fondo del reverso',
+          admin: {
+            description: 'Cualquier color CSS válido: hexadecimal, rgb(), rgba(), hsl() o nombres (black, white, etc.)',
+            placeholder: '#ffffff, rgb(255,255,255), rgba(0,0,0,0.1), white',
+          },
+        },
+        {
+          name: 'avatarImage',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Imagen de avatar',
+          admin: {
+            description: 'Imagen de avatar del usuario (opcional, se muestra cuando la tarjeta está expandida)',
+          },
+        },
+        {
+          name: 'userName',
+          type: 'text',
+          label: 'Nombre de usuario',
+          admin: {
+            description: 'Nombre del usuario (opcional, se muestra cuando la tarjeta está expandida)',
+          },
+        },
+      ],
+    },
+  ],
+}

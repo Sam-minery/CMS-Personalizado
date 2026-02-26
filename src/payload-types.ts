@@ -422,6 +422,7 @@ export interface Page {
     | Portfolio1Block
     | Comparison1Block
     | CTA2SendaBlock
+    | CardsSendaBlock
     | LayoutSendaBlock
     | LayoutSendaSectionsBlock
     | PricingSendaBlock
@@ -1072,6 +1073,171 @@ export interface CTA2SendaBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'cta2Senda';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardsSendaBlock".
+ */
+export interface CardsSendaBlock {
+  /**
+   * ID para enlaces ancla (ej: cards-servicios). Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  /**
+   * Contenido del encabezado del bloque (título, descripción, etc.). Un solo campo para todo el texto.
+   */
+  headerContent: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Cualquier color CSS válido: hexadecimal (#000), rgb(), rgba(), hsl() o nombres (black, white, etc.)
+   */
+  headerContentColor?: string | null;
+  /**
+   * Color de fondo del bloque. Acepta cualquier formato CSS válido: hexadecimal (#ffffff), RGB (rgb(0, 0, 0)), RGBA (rgba(0, 0, 0, 0.5)), HSL (hsl(0, 0%, 0%)), o nombres de color (black, white, etc.)
+   */
+  backgroundColor?: string | null;
+  boldTextColor?: string | null;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
+  /**
+   * Selecciona el espacio entre las cards
+   */
+  cardsGap?: ('xs' | 'sm' | 'medium' | 'lg' | 'xl' | 'custom') | null;
+  /**
+   * Espaciado personalizado en formato CSS (ej: 2.5rem, 40px, 1.5rem 2rem). Solo se usa si "Espaciado entre cards" está en "Personalizado"
+   */
+  customGap?: string | null;
+  /**
+   * Selecciona el tamaño de las cards (siempre delgadas y alargadas)
+   */
+  cardSize?: ('sm' | 'md' | 'lg' | 'custom') | null;
+  /**
+   * Ancho de la card en rem (ej: 18rem). Solo se usa si el tamaño es "Personalizado"
+   */
+  customCardWidth?: string | null;
+  /**
+   * Altura de la card en rem (ej: 32rem). Solo se usa si el tamaño es "Personalizado"
+   */
+  customCardHeight?: string | null;
+  /**
+   * Máximo 4 cards permitidas
+   */
+  cards?:
+    | {
+        title: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Cualquier color CSS válido: hexadecimal, rgb(), rgba(), hsl() o nombres (black, white, etc.)
+         */
+        titleColor?: string | null;
+        /**
+         * Imagen de fondo de la card (opcional)
+         */
+        image?: (number | null) | Media;
+        /**
+         * Contenido que se mostrará al hacer clic en el botón "+".
+         */
+        expandedContent?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Cualquier color CSS válido: hexadecimal, rgb(), rgba(), hsl() o nombres (black, white, etc.)
+         */
+        expandedContentColor?: string | null;
+        /**
+         * Texto que se mostrará en la cara trasera de la tarjeta cuando se dé la vuelta.
+         */
+        backContent?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Cualquier color CSS válido: hexadecimal, rgb(), rgba(), hsl() o nombres (black, white, etc.)
+         */
+        backBackgroundColor?: string | null;
+        /**
+         * Imagen de avatar del usuario (opcional, se muestra cuando la tarjeta está expandida)
+         */
+        avatarImage?: (number | null) | Media;
+        /**
+         * Nombre del usuario (opcional, se muestra cuando la tarjeta está expandida)
+         */
+        userName?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cardsSenda';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2569,6 +2735,7 @@ export interface PagesSelect<T extends boolean = true> {
         portfolio1?: T | Portfolio1BlockSelect<T>;
         comparison1?: T | Comparison1BlockSelect<T>;
         cta2Senda?: T | CTA2SendaBlockSelect<T>;
+        cardsSenda?: T | CardsSendaBlockSelect<T>;
         layoutSenda?: T | LayoutSendaBlockSelect<T>;
         layoutSendaSections?: T | LayoutSendaSectionsBlockSelect<T>;
         pricingSenda?: T | PricingSendaBlockSelect<T>;
@@ -2779,6 +2946,42 @@ export interface CTA2SendaBlockSelect<T extends boolean = true> {
   useCustomFont?: T;
   customFontFile?: T;
   customFontName?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardsSendaBlock_select".
+ */
+export interface CardsSendaBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  headerContent?: T;
+  headerContentColor?: T;
+  backgroundColor?: T;
+  boldTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
+  cardsGap?: T;
+  customGap?: T;
+  cardSize?: T;
+  customCardWidth?: T;
+  customCardHeight?: T;
+  cards?:
+    | T
+    | {
+        title?: T;
+        titleColor?: T;
+        image?: T;
+        expandedContent?: T;
+        expandedContentColor?: T;
+        backContent?: T;
+        backBackgroundColor?: T;
+        avatarImage?: T;
+        userName?: T;
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }
