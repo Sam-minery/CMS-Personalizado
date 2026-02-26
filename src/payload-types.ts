@@ -421,6 +421,7 @@ export interface Page {
     | Banner1Block
     | Portfolio1Block
     | Comparison1Block
+    | CTA2SendaBlock
     | LayoutSendaBlock
     | LayoutSendaSectionsBlock
     | PricingSendaBlock
@@ -985,6 +986,92 @@ export interface Comparison1Block {
   id?: string | null;
   blockName?: string | null;
   blockType: 'comparison1';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTA2SendaBlock".
+ */
+export interface CTA2SendaBlock {
+  /**
+   * ID para enlaces ancla (ej: mi-cta). Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  richText: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  buttons?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+          label: string;
+        };
+        appearance?: ('default' | 'secondary' | 'outline' | 'link') | null;
+        size?: ('sm' | 'lg' | 'clear') | null;
+        iconSVG?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  image: number | Media;
+  /**
+   * Si está activo: texto y botones a la derecha, imagen a la izquierda. Si está desactivado: texto y botones a la izquierda, imagen a la derecha.
+   */
+  invertLayout?: boolean | null;
+  backgroundColor?: string | null;
+  textColor?: string | null;
+  boldTextColor?: string | null;
+  buttonBackgroundColor?: string | null;
+  buttonTextColor?: string | null;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta2Senda';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2481,6 +2568,7 @@ export interface PagesSelect<T extends boolean = true> {
         banner1?: T | Banner1BlockSelect<T>;
         portfolio1?: T | Portfolio1BlockSelect<T>;
         comparison1?: T | Comparison1BlockSelect<T>;
+        cta2Senda?: T | CTA2SendaBlockSelect<T>;
         layoutSenda?: T | LayoutSendaBlockSelect<T>;
         layoutSendaSections?: T | LayoutSendaSectionsBlockSelect<T>;
         pricingSenda?: T | PricingSendaBlockSelect<T>;
@@ -2653,6 +2741,44 @@ export interface Comparison1BlockSelect<T extends boolean = true> {
         iconRight?: T;
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTA2SendaBlock_select".
+ */
+export interface CTA2SendaBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  richText?: T;
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        appearance?: T;
+        size?: T;
+        iconSVG?: T;
+        id?: T;
+      };
+  image?: T;
+  invertLayout?: T;
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  buttonBackgroundColor?: T;
+  buttonTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }

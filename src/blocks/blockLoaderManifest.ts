@@ -39,6 +39,7 @@ export const BLOCK_LOADER_MANIFEST: Record<
   cta5: { path: './CTA5/config', exportName: 'CTA5Block' },
   cta9: { path: './CTA_9/config', exportName: 'CTA9Block' },
   cta_custom_2: { path: './CTA_custom_2/config', exportName: 'CTA_custom_2' },
+  cta2Senda: { path: './CTA2_SENDA/config', exportName: 'CTA2SendaBlock' },
   event1: { path: './Event_1/config', exportName: 'Event1' },
   event3: { path: './Event_3/config', exportName: 'Event3' },
   event4: { path: './Event_4/config', exportName: 'Event4' },

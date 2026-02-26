@@ -51,6 +51,7 @@ export const ALL_BLOCK_SLUGS_ORDERED: string[] = [
   'cta5',
   'cta9',
   'cta_custom_2',
+  'cta2Senda',
   'event1',
   'event3',
   'event4',
