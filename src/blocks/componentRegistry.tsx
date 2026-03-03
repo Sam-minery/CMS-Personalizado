@@ -42,6 +42,7 @@ import { Career6Block } from '@/blocks/Career6/Component'
 import { CTA_custom_2Block } from '@/blocks/CTA_custom_2/Component'
 import { CTA2SendaBlock as CTA2SendaBlockComponent } from '@/blocks/CTA2_SENDA/Component'
 import { SendaCardsBlockComponent } from '@/blocks/Cards_SENDA/Component'
+import { MultiFormSendaBlock } from '@/blocks/Multi_Form_SENDA/Component'
 import { CTA4Block } from '@/blocks/CTA_4/Component'
 import { CTA9Block } from '@/blocks/CTA_9/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
@@ -167,6 +168,7 @@ const BLOCK_COMPONENTS: BlockComponentMap = {
   cta_custom_2: CTA_custom_2Block,
   cta2Senda: CTA2SendaBlockComponent,
   cardsSenda: SendaCardsBlockComponent,
+  multiFormSenda: MultiFormSendaBlock,
   cta4: CTA4Block,
   cta9: CTA9Block,
   formBlock: FormBlock,

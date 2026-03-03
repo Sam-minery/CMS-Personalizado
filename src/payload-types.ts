@@ -423,6 +423,7 @@ export interface Page {
     | Comparison1Block
     | CTA2SendaBlock
     | CardsSendaBlock
+    | MultiFormSendaBlock
     | LayoutSendaBlock
     | LayoutSendaSectionsBlock
     | PricingSendaBlock
@@ -1238,6 +1239,170 @@ export interface CardsSendaBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'cardsSenda';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MultiFormSendaBlock".
+ */
+export interface MultiFormSendaBlock {
+  /**
+   * ID para enlaces ancla (ej: formulario). Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  /**
+   * Contenido que se muestra antes de comenzar el formulario.
+   */
+  introRichText: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Etiqueta del botón que inicia el formulario (no es un enlace).
+   */
+  startButtonLabel: string;
+  /**
+   * SVG que se muestra a la derecha del texto del botón. Dejar vacío para no mostrar icono.
+   */
+  startButtonIconSVG?: string | null;
+  /**
+   * Cada paso muestra un texto y unas opciones; al elegir una opción se avanza al siguiente paso.
+   */
+  steps?:
+    | {
+        stepRichText: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * El usuario debe elegir una opción para pasar al siguiente paso.
+         */
+        options?:
+          | {
+              optionRichText: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Contenido que se muestra al terminar todos los pasos.
+   */
+  endRichText: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Enlace del botón que se muestra al final (ej: ir a una página).
+   */
+  endButtonLink: {
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null);
+    /**
+     * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+     */
+    url?: string | null;
+    label: string;
+  };
+  /**
+   * Etiqueta del botón final. Si está vacío se usa el label del enlace.
+   */
+  endButtonLabel?: string | null;
+  /**
+   * SVG que se muestra a la derecha del texto del botón. Dejar vacío para no mostrar icono.
+   */
+  endButtonIconSVG?: string | null;
+  /**
+   * Fondo de cada opción en los pasos del formulario. Cualquier color CSS válido.
+   */
+  optionsBackgroundColor?: string | null;
+  /**
+   * Cualquier color CSS válido (hex, rgb, rgba, hsl, nombres).
+   */
+  backgroundColor?: string | null;
+  /**
+   * Fondo del área del formulario (intro, pasos y cierre).
+   */
+  formBackgroundColor?: string | null;
+  textColor?: string | null;
+  boldTextColor?: string | null;
+  buttonBackgroundColor?: string | null;
+  buttonTextColor?: string | null;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | 'Georgia, serif'
+        | '"Inter", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'multiFormSenda';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2736,6 +2901,7 @@ export interface PagesSelect<T extends boolean = true> {
         comparison1?: T | Comparison1BlockSelect<T>;
         cta2Senda?: T | CTA2SendaBlockSelect<T>;
         cardsSenda?: T | CardsSendaBlockSelect<T>;
+        multiFormSenda?: T | MultiFormSendaBlockSelect<T>;
         layoutSenda?: T | LayoutSendaBlockSelect<T>;
         layoutSendaSections?: T | LayoutSendaSectionsBlockSelect<T>;
         pricingSenda?: T | PricingSendaBlockSelect<T>;
@@ -2982,6 +3148,53 @@ export interface CardsSendaBlockSelect<T extends boolean = true> {
         userName?: T;
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MultiFormSendaBlock_select".
+ */
+export interface MultiFormSendaBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  introRichText?: T;
+  startButtonLabel?: T;
+  startButtonIconSVG?: T;
+  steps?:
+    | T
+    | {
+        stepRichText?: T;
+        options?:
+          | T
+          | {
+              optionRichText?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  endRichText?: T;
+  endButtonLink?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
+      };
+  endButtonLabel?: T;
+  endButtonIconSVG?: T;
+  optionsBackgroundColor?: T;
+  backgroundColor?: T;
+  formBackgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  buttonBackgroundColor?: T;
+  buttonTextColor?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
