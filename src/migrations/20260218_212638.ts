@@ -1546,11 +1546,18 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   DROP TYPE "public"."enum__pages_v_blocks_timeline7_timeline_items_buttons_variant";
   DROP TYPE "public"."enum__pages_v_blocks_timeline7_timeline_items_buttons_size";`;
   const statements = bulkSql.split(';').map((s: string) => s.trim()).filter(Boolean);
-  for (const st of statements) {
+  for (let i = 0; i < statements.length; i++) {
+    const st = statements[i];
+    const savepointName = `sp_20260218_${i}`;
     try {
+      await db.execute(sql.raw(`SAVEPOINT ${savepointName}`));
       await db.execute(sql.raw(st + ';'));
     } catch {
-      /* skip if table/relation does not exist or other error */
+      try {
+        await db.execute(sql.raw(`ROLLBACK TO SAVEPOINT ${savepointName}`));
+      } catch {
+        /* ignore rollback error */
+      }
     }
   }
 }
