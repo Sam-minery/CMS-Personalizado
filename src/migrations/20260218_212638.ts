@@ -1552,6 +1552,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     try {
       await db.execute(sql.raw(`SAVEPOINT ${savepointName}`));
       await db.execute(sql.raw(st + ';'));
+      await db.execute(sql.raw(`RELEASE SAVEPOINT ${savepointName}`));
     } catch {
       try {
         await db.execute(sql.raw(`ROLLBACK TO SAVEPOINT ${savepointName}`));
