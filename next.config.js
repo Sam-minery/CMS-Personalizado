@@ -18,6 +18,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'picsum.photos',
       },
+      {
+        protocol: 'https',
+        hostname: 'media.istockphoto.com',
+      },
       ...(NEXT_PUBLIC_SERVER_URL ? [NEXT_PUBLIC_SERVER_URL] : []).map((item) => {
         try {
           const url = new URL(item)

@@ -50,8 +50,12 @@ const isLocalDevelopment = process.env.ENVIRONMENT === 'development'
 
 // Configurar SSL según el entorno
 const getSSLConfig = () => {
-  // Verificar si la URI ya incluye sslrootcert (caso de CI/GitHub Actions)
   const databaseUri = process.env.DATABASE_URI || ''
+  // Postgres local (localhost/127.0.0.1) normalmente no tiene SSL: desactivar SSL para evitar "The server does not support SSL connections"
+  if (/localhost|127\.0\.0\.1/.test(databaseUri)) {
+    return false
+  }
+  // Verificar si la URI ya incluye sslrootcert (caso de CI/GitHub Actions)
   const uriHasSSLRootCert = databaseUri.includes('sslrootcert=')
   
   // Usar certificado local si estamos en desarrollo local y el certificado está configurado
