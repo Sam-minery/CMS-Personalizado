@@ -197,8 +197,9 @@ export const CTA1SendaBlock: React.FC<CTA1SendaBlockProps> = ({
     }
 
     if (textColor) {
+      // Excluir enlaces de botones (.cta1-senda-buttons a) para que el color por botón se aplique
       styles.push(
-        `[data-cta1-senda-font="${styleId}"], [data-cta1-senda-font="${styleId}"] p, [data-cta1-senda-font="${styleId}"] h1, [data-cta1-senda-font="${styleId}"] h2, [data-cta1-senda-font="${styleId}"] h3, [data-cta1-senda-font="${styleId}"] h4, [data-cta1-senda-font="${styleId}"] h5, [data-cta1-senda-font="${styleId}"] h6, [data-cta1-senda-font="${styleId}"] span:not(strong):not(b), [data-cta1-senda-font="${styleId}"] div, [data-cta1-senda-font="${styleId}"] a, [data-cta1-senda-font="${styleId}"] ul, [data-cta1-senda-font="${styleId}"] ol, [data-cta1-senda-font="${styleId}"] li { color: ${textColor} !important; }`,
+        `[data-cta1-senda-font="${styleId}"], [data-cta1-senda-font="${styleId}"] p, [data-cta1-senda-font="${styleId}"] h1, [data-cta1-senda-font="${styleId}"] h2, [data-cta1-senda-font="${styleId}"] h3, [data-cta1-senda-font="${styleId}"] h4, [data-cta1-senda-font="${styleId}"] h5, [data-cta1-senda-font="${styleId}"] h6, [data-cta1-senda-font="${styleId}"] span:not(strong):not(b), [data-cta1-senda-font="${styleId}"] div, [data-cta1-senda-font="${styleId}"] a:not(.cta1-senda-buttons a), [data-cta1-senda-font="${styleId}"] ul, [data-cta1-senda-font="${styleId}"] ol, [data-cta1-senda-font="${styleId}"] li { color: ${textColor} !important; }`,
       )
     }
     if (boldTextColor) {
@@ -274,7 +275,7 @@ export const CTA1SendaBlock: React.FC<CTA1SendaBlockProps> = ({
             </div>
             <div
               className={cn(
-                'mt-6 flex flex-wrap gap-4 md:mt-8',
+                'cta1-senda-buttons mt-6 flex flex-wrap gap-4 md:mt-8',
                 buttonsAlignment === 'center' && 'justify-center',
                 buttonsAlignment === 'right' && 'justify-end',
               )}
@@ -302,6 +303,10 @@ export const CTA1SendaBlock: React.FC<CTA1SendaBlockProps> = ({
                   ? sanitizeSVG(button.iconSVG)
                   : ''
 
+                const textColorStyle = hasCustomTextColor && button.textColor
+                  ? { color: button.textColor }
+                  : undefined
+
                 return (
                   <CMSLink
                     key={index}
@@ -316,10 +321,11 @@ export const CTA1SendaBlock: React.FC<CTA1SendaBlockProps> = ({
                     )}
                     style={{ ...fontStyle, ...buttonStyle }}
                   >
-                    <span>{button.title}</span>
+                    <span style={textColorStyle}>{button.title}</span>
                     {buttonIconSvg ? (
                       <span
                         className="ml-2 inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                        style={textColorStyle}
                         aria-hidden
                         dangerouslySetInnerHTML={{ __html: buttonIconSvg }}
                       />

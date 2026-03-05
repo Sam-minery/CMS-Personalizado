@@ -1046,6 +1046,10 @@ export interface CardsSendaBlock {
          */
         backBackgroundColor?: string | null;
         /**
+         * Cualquier color CSS válido: hexadecimal, rgb(), rgba(), hsl() o nombres (black, white, etc.)
+         */
+        backContentColor?: string | null;
+        /**
          * Imagen de avatar del usuario (opcional, se muestra cuando la tarjeta está expandida)
          */
         avatarImage?: (number | null) | Media;
@@ -1053,6 +1057,10 @@ export interface CardsSendaBlock {
          * Nombre del usuario (opcional, se muestra cuando la tarjeta está expandida)
          */
         userName?: string | null;
+        /**
+         * Cualquier color CSS válido: hexadecimal, rgb(), rgba(), hsl() o nombres (black, white, etc.)
+         */
+        userNameColor?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -2908,8 +2916,10 @@ export interface CardsSendaBlockSelect<T extends boolean = true> {
         expandedContentColor?: T;
         backContent?: T;
         backBackgroundColor?: T;
+        backContentColor?: T;
         avatarImage?: T;
         userName?: T;
+        userNameColor?: T;
         id?: T;
       };
   id?: T;

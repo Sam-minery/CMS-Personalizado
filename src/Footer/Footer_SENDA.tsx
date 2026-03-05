@@ -188,7 +188,7 @@ export const Footer_SENDA: React.FC<Props> = (props) => {
   const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined
 
   const logoMedia = logo?.media && typeof logo.media === 'object' ? logo.media : null
-  // URL del logo ya viene resuelta desde el servidor (Footer/Component.tsx), igual que en Navbar_SENDA y Hero_SENDA
+  // URL del logo tal cual (ruta relativa del media), como Hero_SENDA/Layout_SENDA, para mismo origen en next/image
   const logoUrl = logoMedia?.url ?? ''
   const logoHref = logo?.link ? getHref(logo.link) : '#'
   const isLogoAnchor = logo?.link?.type === 'anchor' && logo?.link?.anchorId

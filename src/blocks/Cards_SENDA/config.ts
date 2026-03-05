@@ -331,6 +331,15 @@ export const SendaCardsBlockConfig: Block = {
           },
         },
         {
+          name: 'backContentColor',
+          type: 'text',
+          label: 'Color del texto del reverso',
+          admin: {
+            description: 'Cualquier color CSS válido: hexadecimal, rgb(), rgba(), hsl() o nombres (black, white, etc.)',
+            placeholder: '#1f2937, rgb(31,41,55), black',
+          },
+        },
+        {
           name: 'avatarImage',
           type: 'upload',
           relationTo: 'media',
@@ -345,6 +354,15 @@ export const SendaCardsBlockConfig: Block = {
           label: 'Nombre de usuario',
           admin: {
             description: 'Nombre del usuario (opcional, se muestra cuando la tarjeta está expandida)',
+          },
+        },
+        {
+          name: 'userNameColor',
+          type: 'text',
+          label: 'Color del nombre de usuario',
+          admin: {
+            description: 'Cualquier color CSS válido: hexadecimal, rgb(), rgba(), hsl() o nombres (black, white, etc.)',
+            placeholder: '#1f2937, rgb(31,41,55), black',
           },
         },
       ],

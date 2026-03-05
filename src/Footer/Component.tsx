@@ -18,7 +18,7 @@ import { Footer4 } from './Footer4'
 import { Footer1 } from '@/blocks/Footer1/Component'
 import { Footer5 } from '@/blocks/Footer5/Component'
 import { FooterTemplate } from './FooterTemplate'
-import { mapPayloadLinkToComponentLink, mapPayloadMediaToComponentMedia, mapPayloadButtonToComponentButton, createDefaultMedia, mapFooterSendaLink, resolveMediaUrlForServer } from './utils'
+import { mapPayloadLinkToComponentLink, mapPayloadMediaToComponentMedia, mapPayloadButtonToComponentButton, createDefaultMedia, mapFooterSendaLink } from './utils'
 import { Footer_SENDA } from './Footer_SENDA'
 
 export async function Footer() {
@@ -98,12 +98,11 @@ export async function Footer() {
   const footerSendaConfig = (footerData as { footerType?: string; footerSendaConfig?: any })?.footerSendaConfig
   if ((footerData as { footerType?: string })?.footerType === 'footerSenda' && footerSendaConfig) {
     const logoMedia = mapPayloadMediaToComponentMedia(footerSendaConfig.logo?.media)
-    // URL del logo resuelta en servidor (como en Navbar_SENDA/Hero_SENDA) para evitar hydration mismatch y funcionar igual en producción
-    const logoUrl = logoMedia?.url ? resolveMediaUrlForServer(logoMedia.url) : undefined
+    // Pasar la URL del media tal cual (ruta relativa), como Hero_SENDA/Layout_SENDA, para que next/image la trate como mismo origen en producción
     return (
       <Footer_SENDA
         logo={{
-          media: logoMedia ? { url: logoUrl ?? undefined, alt: logoMedia.alt ?? undefined } : undefined,
+          media: logoMedia ? { url: logoMedia.url ?? undefined, alt: logoMedia.alt ?? undefined } : undefined,
           link: mapFooterSendaLink(footerSendaConfig.logo?.link),
         }}
         columnLinks={footerSendaConfig.columnLinks?.map((col: any) => ({

@@ -291,10 +291,10 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
               )}
             </div>
           </div>
-          {/* Tercer botón: posición absoluta; móvil: -5rem y centrado con la imagen; desktop: -8rem y alineado a la derecha */}
+          {/* Tercer botón: posición absoluta; z-10 para que no lo tape el bloque Cards_SENDA */}
           {imageButtonLink != null && (
             <div
-              className="hero-senda-image-btn-wrap absolute left-0 right-0 flex justify-center -bottom-20 md:left-auto md:right-0 md:justify-end md:-bottom-[8rem]"
+              className="hero-senda-image-btn-wrap absolute left-0 right-0 z-10 flex justify-center -bottom-20 md:left-auto md:right-0 md:justify-end md:-bottom-[8rem]"
             >
               <CMSLink
                 {...(imageButtonLink as React.ComponentProps<typeof CMSLink>)}

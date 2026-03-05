@@ -56,8 +56,10 @@ type SendaCardsBlock = {
     expandedContentColor?: string | null
     avatarImage?: ImageMedia | null
     userName?: string | null
+    userNameColor?: string | null
     backContent?: DefaultTypedEditorState | null
     backBackgroundColor?: string | null
+    backContentColor?: string | null
   }> | null
   backgroundColor?: string | null
   boldTextColor?: string | null
@@ -79,8 +81,10 @@ type CardData = {
  expandedContentColor?: string
  avatarSrc?: string
  userName?: string
+ userNameColor?: string
  backContent: DefaultTypedEditorState
  backBackgroundColor?: string
+ backContentColor?: string
  hasExpandedContent: boolean
 }
 
@@ -111,8 +115,11 @@ const SendaCard: React.FC<{
  : { color: '#374151' } // Color gris oscuro por defecto (neutral-700)
 
  const backCardStyle: React.CSSProperties = {
- backgroundColor: card.backBackgroundColor || '#ffffff',
+   backgroundColor: card.backBackgroundColor || '#ffffff',
  }
+ const backContentStyle: React.CSSProperties = card.backContentColor
+   ? { color: card.backContentColor }
+   : { color: '#1f2937' } // neutral-800 por defecto
 
  return (
  <motion.div
@@ -211,8 +218,11 @@ const SendaCard: React.FC<{
  </div>
  )}
  {card.userName && (
- <span className="text-sm md:text-base font-semibold text-neutral-800 dark:text-neutral-200">
- {card.userName}
+ <span
+   className="text-sm md:text-base font-semibold text-neutral-800 dark:text-neutral-200"
+   style={card.userNameColor ? { color: card.userNameColor } : undefined}
+ >
+   {card.userName}
  </span>
  )}
  </div>
@@ -242,7 +252,7 @@ const SendaCard: React.FC<{
  >
  {/* Contenido del reverso - respeta la alineación del RichText */}
  <div className="flex-1 flex items-start">
- <div className="w-full">
+ <div className="w-full" style={backContentStyle}>
  <RichText
  data={card.backContent}
  enableGutter={false}
@@ -507,8 +517,10 @@ export const SendaCardsBlockComponent: React.FC<
  expandedContentColor: card.expandedContentColor || undefined,
  avatarSrc: avatarUrl || undefined,
  userName: card.userName || undefined,
+ userNameColor: card.userNameColor ?? undefined,
  backContent: card.backContent || contentFallback,
  backBackgroundColor: card.backBackgroundColor || undefined,
+ backContentColor: card.backContentColor ?? undefined,
  hasExpandedContent,
  }
  })
