@@ -39,7 +39,24 @@ type ImageMedia = {
   url?: string | null
   alt?: string | null
   filename?: string | null
+  sizes?: { large?: { url?: string }; medium?: { url?: string }; small?: { url?: string } }
 } | number
+
+/** Misma lógica que Layout_SENDA/CTA1_SENDA: prioriza .url del media y normaliza con getMediaUrl para producción. */
+function getImageUrl(media: ImageMedia | null | undefined): string {
+  if (!media || typeof media === 'number') return ''
+  const m = media as {
+    url?: string | null
+    sizes?: { large?: { url?: string }; medium?: { url?: string }; small?: { url?: string } }
+  }
+  const raw = m.url ?? m.sizes?.large?.url ?? m.sizes?.medium?.url ?? m.sizes?.small?.url ?? ''
+  return raw ? getMediaUrl(raw) : ''
+}
+
+function getImageAlt(media: ImageMedia | null | undefined): string {
+  if (!media || typeof media === 'number') return 'CTA image'
+  return (media as { alt?: string; filename?: string }).alt || (media as { filename?: string }).filename || 'CTA image'
+}
 
 type Props = {
   blockType?: string
@@ -57,16 +74,6 @@ type Props = {
   useCustomFont?: boolean | null
   customFontFile?: FontFile | number | null
   customFontName?: string | null
-}
-
-function getImageUrl(media: ImageMedia | null | undefined): string {
-  if (!media || typeof media === 'number') return ''
-  return media.url ?? ''
-}
-
-function getImageAlt(media: ImageMedia | null | undefined): string {
-  if (!media || typeof media === 'number') return 'CTA image'
-  return media.alt || media.filename || 'CTA image'
 }
 
 export const CTA2SendaBlock: React.FC<Props> = (props) => {
@@ -190,8 +197,7 @@ export const CTA2SendaBlock: React.FC<Props> = (props) => {
   const combinedStyles = buildStyles()
   const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined
 
-  const imageSrc = getImageUrl(image)
-  const imageUrlResolved = imageSrc ? getMediaUrl(imageSrc) : ''
+  const imageUrlResolved = getImageUrl(image)
   const imageAlt = getImageAlt(image)
 
   const textContainerClass = invertLayout ? 'order-1 lg:order-2' : 'order-2 lg:order-1'
