@@ -197,9 +197,10 @@ export const CTA1SendaBlock: React.FC<CTA1SendaBlockProps> = ({
     }
 
     if (textColor) {
-      // Excluir enlaces de botones (.cta1-senda-buttons a) para que el color por botón se aplique
+      // Aplicar solo a elementos de contenido (p, h1, span, a, ul, ol, li), excluyendo todo lo que esté dentro de .cta1-senda-buttons,
+      // y sin aplicar a section/div para que el área de botones no herede el color y el color por botón se aplique bien
       styles.push(
-        `[data-cta1-senda-font="${styleId}"], [data-cta1-senda-font="${styleId}"] p, [data-cta1-senda-font="${styleId}"] h1, [data-cta1-senda-font="${styleId}"] h2, [data-cta1-senda-font="${styleId}"] h3, [data-cta1-senda-font="${styleId}"] h4, [data-cta1-senda-font="${styleId}"] h5, [data-cta1-senda-font="${styleId}"] h6, [data-cta1-senda-font="${styleId}"] span:not(strong):not(b), [data-cta1-senda-font="${styleId}"] div, [data-cta1-senda-font="${styleId}"] a:not(.cta1-senda-buttons a), [data-cta1-senda-font="${styleId}"] ul, [data-cta1-senda-font="${styleId}"] ol, [data-cta1-senda-font="${styleId}"] li { color: ${textColor} !important; }`,
+        `[data-cta1-senda-font="${styleId}"] p:not(.cta1-senda-buttons p), [data-cta1-senda-font="${styleId}"] h1:not(.cta1-senda-buttons h1), [data-cta1-senda-font="${styleId}"] h2:not(.cta1-senda-buttons h2), [data-cta1-senda-font="${styleId}"] h3:not(.cta1-senda-buttons h3), [data-cta1-senda-font="${styleId}"] h4:not(.cta1-senda-buttons h4), [data-cta1-senda-font="${styleId}"] h5:not(.cta1-senda-buttons h5), [data-cta1-senda-font="${styleId}"] h6:not(.cta1-senda-buttons h6), [data-cta1-senda-font="${styleId}"] span:not(strong):not(b):not(.cta1-senda-buttons span), [data-cta1-senda-font="${styleId}"] a:not(.cta1-senda-buttons a), [data-cta1-senda-font="${styleId}"] ul:not(.cta1-senda-buttons ul), [data-cta1-senda-font="${styleId}"] ol:not(.cta1-senda-buttons ol), [data-cta1-senda-font="${styleId}"] li:not(.cta1-senda-buttons li) { color: ${textColor} !important; }`,
       )
     }
     if (boldTextColor) {
