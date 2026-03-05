@@ -76,15 +76,14 @@ function sanitizeAnchorId(value: string | null | undefined): string {
   return s || ''
 }
 
-/** Prioriza .url del media (como Layout_SENDA/Cards_SENDA/Testimonials_SENDA) para producción. */
+/** URL del media: prioriza .url, luego sizes. Misma lógica que Hero_SENDA/Layout_SENDA: devolver tal cual (ruta relativa) para mismo origen en next/image. */
 function getMediaUrlSafe(media: MediaLike | null | undefined): string {
   if (!media || typeof media === 'number') return ''
   const m = media as {
     url?: string
     sizes?: { large?: { url?: string }; medium?: { url?: string }; small?: { url?: string } }
   }
-  const url = m?.url ?? m?.sizes?.large?.url ?? m?.sizes?.medium?.url ?? m?.sizes?.small?.url ?? ''
-  return url ? getMediaUrl(url) : ''
+  return m?.url ?? m?.sizes?.large?.url ?? m?.sizes?.medium?.url ?? m?.sizes?.small?.url ?? ''
 }
 
 export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({

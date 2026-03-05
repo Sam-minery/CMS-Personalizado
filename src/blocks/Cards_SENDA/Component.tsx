@@ -11,7 +11,7 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
 
-/** Tipo local para media (mismo criterio que Layout_SENDA: usar .url del objeto poblado y getMediaUrl para producción). */
+/** Tipo local para media. Misma lógica que Hero_SENDA/Layout_SENDA: usar .url del objeto poblado tal cual (ruta relativa) para que next/image la trate como mismo origen. */
 type ImageMedia = {
   url?: string | null
   alt?: string | null
@@ -23,18 +23,16 @@ type ImageMedia = {
   }
 } | number
 
-/** Obtiene la URL de la imagen de la card: prioriza .url del media (como Layout_SENDA) y la normaliza con getMediaUrl para producción. */
+/** URL de la imagen de la card: prioriza .url del media, luego sizes (como Hero_SENDA/Layout_SENDA). Se devuelve tal cual para mismo origen. */
 function getCardImageSrc(media: ImageMedia | null | undefined): string {
   if (!media || typeof media !== 'object') return ''
-  const raw = media.url ?? media.sizes?.large?.url ?? media.sizes?.medium?.url ?? null
-  return getMediaUrl(raw)
+  return media.url ?? media.sizes?.large?.url ?? media.sizes?.medium?.url ?? ''
 }
 
-/** Obtiene la URL del avatar: prioriza .url del media y la normaliza con getMediaUrl para producción. */
+/** URL del avatar: prioriza .url del media, luego sizes (como Hero_SENDA/Layout_SENDA). */
 function getCardAvatarSrc(media: ImageMedia | null | undefined): string {
   if (!media || typeof media !== 'object') return ''
-  const raw = media.url ?? media.sizes?.thumbnail?.url ?? media.sizes?.small?.url ?? null
-  return getMediaUrl(raw)
+  return media.url ?? media.sizes?.thumbnail?.url ?? media.sizes?.small?.url ?? ''
 }
 
 /** Tipos locales del bloque (incluye campos legacy para compatibilidad). */

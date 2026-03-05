@@ -81,15 +81,14 @@ function sanitizeAnchorId(value: string | null | undefined): string {
   return s || ''
 }
 
-/** Prioriza .url del media (como Layout_SENDA/Cards_SENDA) para que en producción funcione cuando no vengan sizes. */
+/** URL del media: prioriza .url, luego sizes. Misma lógica que Hero_SENDA/Layout_SENDA: devolver tal cual (ruta relativa) para mismo origen en next/image. */
 function getMediaUrlSafe(media: MediaLike | null | undefined): string {
   if (!media || typeof media === 'number') return ''
   const m = media as {
     url?: string
     sizes?: { large?: { url?: string }; medium?: { url?: string } }
   }
-  const url = m?.url ?? m?.sizes?.large?.url ?? m?.sizes?.medium?.url ?? ''
-  return url ? getMediaUrl(url) : ''
+  return m?.url ?? m?.sizes?.large?.url ?? m?.sizes?.medium?.url ?? ''
 }
 
 type TestimonialImageGroup = {
@@ -104,8 +103,7 @@ function getTestimonialImageUrl(imageGroup: TestimonialImageGroup | null | undef
   const useMedia = imageGroup.useMedia !== false
   if (useMedia && imageGroup.mediaImage) return getMediaUrlSafe(imageGroup.mediaImage)
   const src = imageGroup.src?.trim()
-  if (src) return getMediaUrl(src)
-  return ''
+  return src ?? ''
 }
 
 function getTestimonialImageAlt(imageGroup: TestimonialImageGroup | null | undefined): string {

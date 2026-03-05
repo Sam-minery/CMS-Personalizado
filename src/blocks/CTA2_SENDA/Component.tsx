@@ -42,15 +42,14 @@ type ImageMedia = {
   sizes?: { large?: { url?: string }; medium?: { url?: string }; small?: { url?: string } }
 } | number
 
-/** Misma lógica que Layout_SENDA/CTA1_SENDA: prioriza .url del media y normaliza con getMediaUrl para producción. */
+/** URL de la imagen: prioriza .url del media, luego sizes. Misma lógica que Hero_SENDA/Layout_SENDA: devolver tal cual (ruta relativa) para mismo origen en next/image. */
 function getImageUrl(media: ImageMedia | null | undefined): string {
   if (!media || typeof media === 'number') return ''
   const m = media as {
     url?: string | null
     sizes?: { large?: { url?: string }; medium?: { url?: string }; small?: { url?: string } }
   }
-  const raw = m.url ?? m.sizes?.large?.url ?? m.sizes?.medium?.url ?? m.sizes?.small?.url ?? ''
-  return raw ? getMediaUrl(raw) : ''
+  return m.url ?? m.sizes?.large?.url ?? m.sizes?.medium?.url ?? m.sizes?.small?.url ?? ''
 }
 
 function getImageAlt(media: ImageMedia | null | undefined): string {
