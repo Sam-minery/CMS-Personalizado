@@ -228,7 +228,6 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
           logo={{
             useMedia: c.logo?.useMedia ?? true,
             media: c.logo?.media,
-            url: c.logo?.url ?? '#',
             src: c.logo?.src ?? 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg',
             alt: c.logo?.alt ?? 'Logo',
           }}

@@ -16,6 +16,9 @@ const allBlockComponents: Record<string, React.ComponentType<any>> = {
   banner2: dynamic(() => import('@/blocks/Banner2/Component').then((m) => m.Banner2)),
   banner3: dynamic(() => import('@/blocks/Banner3/Component').then((m) => m.Banner3)),
   banner4: dynamic(() => import('@/blocks/Banner_4/Component').then((m) => m.Banner4)),
+  bloqueIMCSenda: dynamic(() =>
+    import('@/blocks/BloqueIMC_SENDA/Component').then((m) => m.BloqueIMCSendaBlock),
+  ),
   banner9: dynamic(() => import('@/blocks/Banner_9/Component').then((m) => m.Banner9)),
   blog1: dynamic(() => import('@/blocks/Blog_1/Component').then((m) => m.Blog1Block)),
   blog5: dynamic(() => import('@/blocks/Blog_5/Component').then((m) => m.Blog5Block)),
@@ -43,6 +46,7 @@ const allBlockComponents: Record<string, React.ComponentType<any>> = {
   content: dynamic(() => import('@/blocks/Content/Component').then((m) => m.ContentBlock)),
   cta: dynamic(() => import('@/blocks/CallToAction/Component').then((m) => m.CallToActionBlock)),
   cta_custom_2: dynamic(() => import('@/blocks/CTA_custom_2/Component').then((m) => m.CTA_custom_2Block)),
+  cta1Senda: dynamic(() => import('@/blocks/CTA1_SENDA/Component').then((m) => m.CTA1SendaBlock)),
   cta2Senda: dynamic(() => import('@/blocks/CTA2_SENDA/Component').then((m) => m.CTA2SendaBlock)),
   cardsSenda: dynamic(() => import('@/blocks/Cards_SENDA/Component').then((m) => m.SendaCardsBlockComponent)),
   multiFormSenda: dynamic(() =>
@@ -79,6 +83,9 @@ const allBlockComponents: Record<string, React.ComponentType<any>> = {
   faq5: dynamic(() => import('@/blocks/FAQ5/Component').then((m) => m.FAQ5)),
   faqSenda: dynamic(() =>
     import('@/blocks/FAQ_SENDA/Component').then((m) => m.FAQSendaBlock),
+  ),
+  testimonialsSenda: dynamic(() =>
+    import('@/blocks/Testimonials_SENDA/Component').then((m) => m.TestimonialsSendaBlockComponent),
   ),
   faqTemplate: dynamic(() => import('@/blocks/FAQ_Template/Component').then((m) => m.FAQTemplate)),
   feature1Template: dynamic(() =>
@@ -217,7 +224,7 @@ export const RenderBlocks: React.FC<{
 
             if (Block) {
               return (
-                <div className="my-16" key={index}>
+                <div key={index}>
                   <Block {...block} />
                 </div>
               )

@@ -417,10 +417,7 @@ export interface Page {
     };
   };
   layout: (
-    | Banner4Block
-    | Banner1Block
-    | Portfolio1Block
-    | Comparison1Block
+    | CTA1SendaBlock
     | CTA2SendaBlock
     | CardsSendaBlock
     | MultiFormSendaBlock
@@ -428,9 +425,8 @@ export interface Page {
     | LayoutSendaSectionsBlock
     | PricingSendaBlock
     | FAQSendaBlock
-    | BlogPostHeader1BlockType
-    | BlogPostHeader5BlockType
-    | Blog5BlockType
+    | TestimonialsSendaBlock
+    | BloqueIMCSendaBlock
   )[];
   meta?: {
     title?: string | null;
@@ -656,11 +652,29 @@ export interface Font {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Banner4Block".
+ * via the `definition` "CTA1SendaBlock".
  */
-export interface Banner4Block {
+export interface CTA1SendaBlock {
   /**
-   * Añade el contenido principal con título y descripción según necesites
+   * ID para enlaces ancla (ej: mi-cta). Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  icon?: {
+    /**
+     * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+     */
+    useMedia?: boolean | null;
+    /**
+     * Icono que se muestra encima del contenido (recomendado: SVG con trazo blanco para fondos oscuros).
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * Pega aquí el código SVG del icono como alternativa a subir una imagen.
+     */
+    iconSVG?: string | null;
+  };
+  /**
+   * Add CTA content with headings and text as needed
    */
   content: {
     root: {
@@ -678,293 +692,42 @@ export interface Banner4Block {
     [k: string]: unknown;
   };
   /**
-   * Selecciona una imagen para el logo desde la biblioteca de medios
-   */
-  logo: number | Media;
-  /**
-   * URL de enlace para el logo (si no se rellena, el logo no enlazará)
-   */
-  logoUrl?: string | null;
-  /**
-   * Cada enlace puede ser una URL personalizada o un enlace interno (página o post).
-   */
-  socialMediaLinks?:
-    | {
-        platform: 'facebook' | 'instagram' | 'twitter' | 'linkedin';
-        type?: ('reference' | 'custom') | null;
-        newTab?: boolean | null;
-        reference?:
-          | ({
-              relationTo: 'pages';
-              value: number | Page;
-            } | null)
-          | ({
-              relationTo: 'posts';
-              value: number | Post;
-            } | null);
-        /**
-         * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
-         */
-        url?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
-   */
-  backgroundColor?: string | null;
-  /**
-   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
+   * Color del texto principal. Cualquier formato CSS válido: hex (#fff), rgb/rgba, o nombre (white).
    */
   textColor?: string | null;
   /**
-   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
+   * Color para <strong> y <b>. Hex, rgb, rgba o nombre de color.
    */
   boldTextColor?: string | null;
   /**
-   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
+   * Controla la altura mínima del bloque.
    */
-  fontFamily?:
-    | (
-        | 'default'
-        | 'Arial, sans-serif'
-        | '"Times New Roman", serif'
-        | 'Georgia, serif'
-        | 'Verdana, sans-serif'
-        | 'Helvetica, Arial, sans-serif'
-        | '"Courier New", monospace'
-        | '"Roboto", sans-serif'
-        | '"Open Sans", sans-serif'
-        | '"Lato", sans-serif'
-        | '"Montserrat", sans-serif'
-        | '"Playfair Display", serif'
-        | '"Inter", sans-serif'
-        | '"Poppins", sans-serif'
-        | '"Raleway", sans-serif'
-      )
-    | null;
+  blockHeightMode?: ('auto' | 'viewport' | 'custom') | null;
   /**
-   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
+   * Define la altura mínima en píxeles cuando la altura es "Personalizada (px)".
    */
-  useCustomFont?: boolean | null;
+  customBlockHeightPx?: number | null;
   /**
-   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
+   * Elige si el fondo será un video, una imagen o un color sólido
    */
-  customFontFile?: (number | null) | Font;
-  /**
-   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
-   */
-  customFontName?: string | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'banner4';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Banner1Block".
- */
-export interface Banner1Block {
-  /**
-   * Add main content with heading and description as needed
-   */
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  /**
-   * Selecciona una imagen para el logo desde la biblioteca de medios
-   */
-  logo?: (number | null) | Media;
-  /**
-   * URL personalizada para el logo (si no se selecciona una imagen)
-   */
-  logoUrl?: string | null;
-  inputPlaceholder: string;
-  button: {
-    type?: ('reference' | 'custom') | null;
-    newTab?: boolean | null;
-    reference?:
-      | ({
-          relationTo: 'pages';
-          value: number | Page;
-        } | null)
-      | ({
-          relationTo: 'posts';
-          value: number | Post;
-        } | null);
-    /**
-     * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
-     */
-    url?: string | null;
-    label: string;
-    size?: ('sm' | 'md' | 'lg') | null;
-    variant?: ('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link') | null;
-    /**
-     * Si está marcado, el botón enviará el formulario de email. Si no está marcado, el botón actuará como enlace (interno o externo) con el texto y estilo configurados arriba.
-     */
-    buttonSubmitsForm?: boolean | null;
-  };
-  /**
-   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
-   */
-  backgroundColor?: string | null;
-  /**
-   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
-   */
-  textColor?: string | null;
-  /**
-   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
-   */
-  boldTextColor?: string | null;
-  /**
-   * Introduce un código de color HTML para el fondo del botón (ej: #007BFF, #28A745, rgb(0,123,255), etc.)
-   */
-  buttonBackgroundColor?: string | null;
-  /**
-   * Introduce un código de color HTML para el texto del botón (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
-   */
-  buttonTextColor?: string | null;
-  /**
-   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
-   */
-  fontFamily?:
-    | (
-        | 'default'
-        | 'Arial, sans-serif'
-        | '"Times New Roman", serif'
-        | 'Georgia, serif'
-        | 'Verdana, sans-serif'
-        | 'Helvetica, Arial, sans-serif'
-        | '"Courier New", monospace'
-        | '"Roboto", sans-serif'
-        | '"Open Sans", sans-serif'
-        | '"Lato", sans-serif'
-        | '"Montserrat", sans-serif'
-        | '"Playfair Display", serif'
-        | '"Inter", sans-serif'
-        | '"Poppins", sans-serif'
-        | '"Raleway", sans-serif'
-      )
-    | null;
-  /**
-   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
-   */
-  useCustomFont?: boolean | null;
-  /**
-   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
-   */
-  customFontFile?: (number | null) | Font;
-  /**
-   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
-   */
-  customFontName?: string | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'banner1';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Portfolio1Block".
- */
-export interface Portfolio1Block {
-  tagline: string;
-  heading: string;
-  description: string;
-  projects?:
-    | {
-        title: string;
-        description: string;
-        image: number | Media;
-        url: string;
-        button: {
-          title: string;
-          variant: 'primary' | 'secondary' | 'link' | 'outline';
-          size: 'small' | 'medium' | 'large' | 'primary' | 'link';
-        };
-        id?: string | null;
-      }[]
-    | null;
-  button: {
-    title: string;
-    variant: 'primary' | 'secondary' | 'link' | 'outline';
-    size: 'small' | 'medium' | 'large' | 'primary' | 'link';
-  };
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'portfolio1';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Comparison1Block".
- */
-export interface Comparison1Block {
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Ej: #ffffff, rgb(255,255,255)
-   */
-  background_color?: string | null;
-  text_color?: string | null;
-  bold_text_color?: string | null;
-  button_background_color?: string | null;
-  button_text_color?: string | null;
-  comparisonTitle: string;
-  comparisonProducts?:
-    | {
-        products?:
-          | {
-              icon?: (number | null) | Media;
-              productName: string;
-              description: string;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  features?:
-    | {
-        text: string;
-        items?:
-          | {
-              type: 'text' | 'check' | 'x';
-              textValue?: string | null;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
+  backgroundType?: ('video' | 'image' | 'color') | null;
   buttons?:
     | {
         title: string;
-        variant: 'primary' | 'secondary' | 'outline' | 'ghost' | 'link';
-        size: 'sm' | 'md' | 'lg' | 'link';
-        link?: {
+        variant?: ('primary' | 'secondary') | null;
+        /**
+         * Hex, rgb, rgba o nombre. Si se rellena, sobrescribe la variante.
+         */
+        backgroundColor?: string | null;
+        /**
+         * Hex, rgb, rgba o nombre. Si se rellena, sobrescribe la variante.
+         */
+        textColor?: string | null;
+        /**
+         * Código SVG del icono que se muestra junto al texto del botón (ej. flecha).
+         */
+        iconSVG?: string | null;
+        link: {
           type?: ('reference' | 'custom') | null;
           newTab?: boolean | null;
           reference?:
@@ -980,14 +743,71 @@ export interface Comparison1Block {
            * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
            */
           url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
         };
-        iconRight?: boolean | null;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Define la posición horizontal de los botones dentro del CTA
+   */
+  buttonsAlignment?: ('left' | 'center' | 'right') | null;
+  video?: {
+    /**
+     * Pega la URL del video de YouTube (ej: https://www.youtube.com/watch?v=VIDEO_ID)
+     */
+    youtubeUrl?: string | null;
+  };
+  /**
+   * Imagen que se usará como fondo del CTA cuando el tipo de fondo sea "Imagen"
+   */
+  backgroundImage?: (number | null) | Media;
+  /**
+   * Color plano. Hex, rgb, rgba o nombre (ej: #000000, rgba(0,0,0,0.5))
+   */
+  backgroundColor?: string | null;
+  /**
+   * Elige si el color será sólido o un degradado
+   */
+  backgroundColorMode?: ('solid' | 'gradient') | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  gradientStartColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  gradientEndColor?: string | null;
+  gradientDirection?: ('to-right' | 'to-left' | 'to-bottom' | 'to-top' | 'diagonal-down' | 'diagonal-up') | null;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'comparison1';
+  blockType: 'cta1Senda';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1881,36 +1701,17 @@ export interface FAQSendaBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "BlogPostHeader1BlockType".
+ * via the `definition` "TestimonialsSendaBlock".
  */
-export interface BlogPostHeader1BlockType {
-  breadcrumbs?:
-    | {
-        title: string;
-        link?: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null);
-          /**
-           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
-           */
-          url?: string | null;
-        };
-        id?: string | null;
-      }[]
-    | null;
+export interface TestimonialsSendaBlock {
   /**
-   * Añade el título o contenido principal del encabezado con el editor rich text.
+   * ID para enlaces ancla (ej: testimonios). Usar el mismo valor en el navbar en "Id ancla (misma página)".
    */
-  content: {
+  anchorId?: string | null;
+  /**
+   * Título principal del bloque de testimonios (ej: "Profesionales que conocen de cerca el proceso")
+   */
+  title: {
     root: {
       type: string;
       children: {
@@ -1925,51 +1726,14 @@ export interface BlogPostHeader1BlockType {
     };
     [k: string]: unknown;
   };
-  image?: (number | null) | Media;
-  author?: {
-    avatar?: (number | null) | Media;
-    fullName?: string | null;
-    date?: string | null;
-    readTime?: string | null;
-  };
-  socialMediaLinks?:
-    | {
-        iconType: 'link' | 'linkedin' | 'twitter' | 'facebook';
-        link?: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null);
-          /**
-           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
-           */
-          url?: string | null;
-        };
-        id?: string | null;
-      }[]
-    | null;
   /**
-   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   * Cualquier formato CSS válido: hex (#000), rgb/rgba, o nombre (black).
+   */
+  titleColor?: string | null;
+  /**
+   * Color de fondo del bloque. Hex, rgb, rgba, hsl o nombre (ej: white, transparent).
    */
   backgroundColor?: string | null;
-  /**
-   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
-   */
-  textColor?: string | null;
-  /**
-   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
-   */
-  boldTextColor?: string | null;
-  /**
-   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
-   */
   fontFamily?:
     | (
         | 'default'
@@ -1989,224 +1753,280 @@ export interface BlogPostHeader1BlockType {
         | '"Raleway", sans-serif'
       )
     | null;
-  /**
-   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
-   */
   useCustomFont?: boolean | null;
-  /**
-   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
-   */
   customFontFile?: (number | null) | Font;
-  /**
-   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
-   */
   customFontName?: string | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'blogPostHeader1';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "BlogPostHeader5BlockType".
- */
-export interface BlogPostHeader5BlockType {
-  category?: string | null;
   /**
-   * Añade el título o contenido principal del encabezado con el editor rich text.
+   * Selecciona el espacio entre las cards (solo en desktop; en móvil se usa 1.5rem)
    */
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  image?: (number | null) | Media;
-  author?: {
-    avatar?: (number | null) | Media;
-    fullName?: string | null;
-    date?: string | null;
-    readTime?: string | null;
-  };
-  socialMediaLinks?:
+  cardsGap?: ('xs' | 'sm' | 'medium' | 'lg' | 'xl' | 'custom') | null;
+  /**
+   * Espaciado en formato CSS (ej: 2.5rem, 40px). Solo si "Espaciado entre cards" es "Personalizado"
+   */
+  customGap?: string | null;
+  /**
+   * En móvil las cards son siempre 355px de ancho x 602px de alto.
+   */
+  cardSize?: ('sm' | 'md' | 'lg' | 'custom') | null;
+  /**
+   * Ancho de la card en rem. Solo si el tamaño es "Personalizado"
+   */
+  customCardWidth?: string | null;
+  /**
+   * Altura de la card en rem. Solo si el tamaño es "Personalizado"
+   */
+  customCardHeight?: string | null;
+  /**
+   * Añade testimonios con imagen, cita/descripción y nombre/profesión
+   */
+  testimonials?:
     | {
-        iconType: 'link' | 'linkedin' | 'twitter' | 'facebook';
-        link?: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null);
+        image?: {
           /**
-           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           * Si está desactivado, puedes indicar una URL de imagen en el campo "URL de imagen".
            */
-          url?: string | null;
+          useMedia?: boolean | null;
+          /**
+           * Foto de la persona (se muestra en la parte superior de la tarjeta).
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * URL de la imagen cuando no usas la librería de media (ej: https://...).
+           */
+          src?: string | null;
+          /**
+           * Alt de la imagen para accesibilidad.
+           */
+          alt?: string | null;
         };
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Introduce un código de color HTML (ej: #FFFFFF, rgba(0,0,0,0.5), etc.)
-   */
-  backgroundColor?: string | null;
-  /**
-   * Introduce un código de color HTML para el texto principal (ej: #FFFFFF, #333333, etc.)
-   */
-  textColor?: string | null;
-  /**
-   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, etc.)
-   */
-  boldTextColor?: string | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'blogPostHeader5';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Blog5BlockType".
- */
-export interface Blog5BlockType {
-  tagline?: string | null;
-  /**
-   * Añade el contenido principal con título y descripción según necesites.
-   */
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  defaultValue?: string | null;
-  featuredBlogPost: {
-    type?: ('reference' | 'custom') | null;
-    newTab?: boolean | null;
-    reference?:
-      | ({
-          relationTo: 'pages';
-          value: number | Page;
-        } | null)
-      | ({
-          relationTo: 'posts';
-          value: number | Post;
-        } | null);
-    /**
-     * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
-     */
-    url?: string | null;
-    image: number | Media;
-    category?: string | null;
-    /**
-     * Contenido del post destacado (título y descripción en un solo richtext).
-     */
-    postContent: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
+        /**
+         * Texto principal del testimonio: cita entre comillas y/o descripción
+         */
+        titleAndDescription: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
           [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
+        };
+        /**
+         * Hex, rgb, rgba o nombre de color.
+         */
+        titleAndDescriptionColor?: string | null;
+        /**
+         * Nombre en negrita y profesión (ej: en mayúsculas)
+         */
+        nameAndProfession: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Hex, rgb, rgba o nombre de color.
+         */
+        nameAndProfessionColor?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'testimonialsSenda';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BloqueIMCSendaBlock".
+ */
+export interface BloqueIMCSendaBlock {
+  /**
+   * ID para enlaces ancla (ej: calculadora-imc). Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  /**
+   * Título principal del bloque (ej: "Calcula tu IMC")
+   */
+  title: {
+    root: {
+      type: string;
+      children: {
+        type: any;
         version: number;
-      };
-      [k: string]: unknown;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
     };
-    avatar: number | Media;
-    fullName?: string | null;
-    date?: string | null;
-    readTime?: string | null;
+    [k: string]: unknown;
   };
-  tabs?:
+  /**
+   * Texto descriptivo que aparece debajo del título
+   */
+  description: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Texto que aparece como etiqueta del campo de estatura
+   */
+  heightLabel?: string | null;
+  /**
+   * Texto que aparece como etiqueta del campo de peso
+   */
+  weightLabel?: string | null;
+  /**
+   * Texto que aparece en el botón para calcular el IMC
+   */
+  calculateButtonText?: string | null;
+  /**
+   * Código SVG del icono que se muestra junto al texto (ej. flecha).
+   */
+  calculateButtonIconSVG?: string | null;
+  /**
+   * Contenido que se mostrará cuando el IMC sea inferior a 25. Puedes usar {bmi} como placeholder para mostrar el valor del IMC.
+   */
+  resultContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  resultButton?:
     | {
-        value: string;
-        trigger: string;
-        content?:
-          | {
-              type?: ('reference' | 'custom') | null;
-              newTab?: boolean | null;
-              reference?:
-                | ({
-                    relationTo: 'pages';
-                    value: number | Page;
-                  } | null)
-                | ({
-                    relationTo: 'posts';
-                    value: number | Post;
-                  } | null);
-              /**
-               * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
-               */
-              url?: string | null;
-              image: number | Media;
-              category?: string | null;
-              /**
-               * Contenido del post (título y descripción en un solo richtext).
-               */
-              postContent: {
-                root: {
-                  type: string;
-                  children: {
-                    type: any;
-                    version: number;
-                    [k: string]: unknown;
-                  }[];
-                  direction: ('ltr' | 'rtl') | null;
-                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                  indent: number;
-                  version: number;
-                };
-                [k: string]: unknown;
-              };
-              avatar: number | Media;
-              fullName?: string | null;
-              date?: string | null;
-              readTime?: string | null;
-              id?: string | null;
-            }[]
-          | null;
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+          label: string;
+        };
+        /**
+         * Código SVG del icono (ej. flecha).
+         */
+        iconSVG?: string | null;
         id?: string | null;
       }[]
     | null;
   /**
-   * Introduce un código de color HTML (ej: #FFFFFF, #000000, rgb(255,255,255), etc.)
+   * Contenido que se mostrará cuando el IMC sea superior o igual a 25 (ej: "Un IMC superior a 25 se considera sobrepeso...")
    */
-  backgroundColor?: string | null;
+  highBMIContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
-   * Introduce un código de color HTML para el texto principal (ej: #000000, #333333, rgb(0,0,0), etc.)
+   * Imagen que se mostrará cuando el IMC sea >= 25 (ej: foto del profesional)
    */
-  textColor?: string | null;
+  highBMIImage?: (number | null) | Media;
   /**
-   * Introduce un código de color HTML para el texto en negrita (ej: #FF0000, #0000FF, rgb(255,0,0), etc.)
+   * Nombre del profesional (ej: "Irene Bretón")
    */
-  boldTextColor?: string | null;
+  highBMIName?: string | null;
   /**
-   * Selecciona una tipografía. Las opciones incluyen fuentes del sistema (sin licencia) y Google Fonts (gratuitas y open source).
+   * Descripción del profesional (ej: "Directora médica de Senda Health. Doctora en Medicina y Cirugía. Especialista en Endocrinología y Nutrición")
    */
+  highBMIDescription?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  highBMIButton?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+          label: string;
+        };
+        /**
+         * Código SVG del icono (ej. flecha).
+         */
+        iconSVG?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   fontFamily?:
     | (
         | 'default'
@@ -2226,21 +2046,64 @@ export interface Blog5BlockType {
         | '"Raleway", sans-serif'
       )
     | null;
-  /**
-   * Marca esta opción si quieres subir tu propia fuente (.woff, .woff2, .ttf, .otf). Cuando esté marcado, el campo de tipografía anterior será ignorado.
-   */
   useCustomFont?: boolean | null;
-  /**
-   * Selecciona una fuente de la colección Fonts o sube un archivo de fuente (.woff, .woff2, .ttf, .otf). Compatible con Google Cloud Storage. Asegúrate de tener la licencia adecuada si es una fuente comercial.
-   */
   customFontFile?: (number | null) | Font;
-  /**
-   * Ingresa el nombre de la fuente tal como debe aparecer en CSS (ej: "Mi Fuente", "Custom Font", etc.)
-   */
   customFontName?: string | null;
+  /**
+   * Hex, rgb, rgba, nombre o linear-gradient(...).
+   */
+  backgroundColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  cardBackgroundColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  resultCardBackgroundColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  textColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  labelColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  calculateButtonColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  calculateButtonTextColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  resultButtonColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  resultButtonTextColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  highBMICardBackgroundColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  highBMITextColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  highBMIButtonColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  highBMIButtonTextColor?: string | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'blog5';
+  blockType: 'bloqueIMCSenda';
 }
 /**
  * Envíos del formulario de Contact Section 2
@@ -2895,10 +2758,7 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
-        banner4?: T | Banner4BlockSelect<T>;
-        banner1?: T | Banner1BlockSelect<T>;
-        portfolio1?: T | Portfolio1BlockSelect<T>;
-        comparison1?: T | Comparison1BlockSelect<T>;
+        cta1Senda?: T | CTA1SendaBlockSelect<T>;
         cta2Senda?: T | CTA2SendaBlockSelect<T>;
         cardsSenda?: T | CardsSendaBlockSelect<T>;
         multiFormSenda?: T | MultiFormSendaBlockSelect<T>;
@@ -2906,9 +2766,8 @@ export interface PagesSelect<T extends boolean = true> {
         layoutSendaSections?: T | LayoutSendaSectionsBlockSelect<T>;
         pricingSenda?: T | PricingSendaBlockSelect<T>;
         faqSenda?: T | FAQSendaBlockSelect<T>;
-        blogPostHeader1?: T | BlogPostHeader1BlockTypeSelect<T>;
-        blogPostHeader5?: T | BlogPostHeader5BlockTypeSelect<T>;
-        blog5?: T | Blog5BlockTypeSelect<T>;
+        testimonialsSenda?: T | TestimonialsSendaBlockSelect<T>;
+        bloqueIMCSenda?: T | BloqueIMCSendaBlockSelect<T>;
       };
   meta?:
     | T
@@ -2926,143 +2785,31 @@ export interface PagesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Banner4Block_select".
+ * via the `definition` "CTA1SendaBlock_select".
  */
-export interface Banner4BlockSelect<T extends boolean = true> {
-  content?: T;
-  logo?: T;
-  logoUrl?: T;
-  socialMediaLinks?:
+export interface CTA1SendaBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  icon?:
     | T
     | {
-        platform?: T;
-        type?: T;
-        newTab?: T;
-        reference?: T;
-        url?: T;
-        id?: T;
+        useMedia?: T;
+        mediaImage?: T;
+        iconSVG?: T;
       };
-  backgroundColor?: T;
+  content?: T;
   textColor?: T;
   boldTextColor?: T;
-  fontFamily?: T;
-  useCustomFont?: T;
-  customFontFile?: T;
-  customFontName?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Banner1Block_select".
- */
-export interface Banner1BlockSelect<T extends boolean = true> {
-  content?: T;
-  logo?: T;
-  logoUrl?: T;
-  inputPlaceholder?: T;
-  button?:
-    | T
-    | {
-        type?: T;
-        newTab?: T;
-        reference?: T;
-        url?: T;
-        label?: T;
-        size?: T;
-        variant?: T;
-        buttonSubmitsForm?: T;
-      };
-  backgroundColor?: T;
-  textColor?: T;
-  boldTextColor?: T;
-  buttonBackgroundColor?: T;
-  buttonTextColor?: T;
-  fontFamily?: T;
-  useCustomFont?: T;
-  customFontFile?: T;
-  customFontName?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Portfolio1Block_select".
- */
-export interface Portfolio1BlockSelect<T extends boolean = true> {
-  tagline?: T;
-  heading?: T;
-  description?: T;
-  projects?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-        image?: T;
-        url?: T;
-        button?:
-          | T
-          | {
-              title?: T;
-              variant?: T;
-              size?: T;
-            };
-        id?: T;
-      };
-  button?:
-    | T
-    | {
-        title?: T;
-        variant?: T;
-        size?: T;
-      };
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Comparison1Block_select".
- */
-export interface Comparison1BlockSelect<T extends boolean = true> {
-  content?: T;
-  background_color?: T;
-  text_color?: T;
-  bold_text_color?: T;
-  button_background_color?: T;
-  button_text_color?: T;
-  comparisonTitle?: T;
-  comparisonProducts?:
-    | T
-    | {
-        products?:
-          | T
-          | {
-              icon?: T;
-              productName?: T;
-              description?: T;
-              id?: T;
-            };
-        id?: T;
-      };
-  features?:
-    | T
-    | {
-        text?: T;
-        items?:
-          | T
-          | {
-              type?: T;
-              textValue?: T;
-              id?: T;
-            };
-        id?: T;
-      };
+  blockHeightMode?: T;
+  customBlockHeightPx?: T;
+  backgroundType?: T;
   buttons?:
     | T
     | {
         title?: T;
         variant?: T;
-        size?: T;
+        backgroundColor?: T;
+        textColor?: T;
+        iconSVG?: T;
         link?:
           | T
           | {
@@ -3070,10 +2817,27 @@ export interface Comparison1BlockSelect<T extends boolean = true> {
               newTab?: T;
               reference?: T;
               url?: T;
+              label?: T;
+              appearance?: T;
             };
-        iconRight?: T;
         id?: T;
       };
+  buttonsAlignment?: T;
+  video?:
+    | T
+    | {
+        youtubeUrl?: T;
+      };
+  backgroundImage?: T;
+  backgroundColor?: T;
+  backgroundColorMode?: T;
+  gradientStartColor?: T;
+  gradientEndColor?: T;
+  gradientDirection?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }
@@ -3389,77 +3153,58 @@ export interface FAQSendaBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "BlogPostHeader1BlockType_select".
+ * via the `definition` "TestimonialsSendaBlock_select".
  */
-export interface BlogPostHeader1BlockTypeSelect<T extends boolean = true> {
-  breadcrumbs?:
-    | T
-    | {
-        title?: T;
-        link?:
-          | T
-          | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
-            };
-        id?: T;
-      };
-  content?: T;
-  image?: T;
-  author?:
-    | T
-    | {
-        avatar?: T;
-        fullName?: T;
-        date?: T;
-        readTime?: T;
-      };
-  socialMediaLinks?:
-    | T
-    | {
-        iconType?: T;
-        link?:
-          | T
-          | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
-            };
-        id?: T;
-      };
+export interface TestimonialsSendaBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  title?: T;
+  titleColor?: T;
   backgroundColor?: T;
-  textColor?: T;
-  boldTextColor?: T;
   fontFamily?: T;
   useCustomFont?: T;
   customFontFile?: T;
   customFontName?: T;
+  cardsGap?: T;
+  customGap?: T;
+  cardSize?: T;
+  customCardWidth?: T;
+  customCardHeight?: T;
+  testimonials?:
+    | T
+    | {
+        image?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              src?: T;
+              alt?: T;
+            };
+        titleAndDescription?: T;
+        titleAndDescriptionColor?: T;
+        nameAndProfession?: T;
+        nameAndProfessionColor?: T;
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "BlogPostHeader5BlockType_select".
+ * via the `definition` "BloqueIMCSendaBlock_select".
  */
-export interface BlogPostHeader5BlockTypeSelect<T extends boolean = true> {
-  category?: T;
-  content?: T;
-  image?: T;
-  author?:
+export interface BloqueIMCSendaBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  title?: T;
+  description?: T;
+  heightLabel?: T;
+  weightLabel?: T;
+  calculateButtonText?: T;
+  calculateButtonIconSVG?: T;
+  resultContent?: T;
+  resultButton?:
     | T
     | {
-        avatar?: T;
-        fullName?: T;
-        date?: T;
-        readTime?: T;
-      };
-  socialMediaLinks?:
-    | T
-    | {
-        iconType?: T;
         link?:
           | T
           | {
@@ -3467,68 +3212,47 @@ export interface BlogPostHeader5BlockTypeSelect<T extends boolean = true> {
               newTab?: T;
               reference?: T;
               url?: T;
+              label?: T;
             };
+        iconSVG?: T;
         id?: T;
       };
-  backgroundColor?: T;
-  textColor?: T;
-  boldTextColor?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Blog5BlockType_select".
- */
-export interface Blog5BlockTypeSelect<T extends boolean = true> {
-  tagline?: T;
-  content?: T;
-  defaultValue?: T;
-  featuredBlogPost?:
+  highBMIContent?: T;
+  highBMIImage?: T;
+  highBMIName?: T;
+  highBMIDescription?: T;
+  highBMIButton?:
     | T
     | {
-        type?: T;
-        newTab?: T;
-        reference?: T;
-        url?: T;
-        image?: T;
-        category?: T;
-        postContent?: T;
-        avatar?: T;
-        fullName?: T;
-        date?: T;
-        readTime?: T;
-      };
-  tabs?:
-    | T
-    | {
-        value?: T;
-        trigger?: T;
-        content?:
+        link?:
           | T
           | {
               type?: T;
               newTab?: T;
               reference?: T;
               url?: T;
-              image?: T;
-              category?: T;
-              postContent?: T;
-              avatar?: T;
-              fullName?: T;
-              date?: T;
-              readTime?: T;
-              id?: T;
+              label?: T;
             };
+        iconSVG?: T;
         id?: T;
       };
-  backgroundColor?: T;
-  textColor?: T;
-  boldTextColor?: T;
   fontFamily?: T;
   useCustomFont?: T;
   customFontFile?: T;
   customFontName?: T;
+  backgroundColor?: T;
+  cardBackgroundColor?: T;
+  resultCardBackgroundColor?: T;
+  textColor?: T;
+  labelColor?: T;
+  calculateButtonColor?: T;
+  calculateButtonTextColor?: T;
+  resultButtonColor?: T;
+  resultButtonTextColor?: T;
+  highBMICardBackgroundColor?: T;
+  highBMITextColor?: T;
+  highBMIButtonColor?: T;
+  highBMIButtonTextColor?: T;
   id?: T;
   blockName?: T;
 }
@@ -4430,7 +4154,6 @@ export interface Header {
     logo?: {
       useMedia?: boolean | null;
       media?: (number | null) | Media;
-      url?: string | null;
       src?: string | null;
       alt?: string | null;
     };
@@ -5597,7 +5320,6 @@ export interface HeaderSelect<T extends boolean = true> {
           | {
               useMedia?: T;
               media?: T;
-              url?: T;
               src?: T;
               alt?: T;
             };

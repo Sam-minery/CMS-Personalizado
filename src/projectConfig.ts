@@ -7,10 +7,7 @@
  * Para ver todos los slugs disponibles: src/blocks/configRegistry.ts → ALL_BLOCK_SLUGS_ORDERED.
  */
 export const enabledBlockSlugs: string[] | null = [
-  'banner4',
-  'banner1',
-  'portfolio1',
-  'comparison1',
+  'cta1Senda',
   'cta2Senda',
   'cardsSenda',
   'multiFormSenda',
@@ -18,7 +15,6 @@ export const enabledBlockSlugs: string[] | null = [
   'layoutSendaSections',
   'pricingSenda',
   'faqSenda',
-  'blogPostHeader1',
-  'blogPostHeader5',
-  'blog5',
+  'testimonialsSenda',
+  'bloqueIMCSenda',
 ]

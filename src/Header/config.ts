@@ -771,14 +771,6 @@ export const Header: GlobalConfig = {
               },
             },
             {
-              name: 'url',
-              type: 'text',
-              defaultValue: '#',
-              admin: {
-                condition: (_, siblingData) => siblingData?.useMedia !== true,
-              },
-            },
-            {
               name: 'src',
               type: 'text',
               defaultValue: 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg',

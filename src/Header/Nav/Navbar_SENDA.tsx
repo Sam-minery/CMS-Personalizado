@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { useMediaQuery } from "@relume_io/relume-ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { RxChevronDown } from "react-icons/rx";
@@ -181,6 +182,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
 
   const combinedStyles = buildStyles();
 
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const [navbarHeight, setNavbarHeight] = useState(0);
@@ -198,17 +200,17 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
         setIsFixed(window.scrollY > 0 && rect.top <= 0);
       }
     };
-    const measureHeight = () => {
-      const el = containerRef.current;
-      if (el) setNavbarHeight(el.offsetHeight);
+    const measure = () => {
+      const section = containerRef.current;
+      if (section) setNavbarHeight(section.offsetHeight);
     };
-    measureHeight();
+    measure();
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", measureHeight);
+    window.addEventListener("resize", measure);
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", measureHeight);
+      window.removeEventListener("resize", measure);
     };
   }, [isMobile, isMobileMenuOpen]);
 
@@ -221,20 +223,20 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
 
   const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined;
 
-  const spacerHeight = isFixed ? (navbarHeight || (isMobile ? 80 : 0)) : 0;
-
+  // Sin spacer. Móvil: navbar top-0. Desktop: margen superior (lg:top-8).
   return (
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
-      {isFixed && spacerHeight > 0 && <div style={{ height: spacerHeight }} aria-hidden />}
-      <div className={!isMobile && !isFixed ? "pt-6 lg:pt-8" : ""}>
-        <section
-          id="navbar-senda"
-          ref={containerRef}
-          data-navbar-senda-font={styleId}
-          className={`navbar-senda-font-root z-[999] flex justify-center ${isFixed ? "fixed top-0 left-0 right-0" : ""}`}
-          style={fontStyle}
-        >
+      <section
+        id="navbar-senda"
+        ref={containerRef}
+        data-navbar-senda-font={styleId}
+        className="navbar-senda-font-root z-[999] flex justify-center fixed left-0 right-0 min-h-0"
+        style={{
+          ...fontStyle,
+          top: isMobile ? 0 : 32,
+        }}
+      >
         <nav
           id={styleId}
           className={`
@@ -251,9 +253,16 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
           }
         >
         <div className="navbar-senda-font-inherit size-full flex items-center justify-between gap-4 lg:gap-6" style={fontStyle}>
-          {/* Logo */}
+          {/* Logo: al pulsar refresca la página actual */}
           <div className="flex-shrink-0">
-            <a href={logo.url}>
+            <a
+              href={pathname || "#"}
+              onClick={(e) => {
+                e.preventDefault();
+                if (typeof window !== "undefined") window.location.reload();
+              }}
+              aria-label="Recargar página"
+            >
               {logo.useMedia && logo.media && typeof logo.media === "object" && logo.media !== null ? (
                 <Image
                   src={logo.media.url || logo.media.image?.url || logo.src || ""}
@@ -554,7 +563,6 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
         </div>
       </nav>
     </section>
-    </div>
     </>
   );
 };
@@ -666,7 +674,6 @@ const bottomLineVariants = {
 export const Navbar_SENDADefaults: Props = {
   logo: {
     useMedia: false,
-    url: "#",
     src: "https://d22po4pjz3o32e.cloudfront.net/logo-image.svg",
     alt: "Logo image",
   },

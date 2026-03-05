@@ -16,6 +16,7 @@ import { Banner1 } from '@/blocks/Banner1/Component'
 import { Banner2 } from '@/blocks/Banner2/Component'
 import { Banner3 } from '@/blocks/Banner3/Component'
 import { Banner4 } from '@/blocks/Banner_4/Component'
+import { BloqueIMCSendaBlock } from '@/blocks/BloqueIMC_SENDA/Component'
 import { Banner9 } from '@/blocks/Banner_9/Component'
 import { Contact1 } from '@/blocks/Contact1/Component'
 import { Contact5 } from '@/blocks/Contact5/Component'
@@ -40,6 +41,7 @@ import { Career4 } from '@/blocks/Caree_Section_4/Component'
 import { Career5Block } from '@/blocks/Career5/Component'
 import { Career6Block } from '@/blocks/Career6/Component'
 import { CTA_custom_2Block } from '@/blocks/CTA_custom_2/Component'
+import { CTA1SendaBlock as CTA1SendaBlockComponent } from '@/blocks/CTA1_SENDA/Component'
 import { CTA2SendaBlock as CTA2SendaBlockComponent } from '@/blocks/CTA2_SENDA/Component'
 import { SendaCardsBlockComponent } from '@/blocks/Cards_SENDA/Component'
 import { MultiFormSendaBlock } from '@/blocks/Multi_Form_SENDA/Component'
@@ -79,6 +81,7 @@ import { Portfolio5 as Portfolio5Block } from '@/blocks/Portfolio_5/Component'
 import { FAQ2 as FAQ2Block } from '@/blocks/FAQ_2/Component'
 import { FAQ4 as FAQ4Block } from '@/blocks/FAQ_4/Component'
 import { FAQSendaBlock as FAQSendaBlockComponent } from '@/blocks/FAQ_SENDA/Component'
+import { TestimonialsSendaBlockComponent } from '@/blocks/Testimonials_SENDA/Component'
 import { PortfolioHeader1 as PortfolioHeader1Block } from '@/blocks/Portfolio_Header_1/Component'
 import { PortfolioHeader2 as PortfolioHeader2Block } from '@/blocks/Portfolio_Header_2/Component'
 import { EventItemHeader1 as EventItemHeader1Block } from '@/blocks/Event_Item_Header_1/Component'
@@ -141,6 +144,7 @@ const BLOCK_COMPONENTS: BlockComponentMap = {
   banner2: Banner2,
   banner3: Banner3,
   banner4: Banner4,
+  bloqueIMCSenda: BloqueIMCSendaBlock,
   banner9: Banner9,
   contact1: Contact1,
   contact5: Contact5,
@@ -166,6 +170,7 @@ const BLOCK_COMPONENTS: BlockComponentMap = {
   content: ContentBlock,
   cta: CallToActionBlock,
   cta_custom_2: CTA_custom_2Block,
+  cta1Senda: CTA1SendaBlockComponent,
   cta2Senda: CTA2SendaBlockComponent,
   cardsSenda: SendaCardsBlockComponent,
   multiFormSenda: MultiFormSendaBlock,
@@ -204,6 +209,7 @@ const BLOCK_COMPONENTS: BlockComponentMap = {
   faq2: FAQ2Block,
   faq4: FAQ4Block,
   faqSenda: FAQSendaBlockComponent,
+  testimonialsSenda: TestimonialsSendaBlockComponent,
   portfolioHeader1: PortfolioHeader1Block,
   portfolioHeader2: PortfolioHeader2Block,
   eventItemHdr1: EventItemHeader1Block,
