@@ -186,8 +186,8 @@ jobs:
               exit 1
             fi
 
-            pm2 start ecosystem.config.cjs --only herramienta-web-payload || \
-            pm2 restart herramienta-web-payload
+            pm2 start ecosystem.config.cjs --only landing-senda || \
+            pm2 restart landing-senda
 
             pm2 save
 
