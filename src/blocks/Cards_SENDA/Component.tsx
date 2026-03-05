@@ -11,9 +11,10 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
 
-/** Tipo local para media (evita depender de payload-types y fallos de build si el bloque no está en projectConfig). */
+/** Tipo local para media (mismo criterio que Layout_SENDA: usar .url del objeto poblado y getMediaUrl para producción). */
 type ImageMedia = {
   url?: string | null
+  alt?: string | null
   sizes?: {
     large?: { url?: string }
     medium?: { url?: string }
@@ -21,6 +22,20 @@ type ImageMedia = {
     small?: { url?: string }
   }
 } | number
+
+/** Obtiene la URL de la imagen de la card: prioriza .url del media (como Layout_SENDA) y la normaliza con getMediaUrl para producción. */
+function getCardImageSrc(media: ImageMedia | null | undefined): string {
+  if (!media || typeof media !== 'object') return ''
+  const raw = media.url ?? media.sizes?.large?.url ?? media.sizes?.medium?.url ?? null
+  return getMediaUrl(raw)
+}
+
+/** Obtiene la URL del avatar: prioriza .url del media y la normaliza con getMediaUrl para producción. */
+function getCardAvatarSrc(media: ImageMedia | null | undefined): string {
+  if (!media || typeof media !== 'object') return ''
+  const raw = media.url ?? media.sizes?.thumbnail?.url ?? media.sizes?.small?.url ?? null
+  return getMediaUrl(raw)
+}
 
 /** Tipos locales del bloque (incluye campos legacy para compatibilidad). */
 type SendaCardsBlock = {
@@ -433,19 +448,8 @@ export const SendaCardsBlockComponent: React.FC<
  })
  }
 
-          const mediaDoc =
-            card.image && typeof card.image === 'object' ? card.image : undefined
-
-          const mediaUrl = getMediaUrl(
-            mediaDoc?.sizes?.large?.url || mediaDoc?.sizes?.medium?.url || mediaDoc?.url || null,
-          )
-
-          const avatarDoc =
-            card.avatarImage && typeof card.avatarImage === 'object' ? card.avatarImage : undefined
-
-          const avatarUrl = getMediaUrl(
-            avatarDoc?.sizes?.thumbnail?.url || avatarDoc?.sizes?.small?.url || avatarDoc?.url || null,
-          )
+          const mediaUrl = getCardImageSrc(card.image)
+          const avatarUrl = getCardAvatarSrc(card.avatarImage)
 
  // Fallback para título si no hay richText
  const titleFallback: DefaultTypedEditorState = {
