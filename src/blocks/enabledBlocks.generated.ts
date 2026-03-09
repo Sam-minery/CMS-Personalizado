@@ -15,6 +15,7 @@ import { PricingSendaBlock } from './Pricing_SENDA/config'
 import { FAQSendaBlock } from './FAQ_SENDA/config'
 import { TestimonialsSendaBlockConfig } from './Testimonials_SENDA/config'
 import { BloqueIMCSendaBlockConfig } from './BloqueIMC_SENDA/config'
+import { AppSendaBlockConfig } from './APP_SENDA/config'
 
 export const ENABLED_BLOCKS_BY_SLUG: Record<string, Block> = {
   "cta1Senda": CTA1SendaBlock,
@@ -27,4 +28,5 @@ export const ENABLED_BLOCKS_BY_SLUG: Record<string, Block> = {
   "faqSenda": FAQSendaBlock,
   "testimonialsSenda": TestimonialsSendaBlockConfig,
   "bloqueIMCSenda": BloqueIMCSendaBlockConfig,
+  "appSenda": AppSendaBlockConfig,
 }

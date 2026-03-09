@@ -17,4 +17,5 @@ export const enabledBlockSlugs: string[] | null = [
   'faqSenda',
   'testimonialsSenda',
   'bloqueIMCSenda',
+  'appSenda',
 ]

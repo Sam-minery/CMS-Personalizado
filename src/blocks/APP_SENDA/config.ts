@@ -1,0 +1,243 @@
+import type { Block } from 'payload'
+
+import {
+  AlignFeature,
+  FixedToolbarFeature,
+  HeadingFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
+
+import { link } from '@/fields/link'
+
+export const AppSendaBlockConfig: Block = {
+  slug: 'appSenda',
+  interfaceName: 'AppSendaBlock',
+  labels: {
+    singular: 'App Senda',
+    plural: 'App Senda',
+  },
+  fields: [
+    {
+      name: 'anchorId',
+      type: 'text',
+      label: 'ID ancla',
+      admin: {
+        description: 'ID para enlaces ancla (ej: app-senda). Usar el mismo valor en el navbar en "Id ancla (misma página)".',
+      },
+    },
+    {
+      name: 'backgroundColor',
+      type: 'text',
+      label: 'Color de fondo del bloque',
+      admin: {
+        description:
+          'Color de fondo: nombre CSS (white, black, transparent) o valor (#f5f5f5, rgb(245,245,245)). Se aplica siempre aunque el navegador esté en modo oscuro.',
+        placeholder: '#f5f5f5',
+      },
+    },
+    {
+      name: 'cardBackgroundColor',
+      type: 'text',
+      label: 'Color de fondo de la caja',
+      admin: {
+        description:
+          'Color de la tarjeta interior. Nombre CSS (white, gray) o valor (#ffffff, rgb(255,255,255)).',
+        placeholder: '#ffffff',
+      },
+    },
+    {
+      name: 'contentColor',
+      type: 'text',
+      label: 'Color del texto (título y descripción)',
+      admin: {
+        description:
+          'Color del texto del primer RichText. Nombre (black, gray) o valor (#111827, rgba(0,0,0,0.8)). Se respeta en modo claro y oscuro.',
+        placeholder: '#111827',
+      },
+    },
+    {
+      name: 'boldTextColor',
+      type: 'text',
+      label: 'Color del texto en negrita',
+      admin: {
+        description:
+          'Color para <strong> y <b> en título, descripción y texto inferior. Nombre CSS o valor hex/rgba. Vacío = hereda del color del texto.',
+        placeholder: '#111827',
+      },
+    },
+    {
+      name: 'contentBelowImagesColor',
+      type: 'text',
+      label: 'Color del texto (debajo de las imágenes)',
+      admin: {
+        description:
+          'Color del segundo RichText. Nombre CSS o valor hex/rgba.',
+        placeholder: '#111827',
+      },
+    },
+    {
+      name: 'buttonsBackgroundColor',
+      type: 'text',
+      label: 'Color de fondo de los botones',
+      admin: {
+        description:
+          'Fondo de los botones: nombre (blue, #007AFF) o valor CSS. Vacío = azul por defecto.',
+        placeholder: '#007AFF',
+      },
+    },
+    {
+      name: 'buttonsTextColor',
+      type: 'text',
+      label: 'Color del texto de los botones',
+      admin: {
+        description:
+          'Texto de los botones: nombre (white) o valor CSS. Vacío = blanco.',
+        placeholder: '#ffffff',
+      },
+    },
+    {
+      name: 'content',
+      type: 'richText',
+      required: true,
+      label: 'Título y descripción',
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
+          AlignFeature(),
+          FixedToolbarFeature(),
+          InlineToolbarFeature(),
+        ],
+      }),
+      admin: {
+        description: 'Título y texto superior (ej: "Sigue en nuestra aplicación" y la descripción).',
+      },
+    },
+    {
+      name: 'image1',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Imagen 1 (ej. código QR)',
+      admin: {
+        description: 'Primera imagen, se muestra a la izquierda en escritorio.',
+      },
+    },
+    {
+      name: 'image2',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Imagen 2 (ej. móvil con app)',
+      admin: {
+        description: 'Segunda imagen, se muestra a la derecha en escritorio.',
+      },
+    },
+    {
+      name: 'contentBelowImages',
+      type: 'richText',
+      label: 'Texto debajo de las imágenes',
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
+          AlignFeature(),
+          FixedToolbarFeature(),
+          InlineToolbarFeature(),
+        ],
+      }),
+      admin: {
+        description: 'Texto que aparece debajo de las dos imágenes (ej. instrucciones de descarga).',
+      },
+    },
+    {
+      name: 'buttons',
+      type: 'array',
+      label: 'Botones',
+      minRows: 1,
+      maxRows: 2,
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+          label: 'Texto del botón',
+          defaultValue: 'App Store',
+          admin: {
+            description: 'Texto visible en el front (ej: "App Store", "Google Play").',
+          },
+        },
+        link({
+          disableLabel: true,
+          appearances: false,
+          overrides: {
+            name: 'link',
+            label: 'Enlace',
+            admin: {
+              description: 'URL de la tienda (App Store o Google Play).',
+            },
+          },
+        }),
+        {
+          name: 'iconSVG',
+          type: 'textarea',
+          label: 'Icono SVG del botón (opcional)',
+          admin: {
+            description: 'Código SVG para el icono (ej. flecha). Si no se define, no se muestra icono.',
+          },
+        },
+      ],
+      admin: {
+        description: 'Hasta dos botones (ej. App Store y Google Play).',
+      },
+    },
+    {
+      name: 'fontFamily',
+      type: 'select',
+      label: 'Tipografía',
+      admin: {
+        condition: (_, siblingData) => !siblingData?.useCustomFont,
+      },
+      options: [
+        { label: 'Por defecto', value: 'default' },
+        { label: 'Arial', value: 'Arial, sans-serif' },
+        { label: 'Times New Roman', value: '"Times New Roman", serif' },
+        { label: 'Georgia', value: 'Georgia, serif' },
+        { label: 'Verdana', value: 'Verdana, sans-serif' },
+        { label: 'Helvetica', value: 'Helvetica, Arial, sans-serif' },
+        { label: 'Courier New', value: '"Courier New", monospace' },
+        { label: 'Roboto', value: '"Roboto", sans-serif' },
+        { label: 'Open Sans', value: '"Open Sans", sans-serif' },
+        { label: 'Lato', value: '"Lato", sans-serif' },
+        { label: 'Montserrat', value: '"Montserrat", sans-serif' },
+        { label: 'Playfair Display', value: '"Playfair Display", serif' },
+        { label: 'Inter', value: '"Inter", sans-serif' },
+        { label: 'Poppins', value: '"Poppins", sans-serif' },
+        { label: 'Raleway', value: '"Raleway", sans-serif' },
+      ],
+      defaultValue: 'default',
+    },
+    {
+      name: 'useCustomFont',
+      type: 'checkbox',
+      label: 'Usar fuente personalizada',
+      defaultValue: false,
+    },
+    {
+      name: 'customFontFile',
+      type: 'upload',
+      relationTo: 'fonts',
+      label: 'Archivo de fuente',
+      admin: {
+        condition: (_, siblingData) => siblingData?.useCustomFont === true,
+      },
+    },
+    {
+      name: 'customFontName',
+      type: 'text',
+      label: 'Nombre de la fuente personalizada',
+      admin: {
+        condition: (_, siblingData) => siblingData?.useCustomFont === true,
+      },
+    },
+  ],
+}

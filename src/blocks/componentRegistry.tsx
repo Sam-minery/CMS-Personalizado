@@ -127,6 +127,7 @@ import { Stats24Block } from '@/blocks/Stats24/Component'
 import { CTA27Block } from '@/blocks/CTA27/Component'
 import { Header44Block } from '@/blocks/Header44/Component'
 import { Header48Block } from '@/blocks/Header48/Component'
+import { AppSendaBlock as AppSendaBlockComponent } from '@/blocks/APP_SENDA/Component'
 import { AnimatedPin3DBlock } from '@/blocks/3D_Animated_Pin/Component'
 import { Pulse_Beams } from '@/blocks/Pulse_Beams/Component'
 import { Background_Ripple_Effect } from '@/blocks/Background_Ripple_Effect/Component'
@@ -138,6 +139,7 @@ import { InfiniteMovingCardsDemo } from '@/blocks/Infinite_Moving_Cards/Componen
 
 const BLOCK_COMPONENTS: BlockComponentMap = {
   animatedPin3D: AnimatedPin3DBlock,
+  appSenda: AppSendaBlockComponent,
   archive: ArchiveBlock,
   backgroundRippleEffect: Background_Ripple_Effect,
   banner1: Banner1,

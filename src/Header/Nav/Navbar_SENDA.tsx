@@ -231,7 +231,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
         id="navbar-senda"
         ref={containerRef}
         data-navbar-senda-font={styleId}
-        className="navbar-senda-font-root z-[999] flex justify-center fixed left-0 right-0 min-h-0"
+        className="navbar-senda-font-root z-[999] flex justify-center fixed left-0 right-0 min-h-0 w-full max-w-full overflow-x-hidden min-w-0"
         style={{
           ...fontStyle,
           top: isMobile ? 0 : 32,
@@ -240,7 +240,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
         <nav
           id={styleId}
           className={`
-            flex items-center ${navBorder}
+            flex items-center ${navBorder} min-w-0 max-w-full
             ${isMenuExpanded ? "bg-white border-b-0 rounded-b-none" : backgroundColor ? "" : "bg-white"}
             ${isMobile ? `w-full px-3 py-3 lg:px-4 lg:py-4 rounded-t-none ${isMenuExpanded ? "rounded-b-none" : "rounded-b-xl"}` : "w-max px-4 py-2 lg:px-5 lg:py-2.5 rounded-3xl"}
           `}
@@ -252,9 +252,9 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                 : undefined
           }
         >
-        <div className="navbar-senda-font-inherit size-full flex items-center justify-between gap-4 lg:gap-6" style={fontStyle}>
+        <div className="navbar-senda-font-inherit size-full flex items-center justify-between gap-4 lg:gap-6 min-w-0 overflow-x-hidden" style={fontStyle}>
           {/* Logo: al pulsar refresca la página actual */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 min-w-0">
             <a
               href={pathname || "#"}
               onClick={(e) => {
@@ -269,10 +269,10 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                   alt={logo.media.alt || logo.media.image?.alt || logo.alt || "Logo"}
                   width={logo.media.width || logo.media.image?.width || 150}
                   height={logo.media.height || logo.media.image?.height || 50}
-                  className="max-w-[150px] max-h-[50px] object-contain"
+                  className="max-w-[120px] sm:max-w-[150px] max-h-[50px] object-contain w-auto h-auto"
                 />
               ) : (
-                <Image src={logo.src} alt={logo.alt || "Logo"} width={150} height={50} className="max-w-[150px] max-h-[50px] object-contain" />
+                <Image src={logo.src} alt={logo.alt || "Logo"} width={150} height={50} className="max-w-[120px] sm:max-w-[150px] max-h-[50px] object-contain w-auto h-auto" />
               )}
             </a>
           </div>
@@ -355,7 +355,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
           {/* Mobile: solo primer botón cuando menú cerrado; hamburger siempre */}
           {isMobile && (
             <>
-              <div className="flex items-center gap-3 flex-1 justify-end">
+              <div className="flex items-center gap-3 flex-1 justify-end min-w-0 shrink">
                 {showMobileTopBarItems && firstButton &&
                   (firstButton.link?.type === "anchor" && firstButton.link?.anchorId ? (
                     <Button
@@ -421,7 +421,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
               </div>
 
               <div
-                className="absolute left-0 right-0 top-full lg:hidden rounded-b-xl border-x border-b border-[1px] border-white border-t-0 transition-[max-height] duration-300 ease-in-out overflow-hidden"
+                className="absolute left-0 right-0 top-full lg:hidden rounded-b-xl border-x border-b border-[1px] border-white border-t-0 transition-[max-height] duration-300 ease-in-out overflow-hidden max-w-full min-w-0"
                 style={{
                   backgroundColor: "white",
                   boxShadow: "none",
