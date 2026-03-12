@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import RichText from '@/components/RichText'
 import { CMSLink } from '@/components/Link'
@@ -216,6 +216,18 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
   const imageButtonLink = heroSendaImageButton?.link
   const imageButtonIconSVG = heroSendaImageButton?.iconSVG
 
+  const [footerInView, setFooterInView] = useState(false)
+  useEffect(() => {
+    const footer = document.querySelector('footer')
+    if (!footer) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setFooterInView(entry.isIntersecting),
+      { rootMargin: '0px 0px 50px 0px', threshold: 0 }
+    )
+    observer.observe(footer)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
@@ -291,24 +303,26 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
               )}
             </div>
           </div>
-          {/* Tercer botón: posición absoluta; z-10 para que no lo tape el bloque Cards_SENDA */}
+          {/* Tercer botón: posición fija; se oculta cuando el footer entra en pantalla para no taparlo */}
           {imageButtonLink != null && (
             <div
-              className="hero-senda-image-btn-wrap absolute left-0 right-0 z-10 flex justify-center -bottom-20 md:left-auto md:right-0 md:justify-end md:-bottom-[8rem]"
+              className={`hero-senda-image-btn-wrap fixed bottom-6 right-6 z-40 flex justify-end transition-opacity duration-300 ${footerInView ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
             >
               <CMSLink
                 {...(imageButtonLink as React.ComponentProps<typeof CMSLink>)}
                 label={undefined}
                 appearance="outline"
                 size="lg"
-                className="hero-senda-btn-image text-base md:text-lg"
+                className="hero-senda-btn-image text-base md:text-lg p-3 md:p-4 md:px-6 md:py-3"
                 style={fontStyle}
               >
                 <span className="inline-flex items-center gap-1.5">
-                  {fontStyle ? <span style={fontStyle}>{(imageButtonLink as HeroSendaLink).label ?? ''}</span> : ((imageButtonLink as HeroSendaLink).label ?? '')}
+                  <span className="hidden md:inline">
+                    {fontStyle ? <span style={fontStyle}>{(imageButtonLink as HeroSendaLink).label ?? ''}</span> : ((imageButtonLink as HeroSendaLink).label ?? '')}
+                  </span>
                   {imageButtonIconSVG ? (
                     <span
-                      className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                      className="inline-flex shrink-0 w-8 h-8 md:w-9 md:h-9 [&_svg]:w-full [&_svg]:h-full"
                       dangerouslySetInnerHTML={{ __html: sanitizeSVG(imageButtonIconSVG) }}
                       aria-hidden
                     />
