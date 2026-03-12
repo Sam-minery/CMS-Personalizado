@@ -27,6 +27,7 @@ type Plan = {
   backgroundColor?: string | null
   textColor?: string | null
   boldTextColor?: string | null
+  enable3DGradient?: boolean | null
   enableLink?: boolean | null
   link?: {
     type?: 'reference' | 'custom' | null
@@ -44,6 +45,23 @@ type Plan = {
 function sanitizeAnchorId(value: string | null | undefined, fallback: string): string {
   const s = (value || '').trim().replace(/[^a-zA-Z0-9_-]/g, '')
   return s || fallback
+}
+
+/** Convierte un color hex o rgb a rgba con la opacidad indicada (0–1). */
+function colorWithAlpha(color: string | null | undefined, alpha: number): string | undefined {
+  if (!color || typeof color !== 'string') return undefined
+  const c = color.trim()
+  const hex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.exec(c)
+  if (hex) {
+    const h = hex[1]
+    const r = h.length === 3 ? parseInt(h[0] + h[0], 16) : parseInt(h.slice(0, 2), 16)
+    const g = h.length === 3 ? parseInt(h[1] + h[1], 16) : parseInt(h.slice(2, 4), 16)
+    const b = h.length === 3 ? parseInt(h[2] + h[2], 16) : parseInt(h.slice(4, 6), 16)
+    return `rgba(${r},${g},${b},${alpha})`
+  }
+  const rgb = /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(c)
+  if (rgb) return `rgba(${rgb[1]},${rgb[2]},${rgb[3]},${alpha})`
+  return undefined
 }
 
 type PricingSendaProps = {
@@ -178,6 +196,19 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
           .join('\n')
       : ''
 
+  const planDividerStyles =
+    Array.isArray(plans) && plans.length > 0
+      ? plans
+          .map((plan, i) => {
+            const divColor = colorWithAlpha(plan?.boldTextColor ?? plan?.textColor ?? null, 0.4)
+            return divColor
+              ? `[data-ps-font="${styleId}"] .pricing-senda-plan-${i} hr { border-color: ${divColor} !important; }`
+              : ''
+          })
+          .filter(Boolean)
+          .join('\n')
+      : ''
+
   const combinedStyles = buildStyles()
   const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined
 
@@ -186,20 +217,38 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
       ...(plan.backgroundColor ? { backgroundColor: plan.backgroundColor } : undefined),
       ...(plan.textColor ? { color: plan.textColor } : undefined),
     }
+    const dividerColor = colorWithAlpha(plan.boldTextColor ?? plan.textColor ?? null, 0.4)
+    const gradientActive = plan.enable3DGradient === true
 
     const planContent = (
       <div
-        className={`pricing-senda-plan pricing-senda-plan-${index} grid grid-cols-1 gap-5 rounded-xl p-5 md:grid-cols-2 md:gap-6 md:p-6 lg:gap-6 lg:p-7`}
+        className={`pricing-senda-plan pricing-senda-plan-${index} relative grid grid-cols-1 gap-5 rounded-xl p-5 md:grid-cols-2 md:grid-rows-1 md:gap-6 md:p-6 lg:gap-6 lg:p-7 shadow-[0_0_24px_rgba(255,255,255,0.55),0_0_48px_rgba(255,255,255,0.25)]`}
         style={planStyle}
       >
+        {gradientActive && (
+          <div
+            className="absolute inset-0 rounded-xl pointer-events-none"
+            style={{
+              background: 'linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.03) 35%, rgba(0,0,0,0.03) 65%, rgba(0,0,0,0.22) 100%)',
+            }}
+            aria-hidden
+          />
+        )}
         {plan.richText && (
-          <div className="min-w-0 md:pr-6 lg:pr-10 [&_h1]:m-0 [&_h1]:text-xl [&_h1]:font-bold [&_h2]:m-0 [&_h2]:text-lg [&_h2]:font-bold [&_h3]:m-0 [&_h4]:font-bold [&_p]:m-0 [&_ul]:mt-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:mt-1 [&_ol]:list-decimal [&_ol]:pl-5">
+          <div className="relative z-10 min-w-0 md:pr-6 lg:pr-10 [&_h1]:m-0 [&_h1]:text-xl [&_h1]:font-bold [&_h2]:m-0 [&_h2]:text-lg [&_h2]:font-bold [&_h3]:m-0 [&_h4]:font-bold [&_p]:m-0 [&_ul]:mt-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:mt-1 [&_ol]:list-decimal [&_ol]:pl-5">
             <RichText data={plan.richText} enableGutter={false} enableProse={false} />
           </div>
         )}
-        <div className="flex flex-col gap-5 min-w-0 md:border-l md:border-current/30 md:pl-6 lg:pl-10">
+        <div
+          className="relative z-10 flex min-h-full flex-col gap-5 min-w-0 md:min-h-0 md:h-full md:justify-between md:border-l md:pl-6 lg:pl-10 md:border-current/30"
+          style={dividerColor ? { borderLeftColor: dividerColor } : undefined}
+        >
           {plan.richText && Array.isArray(plan.planElements) && plan.planElements.length > 0 ? (
-            <hr className="my-0 w-full flex-shrink-0 border-t border-current/30 md:hidden" aria-hidden />
+            <hr
+              className="my-0 w-full flex-shrink-0 border-t border-current/30 md:hidden"
+              style={dividerColor ? { borderTopColor: dividerColor } : undefined}
+              aria-hidden
+            />
           ) : null}
           {Array.isArray(plan.planElements) &&
             plan.planElements.map((el, elIndex) => {
@@ -251,6 +300,7 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
       {planBoldStyles && <style>{planBoldStyles}</style>}
+      {planDividerStyles && <style>{planDividerStyles}</style>}
       <section
         id={sanitizeAnchorId(anchorId, 'pricing-senda')}
         data-ps-font={styleId}

@@ -1105,7 +1105,7 @@ export interface MultiFormSendaBlock {
    */
   startButtonIconSVG?: string | null;
   /**
-   * Cada paso muestra un texto y unas opciones; al elegir una opción se avanza al siguiente paso.
+   * Cada paso muestra un texto, opciones y un botón. El usuario elige una opción y luego pulsa el botón para avanzar (o el botón puede ser un enlace).
    */
   steps?:
     | {
@@ -1147,13 +1147,51 @@ export interface MultiFormSendaBlock {
               id?: string | null;
             }[]
           | null;
+        /**
+         * Cuando el usuario elige una opción, el botón usará este color de fondo.
+         */
+        stepButtonBackgroundColor?: string | null;
+        /**
+         * Cuando el usuario elige una opción, el botón usará este color de texto.
+         */
+        stepButtonTextColor?: string | null;
+        stepButtonIconSVG?: string | null;
+        /**
+         * Cuando el botón no es un enlace, se muestra este texto (ej: Continuar).
+         */
+        stepButtonLabel?: string | null;
+        /**
+         * Si está activo, el botón será un enlace (CMSLink). Si no, el botón confirmará la opción elegida y avanzará al siguiente paso.
+         */
+        convertStepButtonToLink?: boolean | null;
+        /**
+         * Enlace del botón. Solo aplica si "Convertir botón de paso en enlace" está activo.
+         */
+        stepButtonLink?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+          label: string;
+        };
         id?: string | null;
       }[]
     | null;
   /**
-   * Contenido que se muestra al terminar todos los pasos.
+   * Contenido que se muestra al terminar todos los pasos. Si está vacío y no hay botón final, no se mostrará la última pantalla.
    */
-  endRichText: {
+  endRichText?: {
     root: {
       type: string;
       children: {
@@ -1167,11 +1205,11 @@ export interface MultiFormSendaBlock {
       version: number;
     };
     [k: string]: unknown;
-  };
+  } | null;
   /**
-   * Enlace del botón que se muestra al final (ej: ir a una página).
+   * Enlace del botón que se muestra al final (ej: ir a una página). Opcional. No es obligatorio rellenar enlace ni label. Si texto final y enlace están vacíos, no se mostrará la última pantalla.
    */
-  endButtonLink: {
+  endButtonLink?: {
     type?: ('reference' | 'custom') | null;
     newTab?: boolean | null;
     reference?:
@@ -1183,11 +1221,8 @@ export interface MultiFormSendaBlock {
           relationTo: 'posts';
           value: number | Post;
         } | null);
-    /**
-     * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
-     */
     url?: string | null;
-    label: string;
+    label?: string | null;
   };
   /**
    * Etiqueta del botón final. Si está vacío se usa el label del enlace.
@@ -1202,9 +1237,23 @@ export interface MultiFormSendaBlock {
    */
   optionsBackgroundColor?: string | null;
   /**
-   * Cualquier color CSS válido (hex, rgb, rgba, hsl, nombres).
+   * Cualquier color CSS válido (hex, rgb, rgba, hsl, nombres). Se usa si no hay imagen de fondo.
    */
   backgroundColor?: string | null;
+  /**
+   * Opcional. Si se define, puede usarse en lugar del color de fondo. Media subida o URL externa.
+   */
+  backgroundImage?: {
+    useMedia?: boolean | null;
+    /**
+     * Seleccione una imagen de la librería. En deploy se usará la URL absoluta correcta.
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * URL de la imagen cuando no se usa media subida (ej: https://...).
+     */
+    src?: string | null;
+  };
   /**
    * Fondo del área del formulario (intro, pasos y cierre).
    */
@@ -1556,6 +1605,10 @@ export interface PricingSendaBlock {
         backgroundColor?: string | null;
         textColor?: string | null;
         boldTextColor?: string | null;
+        /**
+         * Aplica una capa con gradiente blanco–negro sobre el fondo para dar sensación de relieve.
+         */
+        enable3DGradient?: boolean | null;
         /**
          * Active para hacer este plan clickeable (enlace interno o externo)
          */
@@ -3089,6 +3142,20 @@ export interface MultiFormSendaBlockSelect<T extends boolean = true> {
               optionRichText?: T;
               id?: T;
             };
+        stepButtonBackgroundColor?: T;
+        stepButtonTextColor?: T;
+        stepButtonIconSVG?: T;
+        stepButtonLabel?: T;
+        convertStepButtonToLink?: T;
+        stepButtonLink?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
         id?: T;
       };
   endRichText?: T;
@@ -3105,6 +3172,13 @@ export interface MultiFormSendaBlockSelect<T extends boolean = true> {
   endButtonIconSVG?: T;
   optionsBackgroundColor?: T;
   backgroundColor?: T;
+  backgroundImage?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+      };
   formBackgroundColor?: T;
   textColor?: T;
   boldTextColor?: T;
@@ -3256,6 +3330,7 @@ export interface PricingSendaBlockSelect<T extends boolean = true> {
         backgroundColor?: T;
         textColor?: T;
         boldTextColor?: T;
+        enable3DGradient?: T;
         enableLink?: T;
         link?:
           | T

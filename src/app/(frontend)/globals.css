@@ -88,8 +88,14 @@
   * {
     @apply border-border;
   }
+  html {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
   body {
     @apply bg-background text-foreground min-h-[100vh] flex flex-col;
+    overflow-x: hidden;
+    max-width: 100%;
   }
 }
 

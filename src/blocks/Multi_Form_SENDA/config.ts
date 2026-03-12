@@ -1,4 +1,4 @@
-import type { Block } from 'payload'
+import type { Block, GroupField } from 'payload'
 
 import {
   AlignFeature,
@@ -72,10 +72,11 @@ export const MultiFormSendaBlock: Block = {
     {
       name: 'steps',
       type: 'array',
+      dbName: 'mf_st',
       label: 'Pasos del formulario',
       minRows: 1,
       admin: {
-        description: 'Cada paso muestra un texto y unas opciones; al elegir una opción se avanza al siguiente paso.',
+        description: 'Cada paso muestra un texto, opciones y un botón. El usuario elige una opción y luego pulsa el botón para avanzar (o el botón puede ser un enlace).',
       },
       fields: [
         {
@@ -103,6 +104,57 @@ export const MultiFormSendaBlock: Block = {
             },
           ],
         },
+        {
+          name: 'stepButtonBackgroundColor',
+          type: 'text',
+          label: 'Color de fondo del botón de paso',
+          admin: {
+            description: 'Cuando el usuario elige una opción, el botón usará este color de fondo.',
+          },
+        },
+        {
+          name: 'stepButtonTextColor',
+          type: 'text',
+          label: 'Color del texto del botón de paso',
+          admin: {
+            description: 'Cuando el usuario elige una opción, el botón usará este color de texto.',
+          },
+        },
+        {
+          name: 'stepButtonIconSVG',
+          type: 'textarea',
+          label: 'Icono SVG del botón de paso (opcional)',
+        },
+        {
+          name: 'stepButtonLabel',
+          type: 'text',
+          label: 'Texto del botón de paso',
+          admin: {
+            description: 'Cuando el botón no es un enlace, se muestra este texto (ej: Continuar).',
+          },
+        },
+        {
+          name: 'convertStepButtonToLink',
+          type: 'checkbox',
+          label: 'Convertir botón de paso en enlace',
+          defaultValue: false,
+          admin: {
+            description: 'Si está activo, el botón será un enlace (CMSLink). Si no, el botón confirmará la opción elegida y avanzará al siguiente paso.',
+          },
+        },
+        link({
+          appearances: false,
+          overrides: {
+            name: 'stepButtonLink',
+            dbName: 'sbl',
+            admin: {
+              hideGutter: true,
+              description: 'Enlace del botón. Solo aplica si "Convertir botón de paso en enlace" está activo.',
+              condition: (_: unknown, siblingData: { convertStepButtonToLink?: boolean }) =>
+                siblingData?.convertStepButtonToLink === true,
+            },
+          } as Partial<GroupField>,
+        }),
       ],
     },
     {
@@ -110,21 +162,69 @@ export const MultiFormSendaBlock: Block = {
       type: 'richText',
       editor: richTextEditor(),
       label: 'Texto final',
-      required: true,
+      required: false,
       admin: {
-        description: 'Contenido que se muestra al terminar todos los pasos.',
+        description: 'Contenido que se muestra al terminar todos los pasos. Si está vacío y no hay botón final, no se mostrará la última pantalla.',
       },
     },
-    link({
-      appearances: false,
-      overrides: {
-        name: 'endButtonLink',
-        admin: {
-          hideGutter: true,
-          description: 'Enlace del botón que se muestra al final (ej: ir a una página).',
-        },
+    {
+      name: 'endButtonLink',
+      type: 'group',
+      admin: {
+        hideGutter: true,
+        description: 'Enlace del botón que se muestra al final (ej: ir a una página). Opcional. No es obligatorio rellenar enlace ni label. Si texto final y enlace están vacíos, no se mostrará la última pantalla.',
       },
-    }),
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'type',
+              type: 'radio',
+              admin: { layout: 'horizontal', width: '50%' },
+              defaultValue: 'reference',
+              options: [
+                { label: 'Internal link', value: 'reference' },
+                { label: 'Custom URL', value: 'custom' },
+              ],
+            },
+            {
+              name: 'newTab',
+              type: 'checkbox',
+              admin: { style: { alignSelf: 'flex-end' }, width: '50%' },
+              label: 'Open in new tab',
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'reference',
+              type: 'relationship',
+              relationTo: ['pages', 'posts'],
+              admin: { condition: (_, siblingData) => siblingData?.type === 'reference', width: '50%' },
+              label: 'Document to link to',
+              required: false,
+            },
+            {
+              name: 'url',
+              type: 'text',
+              admin: { condition: (_, siblingData) => siblingData?.type === 'custom', width: '50%' },
+              label: 'Custom URL',
+              required: false,
+            },
+            {
+              name: 'label',
+              type: 'text',
+              admin: { width: '50%' },
+              label: 'Label',
+              required: false,
+            },
+          ],
+        },
+      ],
+    },
     {
       name: 'endButtonLabel',
       type: 'text',
@@ -154,8 +254,42 @@ export const MultiFormSendaBlock: Block = {
       type: 'text',
       label: 'Color de fondo del bloque',
       admin: {
-        description: 'Cualquier color CSS válido (hex, rgb, rgba, hsl, nombres).',
+        description: 'Cualquier color CSS válido (hex, rgb, rgba, hsl, nombres). Se usa si no hay imagen de fondo.',
       },
+    },
+    {
+      name: 'backgroundImage',
+      type: 'group',
+      label: 'Imagen de fondo del bloque',
+      admin: {
+        description: 'Opcional. Si se define, puede usarse en lugar del color de fondo. Media subida o URL externa.',
+      },
+      fields: [
+        {
+          name: 'useMedia',
+          type: 'checkbox',
+          label: 'Usar imagen subida',
+          defaultValue: true,
+        },
+        {
+          name: 'mediaImage',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            condition: (_: unknown, siblingData: { useMedia?: boolean }) => siblingData?.useMedia === true,
+            description: 'Seleccione una imagen de la librería. En deploy se usará la URL absoluta correcta.',
+          },
+        },
+        {
+          name: 'src',
+          type: 'text',
+          label: 'URL de la imagen',
+          admin: {
+            condition: (_: unknown, siblingData: { useMedia?: boolean }) => siblingData?.useMedia !== true,
+            description: 'URL de la imagen cuando no se usa media subida (ej: https://...).',
+          },
+        },
+      ],
     },
     {
       name: 'formBackgroundColor',

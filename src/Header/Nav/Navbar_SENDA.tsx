@@ -87,6 +87,22 @@ function scrollToAnchor(id: string) {
   }
 }
 
+/** Recoge todos los anchorIds de navLinks (y subMenuLinks) para observar visibilidad */
+function getAnchorIdsFromNavLinks(navLinks: NavLink[]): string[] {
+  const ids: string[] = [];
+  for (const link of navLinks) {
+    if (link.link?.type === "anchor" && link.link?.anchorId) {
+      ids.push(link.link.anchorId.trim());
+    }
+    for (const sub of link.subMenuLinks ?? []) {
+      if (sub.link?.type === "anchor" && sub.link?.anchorId) {
+        ids.push(sub.link.anchorId.trim());
+      }
+    }
+  }
+  return [...new Set(ids)];
+}
+
 export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
   const {
     logo,
@@ -186,7 +202,9 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const [navbarHeight, setNavbarHeight] = useState(0);
+  const [activeAnchorId, setActiveAnchorId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const ratiosRef = useRef<Record<string, number>>({});
   const isMobile = useMediaQuery("(max-width: 991px)");
 
   useEffect(() => {
@@ -214,6 +232,43 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
     };
   }, [isMobile, isMobileMenuOpen]);
 
+  // Resaltar nav link en bold cuando su sección (anchor) está visible en pantalla
+  useEffect(() => {
+    const anchorIds = getAnchorIdsFromNavLinks(navLinks);
+    if (anchorIds.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const id = (entry.target as HTMLElement).id;
+          if (id) ratiosRef.current[id] = entry.isIntersecting ? entry.intersectionRatio : 0;
+        }
+        const best = Object.entries(ratiosRef.current).reduce<[string, number] | null>(
+          (acc, [id, ratio]) => {
+            if (ratio <= 0) return acc;
+            if (!acc || ratio > acc[1]) return [id, ratio];
+            return acc;
+          },
+          null
+        );
+        setActiveAnchorId(best ? best[0] : null);
+      },
+      { root: null, rootMargin: "0px 0px -50% 0px", threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] }
+    );
+
+    const elements: Element[] = [];
+    for (const id of anchorIds) {
+      const el = document.getElementById(id);
+      if (el) {
+        elements.push(el);
+        observer.observe(el);
+      }
+    }
+    return () => {
+      elements.forEach((el) => observer.unobserve(el));
+    };
+  }, [navLinks]);
+
   const firstNavLink = navLinks[0];
   const firstButton = buttons[0];
 
@@ -231,18 +286,20 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
         id="navbar-senda"
         ref={containerRef}
         data-navbar-senda-font={styleId}
-        className="navbar-senda-font-root z-[999] flex justify-center fixed left-0 right-0 min-h-0 w-full max-w-full overflow-x-hidden min-w-0"
+        className="navbar-senda-font-root z-[999] flex justify-center fixed left-0 right-0 min-h-0 w-full min-w-0 max-w-[100vw] box-border"
         style={{
           ...fontStyle,
           top: isMobile ? 0 : 32,
+          width: '100%',
+          maxWidth: '100vw',
         }}
       >
         <nav
           id={styleId}
           className={`
-            flex items-center ${navBorder} min-w-0 max-w-full
+            relative flex items-center ${navBorder} min-w-0 box-border
             ${isMenuExpanded ? "bg-white border-b-0 rounded-b-none" : backgroundColor ? "" : "bg-white"}
-            ${isMobile ? `w-full px-3 py-3 lg:px-4 lg:py-4 rounded-t-none ${isMenuExpanded ? "rounded-b-none" : "rounded-b-xl"}` : "w-max px-4 py-2 lg:px-5 lg:py-2.5 rounded-3xl"}
+            ${isMobile ? `w-full max-w-[100vw] px-3 py-3 lg:px-4 lg:py-4 rounded-t-none ${isMenuExpanded ? "rounded-b-none" : "rounded-b-xl"}` : "w-max max-w-full px-4 py-2 lg:px-5 lg:py-2.5 rounded-3xl"}
           `}
           style={
             isMenuExpanded
@@ -282,12 +339,12 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
             <div className="flex items-center">
               {navLinks.map((navLink, index) =>
                 navLink.subMenuLinks && navLink.subMenuLinks.length > 0 ? (
-                  <SubMenu key={index} navLink={navLink} isMobile={false} dropdownBgColor={backgroundColor} linkFontStyle={fontStyle} />
+                  <SubMenu key={index} navLink={navLink} isMobile={false} dropdownBgColor={backgroundColor} linkFontStyle={fontStyle} activeAnchorId={activeAnchorId} />
                 ) : navLink.link?.type === "anchor" && navLink.link?.anchorId ? (
                   <button
                     key={index}
                     type="button"
-                    className="block py-3 px-4 py-2 text-base cursor-pointer bg-transparent border-0"
+                    className={`block py-3 px-4 py-2 text-base cursor-pointer bg-transparent border-0 transition-transform duration-150 active:scale-[0.98] active:opacity-90 ${activeAnchorId === navLink.link!.anchorId!.trim() ? "font-bold" : ""}`}
                     style={fontStyle}
                     onClick={() => scrollToAnchor(navLink.link!.anchorId!)}
                   >
@@ -297,7 +354,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                   <CMSLink
                     key={index}
                     {...(navLink.link as React.ComponentProps<typeof CMSLink>)}
-                    className="block py-3 px-4 py-2 text-base"
+                    className="block py-3 px-4 py-2 text-base transition-transform duration-150 active:scale-[0.98] active:opacity-90"
                     style={fontStyle}
                   >
                     {fontStyle ? <span style={fontStyle}>{navLink.title}</span> : navLink.title}
@@ -421,24 +478,23 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
               </div>
 
               <div
-                className="absolute left-0 right-0 top-full lg:hidden rounded-b-xl border-x border-b border-[1px] border-white border-t-0 transition-[max-height] duration-300 ease-in-out overflow-hidden max-w-full min-w-0"
+                className="absolute left-0 right-0 top-full z-50 lg:hidden w-full max-w-[100vw] box-border rounded-b-xl border-x border-b border-[1px] border-white border-t-0 transition-[max-height] duration-300 ease-in-out overflow-y-auto overflow-x-hidden min-w-0"
                 style={{
                   backgroundColor: "white",
-                  boxShadow: "none",
+                  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
                   maxHeight: isMobileMenuOpen ? "80vh" : "0",
                 }}
               >
-                <div className="navbar-senda-font-inherit px-3 py-4 lg:px-4 lg:py-4" style={fontStyle}>
+                <div className="navbar-senda-font-inherit px-3 py-4 lg:px-4 lg:py-4 min-w-0" style={fontStyle}>
                   {navLinks.map((navLink, index) => (
-                    <div key={index}>
-                      {index > 0 && <hr className="border-t border-gray-200 my-3" aria-hidden />}
+                    <div key={index} className="border-b border-gray-200 py-3">
                       {navLink.subMenuLinks && navLink.subMenuLinks.length > 0 ? (
-                            <SubMenu navLink={navLink} isMobile={true} dropdownBgColor={isMobileMenuOpen ? undefined : backgroundColor} linkFontStyle={fontStyle} onCloseMenu={() => setIsMobileMenuOpen(false)} />
+                            <SubMenu navLink={navLink} isMobile={true} dropdownBgColor={isMobileMenuOpen ? undefined : backgroundColor} linkFontStyle={fontStyle} onCloseMenu={() => setIsMobileMenuOpen(false)} activeAnchorId={activeAnchorId} />
                           ) : navLink.link?.type === "anchor" && navLink.link?.anchorId ? (
                             <div>
                               <button
                                 type="button"
-                                className="block w-full py-2 text-left text-base cursor-pointer bg-transparent border-0"
+                                className={`block w-full py-2 text-left text-base cursor-pointer bg-transparent border-0 transition-transform duration-150 active:scale-[0.98] active:opacity-90 ${activeAnchorId === navLink.link!.anchorId!.trim() ? "font-bold" : ""}`}
                                 style={fontStyle}
                                 onClick={() => {
                                   scrollToAnchor(navLink.link!.anchorId!);
@@ -450,7 +506,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                             </div>
                           ) : (
                             <div onClick={() => setIsMobileMenuOpen(false)}>
-                              <CMSLink {...(navLink.link as React.ComponentProps<typeof CMSLink>)} className="block py-2 text-base" style={fontStyle}>
+                              <CMSLink {...(navLink.link as React.ComponentProps<typeof CMSLink>)} className="block py-2 text-base transition-transform duration-150 active:scale-[0.98] active:opacity-90" style={fontStyle}>
                                 {fontStyle ? <span style={fontStyle}>{navLink.title}</span> : navLink.title}
                               </CMSLink>
                             </div>
@@ -458,12 +514,12 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                     </div>
                   ))}
                       {firstButton && (
-                        <div className="mt-6 pt-6 border-t border-gray-200">
+                        <div className="mt-12 pt-16 flex justify-center">
                           {firstButton.link?.type === "anchor" && firstButton.link?.anchorId ? (
                             <Button
                               size={firstButton.size}
                               variant={firstButton.variant}
-                              className={firstButton.variant === "default" ? "navbar-senda-btn-default w-full" : "w-full"}
+                              className={firstButton.variant === "default" ? "navbar-senda-btn-default w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs" : "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs"}
                               style={fontStyle}
                               onClick={() => {
                                 scrollToAnchor(firstButton!.link!.anchorId!);
@@ -487,7 +543,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                                 {...(firstButton.link as React.ComponentProps<typeof CMSLink>)}
                                 size={firstButton.size}
                                 appearance={firstButton.variant}
-                                className={firstButton.variant === "default" ? "navbar-senda-btn-default w-full" : "w-full"}
+                                className={firstButton.variant === "default" ? "navbar-senda-btn-default w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs" : "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs"}
                                 style={fontStyle}
                               >
                                 <span className="inline-flex items-center gap-1.5">
@@ -506,14 +562,14 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                         </div>
                       )}
                       {buttons.length > 1 && (
-                        <div className="mt-2 flex flex-col gap-2">
+                        <div className="mt-4 flex flex-col gap-2 items-center">
                           {buttons.slice(1).map((button, index) =>
                             button.link?.type === "anchor" && button.link?.anchorId ? (
                               <Button
                                 key={index}
                                 size={button.size}
                                 variant={button.variant}
-                                className={button.variant === "default" ? "navbar-senda-btn-default w-full" : "w-full"}
+                                className={button.variant === "default" ? "navbar-senda-btn-default w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs" : "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs"}
                                 style={fontStyle}
                                 onClick={() => {
                                   scrollToAnchor(button.link!.anchorId!);
@@ -537,7 +593,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                                   {...(button.link as React.ComponentProps<typeof CMSLink>)}
                                   size={button.size}
                                   appearance={button.variant}
-                                  className={button.variant === "default" ? "navbar-senda-btn-default w-full" : "w-full"}
+                                  className={button.variant === "default" ? "navbar-senda-btn-default w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs" : "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs"}
                                   style={fontStyle}
                                 >
                                   <span className="inline-flex items-center gap-1.5">
@@ -573,12 +629,14 @@ const SubMenu = ({
   dropdownBgColor,
   linkFontStyle,
   onCloseMenu,
+  activeAnchorId,
 }: {
   navLink: NavLink;
   isMobile: boolean;
   dropdownBgColor?: string;
   linkFontStyle?: React.CSSProperties;
   onCloseMenu?: () => void;
+  activeAnchorId?: string | null;
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -597,7 +655,7 @@ const SubMenu = ({
       onMouseLeave={() => !isMobile && setIsDropdownOpen(false)}
     >
       <button
-        className="flex w-full items-center justify-between gap-2 py-3 text-left text-md lg:flex-none lg:justify-start lg:px-4 lg:py-2 lg:text-base"
+        className="flex w-full items-center justify-between gap-2 py-3 text-left text-md lg:flex-none lg:justify-start lg:px-4 lg:py-2 lg:text-base transition-transform duration-150 active:scale-[0.98] active:opacity-90"
         onClick={() => setIsDropdownOpen((prev) => !prev)}
         style={linkFontStyle}
       >
@@ -629,7 +687,7 @@ const SubMenu = ({
                 <button
                   key={index}
                   type="button"
-                  className="block w-full py-3 pl-[5%] text-left text-md cursor-pointer bg-transparent border-0 lg:px-4 lg:py-2 lg:text-base"
+                  className={`block w-full py-3 pl-[5%] text-left text-md cursor-pointer bg-transparent border-0 lg:px-4 lg:py-2 lg:text-base transition-transform duration-150 active:scale-[0.98] active:opacity-90 ${activeAnchorId === subLink.link.anchorId.trim() ? "font-bold" : ""}`}
                   style={linkFontStyle}
                   onClick={() => handleSubLinkClick(subLink)}
                 >
@@ -639,7 +697,7 @@ const SubMenu = ({
                 <div key={index} onClick={() => isMobile && onCloseMenu?.()}>
                   <CMSLink
                     {...(subLink.link as React.ComponentProps<typeof CMSLink>)}
-                    className="block py-3 pl-[5%] text-md lg:px-4 lg:py-2 lg:text-base"
+                    className="block py-3 pl-[5%] text-md lg:px-4 lg:py-2 lg:text-base transition-transform duration-150 active:scale-[0.98] active:opacity-90"
                     style={linkFontStyle}
                   >
                     {linkFontStyle ? <span style={linkFontStyle}>{subLink.title}</span> : subLink.title}

@@ -107,6 +107,15 @@ export const PricingSendaBlock: Block = {
           label: 'Color del texto en negrita de esta sección',
         },
         {
+          name: 'enable3DGradient',
+          type: 'checkbox',
+          label: 'Efecto 3D (gradiente sobre el fondo)',
+          defaultValue: false,
+          admin: {
+            description: 'Aplica una capa con gradiente blanco–negro sobre el fondo para dar sensación de relieve.',
+          },
+        },
+        {
           name: 'enableLink',
           type: 'checkbox',
           label: 'Convertir en enlace',

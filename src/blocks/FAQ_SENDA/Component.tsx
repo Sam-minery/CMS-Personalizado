@@ -197,7 +197,7 @@ export const FAQSendaBlock: React.FC<FAQSendaProps> = (props) => {
           </div>
 
           <div className="faq-senda-accordion-wrapper px-2 py-4 md:p-5">
-            <Accordion type="multiple" className="grid items-start justify-stretch gap-4">
+            <Accordion type="multiple" className="grid items-start justify-stretch gap-2">
               {questionsList.map((q, index) => {
                 const iconSvg = q?.iconSVG?.trim()
                 const normalizedSvg = iconSvg
