@@ -1,6 +1,7 @@
 import type { Metadata } from 'next/types'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
+import { Header } from '@/Header/Component'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
@@ -67,6 +68,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
 
   return (
     <div className="pt-24 pb-24">
+      <Header />
       <PageClient />
       <div className="container mb-16">
         <div className="prose dark:prose-invert max-w-none text-center">

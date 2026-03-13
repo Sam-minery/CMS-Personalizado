@@ -8,6 +8,7 @@ import React, { cache } from 'react'
 import { homeStatic } from '@/endpoints/seed/home-static'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
+import { Header } from '@/Header/Component'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
@@ -78,9 +79,14 @@ export default async function Page({ params: paramsPromise }: Args) {
   }
 
   const { hero, layout } = page
+  const layoutBlocks = Array.isArray(layout) ? layout : (layout as { blocks?: unknown[] })?.blocks
+  const hasSimpleNavbar =
+    Array.isArray(layoutBlocks) &&
+    layoutBlocks.some((b) => (b as { blockType?: string })?.blockType === 'navbarSimpleSenda')
 
   return (
     <article>
+      {!hasSimpleNavbar && <Header />}
       <PageClient />
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />

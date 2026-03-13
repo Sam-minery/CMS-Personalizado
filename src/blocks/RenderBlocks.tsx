@@ -120,6 +120,9 @@ const allBlockComponents: Record<string, React.ComponentType<any>> = {
   layoutSendaSections: dynamic(() =>
     import('@/blocks/Layout_SENDA_Sections/Component').then((m) => m.LayoutSendaSectionsBlock),
   ),
+  navbarSimpleSenda: dynamic(() =>
+    import('@/blocks/Navbar_Simple_SENDA/Component').then((m) => m.NavbarSimpleSendaBlock),
+  ),
   pricingSenda: dynamic(() =>
     import('@/blocks/Pricing_SENDA/Component').then((m) => m.PricingSendaBlock),
   ),

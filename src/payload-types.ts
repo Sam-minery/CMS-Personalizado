@@ -423,6 +423,7 @@ export interface Page {
     | MultiFormSendaBlock
     | LayoutSendaBlock
     | LayoutSendaSectionsBlock
+    | NavbarSimpleSendaBlock
     | PricingSendaBlock
     | FAQSendaBlock
     | TestimonialsSendaBlock
@@ -1550,6 +1551,60 @@ export interface LayoutSendaSectionsBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'layoutSendaSections';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NavbarSimpleSendaBlock".
+ */
+export interface NavbarSimpleSendaBlock {
+  /**
+   * Imagen que se muestra centrada en la parte superior. Media subida o URL.
+   */
+  image?: {
+    useMedia?: boolean | null;
+    /**
+     * Seleccione una imagen de la librería.
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * URL de la imagen cuando no se usa media subida.
+     */
+    src?: string | null;
+    alt?: string | null;
+  };
+  /**
+   * Enlace que muestra solo el icono SVG (sin texto). Al hacer clic navega al destino configurado.
+   */
+  iconLink?: {
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      /**
+       * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+       */
+      url?: string | null;
+      /**
+       * Choose how the link should be rendered.
+       */
+      appearance?: ('default' | 'outline') | null;
+    };
+    /**
+     * Código SVG del icono. Se muestra como botón enlace en la esquina superior izquierda.
+     */
+    iconSVG?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'navbarSimpleSenda';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2969,6 +3024,7 @@ export interface PagesSelect<T extends boolean = true> {
         multiFormSenda?: T | MultiFormSendaBlockSelect<T>;
         layoutSenda?: T | LayoutSendaBlockSelect<T>;
         layoutSendaSections?: T | LayoutSendaSectionsBlockSelect<T>;
+        navbarSimpleSenda?: T | NavbarSimpleSendaBlockSelect<T>;
         pricingSenda?: T | PricingSendaBlockSelect<T>;
         faqSenda?: T | FAQSendaBlockSelect<T>;
         testimonialsSenda?: T | TestimonialsSendaBlockSelect<T>;
@@ -3306,6 +3362,36 @@ export interface LayoutSendaSectionsBlockSelect<T extends boolean = true> {
   useCustomFont?: T;
   customFontFile?: T;
   customFontName?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NavbarSimpleSendaBlock_select".
+ */
+export interface NavbarSimpleSendaBlockSelect<T extends boolean = true> {
+  image?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  iconLink?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              appearance?: T;
+            };
+        iconSVG?: T;
+      };
   id?: T;
   blockName?: T;
 }

@@ -10,6 +10,7 @@ import RichText from '@/components/RichText'
 
 import type { Post } from '@/payload-types'
 
+import { Header } from '@/Header/Component'
 import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
@@ -59,6 +60,7 @@ export default async function Post({ params: paramsPromise }: Args) {
 
   return (
     <article className="pt-16 pb-16">
+      <Header />
       <PageClient />
 
       {/* Allows redirects for valid pages too */}
