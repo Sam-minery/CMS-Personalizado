@@ -26,6 +26,7 @@ import fs from 'fs'
 import { Categories } from './collections/Categories'
 import { ContactSubmissions } from './collections/ContactSubmissions'
 import { FormCustom2Submissions } from './collections/FormCustom2Submissions'
+import { FontGroups } from './collections/FontGroups'
 import { Fonts } from './collections/Fonts'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
@@ -149,7 +150,7 @@ export default buildConfig({
     // Desactivar push solo cuando se ejecuta migrate:one
     push: process.env.PAYLOAD_DISABLE_PUSH !== '1',
   }),
-  collections: [Pages, Posts, Media, Fonts, Categories, Users, ContactSubmissions, FormCustom2Submissions],
+  collections: [Pages, Posts, Media, Fonts, FontGroups, Categories, Users, ContactSubmissions, FormCustom2Submissions],
   cors: (() => {
     const serverURL = getServerSideURL()
     return serverURL ? [serverURL] : []

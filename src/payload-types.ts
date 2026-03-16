@@ -71,6 +71,7 @@ export interface Config {
     posts: Post;
     media: Media;
     fonts: Font;
+    'font-groups': FontGroup;
     categories: Category;
     users: User;
     'contact-submissions': ContactSubmission;
@@ -91,6 +92,7 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     fonts: FontsSelect<false> | FontsSelect<true>;
+    'font-groups': FontGroupsSelect<false> | FontGroupsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'contact-submissions': ContactSubmissionsSelect<false> | ContactSubmissionsSelect<true>;
@@ -1696,6 +1698,14 @@ export interface PricingSendaBlock {
   backgroundColor?: string | null;
   textColor?: string | null;
   boldTextColor?: string | null;
+  /**
+   * Activa para elegir un grupo de fuentes (font-groups) en lugar de una sola fuente.
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Selecciona un grupo creado en Font Groups. Se aplicarán sus fuentes y tamaños de tipografía.
+   */
+  fontGroup?: (number | null) | FontGroup;
   fontFamily?:
     | (
         | 'default'
@@ -1721,6 +1731,67 @@ export interface PricingSendaBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'pricingSenda';
+}
+/**
+ * Crea grupos de tipografías: añade fuentes de la colección Fonts, asígnales variante (regular, bold, semibold, etc.) y define tamaños para títulos y texto. Si activas "Precargar siempre", las fuentes del grupo se cargarán al inicio de cada página.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "font-groups".
+ */
+export interface FontGroup {
+  id: number;
+  /**
+   * Nombre descriptivo del grupo (ej: "Saans", "Mi familia principal")
+   */
+  name: string;
+  /**
+   * Nombre que se usará en font-family en el CSS. Debe ser el mismo para todas las variantes (ej: "Saans"). Sin comillas.
+   */
+  fontFamilyName: string;
+  /**
+   * Añade cada archivo de fuente y asígnale una variante (regular, bold, semibold, etc.).
+   */
+  fonts?:
+    | {
+        font: number | Font;
+        /**
+         * Peso y estilo que representa este archivo (se usará en @font-face como font-weight/font-style).
+         */
+        variant:
+          | 'regular'
+          | 'regularItalic'
+          | 'medium'
+          | 'mediumItalic'
+          | 'semibold'
+          | 'semiboldItalic'
+          | 'bold'
+          | 'boldItalic'
+          | 'light'
+          | 'lightItalic'
+          | 'heavy'
+          | 'heavyItalic';
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Tamaños que se aplicarán a los elementos de texto cuando un bloque use este grupo. Usa unidades como rem, px (ej: 2rem, 1.5rem, 16px).
+   */
+  typography?: {
+    h1?: string | null;
+    h2?: string | null;
+    h3?: string | null;
+    h4?: string | null;
+    h5?: string | null;
+    h6?: string | null;
+    body?: string | null;
+    caption?: string | null;
+  };
+  /**
+   * Si está activado, todos los archivos de fuentes de este grupo se precargarán en el front (en cada página) para evitar que el texto se muestre con otra fuente al recargar.
+   */
+  preloadFonts?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2805,6 +2876,10 @@ export interface PayloadLockedDocument {
         value: number | Font;
       } | null)
     | ({
+        relationTo: 'font-groups';
+        value: number | FontGroup;
+      } | null)
+    | ({
         relationTo: 'categories';
         value: number | Category;
       } | null)
@@ -3433,6 +3508,8 @@ export interface PricingSendaBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
   textColor?: T;
   boldTextColor?: T;
+  useFontGroup?: T;
+  fontGroup?: T;
   fontFamily?: T;
   useCustomFont?: T;
   customFontFile?: T;
@@ -3752,6 +3829,36 @@ export interface FontsSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "font-groups_select".
+ */
+export interface FontGroupsSelect<T extends boolean = true> {
+  name?: T;
+  fontFamilyName?: T;
+  fonts?:
+    | T
+    | {
+        font?: T;
+        variant?: T;
+        id?: T;
+      };
+  typography?:
+    | T
+    | {
+        h1?: T;
+        h2?: T;
+        h3?: T;
+        h4?: T;
+        h5?: T;
+        h6?: T;
+        body?: T;
+        caption?: T;
+      };
+  preloadFonts?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

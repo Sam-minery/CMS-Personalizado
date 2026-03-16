@@ -13,8 +13,20 @@ import {
   OrderedListFeature,
   ParagraphFeature,
   SubscriptFeature,
+  TextStateFeature,
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
+
+/** Pesos de fuente compatibles con font groups (bold/italic ya vienen de BoldFeature/ItalicFeature). */
+const fontGroupWeightState = {
+  weight: {
+    light: { label: 'Light', css: { 'font-weight': '300' } },
+    regular: { label: 'Regular', css: { 'font-weight': '400' } },
+    medium: { label: 'Medium', css: { 'font-weight': '500' } },
+    semibold: { label: 'Semibold', css: { 'font-weight': '600' } },
+    heavy: { label: 'Heavy', css: { 'font-weight': '800' } },
+  },
+} as const
 
 const richTextEditor = () =>
   lexicalEditor({
@@ -30,6 +42,7 @@ const richTextEditor = () =>
       BlockquoteFeature(),
       HorizontalRuleFeature(),
       SubscriptFeature(),
+      TextStateFeature({ state: fontGroupWeightState }),
       FixedToolbarFeature(),
       InlineToolbarFeature(),
     ],
@@ -220,11 +233,30 @@ export const PricingSendaBlock: Block = {
       label: 'Color del texto en negrita del bloque',
     },
     {
+      name: 'useFontGroup',
+      type: 'checkbox',
+      label: 'Usar grupo de fuentes',
+      defaultValue: false,
+      admin: {
+        description: 'Activa para elegir un grupo de fuentes (font-groups) en lugar de una sola fuente.',
+      },
+    },
+    {
+      name: 'fontGroup',
+      type: 'relationship',
+      relationTo: 'font-groups',
+      label: 'Grupo de fuentes',
+      admin: {
+        condition: (_, siblingData) => siblingData?.useFontGroup === true,
+        description: 'Selecciona un grupo creado en Font Groups. Se aplicarán sus fuentes y tamaños de tipografía.',
+      },
+    },
+    {
       name: 'fontFamily',
       type: 'select',
       label: 'Tipografía',
       admin: {
-        condition: (_, siblingData) => !siblingData?.useCustomFont,
+        condition: (_, siblingData) => !siblingData?.useFontGroup && !siblingData?.useCustomFont,
       },
       options: [
         { label: 'Por defecto', value: 'default' },
@@ -250,6 +282,9 @@ export const PricingSendaBlock: Block = {
       type: 'checkbox',
       label: 'Usar fuente personalizada',
       defaultValue: false,
+      admin: {
+        condition: (_, siblingData) => siblingData?.useFontGroup !== true,
+      },
     },
     {
       name: 'customFontFile',
@@ -257,7 +292,7 @@ export const PricingSendaBlock: Block = {
       relationTo: 'fonts',
       label: 'Archivo de fuente',
       admin: {
-        condition: (_, siblingData) => siblingData?.useCustomFont === true,
+        condition: (_, siblingData) => siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
       },
     },
     {
@@ -265,7 +300,7 @@ export const PricingSendaBlock: Block = {
       type: 'text',
       label: 'Nombre de la fuente personalizada',
       admin: {
-        condition: (_, siblingData) => siblingData?.useCustomFont === true,
+        condition: (_, siblingData) => siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
       },
     },
   ],

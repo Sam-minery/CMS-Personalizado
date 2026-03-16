@@ -16,6 +16,45 @@ type FontFile = {
   name?: string
 }
 
+/** Variante de font group -> font-weight y font-style para @font-face */
+const FONT_GROUP_VARIANT_CSS: Record<
+  string,
+  { weight: string; style: string }
+> = {
+  regular: { weight: '400', style: 'normal' },
+  regularItalic: { weight: '400', style: 'italic' },
+  medium: { weight: '500', style: 'normal' },
+  mediumItalic: { weight: '500', style: 'italic' },
+  semibold: { weight: '600', style: 'normal' },
+  semiboldItalic: { weight: '600', style: 'italic' },
+  bold: { weight: '700', style: 'normal' },
+  boldItalic: { weight: '700', style: 'italic' },
+  light: { weight: '300', style: 'normal' },
+  lightItalic: { weight: '300', style: 'italic' },
+  heavy: { weight: '800', style: 'normal' },
+  heavyItalic: { weight: '800', style: 'italic' },
+}
+
+type FontGroupFontEntry = {
+  font?: FontFile | number
+  variant?: string
+}
+
+type FontGroupData = {
+  fontFamilyName?: string | null
+  fonts?: FontGroupFontEntry[] | null
+  typography?: {
+    h1?: string | null
+    h2?: string | null
+    h3?: string | null
+    h4?: string | null
+    h5?: string | null
+    h6?: string | null
+    body?: string | null
+    caption?: string | null
+  } | null
+}
+
 type PlanElement = {
   iconSVG?: string | null
   text?: string | null
@@ -71,6 +110,8 @@ type PricingSendaProps = {
   backgroundColor?: string | null
   textColor?: string | null
   boldTextColor?: string | null
+  useFontGroup?: boolean | null
+  fontGroup?: FontGroupData | number | null
   fontFamily?: string | null
   useCustomFont?: boolean | null
   customFontFile?: FontFile | number | null
@@ -92,6 +133,8 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
     backgroundColor,
     textColor,
     boldTextColor,
+    useFontGroup,
+    fontGroup,
     fontFamily,
     useCustomFont,
     customFontFile,
@@ -101,6 +144,9 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
   const uniqueId = React.useId().replace(/:/g, '-')
   const styleId = `pricing-senda-${uniqueId}`
 
+  const fontGroupObj =
+    useFontGroup && fontGroup && typeof fontGroup === 'object' ? (fontGroup as FontGroupData) : null
+
   const customFontFileObj =
     customFontFile && typeof customFontFile === 'object' ? customFontFile : null
   const customFontFamilyName =
@@ -109,13 +155,14 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
     (customFontFileObj?.filename ? customFontFileObj.filename.replace(/\.[^.]+$/, '') : undefined)
 
   const getFontFamily = () => {
+    if (fontGroupObj?.fontFamilyName) return `"${fontGroupObj.fontFamilyName.replace(/"/g, '\\"')}"`
     if (useCustomFont && customFontFamilyName) return `"${customFontFamilyName}"`
     if (fontFamily && fontFamily !== 'default') return fontFamily
     return undefined
   }
 
   const selectedFontFamily = getFontFamily()
-  useGoogleFont(selectedFontFamily)
+  useGoogleFont(fontGroupObj ? undefined : selectedFontFamily)
 
   const fontFileUrl = customFontFileObj?.url
     ? getMediaUrl(customFontFileObj.url).replace(/([^:]\/)\/+/g, '$1')
@@ -125,8 +172,60 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
 
   const buildStyles = () => {
     const styles: string[] = []
+    const sel = `[data-ps-font="${styleId}"]`
+    const mainRichtext = `${sel} .pricing-senda-main-richtext`
+    const planRichtext = `${sel} .pricing-senda-plan`
 
-    if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
+    if (fontGroupObj?.fontFamilyName && Array.isArray(fontGroupObj.fonts)) {
+      const familyName = fontGroupObj.fontFamilyName.replace(/"/g, '\\"')
+      for (const entry of fontGroupObj.fonts) {
+        const font = entry?.font
+        if (!font || typeof font === 'number') continue
+        const url = (font as FontFile).url
+        if (!url) continue
+        const fontUrl = getMediaUrl(url).replace(/([^:]\/)\/+/g, '$1')
+        const variant = entry.variant || 'regular'
+        const { weight, style } = FONT_GROUP_VARIANT_CSS[variant] ?? {
+          weight: '400',
+          style: 'normal',
+        }
+        if (!fontUrl || !/\.(woff|woff2|ttf|otf)(\?.*)?$/i.test(fontUrl)) continue
+        styles.push(`
+          @font-face {
+            font-family: "${familyName}";
+            src: url("${fontUrl}") format("woff2"), url("${fontUrl}") format("woff");
+            font-weight: ${weight};
+            font-style: ${style};
+            font-display: swap;
+          }
+        `)
+      }
+      const fontValue = `"${fontGroupObj.fontFamilyName.replace(/"/g, '\\"')}"`
+      styles.push(
+        `${sel}, ${sel} *, ${sel} a, ${sel} span { font-family: ${fontValue} !important; }`,
+      )
+      const typo = fontGroupObj.typography
+      if (typo) {
+        if (typo.h1)
+          styles.push(`${mainRichtext} h1, ${planRichtext} h1 { font-size: ${typo.h1} !important; }`)
+        if (typo.h2)
+          styles.push(`${mainRichtext} h2, ${planRichtext} h2 { font-size: ${typo.h2} !important; }`)
+        if (typo.h3)
+          styles.push(`${mainRichtext} h3, ${planRichtext} h3 { font-size: ${typo.h3} !important; }`)
+        if (typo.h4)
+          styles.push(`${mainRichtext} h4, ${planRichtext} h4 { font-size: ${typo.h4} !important; }`)
+        if (typo.h5)
+          styles.push(`${mainRichtext} h5, ${planRichtext} h5 { font-size: ${typo.h5} !important; }`)
+        if (typo.h6)
+          styles.push(`${mainRichtext} h6, ${planRichtext} h6 { font-size: ${typo.h6} !important; }`)
+        if (typo.body)
+          styles.push(
+            `${mainRichtext} p, ${mainRichtext} li, ${planRichtext} p, ${planRichtext} li { font-size: ${typo.body} !important; }`,
+          )
+        if (typo.caption)
+          styles.push(`${mainRichtext} .caption, ${planRichtext} .caption { font-size: ${typo.caption} !important; }`)
+      }
+    } else if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
       styles.push(`
         @font-face {
           font-family: "${customFontFamilyName.replace(/"/g, '\\"')}";
@@ -136,18 +235,14 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
           font-display: swap;
         }
       `)
-    }
-
-    const fontValue =
-      useCustomFont && customFontFamilyName && isValidFontFile
-        ? `"${customFontFamilyName.replace(/"/g, '\\"')}"`
-        : selectedFontFamily && !useCustomFont
-          ? selectedFontFamily
-          : ''
-
-    if (fontValue) {
+      const fontValue = `"${customFontFamilyName.replace(/"/g, '\\"')}"`
       styles.push(
-        `[data-ps-font="${styleId}"], [data-ps-font="${styleId}"] *, [data-ps-font="${styleId}"] a, [data-ps-font="${styleId}"] span { font-family: ${fontValue} !important; }`,
+        `${sel}, ${sel} *, ${sel} a, ${sel} span { font-family: ${fontValue} !important; }`,
+      )
+    } else if (selectedFontFamily) {
+      const fontValue = selectedFontFamily
+      styles.push(
+        `${sel}, ${sel} *, ${sel} a, ${sel} span { font-family: ${fontValue} !important; }`,
       )
     }
 
@@ -163,12 +258,18 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
       )
     }
 
-    styles.push(
-      `[data-ps-font="${styleId}"] .pricing-senda-main-richtext h1, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h2, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h3, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h4, [data-ps-font="${styleId}"] .pricing-senda-plan h1, [data-ps-font="${styleId}"] .pricing-senda-plan h2, [data-ps-font="${styleId}"] .pricing-senda-plan h3, [data-ps-font="${styleId}"] .pricing-senda-plan h4 { font-weight: 800 !important; letter-spacing: 0.02em; }`,
-    )
-    styles.push(
-      `[data-ps-font="${styleId}"] .pricing-senda-main-richtext h4, [data-ps-font="${styleId}"] .pricing-senda-plan h4 { font-weight: 900 !important; }`,
-    )
+    if (!fontGroupObj) {
+      styles.push(
+        `[data-ps-font="${styleId}"] .pricing-senda-main-richtext h1, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h2, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h3, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h4, [data-ps-font="${styleId}"] .pricing-senda-plan h1, [data-ps-font="${styleId}"] .pricing-senda-plan h2, [data-ps-font="${styleId}"] .pricing-senda-plan h3, [data-ps-font="${styleId}"] .pricing-senda-plan h4 { font-weight: 800 !important; letter-spacing: 0.02em; }`,
+      )
+      styles.push(
+        `[data-ps-font="${styleId}"] .pricing-senda-main-richtext h4, [data-ps-font="${styleId}"] .pricing-senda-plan h4 { font-weight: 900 !important; }`,
+      )
+    } else {
+      styles.push(
+        `[data-ps-font="${styleId}"] .pricing-senda-main-richtext h1, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h2, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h3, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h4, [data-ps-font="${styleId}"] .pricing-senda-plan h1, [data-ps-font="${styleId}"] .pricing-senda-plan h2, [data-ps-font="${styleId}"] .pricing-senda-plan h3, [data-ps-font="${styleId}"] .pricing-senda-plan h4 { letter-spacing: 0.02em; }`,
+      )
+    }
     /* sub/sup como “texto secundario” en la misma línea: estilo tipo h4, sin bajar/subir */
     styles.push(
       `[data-ps-font="${styleId}"] sub, [data-ps-font="${styleId}"] sup { font-weight: 700 !important; vertical-align: baseline !important; font-size: 0.75em; line-height: 1.2; }`,

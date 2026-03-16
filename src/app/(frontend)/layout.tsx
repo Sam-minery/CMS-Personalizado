@@ -10,17 +10,30 @@ import { Header } from '@/Header/Component'
 import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { getPreloadFontUrls } from '@/utilities/getPreloadFontUrls'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const preloadFontItems = await getPreloadFontUrls()()
+
   return (
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+        {preloadFontItems.map((item) => (
+          <link
+            key={item.url}
+            rel="preload"
+            href={item.url}
+            as="font"
+            type={item.type}
+            crossOrigin="anonymous"
+          />
+        ))}
       </head>
       <body>
         <Providers>
