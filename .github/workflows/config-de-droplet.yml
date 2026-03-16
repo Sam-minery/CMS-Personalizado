@@ -1,0 +1,190 @@
+name: Build and Deploy Payload - Primera versión
+
+on:
+  push:
+    branches:
+      - deploy-do
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-payload
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ─────────────────────────────────────────────
+      # TÚNEL A POSTGRES (SOLO PARA BUILD)
+      # ─────────────────────────────────────────────
+
+      - name: Open SSH tunnel to DO Postgres via droplet
+        shell: bash
+        run: |
+          set -e
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          DB_HOST="${{ secrets.DB_HOST }}"
+          DB_PORT="${{ secrets.DB_PORT }}"
+          if [ -z "$DB_HOST" ]; then
+            echo "ERROR: DB_HOST secret no definido" >&2
+            exit 1
+          fi
+          if [ -z "$DB_PORT" ]; then
+            DB_PORT=25060
+          fi
+          ssh \
+            -o StrictHostKeyChecking=no \
+            -o IdentitiesOnly=yes \
+            -o ServerAliveInterval=30 \
+            -o ServerAliveCountMax=10 \
+            -o TCPKeepAlive=yes \
+            -i ~/.ssh/id_rsa \
+            -f -N \
+            -L 127.0.0.1:5432:${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }} \
+            -p "${{ secrets.SSH_PORT }}" \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+
+
+      - name: Write CA cert (DO Postgres)
+        run: |
+          set -e
+          if [ -z "${{ secrets.DB_CA_CERT }}" ]; then
+            echo "ERROR: DB_CA_CERT no está definido en Secrets" >&2
+            exit 1
+          fi
+          echo "${{ secrets.DB_CA_CERT }}" > ca.crt
+      - name: Map DB host to localhost for TLS SNI
+        run: |
+          echo "127.0.0.1 ${{ secrets.DB_HOST }}" | sudo tee -a /etc/hosts
+
+      - name: Compose DATABASE_URI with CA
+        run: |
+          # compone DATABASE_URI a partir de DATABASE_URI_TUNNEL + sslrootcert
+          if [ -z "${{ secrets.DATABASE_URI_TUNNEL }}" ]; then
+            echo "ERROR: DATABASE_URI_TUNNEL no está definido en Secrets" >&2
+            exit 1
+          fi
+          DB_URI="${{ secrets.DATABASE_URI_TUNNEL }}"
+          # Sustituir host 127.0.0.1 por el hostname real para que SNI/altname coincidan;
+          # la resolución apunta a 127.0.0.1 gracias a /etc/hosts
+          DB_URI="${DB_URI/127.0.0.1/${{ secrets.DB_HOST }}}"
+          echo "DATABASE_URI=${DB_URI}&sslrootcert=$GITHUB_WORKSPACE/ca.crt" >> $GITHUB_ENV
+
+      # ─────────────────────────────────────────────
+      # MIGRACIONES (antes del build para que el esquema esté al día)
+      # ─────────────────────────────────────────────
+
+      - name: Migrations
+        env:
+          NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
+          DATABASE_URI: ${{ env.DATABASE_URI }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          PAYLOAD_NO_CONFIRMATION: "true"
+        run: |
+          npm run payload -- migrate || echo "Warning: Migrations failed or none pending"
+
+      # ─────────────────────────────────────────────
+      # BUILD (con túnel abierto para que Payload/DB funcionen)
+      # ─────────────────────────────────────────────
+
+      - name: Build (Next.js + Payload)
+        env:
+          NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
+          DATABASE_URI: ${{ env.DATABASE_URI }}
+          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          GCS_BUCKET_NAME: ${{ secrets.GCS_BUCKET_NAME }}
+          GCS_PROJECT_ID: ${{ secrets.GCS_PROJECT_ID }}
+          GCS_CLIENT_EMAIL: ${{ secrets.GCS_CLIENT_EMAIL }}
+          GCS_PRIVATE_KEY: ${{ secrets.GCS_PRIVATE_KEY }}
+        run: npm run build
+
+      # ─────────────────────────────────────────────
+      # PREPARAR ARTEFACTOS (antes de cerrar el túnel)
+      # ─────────────────────────────────────────────
+
+      - name: Prepare artifacts
+        run: |
+          set -e
+
+          mkdir -p deploy/.next
+          cp -a .next/standalone deploy/.next/
+          cp -a .next/static deploy/.next/static
+
+          # Next standalone necesita static aquí:
+          mkdir -p deploy/.next/standalone/.next
+          cp -a .next/static deploy/.next/standalone/.next/static
+
+          if [ -d public ]; then
+            cp -a public deploy/public
+          fi
+
+          if [ -f ecosystem.config.cjs ]; then
+            cp ecosystem.config.cjs deploy/
+          fi
+
+          tar -czf deploy.tgz -C deploy .
+
+      - name: Cerrar túnel SSH
+        if: always()
+        run: |
+          pkill -f "ssh.*-L 5432:" || true
+
+      # ─────────────────────────────────────────────
+      # DEPLOY
+      # ─────────────────────────────────────────────
+
+      - name: Copy artifacts to droplet
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: deploy.tgz
+          target: ${{ secrets.REMOTE_PATH }}
+
+      - name: Deploy and restart (PM2)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            cd ${{ secrets.REMOTE_PATH }}
+
+            tar -xzf deploy.tgz
+            rm -f deploy.tgz
+
+            if ! command -v pm2 >/dev/null 2>&1; then
+              echo "ERROR: PM2 no está instalado en el servidor" >&2
+              exit 1
+            fi
+
+            pm2 start ecosystem.config.cjs --only herramienta-web-payload || \
+            pm2 restart herramienta-web-payload
+
+            pm2 save
+
+            if command -v nginx >/dev/null 2>&1; then
+              sudo systemctl reload nginx || true
+            fi

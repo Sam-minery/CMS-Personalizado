@@ -1,0 +1,296 @@
+import type { Block } from 'payload'
+
+import {
+  AlignFeature,
+  BlockquoteFeature,
+  ChecklistFeature,
+  FixedToolbarFeature,
+  HeadingFeature,
+  HorizontalRuleFeature,
+  IndentFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+  OrderedListFeature,
+  ParagraphFeature,
+  UnorderedListFeature,
+} from '@payloadcms/richtext-lexical'
+
+import { link } from '@/fields/link'
+
+const richTextEditor = () =>
+  lexicalEditor({
+    features: ({ rootFeatures }) => [
+      ...rootFeatures,
+      ParagraphFeature(),
+      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+      AlignFeature(),
+      IndentFeature(),
+      UnorderedListFeature(),
+      OrderedListFeature(),
+      ChecklistFeature(),
+      BlockquoteFeature(),
+      HorizontalRuleFeature(),
+      FixedToolbarFeature(),
+      InlineToolbarFeature(),
+    ],
+  })
+
+export const LayoutSendaSectionsBlock: Block = {
+  slug: 'layoutSendaSections',
+  interfaceName: 'LayoutSendaSectionsBlock',
+  labels: {
+    singular: 'Layout SENDA Sections',
+    plural: 'Layout SENDA Sections Blocks',
+  },
+  fields: [
+    {
+      name: 'anchorId',
+      type: 'text',
+      label: 'ID ancla',
+      admin: {
+        description: 'ID para enlaces ancla (ej: mi-seccion). Usar el mismo valor en el navbar en "Id ancla (misma página)".',
+      },
+    },
+    {
+      name: 'richText',
+      type: 'richText',
+      editor: richTextEditor(),
+      label: 'Contenido principal (RichText)',
+      required: true,
+    },
+    {
+      name: 'sections',
+      type: 'array',
+      dbName: 'lss_sections',
+      label: 'Secciones',
+      maxRows: 4,
+      fields: [
+        {
+          name: 'icon',
+          type: 'group',
+          label: 'Icono',
+          fields: [
+            {
+              name: 'useMedia',
+              type: 'checkbox',
+              label: 'Usar imagen subida',
+              defaultValue: false,
+            },
+            {
+              name: 'mediaImage',
+              type: 'upload',
+              relationTo: 'media',
+              admin: {
+                condition: (_, siblingData) => siblingData?.useMedia === true,
+                description: 'Seleccione una imagen para el icono',
+              },
+            },
+            {
+              name: 'iconSVG',
+              type: 'textarea',
+              label: 'Icono SVG',
+              admin: {
+                condition: (_, siblingData) => siblingData?.useMedia !== true,
+                description: 'Código SVG del icono de la sección',
+              },
+            },
+            {
+              name: 'alt',
+              type: 'text',
+              label: 'Alt del icono',
+              defaultValue: 'Section icon',
+            },
+          ],
+        },
+        {
+          name: 'richText',
+          type: 'richText',
+          editor: richTextEditor(),
+          label: 'Contenido de la sección (RichText)',
+          required: true,
+        },
+        {
+          name: 'enableLink',
+          type: 'checkbox',
+          label: 'Convertir en enlace',
+          defaultValue: false,
+          admin: {
+            description: 'Active esta opción para hacer esta sección clickeable',
+          },
+        },
+        {
+          name: 'link',
+          type: 'group',
+          admin: {
+            hideGutter: true,
+            condition: (_, siblingData) => siblingData?.enableLink === true,
+            description: 'Configure el enlace para esta sección',
+          },
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'type',
+                  type: 'radio',
+                  admin: {
+                    layout: 'horizontal',
+                    width: '50%',
+                  },
+                  defaultValue: 'reference',
+                  options: [
+                    { label: 'Internal link', value: 'reference' },
+                    { label: 'Custom URL', value: 'custom' },
+                  ],
+                },
+                {
+                  name: 'newTab',
+                  type: 'checkbox',
+                  admin: {
+                    style: { alignSelf: 'flex-end' },
+                    width: '50%',
+                  },
+                  label: 'Open in new tab',
+                },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'reference',
+                  type: 'relationship',
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.type === 'reference',
+                    width: '50%',
+                  },
+                  label: 'Document to link to',
+                  relationTo: ['pages', 'posts'],
+                  required: true,
+                },
+                {
+                  name: 'url',
+                  type: 'text',
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.type === 'custom',
+                    width: '50%',
+                  },
+                  label: 'Custom URL',
+                  required: true,
+                },
+                {
+                  name: 'label',
+                  type: 'text',
+                  admin: { width: '50%' },
+                  label: 'Label',
+                  required: false,
+                },
+              ],
+            },
+            {
+              name: 'appearance',
+              type: 'select',
+              admin: { description: 'Choose how the link should be rendered.' },
+              defaultValue: 'default',
+              options: [
+                { label: 'Default', value: 'default' },
+                { label: 'Outline', value: 'outline' },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'buttons',
+      type: 'array',
+      dbName: 'lss_btns',
+      label: 'Botones',
+      required: false,
+      maxRows: 2,
+      fields: [
+        link({
+          overrides: {
+            admin: {
+              description: 'Configure el enlace para este botón',
+            },
+          },
+        }),
+      ],
+    },
+    {
+      name: 'backgroundColor',
+      type: 'text',
+      label: 'Color de fondo del bloque',
+    },
+    {
+      name: 'textColor',
+      type: 'text',
+      label: 'Color del texto principal',
+    },
+    {
+      name: 'boldTextColor',
+      type: 'text',
+      label: 'Color del texto en negrita',
+    },
+    {
+      name: 'buttonBackgroundColor',
+      type: 'text',
+      label: 'Color de fondo de botones',
+    },
+    {
+      name: 'buttonTextColor',
+      type: 'text',
+      label: 'Color del texto de botones',
+    },
+    {
+      name: 'fontFamily',
+      type: 'select',
+      label: 'Tipografía',
+      admin: {
+        condition: (_, siblingData) => !siblingData?.useCustomFont,
+      },
+      options: [
+        { label: 'Por defecto', value: 'default' },
+        { label: 'Arial', value: 'Arial, sans-serif' },
+        { label: 'Times New Roman', value: '"Times New Roman", serif' },
+        { label: 'Georgia', value: 'Georgia, serif' },
+        { label: 'Verdana', value: 'Verdana, sans-serif' },
+        { label: 'Helvetica', value: 'Helvetica, Arial, sans-serif' },
+        { label: 'Courier New', value: '"Courier New", monospace' },
+        { label: 'Roboto', value: '"Roboto", sans-serif' },
+        { label: 'Open Sans', value: '"Open Sans", sans-serif' },
+        { label: 'Lato', value: '"Lato", sans-serif' },
+        { label: 'Montserrat', value: '"Montserrat", sans-serif' },
+        { label: 'Playfair Display', value: '"Playfair Display", serif' },
+        { label: 'Inter', value: '"Inter", sans-serif' },
+        { label: 'Poppins', value: '"Poppins", sans-serif' },
+        { label: 'Raleway', value: '"Raleway", sans-serif' },
+      ],
+      defaultValue: 'default',
+    },
+    {
+      name: 'useCustomFont',
+      type: 'checkbox',
+      label: 'Usar fuente personalizada',
+      defaultValue: false,
+    },
+    {
+      name: 'customFontFile',
+      type: 'upload',
+      relationTo: 'fonts',
+      label: 'Archivo de fuente',
+      admin: {
+        condition: (_, siblingData) => siblingData?.useCustomFont === true,
+      },
+    },
+    {
+      name: 'customFontName',
+      type: 'text',
+      label: 'Nombre de la fuente personalizada',
+      admin: {
+        condition: (_, siblingData) => siblingData?.useCustomFont === true,
+      },
+    },
+  ],
+}

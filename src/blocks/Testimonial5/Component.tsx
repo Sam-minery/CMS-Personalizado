@@ -1,0 +1,171 @@
+'use client'
+
+import Image from 'next/image'
+import { BiSolidStar } from "react-icons/bi";
+import RichText from '@/components/RichText';
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical';
+import type { Media } from '@/payload-types';
+
+type Testimonial = {
+  numberOfStars: number;
+  quote: DefaultTypedEditorState;
+  avatar: {
+    media: any;
+    alt?: string;
+  };
+  name: string;
+  position: string;
+  logo: {
+    media: any;
+    alt?: string;
+  };
+};
+
+type Props = {
+  content?: DefaultTypedEditorState;
+  testimonials: Testimonial[];
+};
+
+export type Testimonial5BlockType = {
+  blockName?: string
+  blockType?: 'testimonial5'
+  content?: DefaultTypedEditorState;
+  testimonials: Testimonial[];
+}
+
+export const Testimonial5 = (props: Testimonial5BlockType) => {
+  const { content, testimonials } = {
+    ...Testimonial5Defaults,
+    ...props,
+  };
+
+  return (
+    <section id="relume" className="px-[5%] py-16 md:py-24 lg:py-28">
+      <div className="container">
+        <div className="mb-12 w-full md:mb-18 lg:mb-20">
+          {content && (
+            <RichText data={content} />
+          )}
+        </div>
+        <div className="grid grid-cols-1 gap-y-12 md:grid-cols-2 md:gap-x-8 lg:gap-16">
+          {testimonials.map((testimonial, index) => (
+            <Testimonial key={index} testimonial={testimonial} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Testimonial = ({ testimonial }: { testimonial: Testimonial }) => {
+  // Función para obtener la URL de la imagen desde el objeto Media
+  const getImageSrc = (mediaItem: any): string => {
+    if (!mediaItem) return ''
+    if (typeof mediaItem === 'string') return mediaItem
+    if (typeof mediaItem === 'object' && mediaItem !== null && mediaItem.url) {
+      return mediaItem.url
+    }
+    return ''
+  }
+
+  // Función para obtener el alt de la imagen
+  const getImageAlt = (mediaItem: any, fallbackAlt: string): string => {
+    if (typeof mediaItem === 'object' && mediaItem?.alt) {
+      return mediaItem.alt
+    }
+    return fallbackAlt
+  }
+
+  const avatarSrc = getImageSrc(testimonial.avatar.media)
+  const avatarAlt = getImageAlt(testimonial.avatar.media, testimonial.avatar.alt || 'Avatar')
+  const logoSrc = getImageSrc(testimonial.logo.media)
+  const logoAlt = getImageAlt(testimonial.logo.media, testimonial.logo.alt || 'Company logo')
+
+  return (
+  <div className="flex h-full max-w-lg flex-col items-start justify-start text-left">
+    <div className="mb-6 flex md:mb-8">
+      {Array(testimonial.numberOfStars)
+        .fill(null)
+        .map((_, starIndex) => (
+          <BiSolidStar key={starIndex} className="size-6" />
+        ))}
+    </div>
+    <blockquote className="text-md font-bold leading-[1.4] md:text-xl">
+      <RichText data={testimonial.quote} />
+    </blockquote>
+    <div className="mt-6 flex w-full flex-col gap-3 md:mt-8 md:w-auto md:flex-row md:items-center md:gap-5">
+      <div className="flex items-center justify-center">
+        {avatarSrc && (
+          <div className="relative w-14 h-14 rounded-full overflow-hidden flex items-center justify-center">
+            <Image
+              src={avatarSrc}
+              alt={avatarAlt}
+              fill
+              className="object-cover rounded-full"
+            />
+          </div>
+        )}
+      </div>
+      <div className="mb-4 md:mb-0">
+        <p className="font-semibold">{testimonial.name}</p>
+        <p>{testimonial.position}</p>
+      </div>
+      <div className="hidden w-px self-stretch bg-black md:block" />
+      <div className="flex items-start h-14">
+        {logoSrc && (
+          <div style={{ 
+            height: '20px', 
+            maxWidth: '80px', 
+            display: 'flex', 
+            alignItems: 'flex-start', 
+            justifyContent: 'center',
+            marginTop: '-2px'
+          }}>
+            <Image
+              src={logoSrc}
+              alt={logoAlt}
+              width={80}
+              height={20}
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+  )
+};
+
+export const Testimonial5Defaults: Props = {
+  content: undefined,
+  testimonials: [
+    {
+      numberOfStars: 5,
+      quote: {} as DefaultTypedEditorState,
+      avatar: {
+        media: undefined,
+        alt: "Testimonial avatar 1",
+      },
+      name: "Name Surname",
+      position: "Position, Company name",
+      logo: {
+        media: undefined,
+        alt: "Company logo 1",
+      },
+    },
+    {
+      numberOfStars: 5,
+      quote: {} as DefaultTypedEditorState,
+      avatar: {
+        media: undefined,
+        alt: "Testimonial avatar 2",
+      },
+      name: "Name Surname",
+      position: "Position, Company name",
+      logo: {
+        media: undefined,
+        alt: "Company logo 2",
+      },
+    },
+  ],
+};

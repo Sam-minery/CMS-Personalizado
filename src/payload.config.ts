@@ -1,0 +1,206 @@
+// Cargar variables de entorno desde .env (necesario para comandos CLI como migrate)
+import 'dotenv/config'
+
+// Configurar TLS para desarrollo: deshabilitar verificación de certificados self-signed
+// Solo en desarrollo cuando se requiere un certificado CA que tiene certificados self-signed en la cadena
+// Nota: No verificamos NODE_ENV aquí porque durante 'npm run build' Next.js establece NODE_ENV=production
+// pero seguimos necesitando el certificado local para conectarnos a la DB de desarrollo
+if (
+  process.env.ENVIRONMENT === 'development' && 
+  process.env.DB_SSL_CA_PATH
+) {
+  // Deshabilitar la verificación TLS a nivel de Node.js para permitir certificados self-signed
+  // Esto es necesario porque el driver de PostgreSQL valida la cadena completa incluso con rejectUnauthorized: false
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+}
+
+import { postgresAdapter } from '@payloadcms/db-postgres'
+import { gcsStorage } from '@payloadcms/storage-gcs'
+
+import sharp from 'sharp' // sharp-import
+import path from 'path'
+import { buildConfig, PayloadRequest } from 'payload'
+import { fileURLToPath } from 'url'
+import fs from 'fs'
+
+import { Categories } from './collections/Categories'
+import { ContactSubmissions } from './collections/ContactSubmissions'
+import { FormCustom2Submissions } from './collections/FormCustom2Submissions'
+import { Fonts } from './collections/Fonts'
+import { Media } from './collections/Media'
+import { Pages } from './collections/Pages'
+import { Posts } from './collections/Posts'
+import { Users } from './collections/Users'
+import { Footer } from './Footer/config'
+import { Header } from './Header/config'
+import { plugins } from './plugins'
+import { defaultLexical } from '@/fields/defaultLexical'
+import { getServerSideURL } from './utilities/getURL'
+
+const filename = fileURLToPath(import.meta.url)
+const dirname = path.dirname(filename)
+// Obtener la raíz del proyecto (un nivel arriba de src/)
+const projectRoot = path.resolve(dirname, '..')
+
+// Determinar si estamos en desarrollo local
+// Usamos solo ENVIRONMENT porque NODE_ENV puede ser 'production' durante 'npm run build'
+// pero seguimos necesitando el certificado local para la DB de desarrollo
+// En producción real (CI/DigitalOcean), ENVIRONMENT no será 'development'
+const isLocalDevelopment = process.env.ENVIRONMENT === 'development'
+
+// Configurar SSL según el entorno
+const getSSLConfig = () => {
+  const databaseUri = process.env.DATABASE_URI || ''
+  // Postgres local (localhost/127.0.0.1) normalmente no tiene SSL: desactivar SSL para evitar "The server does not support SSL connections"
+  if (/localhost|127\.0\.0\.1/.test(databaseUri)) {
+    return false
+  }
+  // Verificar si la URI ya incluye sslrootcert (caso de CI/GitHub Actions)
+  const uriHasSSLRootCert = databaseUri.includes('sslrootcert=')
+  
+  // Usar certificado local si estamos en desarrollo local y el certificado está configurado
+  // Esto funciona tanto para 'npm run dev' como para 'npm run build' local
+  if (isLocalDevelopment && process.env.DB_SSL_CA_PATH) {
+    // En desarrollo: usar el certificado CA
+    // Resolver la ruta de forma absoluta para evitar problemas con rutas relativas
+    const certPath = path.isAbsolute(process.env.DB_SSL_CA_PATH)
+      ? process.env.DB_SSL_CA_PATH
+      : path.resolve(projectRoot, process.env.DB_SSL_CA_PATH)
+    
+    // Verificar que el certificado existe antes de intentar leerlo
+    if (!fs.existsSync(certPath)) {
+      console.warn(`[SSL Config] Certificate file not found at: ${certPath}, falling back to rejectUnauthorized: false`)
+      return {
+        rejectUnauthorized: false,
+      }
+    }
+    
+    const caCert = fs.readFileSync(certPath, 'utf8').trim()
+    
+    return {
+      rejectUnauthorized: false,
+      ca: caCert,
+      checkServerIdentity: () => {
+        return undefined
+      },
+    }
+  }
+  
+  // En producción o CI: 
+  // Si la URI ya incluye sslrootcert (como en GitHub Actions), no pasar configuración SSL adicional
+  // El driver de PostgreSQL usará automáticamente el certificado de la URI
+  // Si no incluye sslrootcert, usar rejectUnauthorized: false (suficiente para DO en producción)
+  if (uriHasSSLRootCert) {
+    // No pasar configuración SSL cuando ya está en la URI para evitar conflictos
+    return undefined
+  }
+  
+  return {
+    rejectUnauthorized: false,
+  }
+}
+
+export default buildConfig({
+  admin: {
+    components: {
+      // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
+      // Feel free to delete this at any time. Simply remove the line below.
+      beforeLogin: ['@/components/BeforeLogin'],
+      // The `BeforeDashboard` component renders the 'welcome' block that you see after logging into your admin panel.
+      // Feel free to delete this at any time. Simply remove the line below.
+      // beforeDashboard: ['@/components/BeforeDashboard'], // Comentado para ocultar el mensaje del dashboard
+      // Componente personalizado para CSS del admin panel
+      afterNavLinks: ['@/components/AdminCustomCSS'],
+    },
+    importMap: {
+      baseDir: path.resolve(dirname),
+    },
+    user: Users.slug,
+    livePreview: {
+      breakpoints: [
+        {
+          label: 'Mobile',
+          name: 'mobile',
+          width: 375,
+          height: 667,
+        },
+        {
+          label: 'Tablet',
+          name: 'tablet',
+          width: 768,
+          height: 1024,
+        },
+        {
+          label: 'Desktop',
+          name: 'desktop',
+          width: 1440,
+          height: 900,
+        },
+      ],
+    },
+  },
+  // This config helps us configure global or default features that the other editors can inherit
+  editor: defaultLexical,
+  db: postgresAdapter({
+    pool: {
+      connectionString: process.env.DATABASE_URI || '',
+      ssl: getSSLConfig(),
+    },
+    // Desactivar push solo cuando se ejecuta migrate:one
+    push: process.env.PAYLOAD_DISABLE_PUSH !== '1',
+  }),
+  collections: [Pages, Posts, Media, Fonts, Categories, Users, ContactSubmissions, FormCustom2Submissions],
+  cors: (() => {
+    const serverURL = getServerSideURL()
+    return serverURL ? [serverURL] : []
+  })(),
+  globals: [Header, Footer],
+  plugins: [
+    ...plugins,
+    // Plugin oficial de Google Cloud Storage para la colección de media
+    ...(process.env.GCS_BUCKET_NAME
+      ? [
+          gcsStorage({
+            collections: {
+              media: true,
+              fonts: true,
+            } as any,
+            bucket: process.env.GCS_BUCKET_NAME,
+            options: process.env.GCS_KEY_FILENAME
+              ? {
+                  keyFilename: process.env.GCS_KEY_FILENAME,
+                }
+              : process.env.GCS_PROJECT_ID && process.env.GCS_CLIENT_EMAIL && process.env.GCS_PRIVATE_KEY
+                ? {
+                    projectId: process.env.GCS_PROJECT_ID,
+                    credentials: {
+                      client_email: process.env.GCS_CLIENT_EMAIL,
+                      private_key: process.env.GCS_PRIVATE_KEY.replace(/\\n/g, '\n'),
+                    },
+                  }
+                : {},
+          }),
+        ]
+      : []),
+  ],
+  secret: process.env.PAYLOAD_SECRET,
+  sharp,
+  typescript: {
+    outputFile: path.resolve(dirname, 'payload-types.ts'),
+  },
+  jobs: {
+    access: {
+      run: ({ req }: { req: PayloadRequest }): boolean => {
+        // Allow logged in users to execute this endpoint (default)
+        if (req.user) return true
+
+        // If there is no logged in user, then check
+        // for the Vercel Cron secret to be present as an
+        // Authorization header:
+        const authHeader = req.headers.get('authorization')
+        return authHeader === `Bearer ${process.env.CRON_SECRET}`
+      },
+    },
+    tasks: [],
+  },
+})

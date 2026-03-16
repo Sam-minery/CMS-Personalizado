@@ -1,0 +1,351 @@
+'use client'
+
+import React, { useState } from 'react'
+import RichText from '@/components/RichText'
+import { CMSLink } from '@/components/Link'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
+import { useGoogleFont } from '@/utilities/useGoogleFont'
+import { sanitizeSVG } from '@/utilities/sanitizeHTML'
+import { cn } from '@/utilities/ui'
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
+
+/** Tipos locales para no depender de payload-types (evita fallos de build si el bloque no está en projectConfig). */
+type FontFile = {
+  url?: string
+  filename?: string
+  name?: string
+}
+
+type LinkGroup = {
+  type?: 'reference' | 'custom' | null
+  url?: string | null
+  newTab?: boolean | null
+  label?: string | null
+  reference?: {
+    relationTo?: 'pages' | 'posts'
+    value?: { slug?: string } | string | number
+  } | null
+}
+
+type FormStep = {
+  stepRichText?: DefaultTypedEditorState | null
+  options?: Array<{ optionRichText?: DefaultTypedEditorState | null }> | null
+}
+
+type Props = {
+  anchorId?: string | null
+  introRichText?: DefaultTypedEditorState | null
+  startButtonLabel?: string | null
+  startButtonIconSVG?: string | null
+  steps?: FormStep[] | null
+  endRichText?: DefaultTypedEditorState | null
+  endButtonLink?: LinkGroup | null
+  endButtonLabel?: string | null
+  endButtonIconSVG?: string | null
+  optionsBackgroundColor?: string | null
+  backgroundColor?: string | null
+  formBackgroundColor?: string | null
+  textColor?: string | null
+  boldTextColor?: string | null
+  buttonBackgroundColor?: string | null
+  buttonTextColor?: string | null
+  fontFamily?: string | null
+  useCustomFont?: boolean | null
+  customFontFile?: FontFile | number | null
+  customFontName?: string | null
+}
+
+function sanitizeAnchorId(value: string | null | undefined, fallback: string): string {
+  const s = (value || '').trim().replace(/[^a-zA-Z0-9_-]/g, '')
+  return s || fallback
+}
+
+function getHref(link: LinkGroup | null | undefined): string {
+  if (!link) return '#'
+  if (link.type === 'custom' && link.url) return link.url
+  if (link.type === 'reference' && link.reference?.value) {
+    const val = link.reference.value
+    const slug = typeof val === 'object' && val !== null && 'slug' in val ? (val as { slug: string }).slug : null
+    if (slug) {
+      const base = link.reference.relationTo !== 'pages' ? `/${link.reference.relationTo}` : ''
+      return `${base}/${slug}`
+    }
+  }
+  return '#'
+}
+
+export const MultiFormSendaBlock: React.FC<Props> = (props) => {
+  const {
+    anchorId,
+    introRichText,
+    startButtonLabel = 'Comenzar',
+    startButtonIconSVG,
+    steps = [],
+    endRichText,
+    endButtonLink,
+    endButtonLabel,
+    endButtonIconSVG,
+    optionsBackgroundColor,
+    backgroundColor,
+    formBackgroundColor = '#ffffff',
+    textColor,
+    boldTextColor,
+    buttonBackgroundColor,
+    buttonTextColor,
+    fontFamily,
+    useCustomFont,
+    customFontFile,
+    customFontName,
+  } = props
+
+  const [formStarted, setFormStarted] = useState(false)
+  const [currentStepIndex, setCurrentStepIndex] = useState(0)
+
+  const uniqueId = React.useId().replace(/:/g, '-')
+  const styleId = `multi-form-senda-${uniqueId}`
+
+  const customFontFileObj =
+    customFontFile && typeof customFontFile === 'object' ? customFontFile : null
+  const customFontFamilyName =
+    customFontName?.trim() ||
+    customFontFileObj?.name?.trim() ||
+    (customFontFileObj?.filename ? customFontFileObj.filename.replace(/\.[^.]+$/, '') : undefined)
+
+  const getFontFamily = () => {
+    if (useCustomFont && customFontFamilyName) return `"${customFontFamilyName}"`
+    if (fontFamily && fontFamily !== 'default') return fontFamily
+    return undefined
+  }
+
+  const selectedFontFamily = getFontFamily()
+  useGoogleFont(selectedFontFamily)
+
+  const fontFileUrl = customFontFileObj?.url
+    ? getMediaUrl(customFontFileObj.url).replace(/([^:]\/)\/+/g, '$1')
+    : null
+  const fontFileNameOrUrl = customFontFileObj?.filename || customFontFileObj?.url || ''
+  const isValidFontFile =
+    fontFileUrl && /\.(woff|woff2|ttf|otf)(\?.*)?$/i.test(fontFileNameOrUrl)
+
+  const buildStyles = () => {
+    const styles: string[] = []
+
+    if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
+      styles.push(`
+        @font-face {
+          font-family: "${customFontFamilyName.replace(/"/g, '\\"')}";
+          src: url("${fontFileUrl}") format("woff2"), url("${fontFileUrl}") format("woff");
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }
+      `)
+    }
+
+    const fontValue =
+      useCustomFont && customFontFamilyName && isValidFontFile
+        ? `"${customFontFamilyName.replace(/"/g, '\\"')}"`
+        : selectedFontFamily && !useCustomFont
+          ? selectedFontFamily
+          : ''
+    if (fontValue) {
+      styles.push(
+        `[data-mf-senda-font="${styleId}"], [data-mf-senda-font="${styleId}"] *, [data-mf-senda-font="${styleId}"] a, [data-mf-senda-font="${styleId}"] button { font-family: ${fontValue} !important; }`,
+      )
+    }
+    if (textColor) {
+      styles.push(
+        `[data-mf-senda-font="${styleId}"], [data-mf-senda-font="${styleId}"] p, [data-mf-senda-font="${styleId}"] h1, [data-mf-senda-font="${styleId}"] h2, [data-mf-senda-font="${styleId}"] h3, [data-mf-senda-font="${styleId}"] h4, [data-mf-senda-font="${styleId}"] span:not(strong):not(b), [data-mf-senda-font="${styleId}"] a { color: ${textColor} !important; }`,
+      )
+    }
+    if (boldTextColor) {
+      styles.push(
+        `[data-mf-senda-font="${styleId}"] strong, [data-mf-senda-font="${styleId}"] b { color: ${boldTextColor} !important; }`,
+      )
+    }
+    const btnRules: string[] = ['border-radius: 0.75rem !important;']
+    if (buttonBackgroundColor) btnRules.push(`background-color: ${buttonBackgroundColor} !important;`)
+    styles.push(`[data-mf-senda-font="${styleId}"] .mf-senda-btn { ${btnRules.join(' ')} }`)
+    if (buttonTextColor) {
+      styles.push(
+        `[data-mf-senda-font="${styleId}"] .mf-senda-btn, [data-mf-senda-font="${styleId}"] .mf-senda-btn * { color: ${buttonTextColor} !important; }`,
+      )
+    }
+    const boldColorForHover = boldTextColor ?? '#000000'
+    styles.push(
+      `[data-mf-senda-font="${styleId}"] .mf-senda-option-btn:hover .mf-senda-option-dot { box-shadow: inset 0 0 0 6px ${boldColorForHover} !important; }`,
+    )
+
+    return styles.join('\n')
+  }
+
+  const combinedStyles = buildStyles()
+  const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined
+  const stepsList = steps ?? []
+  const stepCount = stepsList.length
+  const isOnSteps = formStarted && currentStepIndex < stepCount
+  const isFinished = formStarted && currentStepIndex >= stepCount
+  const currentStep = isOnSteps && stepsList[currentStepIndex] ? stepsList[currentStepIndex] : null
+  const options = currentStep?.options ?? []
+
+  return (
+    <>
+      {combinedStyles && <style>{combinedStyles}</style>}
+      <section
+        id={sanitizeAnchorId(anchorId, 'multi-form-senda')}
+        data-mf-senda-font={styleId}
+        className="relative w-full py-16 md:py-20 lg:py-24 px-4 md:px-6"
+        style={
+          backgroundColor != null && backgroundColor !== ''
+            ? { backgroundColor: backgroundColor as React.CSSProperties['backgroundColor'] }
+            : undefined
+        }
+      >
+        <div className="container">
+          <div
+            className="mx-auto max-w-2xl rounded-2xl p-6 md:p-8 shadow-lg"
+            style={{
+              backgroundColor: (formBackgroundColor ?? '#ffffff') as React.CSSProperties['backgroundColor'],
+            }}
+          >
+            {/* Línea temporal: móvil ancho completo; desktop ancho 1/3 del contenedor, centrada */}
+            {stepCount > 0 && (
+              <div className="w-full lg:w-1/3 lg:mx-auto mb-8">
+                <div className="flex items-center gap-1 lg:gap-2">
+                  {stepsList.map((_, index) => {
+                    const isActive = formStarted && index <= currentStepIndex
+                    const activeColor = (boldTextColor as React.CSSProperties['backgroundColor']) ?? '#000000'
+                    const inactiveColor = (textColor as React.CSSProperties['backgroundColor']) ?? '#000000'
+                    return (
+                      <div
+                        key={index}
+                        className="h-1.5 flex-1 min-w-0 rounded-full transition-all duration-300 lg:h-2"
+                        style={{
+                          backgroundColor: isActive ? activeColor : inactiveColor,
+                          opacity: isActive ? 1 : 0.6,
+                        }}
+                        aria-hidden
+                      />
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Intro: antes de empezar */}
+            {!formStarted && (
+              <div style={fontStyle}>
+                {introRichText && (
+                  <div className="mb-8 lg:px-28 [&_h1]:text-2xl [&_h1]:md:text-3xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:md:text-2xl [&_h2]:font-bold [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6">
+                    <RichText data={introRichText} enableGutter={false} enableProse={false} />
+                  </div>
+                )}
+                <div className="lg:flex lg:justify-center">
+                  <button
+                    type="button"
+                    onClick={() => setFormStarted(true)}
+                    className="mf-senda-btn inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-semibold transition-all hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400"
+                    style={fontStyle}
+                  >
+                    {startButtonLabel}
+                    {startButtonIconSVG?.trim() && (
+                      <span
+                        className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                        dangerouslySetInnerHTML={{
+                          __html: sanitizeSVG(startButtonIconSVG).replace(/\sheight=["'][^"']*["']/gi, ''),
+                        }}
+                        aria-hidden
+                      />
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Paso actual */}
+            {isOnSteps && currentStep && (
+              <div style={fontStyle}>
+                {currentStep.stepRichText && (
+                  <div className="mb-8 lg:px-28 [&_h1]:text-2xl [&_h1]:md:text-3xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:md:text-2xl [&_h2]:font-bold [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6">
+                    <RichText data={currentStep.stepRichText} enableGutter={false} enableProse={false} />
+                  </div>
+                )}
+                <div className="flex flex-col gap-3">
+                  {options.map((opt, optIndex) => (
+                    <button
+                      key={optIndex}
+                      type="button"
+                      onClick={() => setCurrentStepIndex((i) => i + 1)}
+                      className="mf-senda-option-btn flex w-full items-start gap-3 text-left rounded-xl px-5 py-4 font-medium transition-all hover:opacity-90 focus:outline-none border border-neutral-200 dark:border-neutral-600"
+                      style={{
+                        ...fontStyle,
+                        ...(optionsBackgroundColor != null && optionsBackgroundColor !== ''
+                          ? { backgroundColor: optionsBackgroundColor as React.CSSProperties['backgroundColor'] }
+                          : {}),
+                      }}
+                    >
+                      <span
+                        className="mf-senda-option-dot mt-1.5 h-5 w-5 flex-shrink-0 rounded-full border-2 border-neutral-800 bg-transparent transition-[box-shadow] duration-200"
+                        aria-hidden
+                      />
+                      {opt.optionRichText && (
+                        <span className="min-w-0 flex-1 [&_p]:m-0 [&_h1]:text-lg [&_h2]:text-base [&_h3]:text-base [&_h4]:text-sm">
+                          <RichText data={opt.optionRichText} enableGutter={false} enableProse={false} />
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Final: texto + botón con enlace */}
+            {isFinished && (
+              <div style={fontStyle}>
+                {endRichText && (
+                  <div className="mb-8 lg:px-28 [&_h1]:text-2xl [&_h1]:md:text-3xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:md:text-2xl [&_h2]:font-bold [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6">
+                    <RichText data={endRichText} enableGutter={false} enableProse={false} />
+                  </div>
+                )}
+                {endButtonLink && (
+                  <div className="lg:flex lg:justify-center">
+                    <CMSLink
+                      type={endButtonLink.type ?? undefined}
+                      reference={
+                        endButtonLink.reference?.relationTo && endButtonLink.reference?.value != null
+                          ? {
+                              relationTo: endButtonLink.reference.relationTo,
+                              value: endButtonLink.reference.value as React.ComponentProps<
+                                typeof CMSLink
+                              >['reference'] extends { value: infer V } ? V : never,
+                            }
+                          : undefined
+                      }
+                      url={endButtonLink.url ?? undefined}
+                      newTab={endButtonLink.newTab ?? undefined}
+                      appearance="default"
+                      size="default"
+                      className="mf-senda-btn inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-semibold transition-all hover:opacity-90"
+                      style={fontStyle}
+                    >
+                      {endButtonLabel?.trim() || endButtonLink.label || 'Continuar'}
+                      {endButtonIconSVG?.trim() && (
+                        <span
+                          className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                          dangerouslySetInnerHTML={{
+                            __html: sanitizeSVG(endButtonIconSVG).replace(/\sheight=["'][^"']*["']/gi, ''),
+                          }}
+                          aria-hidden
+                        />
+                      )}
+                    </CMSLink>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}
