@@ -277,6 +277,19 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
       styles.push(
         `[data-ps-font="${styleId}"] .pricing-senda-main-richtext h1, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h2, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h3, [data-ps-font="${styleId}"] .pricing-senda-main-richtext h4, [data-ps-font="${styleId}"] .pricing-senda-plan h1, [data-ps-font="${styleId}"] .pricing-senda-plan h2, [data-ps-font="${styleId}"] .pricing-senda-plan h3, [data-ps-font="${styleId}"] .pricing-senda-plan h4 { letter-spacing: 0.02em; }`,
       )
+      const weightRules: Array<[string, string]> = [
+        ['light', '300'],
+        ['regular', '400'],
+        ['medium', '500'],
+        ['semibold', '600'],
+        ['bold', '700'],
+        ['heavy', '800'],
+      ]
+      for (const [key, w] of weightRules) {
+        styles.push(
+          `[data-ps-font="${styleId}"] [data-text-weight="${key}"] { font-weight: ${w} !important; }`,
+        )
+      }
     }
     /* sub/sup como “texto secundario” en la misma línea: estilo tipo h4, sin bajar/subir */
     styles.push(

@@ -26,6 +26,10 @@ const fontGroupWeightState = {
     semibold: { label: 'Semibold', css: { 'font-weight': '600' } },
     heavy: { label: 'Heavy', css: { 'font-weight': '800' } },
   },
+  /** Tamaño “texto pequeño” para alinear con font-group typography.caption. */
+  size: {
+    caption: { label: 'Texto pequeño', css: {} },
+  },
 } as const
 
 const richTextEditor = () =>
@@ -33,7 +37,7 @@ const richTextEditor = () =>
     features: ({ rootFeatures }) => [
       ...rootFeatures,
       ParagraphFeature(),
-      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
       AlignFeature(),
       IndentFeature(),
       UnorderedListFeature(),

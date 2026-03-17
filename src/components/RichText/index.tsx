@@ -91,11 +91,35 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
       const rawStyle = node?.style ?? node?.__style
       const cssString = typeof rawStyle === 'string' ? rawStyle : ''
       if (cssString) Object.assign(style, cssStringToReactStyle(cssString))
-      if (node?.weight && typeof node.weight === 'string' && TEXT_STATE_WEIGHT_MAP[node.weight] != null) {
-        style.fontWeight = TEXT_STATE_WEIGHT_MAP[node.weight]
+      // Lexical NodeState puede serializarse como node.weight o node.__state?.weight
+      let weightValue: string | undefined =
+        typeof node?.weight === 'string'
+          ? node.weight
+          : typeof (node?.__state as Record<string, unknown>)?.weight === 'string'
+            ? (node.__state as Record<string, string>).weight
+            : undefined
+      if (weightValue && TEXT_STATE_WEIGHT_MAP[weightValue] != null) {
+        style.fontWeight = TEXT_STATE_WEIGHT_MAP[weightValue]
       }
-      if (Object.keys(style).length === 0) return inner
-      return React.createElement('span', { style }, inner)
+      // Si el peso vino solo por CSS (ej. style: "font-weight: 600"), mapear a key para data-text-weight
+      if (!weightValue && typeof style.fontWeight === 'number') {
+        const numToKey = Object.entries(TEXT_STATE_WEIGHT_MAP).find(([, n]) => n === style.fontWeight)
+        if (numToKey) weightValue = numToKey[0]
+      }
+      const sizeValue =
+        typeof node?.size === 'string'
+          ? node.size
+          : typeof (node?.__state as Record<string, unknown>)?.size === 'string'
+            ? (node.__state as Record<string, string>).size
+            : undefined
+      const isCaption = sizeValue === 'caption'
+      if (Object.keys(style).length === 0 && !weightValue && !isCaption) return inner
+      const dataAttrs: Record<string, string> = {}
+      if (weightValue && TEXT_STATE_WEIGHT_MAP[weightValue] != null) {
+        dataAttrs['data-text-weight'] = weightValue
+      }
+      const className = isCaption ? 'caption' : undefined
+      return React.createElement('span', { style, className, ...dataAttrs }, inner)
     },
     ...LinkJSXConverter({ internalDocToHref }),
     blocks: {
