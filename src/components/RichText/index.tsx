@@ -1,3 +1,4 @@
+import React from 'react'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import {
   DefaultNodeTypes,
@@ -18,6 +19,31 @@ import type { Media as MediaType } from '@/payload-types'
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { cn } from '@/utilities/ui'
+
+/** Convierte "font-weight: 600" -> { fontWeight: 600 }; soporta varias propiedades. */
+function cssStringToReactStyle(cssString: string): React.CSSProperties {
+  const style: Record<string, string | number> = {}
+  if (!cssString || typeof cssString !== 'string') return style
+  const decls = cssString.split(';').map((s) => s.trim()).filter(Boolean)
+  for (const decl of decls) {
+    const colon = decl.indexOf(':')
+    if (colon === -1) continue
+    const prop = decl.slice(0, colon).trim().replace(/-([a-z])/g, (_, l) => l.toUpperCase())
+    const value = decl.slice(colon + 1).trim()
+    if (prop && value) style[prop] = /^\d+$/.test(value) ? parseInt(value, 10) : value
+  }
+  return style as React.CSSProperties
+}
+
+/** Pesos de TextStateFeature (weight) -> font-weight para el frontend. */
+const TEXT_STATE_WEIGHT_MAP: Record<string, number> = {
+  light: 300,
+  regular: 400,
+  medium: 500,
+  semibold: 600,
+  bold: 700,
+  heavy: 800,
+}
 
 /** Tipos locales: los bloques embebidos en rich text pueden no estar en enabledBlockSlugs, así que no importamos *Block desde payload-types. */
 type BannerBlockProps = {
@@ -51,10 +77,28 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   return relationTo === 'posts' ? `/posts/${slug}` : `/${slug}`
 }
 
-const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
-  ...defaultConverters,
-  ...LinkJSXConverter({ internalDocToHref }),
-  blocks: {
+const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => {
+  const defaultTextConverter = defaultConverters.text
+  return {
+    ...defaultConverters,
+    text: (args) => {
+      const inner =
+        typeof defaultTextConverter === 'function'
+          ? defaultTextConverter(args)
+          : (args.node?.text as string) ?? ''
+      const node = args.node as Record<string, unknown> & { text?: string; style?: string; weight?: string }
+      const style: React.CSSProperties = {}
+      const rawStyle = node?.style ?? node?.__style
+      const cssString = typeof rawStyle === 'string' ? rawStyle : ''
+      if (cssString) Object.assign(style, cssStringToReactStyle(cssString))
+      if (node?.weight && typeof node.weight === 'string' && TEXT_STATE_WEIGHT_MAP[node.weight] != null) {
+        style.fontWeight = TEXT_STATE_WEIGHT_MAP[node.weight]
+      }
+      if (Object.keys(style).length === 0) return inner
+      return React.createElement('span', { style }, inner)
+    },
+    ...LinkJSXConverter({ internalDocToHref }),
+    blocks: {
     banner: ({ node }: { node: { fields: BannerBlockProps } }) => (
       <BannerBlock className="col-start-2 mb-4" {...node.fields} />
     ),
@@ -75,7 +119,8 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
       <CallToActionBlock {...node.fields} />
     ),
   },
-})
+  }
+}
 
 type Props = {
   data: DefaultTypedEditorState
