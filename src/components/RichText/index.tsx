@@ -76,6 +76,33 @@ function getWeightFromNode(node: Record<string, unknown>): string | undefined {
   return findWeight(node)
 }
 
+/** Extrae el valor "size" del nodo (p. ej. "caption" para texto pequeño). */
+function getSizeFromNode(node: Record<string, unknown>): string | undefined {
+  if (typeof node?.size === 'string') return node.size
+  const state = node?.__state as Record<string, unknown> | undefined
+  if (state && typeof state?.size === 'string') return state.size
+  for (const key of Object.keys(node)) {
+    const val = node[key]
+    if (val && typeof val === 'object' && !Array.isArray(val) && 'size' in val) {
+      const s = (val as Record<string, unknown>).size
+      if (typeof s === 'string') return s
+    }
+  }
+  const seen = new Set<object>()
+  function findSize(obj: unknown): string | undefined {
+    if (obj == null || typeof obj !== 'object') return undefined
+    if (seen.has(obj as object)) return undefined
+    seen.add(obj as object)
+    if (typeof (obj as Record<string, unknown>).size === 'string') return (obj as Record<string, string>).size
+    for (const v of Object.values(obj as Record<string, unknown>)) {
+      const found = findSize(v)
+      if (found) return found
+    }
+    return undefined
+  }
+  return findSize(node)
+}
+
 /** Tipos locales: los bloques embebidos en rich text pueden no estar en enabledBlockSlugs, así que no importamos *Block desde payload-types. */
 type BannerBlockProps = {
   style?: 'info' | 'warning' | 'error' | 'success'
@@ -131,12 +158,7 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
         const numToKey = Object.entries(TEXT_STATE_WEIGHT_MAP).find(([, n]) => n === style.fontWeight)
         if (numToKey) weightValue = numToKey[0]
       }
-      const sizeValue =
-        typeof node?.size === 'string'
-          ? node.size
-          : typeof (node?.__state as Record<string, unknown>)?.size === 'string'
-            ? (node.__state as Record<string, string>).size
-            : undefined
+      const sizeValue = getSizeFromNode(node)
       const isCaption = sizeValue === 'caption'
       if (Object.keys(style).length === 0 && !weightValue && !isCaption) return inner
       const dataAttrs: Record<string, string> = {
@@ -147,6 +169,7 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
         dataAttrs['data-text-weight'] = weightValue
       }
       const className = isCaption ? 'caption' : undefined
+      if (isCaption) dataAttrs['data-text-size'] = 'caption'
       return React.createElement('span', { style, className, ...dataAttrs }, inner)
     },
     ...LinkJSXConverter({ internalDocToHref }),

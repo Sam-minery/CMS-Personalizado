@@ -230,8 +230,15 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
           styles.push(
             `${mainRichtext} p, ${mainRichtext} li, ${planRichtext} p, ${planRichtext} li, ${payloadRichtext} p, ${payloadRichtext} li { font-size: ${typo.body} !important; }`,
           )
-        if (typo.caption)
+        if (typo.caption) {
           styles.push(`${mainRichtext} .caption, ${planRichtext} .caption, ${payloadRichtext} .caption { font-size: ${typo.caption} !important; }`)
+          styles.push(
+            `${mainRichtext} p .caption, ${mainRichtext} .payload-richtext .caption, ${mainRichtext} span.caption, ${planRichtext} p .caption, ${planRichtext} span.caption, ${payloadRichtext} span.caption { font-size: ${typo.caption} !important; }`,
+          )
+          styles.push(
+            `[data-ps-font="${styleId}"] [data-text-size="caption"] { font-size: ${typo.caption} !important; }`,
+          )
+        }
       }
     } else if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
       styles.push(`
