@@ -103,15 +103,15 @@ export const NavbarSimpleSendaBlock: React.FC<Props> = (props) => {
         ) : null}
       </div>
 
-      {/* Imagen: centrada */}
-      <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center pt-1">
+      {/* Imagen: centrada; en desktop más padding superior y tamaño reducido (móvil sin cambios) */}
+      <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center pt-1 md:pt-4">
         {imageSrc ? (
           <Image
             src={imageSrc}
             alt={imageAlt}
             width={480}
             height={80}
-            className="h-9 w-auto max-w-[200px] object-contain object-center md:h-14 md:max-w-[420px] lg:h-16 lg:max-w-[480px]"
+            className="h-9 w-auto max-w-[200px] object-contain object-center md:h-11 md:max-w-[280px] lg:h-12 lg:max-w-[320px]"
           />
         ) : null}
       </div>

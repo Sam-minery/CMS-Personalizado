@@ -229,7 +229,7 @@ export const RenderBlocks: React.FC<{
             if (Block) {
               return (
                 <div key={index}>
-                  <Block {...block} />
+                  <Block {...block} blockIndex={index} />
                 </div>
               )
             }

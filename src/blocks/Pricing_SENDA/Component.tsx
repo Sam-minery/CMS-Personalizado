@@ -105,6 +105,8 @@ function colorWithAlpha(color: string | null | undefined, alpha: number): string
 
 type PricingSendaProps = {
   anchorId?: string | null
+  /** Índice del bloque en el layout (pasado por RenderBlocks); se usa para un styleId estable cuando no hay anchorId */
+  blockIndex?: number
   richText?: DefaultTypedEditorState | null
   plans?: Plan[] | null
   backgroundColor?: string | null
@@ -128,6 +130,7 @@ const hasLink = (plan: Plan): boolean => {
 export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
   const {
     anchorId,
+    blockIndex = 0,
     richText,
     plans,
     backgroundColor,
@@ -141,8 +144,10 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
     customFontName,
   } = props
 
-  const uniqueId = React.useId().replace(/:/g, '-')
-  const styleId = `pricing-senda-${uniqueId}`
+  // ID estable (mismo en servidor y cliente) para que [data-ps-font] aplique los estilos del font group.
+  // Con anchorId usamos ese valor; si no hay o queda vacío, usamos el índice del bloque en el layout.
+  const anchorSlug = sanitizeAnchorId(anchorId, '')
+  const styleId = anchorSlug ? `pricing-senda-${anchorSlug}` : `pricing-senda-block-${blockIndex}`
 
   const fontGroupObj =
     useFontGroup && fontGroup && typeof fontGroup === 'object' ? (fontGroup as FontGroupData) : null
@@ -175,6 +180,7 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
     const sel = `[data-ps-font="${styleId}"]`
     const mainRichtext = `${sel} .pricing-senda-main-richtext`
     const planRichtext = `${sel} .pricing-senda-plan`
+    const payloadRichtext = `${sel} .payload-richtext`
 
     if (fontGroupObj?.fontFamilyName && Array.isArray(fontGroupObj.fonts)) {
       const familyName = fontGroupObj.fontFamilyName.replace(/"/g, '\\"')
@@ -189,11 +195,13 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
           weight: '400',
           style: 'normal',
         }
-        if (!fontUrl || !/\.(woff|woff2|ttf|otf)(\?.*)?$/i.test(fontUrl)) continue
+        const formatMatch = fontUrl.match(/\.(woff2?|ttf|otf)(\?.*)?$/i)
+        const format = formatMatch ? (formatMatch[1].toLowerCase() === 'woff2' ? 'woff2' : formatMatch[1].toLowerCase() === 'woff' ? 'woff' : formatMatch[1].toLowerCase() === 'ttf' ? 'truetype' : 'opentype') : 'woff2'
+        if (!fontUrl || !formatMatch) continue
         styles.push(`
           @font-face {
             font-family: "${familyName}";
-            src: url("${fontUrl}") format("woff2"), url("${fontUrl}") format("woff");
+            src: url("${fontUrl}") format("${format}");
             font-weight: ${weight};
             font-style: ${style};
             font-display: swap;
@@ -202,28 +210,28 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
       }
       const fontValue = `"${fontGroupObj.fontFamilyName.replace(/"/g, '\\"')}"`
       styles.push(
-        `${sel}, ${sel} *, ${sel} a, ${sel} span { font-family: ${fontValue} !important; }`,
+        `${sel}, ${sel} *, ${sel} a, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${fontValue} !important; }`,
       )
       const typo = fontGroupObj.typography
       if (typo) {
         if (typo.h1)
-          styles.push(`${mainRichtext} h1, ${planRichtext} h1 { font-size: ${typo.h1} !important; }`)
+          styles.push(`${mainRichtext} h1, ${planRichtext} h1, ${payloadRichtext} h1 { font-size: ${typo.h1} !important; }`)
         if (typo.h2)
-          styles.push(`${mainRichtext} h2, ${planRichtext} h2 { font-size: ${typo.h2} !important; }`)
+          styles.push(`${mainRichtext} h2, ${planRichtext} h2, ${payloadRichtext} h2 { font-size: ${typo.h2} !important; }`)
         if (typo.h3)
-          styles.push(`${mainRichtext} h3, ${planRichtext} h3 { font-size: ${typo.h3} !important; }`)
+          styles.push(`${mainRichtext} h3, ${planRichtext} h3, ${payloadRichtext} h3 { font-size: ${typo.h3} !important; }`)
         if (typo.h4)
-          styles.push(`${mainRichtext} h4, ${planRichtext} h4 { font-size: ${typo.h4} !important; }`)
+          styles.push(`${mainRichtext} h4, ${planRichtext} h4, ${payloadRichtext} h4 { font-size: ${typo.h4} !important; }`)
         if (typo.h5)
-          styles.push(`${mainRichtext} h5, ${planRichtext} h5 { font-size: ${typo.h5} !important; }`)
+          styles.push(`${mainRichtext} h5, ${planRichtext} h5, ${payloadRichtext} h5 { font-size: ${typo.h5} !important; }`)
         if (typo.h6)
-          styles.push(`${mainRichtext} h6, ${planRichtext} h6 { font-size: ${typo.h6} !important; }`)
+          styles.push(`${mainRichtext} h6, ${planRichtext} h6, ${payloadRichtext} h6 { font-size: ${typo.h6} !important; }`)
         if (typo.body)
           styles.push(
-            `${mainRichtext} p, ${mainRichtext} li, ${planRichtext} p, ${planRichtext} li { font-size: ${typo.body} !important; }`,
+            `${mainRichtext} p, ${mainRichtext} li, ${planRichtext} p, ${planRichtext} li, ${payloadRichtext} p, ${payloadRichtext} li { font-size: ${typo.body} !important; }`,
           )
         if (typo.caption)
-          styles.push(`${mainRichtext} .caption, ${planRichtext} .caption { font-size: ${typo.caption} !important; }`)
+          styles.push(`${mainRichtext} .caption, ${planRichtext} .caption, ${payloadRichtext} .caption { font-size: ${typo.caption} !important; }`)
       }
     } else if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
       styles.push(`
