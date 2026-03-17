@@ -45,6 +45,37 @@ const TEXT_STATE_WEIGHT_MAP: Record<string, number> = {
   heavy: 800,
 }
 
+/** Extrae el valor "weight" del nodo desde cualquier ubicación (Lexical puede serializar el estado en distintas claves). */
+function getWeightFromNode(node: Record<string, unknown>): string | undefined {
+  if (typeof node?.weight === 'string' && TEXT_STATE_WEIGHT_MAP[node.weight] != null) return node.weight
+  const state = node?.__state as Record<string, unknown> | undefined
+  if (state && typeof state?.weight === 'string' && TEXT_STATE_WEIGHT_MAP[state.weight] != null) return state.weight
+  for (const key of Object.keys(node)) {
+    const val = node[key]
+    if (val && typeof val === 'object' && !Array.isArray(val) && 'weight' in val) {
+      const w = (val as Record<string, unknown>).weight
+      if (typeof w === 'string' && TEXT_STATE_WEIGHT_MAP[w] != null) return w
+    }
+  }
+  // Último recurso: buscar cualquier valor string que sea un peso válido (p. ej. en arrays o claves numéricas)
+  const seen = new Set<object>()
+  function findWeight(obj: unknown): string | undefined {
+    if (obj == null || typeof obj !== 'object') return undefined
+    if (seen.has(obj)) return undefined
+    seen.add(obj as object)
+    if (typeof (obj as Record<string, unknown>).weight === 'string') {
+      const w = (obj as Record<string, unknown>).weight as string
+      if (TEXT_STATE_WEIGHT_MAP[w] != null) return w
+    }
+    for (const v of Object.values(obj as Record<string, unknown>)) {
+      const found = findWeight(v)
+      if (found) return found
+    }
+    return undefined
+  }
+  return findWeight(node)
+}
+
 /** Tipos locales: los bloques embebidos en rich text pueden no estar en enabledBlockSlugs, así que no importamos *Block desde payload-types. */
 type BannerBlockProps = {
   style?: 'info' | 'warning' | 'error' | 'success'
@@ -91,13 +122,7 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
       const rawStyle = node?.style ?? node?.__style
       const cssString = typeof rawStyle === 'string' ? rawStyle : ''
       if (cssString) Object.assign(style, cssStringToReactStyle(cssString))
-      // Lexical NodeState puede serializarse como node.weight o node.__state?.weight
-      let weightValue: string | undefined =
-        typeof node?.weight === 'string'
-          ? node.weight
-          : typeof (node?.__state as Record<string, unknown>)?.weight === 'string'
-            ? (node.__state as Record<string, string>).weight
-            : undefined
+      let weightValue = getWeightFromNode(node)
       if (weightValue && TEXT_STATE_WEIGHT_MAP[weightValue] != null) {
         style.fontWeight = TEXT_STATE_WEIGHT_MAP[weightValue]
       }
@@ -114,7 +139,10 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
             : undefined
       const isCaption = sizeValue === 'caption'
       if (Object.keys(style).length === 0 && !weightValue && !isCaption) return inner
-      const dataAttrs: Record<string, string> = {}
+      const dataAttrs: Record<string, string> = {
+        // En producción: inspecciona el DOM; si ves "no-weight" en texto formateado como semibold, el estado no viene en el JSON
+        'data-ps-weight-debug': weightValue && TEXT_STATE_WEIGHT_MAP[weightValue] != null ? weightValue : 'no-weight',
+      }
       if (weightValue && TEXT_STATE_WEIGHT_MAP[weightValue] != null) {
         dataAttrs['data-text-weight'] = weightValue
       }

@@ -289,6 +289,9 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
         styles.push(
           `[data-ps-font="${styleId}"] [data-text-weight="${key}"] { font-weight: ${w} !important; }`,
         )
+        styles.push(
+          `[data-ps-font="${styleId}"] .pricing-senda-main-richtext [data-text-weight="${key}"], [data-ps-font="${styleId}"] .pricing-senda-plan [data-text-weight="${key}"], [data-ps-font="${styleId}"] .payload-richtext [data-text-weight="${key}"] { font-weight: ${w} !important; }`,
+        )
       }
     }
     /* sub/sup como “texto secundario” en la misma línea: estilo tipo h4, sin bajar/subir */
