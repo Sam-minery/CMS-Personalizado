@@ -8,6 +8,7 @@
  */
 export const enabledBlockSlugs: string[] | null = [
   'cta1Senda',
+  'cta1SendaAlter',
   'cta2Senda',
   'cardsSenda',
   'multiFormSenda',

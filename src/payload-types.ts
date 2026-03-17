@@ -418,6 +418,7 @@ export interface Page {
   };
   layout: (
     | CTA1SendaBlock
+    | CTA1SendaAlterBlock
     | CTA2SendaBlock
     | CardsSendaBlock
     | MultiFormSendaBlock
@@ -809,6 +810,337 @@ export interface CTA1SendaBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'cta1Senda';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTA1SendaAlterBlock".
+ */
+export interface CTA1SendaAlterBlock {
+  /**
+   * ID para enlaces ancla (ej: mi-cta). Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  /**
+   * Contenido de cabecera (título y descripción en un único bloque). Se muestra en área 929×120px.
+   */
+  title: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Color del texto principal. Cualquier formato CSS válido: hex (#fff), rgb/rgba, o nombre (white).
+   */
+  textColor?: string | null;
+  /**
+   * Color para <strong> y <b>. Hex, rgb, rgba o nombre de color.
+   */
+  boldTextColor?: string | null;
+  /**
+   * Controla la altura mínima del bloque.
+   */
+  blockHeightMode?: ('auto' | 'viewport' | 'custom') | null;
+  /**
+   * Define la altura mínima en píxeles cuando la altura es "Personalizada (px)".
+   */
+  customBlockHeightPx?: number | null;
+  /**
+   * Elige si el fondo será un video, una imagen o un color sólido
+   */
+  backgroundType?: ('video' | 'image' | 'color') | null;
+  videocallSection: {
+    icon?: {
+      useMedia?: boolean | null;
+      mediaImage?: (number | null) | Media;
+      iconSVG?: string | null;
+    };
+    /**
+     * Ej: "Videollamada gratuita". RichText con formato.
+     */
+    labelRichText?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Hex, rgb, rgba o nombre.
+     */
+    labelTextColor?: string | null;
+    /**
+     * Hex, rgb, rgba o nombre.
+     */
+    buttonBackgroundColor?: string | null;
+    /**
+     * Hex, rgb, rgba o nombre.
+     */
+    buttonTextColor?: string | null;
+    /**
+     * Ej. flecha a la derecha
+     */
+    iconSVG?: string | null;
+    link: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      /**
+       * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+       */
+      url?: string | null;
+      label: string;
+    };
+  };
+  phoneSection: {
+    icon?: {
+      useMedia?: boolean | null;
+      mediaImage?: (number | null) | Media;
+      iconSVG?: string | null;
+    };
+    /**
+     * Ej: "Te llamamos por teléfono". RichText con formato.
+     */
+    labelRichText?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Hex, rgb, rgba o nombre.
+     */
+    labelTextColor?: string | null;
+    /**
+     * Hex, rgb, rgba o nombre.
+     */
+    buttonBackgroundColor?: string | null;
+    /**
+     * Hex, rgb, rgba o nombre.
+     */
+    buttonTextColor?: string | null;
+    /**
+     * Ej. flecha a la derecha
+     */
+    iconSVG?: string | null;
+    link: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      /**
+       * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+       */
+      url?: string | null;
+      label: string;
+    };
+    /**
+     * Si está configurado, el botón abrirá este popup en lugar de seguir el enlace.
+     */
+    phonePopup?: {
+      /**
+       * Activar para mostrar un formulario en popup en lugar de ir al enlace.
+       */
+      usePopup?: boolean | null;
+      /**
+       * Código SVG del icono para cerrar el popup. Se muestra fuera del popup, encima de la esquina superior derecha.
+       */
+      closeButtonSVG?: string | null;
+      /**
+       * Ej: "Déjanos tus datos y te llamamos lo antes posible"
+       */
+      title?: {
+        root: {
+          type: string;
+          children: {
+            type: any;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      } | null;
+      /**
+       * Hex, rgb, rgba o nombre. Igual que en las secciones.
+       */
+      titleTextColor?: string | null;
+      /**
+       * Color para <strong> y <b> dentro del título.
+       */
+      titleBoldTextColor?: string | null;
+      nameLabel?: string | null;
+      phoneLabel?: string | null;
+      /**
+       * Botón tipo enlace (CMSLink) con colores. Mismo tamaño que secciones (180×48px).
+       */
+      button?: {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+          label: string;
+        };
+        backgroundColor?: string | null;
+        textColor?: string | null;
+      };
+      /**
+       * Texto que aparece junto al checkbox. Ej: "He leído y acepto las instrucciones del tratamiento."
+       */
+      termsRichText?: {
+        root: {
+          type: string;
+          children: {
+            type: any;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      } | null;
+      /**
+       * Hex, rgb, rgba o nombre.
+       */
+      termsTextColor?: string | null;
+      /**
+       * Texto legal que se muestra debajo del formulario.
+       */
+      dataProtectionRichText?: {
+        root: {
+          type: string;
+          children: {
+            type: any;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      } | null;
+      /**
+       * Hex, rgb, rgba o nombre.
+       */
+      dataProtectionTextColor?: string | null;
+      gradientStartColor?: string | null;
+      gradientEndColor?: string | null;
+      gradientDirection?: ('to-br' | 'to-tr' | 'to-right' | 'to-bottom') | null;
+    };
+  };
+  video?: {
+    /**
+     * Pega la URL del video de YouTube (ej: https://www.youtube.com/watch?v=VIDEO_ID)
+     */
+    youtubeUrl?: string | null;
+  };
+  /**
+   * Imagen que se usará como fondo del CTA cuando el tipo de fondo sea "Imagen"
+   */
+  backgroundImage?: (number | null) | Media;
+  /**
+   * Color plano. Hex, rgb, rgba o nombre (ej: #000000, rgba(0,0,0,0.5))
+   */
+  backgroundColor?: string | null;
+  /**
+   * Elige si el color será sólido o un degradado
+   */
+  backgroundColorMode?: ('solid' | 'gradient') | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  gradientStartColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  gradientEndColor?: string | null;
+  gradientDirection?: ('to-right' | 'to-left' | 'to-bottom' | 'to-top' | 'diagonal-down' | 'diagonal-up') | null;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta1SendaAlter';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2985,6 +3317,7 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         cta1Senda?: T | CTA1SendaBlockSelect<T>;
+        cta1SendaAlter?: T | CTA1SendaAlterBlockSelect<T>;
         cta2Senda?: T | CTA2SendaBlockSelect<T>;
         cardsSenda?: T | CardsSendaBlockSelect<T>;
         multiFormSenda?: T | MultiFormSendaBlockSelect<T>;
@@ -3050,6 +3383,119 @@ export interface CTA1SendaBlockSelect<T extends boolean = true> {
         id?: T;
       };
   buttonsAlignment?: T;
+  video?:
+    | T
+    | {
+        youtubeUrl?: T;
+      };
+  backgroundImage?: T;
+  backgroundColor?: T;
+  backgroundColorMode?: T;
+  gradientStartColor?: T;
+  gradientEndColor?: T;
+  gradientDirection?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTA1SendaAlterBlock_select".
+ */
+export interface CTA1SendaAlterBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  title?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  blockHeightMode?: T;
+  customBlockHeightPx?: T;
+  backgroundType?: T;
+  videocallSection?:
+    | T
+    | {
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+            };
+        labelRichText?: T;
+        labelTextColor?: T;
+        buttonBackgroundColor?: T;
+        buttonTextColor?: T;
+        iconSVG?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+      };
+  phoneSection?:
+    | T
+    | {
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+            };
+        labelRichText?: T;
+        labelTextColor?: T;
+        buttonBackgroundColor?: T;
+        buttonTextColor?: T;
+        iconSVG?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        phonePopup?:
+          | T
+          | {
+              usePopup?: T;
+              closeButtonSVG?: T;
+              title?: T;
+              titleTextColor?: T;
+              titleBoldTextColor?: T;
+              nameLabel?: T;
+              phoneLabel?: T;
+              button?:
+                | T
+                | {
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                          label?: T;
+                        };
+                    backgroundColor?: T;
+                    textColor?: T;
+                  };
+              termsRichText?: T;
+              termsTextColor?: T;
+              dataProtectionRichText?: T;
+              dataProtectionTextColor?: T;
+              gradientStartColor?: T;
+              gradientEndColor?: T;
+              gradientDirection?: T;
+            };
+      };
   video?:
     | T
     | {
