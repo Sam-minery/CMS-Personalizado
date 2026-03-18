@@ -253,7 +253,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
         }
       >
         <div className="container relative">
-          {/* Móvil: orden 1) RichText 2) 2 botones izquierda 3) Imagen 4) Tercer botón. Desktop: 2 columnas (texto+botones | imagen+botón). */}
+          {/* Móvil: texto → botones (1 o 2 en fila) → imagen. Desktop lg+: 2 cols; 1 botón además centrado bajo el bloque. */}
           <div className="grid grid-cols-1 gap-x-20 gap-y-12 md:gap-y-16 lg:grid-cols-2 lg:items-center [&>.hero-senda-col-left]:order-1 [&>.hero-senda-col-right]:order-2">
             <div className="hero-senda-col-left" style={fontStyle}>
               {richText && (
@@ -266,8 +266,15 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                   />
                 </div>
               )}
-              {leftButtons.length === 2 && (
-                <div className="mt-6 flex flex-wrap gap-4 md:mt-8">
+              {/* Móvil/tablet: 1 o 2 botones bajo el texto. Desktop (lg+): solo 2 botones aquí; 1 botón va abajo centrado. */}
+              {leftButtons.length > 0 && (
+                <div
+                  className={
+                    leftButtons.length === 1
+                      ? 'mt-6 flex flex-wrap gap-4 md:mt-8 lg:hidden'
+                      : 'mt-6 flex flex-row flex-nowrap items-stretch gap-2 sm:gap-3 md:mt-8 md:gap-4 lg:flex-wrap lg:gap-4'
+                  }
+                >
                   {leftButtons.map((item, index) => {
                     const link = (item as HeroSendaButton).link ?? (item as LinkItem).link
                     const label = (link as HeroSendaLink)?.label ?? (item as HeroSendaButton).title ?? 'Button'
@@ -275,6 +282,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                     const size = (item as HeroSendaButton).size ?? 'sm'
                     const iconSVG = (item as HeroSendaButton).iconSVG ?? null
                     const btnClassName = appearance === 'default' ? 'hero-senda-btn-default' : appearance === 'secondary' ? 'hero-senda-btn-secondary' : undefined
+                    const twoCols = leftButtons.length === 2
                     return (
                       <CMSLink
                         key={index}
@@ -282,11 +290,38 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                         label={undefined}
                         appearance={appearance}
                         size={size}
-                        className={btnClassName}
+                        className={
+                          twoCols
+                            ? `${btnClassName ?? ''} max-lg:min-w-0 max-lg:flex-1 max-lg:basis-0 max-lg:justify-center lg:inline-flex lg:w-auto lg:flex-none lg:shrink-0`.trim()
+                            : btnClassName
+                        }
                         style={fontStyle}
                       >
-                        <span className="inline-flex items-center gap-1.5">
-                          {fontStyle ? <span style={fontStyle}>{label}</span> : label}
+                        <span
+                          className={
+                            twoCols
+                              ? 'inline-flex max-w-full items-center justify-center gap-1 sm:gap-1.5 lg:max-w-none lg:justify-start'
+                              : 'inline-flex items-center gap-1.5'
+                          }
+                        >
+                          {fontStyle ? (
+                            <span
+                              className={
+                                twoCols
+                                  ? 'truncate text-center text-sm sm:text-base lg:overflow-visible lg:whitespace-normal lg:text-base'
+                                  : ''
+                              }
+                              style={fontStyle}
+                            >
+                              {label}
+                            </span>
+                          ) : twoCols ? (
+                            <span className="truncate text-center text-sm sm:text-base lg:overflow-visible lg:whitespace-normal lg:text-base">
+                              {label}
+                            </span>
+                          ) : (
+                            label
+                          )}
                           {iconSVG ? (
                             <span
                               className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
@@ -314,7 +349,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
               )}
             </div>
           </div>
-          {/* Un solo botón izquierda: centrado en la parte inferior del hero */}
+          {/* Solo desktop (lg+): un botón centrado bajo el hero; en móvil ese botón va bajo el texto (columna izq). */}
           {leftButtons.length === 1 && (() => {
             const item = leftButtons[0]
             const link = (item as HeroSendaButton).link ?? (item as LinkItem).link
@@ -324,7 +359,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
             const iconSVG = (item as HeroSendaButton).iconSVG ?? null
             const btnClassName = appearance === 'default' ? 'hero-senda-btn-default' : appearance === 'secondary' ? 'hero-senda-btn-secondary' : undefined
             return (
-              <div className="mt-10 md:mt-12 flex justify-center">
+              <div className="mt-10 md:mt-12 hidden lg:flex justify-center">
                 <CMSLink
                   {...(link as React.ComponentProps<typeof CMSLink>)}
                   label={undefined}
