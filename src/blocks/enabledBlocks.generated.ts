@@ -6,6 +6,7 @@
 import type { Block } from 'payload'
 
 import { CTA1SendaBlock } from './CTA1_SENDA/config'
+import { CTA1SendaAlterBlock } from './CTA1_SENDA_Alter/config'
 import { CTA2SendaBlock } from './CTA2_SENDA/config'
 import { SendaCardsBlockConfig } from './Cards_SENDA/config'
 import { MultiFormSendaBlock } from './Multi_Form_SENDA/config'
@@ -20,6 +21,7 @@ import { AppSendaBlockConfig } from './APP_SENDA/config'
 
 export const ENABLED_BLOCKS_BY_SLUG: Record<string, Block> = {
   "cta1Senda": CTA1SendaBlock,
+  "cta1SendaAlter": CTA1SendaAlterBlock,
   "cta2Senda": CTA2SendaBlock,
   "cardsSenda": SendaCardsBlockConfig,
   "multiFormSenda": MultiFormSendaBlock,

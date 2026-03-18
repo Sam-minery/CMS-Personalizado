@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { Component, useState } from 'react'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import Image from 'next/image'
 import RichText from '@/components/RichText'
@@ -10,11 +10,36 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 
+/** Error Boundary para la vista IMC >= 25: si RichText/Image/CMSLink lanzan, mostramos fallback y el resto del front no se cae. */
+class HighBMIResultErrorBoundary extends Component<
+  { children: React.ReactNode; fallback: React.ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false }
+
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+
+  render() {
+    if (this.state.hasError) return this.props.fallback
+    return this.props.children
+  }
+}
+
 /** Tipos locales para no depender de payload-types (evita fallos de build si el bloque no está en projectConfig). */
 type MediaLike = {
   url?: string | null
   sizes?: { large?: { url?: string }; medium?: { url?: string }; small?: { url?: string } }
 } | number
+
+/** Grupo imagen: subida (media) o URL externa (src). Misma lógica que Layout_SENDA. */
+type ImageGroup = {
+  useMedia?: boolean | null
+  mediaImage?: MediaLike | null
+  src?: string | null
+  alt?: string | null
+}
 
 type FontFile = {
   id?: string | number
@@ -45,10 +70,14 @@ export type BloqueIMCSendaBlockProps = {
   calculateButtonText?: string | null
   calculateButtonIconSVG?: string | null
   resultContent?: DefaultTypedEditorState | null
+  /** Botón del resultado cuando IMC < 25 (nombre en config: 'resultButton (IMC < 25)') */
+  'resultButton (IMC < 25)'?: ButtonItem[] | null
+  /** Clave antigua por si hay datos guardados con el nombre anterior */
   resultButton?: ButtonItem[] | null
   backgroundColor?: string | null
   cardBackgroundColor?: string | null
   resultCardBackgroundColor?: string | null
+  resultTextColor?: string | null
   textColor?: string | null
   labelColor?: string | null
   calculateButtonColor?: string | null
@@ -56,9 +85,9 @@ export type BloqueIMCSendaBlockProps = {
   resultButtonColor?: string | null
   resultButtonTextColor?: string | null
   highBMIContent?: DefaultTypedEditorState | null
-  highBMIImage?: MediaLike | null
-  highBMIName?: string | null
-  highBMIDescription?: DefaultTypedEditorState | null
+  backgroundImage?: ImageGroup | null
+  highBMIImage?: ImageGroup | null
+  highBMINameAndDescription?: DefaultTypedEditorState | null
   highBMIButton?: ButtonItem[] | null
   highBMICardBackgroundColor?: string | null
   highBMITextColor?: string | null
@@ -76,7 +105,7 @@ function sanitizeAnchorId(value: string | null | undefined): string {
   return s || ''
 }
 
-/** URL del media: prioriza .url, luego sizes. Misma lógica que Hero_SENDA/Layout_SENDA: devolver tal cual (ruta relativa) para mismo origen en next/image. */
+/** URL del media: prioriza .url, luego sizes. Sin getMediaUrl (evita fallos en producción); misma metodología que Layout_SENDA (imageGroup.mediaImage.url). */
 function getMediaUrlSafe(media: MediaLike | null | undefined): string {
   if (!media || typeof media === 'number') return ''
   const m = media as {
@@ -84,6 +113,23 @@ function getMediaUrlSafe(media: MediaLike | null | undefined): string {
     sizes?: { large?: { url?: string }; medium?: { url?: string }; small?: { url?: string } }
   }
   return m?.url ?? m?.sizes?.large?.url ?? m?.sizes?.medium?.url ?? m?.sizes?.small?.url ?? ''
+}
+
+/** Resuelve la URL de un grupo imagen (subida o URL externa). Misma lógica que Layout_SENDA: mediaImage.url directo o src. Acepta dato legacy: highBMIImage como media directo. */
+function getImageGroupSrc(
+  group: ImageGroup | MediaLike | null | undefined,
+): string {
+  if (!group) return ''
+  const g = group as ImageGroup
+  if ('useMedia' in g && g.useMedia && g.mediaImage && typeof g.mediaImage === 'object') {
+    return getMediaUrlSafe(g.mediaImage)
+  }
+  if ('src' in g && typeof g.src === 'string' && g.src.trim()) return g.src.trim()
+  if (typeof group === 'object' && 'url' in group) {
+    return getMediaUrlSafe(group as MediaLike)
+  }
+  if (typeof group === 'number') return ''
+  return ''
 }
 
 export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
@@ -95,10 +141,12 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
   calculateButtonText = 'Calcular IMC',
   calculateButtonIconSVG,
   resultContent,
-  resultButton,
+  'resultButton (IMC < 25)': resultButtonNewKey,
+  resultButton: resultButtonLegacy,
   backgroundColor,
   cardBackgroundColor,
   resultCardBackgroundColor,
+  resultTextColor,
   textColor,
   labelColor,
   calculateButtonColor,
@@ -106,9 +154,9 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
   resultButtonColor,
   resultButtonTextColor,
   highBMIContent,
+  backgroundImage,
   highBMIImage,
-  highBMIName,
-  highBMIDescription,
+  highBMINameAndDescription,
   highBMIButton,
   highBMICardBackgroundColor,
   highBMITextColor,
@@ -125,6 +173,9 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
   const [bmi, setBmi] = useState<number | null>(null)
   const [showResult, setShowResult] = useState(false)
   const [showHighBMI, setShowHighBMI] = useState(false)
+
+  /** Botón IMC < 25: priorizar clave nueva del config, luego la antigua por datos ya guardados */
+  const resultButton = resultButtonNewKey ?? resultButtonLegacy
 
   const uniqueId = React.useId().replace(/:/g, '-')
   const styleId = `bloque-imc-senda-${uniqueId}`
@@ -154,7 +205,24 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
 
   const buildStyles = () => {
     const styles: string[] = []
-
+    styles.push(`
+      @media (max-width: 767px) {
+        [data-bloque-imc-high-bmi-desc],
+        [data-bloque-imc-high-bmi-desc] *,
+        [data-bloque-imc-result-desc],
+        [data-bloque-imc-result-desc] *,
+        [data-bloque-imc-calc-title-desc],
+        [data-bloque-imc-calc-title-desc] * {
+          text-align: left !important;
+        }
+      }
+      [data-bloque-imc-calc-btn-icon] svg,
+      [data-bloque-imc-calc-btn-icon] svg * {
+        fill: currentColor !important;
+        stroke: currentColor !important;
+        stroke-width: 0.1 !important;
+      }
+    `)
     if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
       styles.push(`
         @font-face {
@@ -211,6 +279,7 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
     backgroundColor || 'linear-gradient(to bottom, #f8f8f8 0%, #e8e8ea 100%)'
   const defaultCardBackground = cardBackgroundColor || '#f5f5f0'
   const defaultResultCardBackground = resultCardBackgroundColor || cardBackgroundColor || '#fafafa'
+  const defaultResultTextColor = resultTextColor || textColor || '#000000'
   const defaultTextColor = textColor || '#000000'
   const defaultLabelColor = labelColor || textColor || '#000000'
   const defaultCalculateButtonColor = calculateButtonColor || '#2563eb'
@@ -223,7 +292,9 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
   const defaultHighBMIButtonColor = highBMIButtonColor || resultButtonColor || '#2563eb'
   const defaultHighBMIButtonTextColor = highBMIButtonTextColor || resultButtonTextColor || '#ffffff'
 
-  const highBMIImageUrl = getMediaUrlSafe(highBMIImage)
+  const backgroundImageUrl = getImageGroupSrc(backgroundImage)
+  const highBMIImageUrl = getImageGroupSrc(highBMIImage)
+  const highBMIImageAlt = highBMIImage?.alt?.trim() || 'Imagen profesional'
   const calculateBtnIconSvg = calculateButtonIconSVG?.trim()
     ? sanitizeSVG(calculateButtonIconSVG)
     : ''
@@ -236,9 +307,17 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
       <div
         id={sectionId}
         data-bloque-imc-senda-font={styleId}
-        className="relative w-full min-w-full min-h-screen flex items-center justify-center px-4 md:px-6 py-12"
+        className="relative w-full min-w-0 min-h-screen flex items-start justify-center px-4 md:px-6 pt-12 pb-12 overflow-x-hidden md:h-[690px] md:min-h-[690px]"
         style={{
           background: showResult || showHighBMI ? backgroundColor || '#f5f5f5' : defaultBackground,
+          ...(backgroundImageUrl
+            ? {
+                backgroundImage: `url(${backgroundImageUrl})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+              }
+            : {}),
           ...fontStyle,
         }}
       >
@@ -250,18 +329,19 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
         >
           {!showResult && !showHighBMI ? (
             <div
-              className="rounded-3xl flex flex-col items-center justify-center w-full max-w-[327px] min-h-[602px] p-6 box-border md:max-w-[1100px] md:w-[1100px] md:min-h-[350px] md:h-[430px] md:py-12 md:px-0 md:gap-8"
+              className="rounded-3xl flex flex-col items-start justify-center w-full max-w-[327px] min-h-[602px] p-6 box-border md:w-full md:max-w-[1100px] md:min-h-[350px] md:h-[430px] md:py-12 md:px-0 md:gap-8 md:items-center"
               style={{
                 backgroundColor: defaultCardBackground,
-                boxShadow:
-                  '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
               }}
             >
-              <div className="flex flex-col justify-center w-[279px] min-h-[236px] shrink-0 mb-6 md:w-[680px] md:min-h-[158px] md:mb-0 md:mx-auto">
+              <div
+                data-bloque-imc-calc-title-desc
+                className="flex flex-col justify-center w-[279px] min-h-[236px] shrink-0 mb-6 md:w-[680px] md:min-h-[158px] md:mb-0 md:mx-auto"
+              >
                 <div className="flex flex-col justify-center w-full h-full min-h-0">
                   {title ? (
                     <div
-                      className="text-left md:text-center max-w-full break-words md:mb-2"
+                      className="text-left md:text-center max-w-full break-words mb-0"
                       style={{ color: defaultTextColor }}
                     >
                       <RichText
@@ -274,7 +354,7 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                   ) : null}
                   {description ? (
                     <div
-                      className="text-left md:text-center break-words mt-2 md:mt-0"
+                      className="text-left md:text-center break-words"
                       style={{ color: defaultTextColor }}
                     >
                       <RichText
@@ -304,11 +384,9 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                       value={height}
                       onChange={(e) => setHeight(e.target.value)}
                       placeholder="ejemplo: 165"
-                      className="w-full h-[48px] px-3 rounded-xl bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 shadow-sm text-sm md:w-[201px] md:min-w-[201px]"
+                      className="w-full h-[48px] px-3 rounded-xl bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm md:w-[201px] md:min-w-[201px]"
                       style={{
                         border: '1px solid #B8B5AE',
-                        boxShadow:
-                          '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
                       }}
                     />
                   </div>
@@ -326,11 +404,9 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                       value={weight}
                       onChange={(e) => setWeight(e.target.value)}
                       placeholder="ejemplo: 92"
-                      className="w-full h-[48px] px-3 rounded-xl bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 shadow-sm text-sm md:w-[201px] md:min-w-[201px]"
+                      className="w-full h-[48px] px-3 rounded-xl bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm md:w-[201px] md:min-w-[201px]"
                       style={{
                         border: '1px solid #B8B5AE',
-                        boxShadow:
-                          '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
                       }}
                     />
                   </div>
@@ -339,10 +415,10 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                 <div className="flex justify-center mt-6 w-full max-w-[279px] md:mt-6 md:max-w-none md:shrink-0">
                   <button
                     onClick={calculateBMI}
-                    className="rounded-xl font-medium flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm text-white shadow-sm hover:shadow-md w-full h-[48px] md:w-[153px] whitespace-nowrap"
+                    className="rounded-xl font-medium flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm text-white shrink-0 w-[149px] min-w-[149px] max-w-[149px] h-[38px] min-h-[38px] max-h-[38px] md:w-[153px] md:min-w-[153px] md:max-w-none md:h-[48px] md:min-h-[48px] md:max-h-none whitespace-nowrap"
                     style={{
-                      backgroundColor: defaultCalculateButtonColor,
-                      color: defaultCalculateButtonTextColor,
+                      backgroundColor: height && weight ? defaultHighBMIButtonColor : defaultCalculateButtonColor,
+                      color: height && weight ? defaultHighBMIButtonTextColor : defaultCalculateButtonTextColor,
                       ...fontStyle,
                     }}
                     onMouseEnter={(e) => {
@@ -360,7 +436,9 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                     <span>{calculateButtonText}</span>
                     {calculateBtnIconSvg ? (
                       <span
+                        data-bloque-imc-calc-btn-icon
                         className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                        style={{ color: 'inherit' }}
                         aria-hidden
                         dangerouslySetInnerHTML={{ __html: calculateBtnIconSvg }}
                       />
@@ -370,33 +448,47 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
               </div>
             </div>
           ) : showResult ? (
-            <div className="w-full max-w-[1100px] mx-auto px-4 md:px-0 flex justify-center">
+            <div className="w-full max-w-[1100px] mx-auto px-4 md:px-0 flex justify-center min-w-0">
               <div
-                className="rounded-3xl shadow-lg flex items-center justify-center w-full max-w-[327px] min-h-[570px] p-6 box-border md:max-w-[1100px] md:w-[1100px] md:h-[472px] md:min-h-[472px] md:p-10"
+                className="rounded-3xl flex items-center justify-center w-full max-w-[327px] min-h-[570px] p-6 box-border md:w-full md:max-w-[1100px] md:h-[472px] md:min-h-[472px] md:p-10"
                 style={{ backgroundColor: defaultResultCardBackground, ...fontStyle }}
               >
-                <div className="flex flex-col items-start justify-between w-full h-full md:items-center">
-                  <div className="flex flex-col items-start justify-center w-[279px] min-h-[416px] text-left md:w-[492px] md:min-h-[234px] md:items-center md:text-center">
+                <div className="flex flex-col items-start justify-start w-full h-full md:items-center overflow-visible">
+                  {/* Contenedor conjunto resultado + RichText: 492 × 234 en desktop */}
+                  <div className="flex flex-col items-start justify-center w-full max-w-[279px] min-h-0 shrink-0 text-left mt-4 md:mt-6 md:max-w-[492px] md:w-full md:h-[234px] md:items-center md:text-center">
                     {bmi !== null && (
-                      <div className="mb-3 md:mb-2" style={{ color: defaultTextColor }}>
-                        <p className="text-lg md:text-2xl font-normal text-inherit">
+                      /* Resultado: fuente del bloque o Saans; móvil izquierda, desktop centro */
+                      <div
+                        className="mb-4 w-full max-w-[675px] md:h-[52px] flex flex-wrap items-baseline justify-start text-left md:justify-center md:text-center"
+                        style={{
+                          color: defaultResultTextColor,
+                          fontFamily: selectedFontFamily || 'Saans, sans-serif',
+                          fontWeight: 300,
+                          fontStyle: 'normal',
+                          fontSize: '2rem',
+                          lineHeight: 1.25,
+                          letterSpacing: 0,
+                        }}
+                      >
+                        <span style={{ fontSize: '2.25rem' }}>
                           Tu IMC es de
-                        </p>
-                        <div className="w-[279px] min-h-[40px] flex items-center md:w-auto md:min-h-0">
-                          <p className="mt-1 text-4xl md:text-5xl font-bold text-inherit">
-                            {bmi.toFixed(1).replace('.', ',')}{' '}
-                            <span className="text-sm md:text-xl font-normal align-top">
-                              kg/m²
-                            </span>
-                          </p>
-                        </div>
+                        </span>
+                        <span className="inline-flex items-baseline ml-2">
+                          <span style={{ fontSize: '2.75rem' }}>
+                            {bmi.toFixed(1).replace('.', ',')}
+                          </span>
+                          <span style={{ fontSize: '1.5rem' }} className="ml-1">
+                            kg/m2
+                          </span>
+                        </span>
                       </div>
                     )}
 
                     {resultContent ? (
                       <div
-                        className="text-sm leading-relaxed md:text-base text-left"
-                        style={{ color: defaultTextColor }}
+                        data-bloque-imc-result-desc
+                        className="text-sm leading-relaxed md:text-base text-left flex-1 min-h-0 w-full md:flex md:items-start md:justify-center"
+                        style={{ color: defaultResultTextColor }}
                       >
                         <RichText
                           data={resultContent}
@@ -407,8 +499,12 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                     ) : null}
                   </div>
 
+                  {/* Espaciador solo en móvil para separar descripción y botón (IMC < 25) */}
                   {resultButton && resultButton.length > 0 ? (
-                    <div className="flex justify-center shrink-0 w-full">
+                    <div className="w-full shrink-0 h-24 md:h-0 md:min-h-0 md:overflow-hidden" aria-hidden />
+                  ) : null}
+                  {resultButton && resultButton.length > 0 ? (
+                    <div className="flex justify-center shrink-0 w-full md:mt-10">
                       {resultButton.map((buttonItem, index) => {
                         const iconSvg = buttonItem.iconSVG?.trim()
                           ? sanitizeSVG(buttonItem.iconSVG)
@@ -449,131 +545,173 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
               </div>
             </div>
           ) : (
-            <div className="w-full max-w-[1100px] mx-auto px-4 md:px-0 flex justify-center">
-              <div
-                className="rounded-3xl shadow-lg flex items-center justify-center w-full max-w-[327px] min-h-[722px] p-6 box-border md:max-w-[1100px] md:w-[1100px] md:min-h-[472px] md:h-[540px] md:p-10"
-                style={{
-                  backgroundColor: defaultHighBMICardBackground,
-                  ...fontStyle,
-                }}
-              >
-                <div className="flex flex-col items-start justify-between w-full h-full max-w-full md:max-w-[908px] md:items-center">
-                  <div className="flex flex-col items-start justify-center w-[279px] min-h-[190px] text-left md:w-[492px] md:min-h-[128px] md:items-center md:text-center">
-                    {bmi !== null && (
-                      <div
-                        className="w-[279px] min-h-[40px] flex flex-col justify-center mb-3 md:mb-2 md:w-auto md:min-h-0"
-                        style={{ color: defaultHighBMITextColor }}
-                      >
-                        <h2 className="font-sans text-2xl font-normal leading-tight md:text-4xl md:font-bold">
-                          Tu IMC es de {bmi.toFixed(1).replace('.', ',')}
-                          <span className="text-base md:text-lg font-normal align-top">
-                            {' '}
-                            kg/m²
+            <HighBMIResultErrorBoundary
+              fallback={
+                <div className="w-full max-w-[1100px] mx-auto px-4 md:px-0 flex justify-center min-w-0">
+                  <div
+                    className="rounded-3xl flex items-center justify-center w-full max-w-[327px] min-h-[200px] p-6 box-border md:w-full md:max-w-[1100px] md:min-h-[200px] md:p-10"
+                    style={{
+                      backgroundColor: defaultHighBMICardBackground || '#f8f8f8',
+                      color: defaultHighBMITextColor || '#000000',
+                      ...fontStyle,
+                    }}
+                  >
+                    <div className="flex flex-col items-center justify-center text-center">
+                      {bmi !== null && (
+                        <div
+                          className="mb-4 w-full max-w-[675px] flex flex-wrap items-baseline justify-center text-center"
+                          style={{
+                            color: defaultHighBMITextColor || '#000000',
+                            fontFamily: selectedFontFamily || 'Saans, sans-serif',
+                            fontWeight: 300,
+                            fontStyle: 'normal',
+                            fontSize: '2rem',
+                            lineHeight: 1.25,
+                            letterSpacing: 0,
+                            textAlign: 'center',
+                          }}
+                        >
+                          <span style={{ fontSize: '2.25rem' }}>Tu IMC es de</span>
+                          <span className="inline-flex items-baseline ml-2">
+                            <span style={{ fontSize: '2.75rem' }}>
+                              {bmi.toFixed(1).replace('.', ',')}
+                            </span>
+                            <span style={{ fontSize: '1.5rem' }} className="ml-1">
+                              kg/m2
+                            </span>
                           </span>
-                        </h2>
-                      </div>
-                    )}
-
-                    {highBMIContent ? (
-                      <div
-                        className="text-sm md:text-base leading-relaxed"
-                        style={{ color: defaultHighBMITextColor }}
-                      >
-                        <RichText
-                          data={highBMIContent}
-                          enableGutter={false}
-                          enableProse={false}
-                        />
-                      </div>
-                    ) : null}
+                        </div>
+                      )}
+                      <p className="mt-2 text-sm opacity-80">Contenido no disponible en este momento.</p>
+                    </div>
                   </div>
+                </div>
+              }
+            >
+              <div className="w-full max-w-[1100px] mx-auto px-4 md:px-0 flex justify-center min-w-0">
+                <div
+                  className="rounded-3xl flex items-center justify-center w-full max-w-[327px] min-h-[722px] p-6 box-border md:w-full md:max-w-[1100px] md:min-h-[472px] md:h-[540px] md:p-10"
+                  style={{
+                    backgroundColor: defaultHighBMICardBackground,
+                    ...fontStyle,
+                  }}
+                >
+                  <div className="flex flex-col items-start justify-between w-full h-full max-w-full min-w-0 md:max-w-[908px] md:items-center">
+                    <div className="flex flex-col items-start justify-center w-full max-w-[279px] min-h-[190px] min-w-0 text-left md:max-w-[492px] md:w-full md:min-h-[128px] md:items-center md:text-center">
+                      {bmi !== null && (
+                        <div
+                          className="mb-6 w-full max-w-[675px] md:h-[52px] flex flex-wrap items-baseline justify-start text-left md:justify-center md:text-center md:mb-6"
+                          style={{
+                            color: defaultHighBMITextColor,
+                            fontFamily: selectedFontFamily || 'Saans, sans-serif',
+                            fontWeight: 300,
+                            fontStyle: 'normal',
+                            fontSize: '2rem',
+                            lineHeight: 1.25,
+                            letterSpacing: 0,
+                          }}
+                        >
+                          <span style={{ fontSize: '2.25rem' }}>Tu IMC es de</span>
+                          <span className="inline-flex items-baseline ml-2">
+                            <span style={{ fontSize: '2.75rem' }}>
+                              {bmi.toFixed(1).replace('.', ',')}
+                            </span>
+                            <span style={{ fontSize: '1.5rem' }} className="ml-1">
+                              kg/m2
+                            </span>
+                          </span>
+                        </div>
+                      )}
 
-                  <div className="w-[279px] md:w-[492px] h-[1px] my-4 md:my-5 bg-[#BDB6A8] shrink-0" />
-
-                  <div className="w-[279px] min-h-[342px] md:w-[492px] md:min-h-[211px] flex flex-col md:flex-row gap-4 md:gap-6 md:items-center items-start">
-                    {highBMIImageUrl ? (
-                      <div className="flex justify-start md:justify-start shrink-0">
-                        <div className="relative w-[127px] h-[118px] md:w-[176px] md:h-[163px] rounded-2xl overflow-hidden">
-                          <Image
-                            src={highBMIImageUrl}
-                            alt={highBMIName || 'Imagen profesional'}
-                            fill
-                            className="object-cover"
+                      {highBMIContent ? (
+                        <div
+                          data-bloque-imc-high-bmi-desc
+                          className="text-sm md:text-base leading-relaxed text-left md:text-center ml-2 md:ml-0"
+                          style={{ color: defaultHighBMITextColor }}
+                        >
+                          <RichText
+                            data={highBMIContent}
+                            enableGutter={false}
+                            enableProse={false}
                           />
                         </div>
-                      </div>
-                    ) : null}
+                      ) : null}
+                    </div>
 
-                    {(highBMIName || highBMIDescription) ? (
-                      <div className="flex flex-col justify-center text-left min-w-0 md:flex-1">
-                        {highBMIName ? (
-                          <h3
-                            className="text-lg md:text-xl font-bold mb-1"
-                            style={{ color: defaultHighBMITextColor }}
-                          >
-                            {highBMIName}
-                          </h3>
-                        ) : null}
+                    <div className="w-full max-w-[279px] md:max-w-[492px] h-[1px] my-4 md:my-5 bg-[#BDB6A8] shrink-0" />
 
-                        {highBMIDescription ? (
-                          <div
-                            className="text-sm md:text-base leading-relaxed"
-                            style={{ color: defaultHighBMITextColor }}
-                          >
-                            <RichText
-                              data={highBMIDescription}
-                              enableGutter={false}
-                              enableProse={false}
+                    <div className="w-full max-w-[279px] min-h-[342px] min-w-0 md:max-w-[492px] md:w-full md:min-h-[211px] flex flex-col md:flex-row gap-2 md:gap-6 md:items-center items-start">
+                      {highBMIImageUrl ? (
+                        <div className="flex justify-start md:justify-start shrink-0">
+                          <div className="relative w-[127px] h-[118px] md:w-[176px] md:h-[163px] rounded-2xl overflow-hidden">
+                            <Image
+                              src={highBMIImageUrl}
+                              alt={highBMIImageAlt}
+                              fill
+                              className="object-cover"
                             />
                           </div>
-                        ) : null}
+                        </div>
+                      ) : null}
+
+                      {highBMINameAndDescription ? (
+                        <div
+                          className="flex flex-col justify-center text-left min-w-0 flex-1 -mt-4 md:mt-0 w-[247px] max-w-full h-[88px] overflow-hidden md:w-auto md:h-auto md:overflow-visible ml-4 md:ml-0 text-sm md:text-base leading-relaxed [&_h1]:text-lg [&_h1]:md:text-xl [&_h2]:text-base [&_h2]:md:text-lg [&_h3]:text-sm [&_h3]:md:text-base"
+                          style={{ color: defaultHighBMITextColor }}
+                        >
+                          <RichText
+                            data={highBMINameAndDescription}
+                            enableGutter={false}
+                            enableProse={false}
+                          />
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <div className="w-full max-w-[279px] md:max-w-[492px] h-[1px] my-4 md:my-5 bg-[#BDB6A8] shrink-0" />
+
+                    {highBMIButton && highBMIButton.length > 0 ? (
+                      <div className="flex justify-center w-full">
+                        {highBMIButton.map((buttonItem, index) => {
+                          const iconSvg = buttonItem.iconSVG?.trim()
+                            ? sanitizeSVG(buttonItem.iconSVG)
+                            : ''
+                          return (
+                            <div
+                              key={index}
+                              className="inline-flex items-center justify-center rounded-xl text-sm md:text-base font-medium transition-opacity hover:opacity-90 w-[164px] h-[38px] md:w-[207px] md:h-[48px]"
+                              style={{
+                                ...(defaultHighBMIButtonColor && {
+                                  backgroundColor: defaultHighBMIButtonColor,
+                                }),
+                                ...(defaultHighBMIButtonTextColor && {
+                                  color: defaultHighBMIButtonTextColor,
+                                }),
+                                ...fontStyle,
+                              }}
+                            >
+                              <CMSLink
+                                {...(buttonItem.link as React.ComponentProps<typeof CMSLink>)}
+                                appearance="inline"
+                                className="inline-flex items-center justify-center gap-2 w-full h-full"
+                              >
+                                {iconSvg ? (
+                                  <span
+                                    className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                                    aria-hidden
+                                    dangerouslySetInnerHTML={{ __html: iconSvg }}
+                                  />
+                                ) : null}
+                              </CMSLink>
+                            </div>
+                          )
+                        })}
                       </div>
                     ) : null}
                   </div>
-
-                  <div className="w-[279px] md:w-[492px] h-[1px] my-4 md:my-5 bg-[#BDB6A8] shrink-0" />
-
-                  {highBMIButton && highBMIButton.length > 0 ? (
-                    <div className="flex justify-center w-full">
-                      {highBMIButton.map((buttonItem, index) => {
-                        const iconSvg = buttonItem.iconSVG?.trim()
-                          ? sanitizeSVG(buttonItem.iconSVG)
-                          : ''
-                        return (
-                          <div
-                            key={index}
-                            className="inline-flex items-center justify-center rounded-xl text-sm md:text-base font-medium transition-opacity hover:opacity-90 w-[164px] h-[38px] md:w-[207px] md:h-[48px]"
-                            style={{
-                              ...(defaultHighBMIButtonColor && {
-                                backgroundColor: defaultHighBMIButtonColor,
-                              }),
-                              ...(defaultHighBMIButtonTextColor && {
-                                color: defaultHighBMIButtonTextColor,
-                              }),
-                              ...fontStyle,
-                            }}
-                          >
-                            <CMSLink
-                              {...(buttonItem.link as React.ComponentProps<typeof CMSLink>)}
-                              appearance="inline"
-                              className="inline-flex items-center justify-center gap-2 w-full h-full"
-                            >
-                              {iconSvg ? (
-                                <span
-                                  className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                                  aria-hidden
-                                  dangerouslySetInnerHTML={{ __html: iconSvg }}
-                                />
-                              ) : null}
-                            </CMSLink>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  ) : null}
                 </div>
               </div>
-            </div>
+            </HighBMIResultErrorBoundary>
           )}
         </div>
       </div>

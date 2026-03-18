@@ -42,6 +42,7 @@ export const BLOCK_LOADER_MANIFEST: Record<
   cta9: { path: './CTA_9/config', exportName: 'CTA9Block' },
   cta_custom_2: { path: './CTA_custom_2/config', exportName: 'CTA_custom_2' },
   cta1Senda: { path: './CTA1_SENDA/config', exportName: 'CTA1SendaBlock' },
+  cta1SendaAlter: { path: './CTA1_SENDA_Alter/config', exportName: 'CTA1SendaAlterBlock' },
   cta2Senda: { path: './CTA2_SENDA/config', exportName: 'CTA2SendaBlock' },
   cardsSenda: { path: './Cards_SENDA/config', exportName: 'SendaCardsBlockConfig' },
   multiFormSenda: { path: './Multi_Form_SENDA/config', exportName: 'MultiFormSendaBlock' },

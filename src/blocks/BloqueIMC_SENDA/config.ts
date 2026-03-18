@@ -29,6 +29,43 @@ export const BloqueIMCSendaBlockConfig: Block = {
       },
     },
     {
+      name: 'backgroundImage',
+      type: 'group',
+      label: 'Imagen de fondo',
+      admin: {
+        description: 'Opcional. Si se define, se muestra como fondo del bloque.',
+      },
+      fields: [
+        {
+          name: 'useMedia',
+          type: 'checkbox',
+          label: 'Usar imagen subida',
+          defaultValue: true,
+        },
+        {
+          name: 'mediaImage',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Imagen de fondo',
+          admin: {
+            condition: (_: unknown, siblingData: { useMedia?: boolean }) =>
+              siblingData?.useMedia === true,
+            description: 'Seleccione una imagen de la librería',
+          },
+        },
+        {
+          name: 'src',
+          type: 'text',
+          label: 'URL de la imagen',
+          admin: {
+            condition: (_: unknown, siblingData: { useMedia?: boolean }) =>
+              siblingData?.useMedia === false,
+            description: 'URL externa de la imagen cuando no se usa imagen subida',
+          },
+        },
+      ],
+    },
+    {
       name: 'title',
       type: 'richText',
       required: true,
@@ -106,7 +143,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
     {
       name: 'resultContent',
       type: 'richText',
-      label: 'Contenido del resultado',
+      label: 'Contenido del resultado (IMC < 25)',
       admin: {
         description:
           'Contenido que se mostrará cuando el IMC sea inferior a 25. Puedes usar {bmi} como placeholder para mostrar el valor del IMC.',
@@ -124,7 +161,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
       }),
     },
     {
-      name: 'resultButton',
+      name: 'resultButton (IMC < 25)',
       type: 'array',
       dbName: 'imc_res_btn',
       label: 'Botón del resultado (IMC < 25)',
@@ -167,28 +204,56 @@ export const BloqueIMCSendaBlockConfig: Block = {
         },
         {
           name: 'highBMIImage',
-          type: 'upload',
-          relationTo: 'media',
+          type: 'group',
           label: 'Imagen',
           admin: {
             description: 'Imagen que se mostrará cuando el IMC sea >= 25 (ej: foto del profesional)',
           },
+          fields: [
+            {
+              name: 'useMedia',
+              type: 'checkbox',
+              label: 'Usar imagen subida',
+              defaultValue: true,
+            },
+            {
+              name: 'mediaImage',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Imagen',
+              admin: {
+                condition: (_: unknown, siblingData: { useMedia?: boolean }) =>
+                  siblingData?.useMedia === true,
+                description: 'Seleccione una imagen de la librería',
+              },
+            },
+            {
+              name: 'src',
+              type: 'text',
+              label: 'URL de la imagen',
+              admin: {
+                condition: (_: unknown, siblingData: { useMedia?: boolean }) =>
+                  siblingData?.useMedia === false,
+                description: 'URL externa de la imagen cuando no se usa imagen subida',
+              },
+            },
+            {
+              name: 'alt',
+              type: 'text',
+              label: 'Texto alternativo',
+              admin: {
+                description: 'Alt de la imagen (por defecto se usa el nombre del profesional)',
+              },
+            },
+          ],
         },
         {
-          name: 'highBMIName',
-          type: 'text',
-          label: 'Nombre',
-          admin: {
-            description: 'Nombre del profesional (ej: "Irene Bretón")',
-          },
-        },
-        {
-          name: 'highBMIDescription',
+          name: 'highBMINameAndDescription',
           type: 'richText',
-          label: 'Descripción',
+          label: 'Nombre y descripción',
           admin: {
             description:
-              'Descripción del profesional (ej: "Directora médica de Senda Health. Doctora en Medicina y Cirugía. Especialista en Endocrinología y Nutrición")',
+              'Texto del profesional: nombre y descripción en un solo bloque (ej: nombre en título y descripción en párrafo)',
           },
           editor: lexicalEditor({
             features: ({ defaultFeatures }) => {
@@ -284,7 +349,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
         {
           name: 'backgroundColor',
           type: 'text',
-          label: 'Color de fondo del bloque',
+          label: 'Color de fondo del bloque principal (en caso de no tener imagen de fondo)',
           admin: {
             description: 'Hex, rgb, rgba, nombre o linear-gradient(...).',
             placeholder: '#fafafa o linear-gradient(...)',
@@ -293,7 +358,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
         {
           name: 'cardBackgroundColor',
           type: 'text',
-          label: 'Color de fondo de la caja del formulario',
+          label: 'Color de fondo de la caja de la Calculadora/formulario',
           admin: {
             description: 'Hex, rgb, rgba o nombre.',
             placeholder: '#f5f5f0',
@@ -309,9 +374,18 @@ export const BloqueIMCSendaBlockConfig: Block = {
           },
         },
         {
+          name: 'resultTextColor',
+          type: 'text',
+          label: 'Color del texto (IMC < 25)',
+          admin: {
+            description: 'Color del texto del resultado cuando el IMC es inferior a 25. Hex, rgb, rgba o nombre.',
+            placeholder: '#000000',
+          },
+        },
+        {
           name: 'textColor',
           type: 'text',
-          label: 'Color del texto',
+          label: 'Color del texto principal del bloque',
           admin: {
             description: 'Hex, rgb, rgba o nombre.',
             placeholder: '#000000',
@@ -320,7 +394,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
         {
           name: 'labelColor',
           type: 'text',
-          label: 'Color de las etiquetas',
+          label: 'Color de las etiquetas peso y estatura',
           admin: {
             description: 'Hex, rgb, rgba o nombre.',
             placeholder: '#000000',
@@ -347,7 +421,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
         {
           name: 'resultButtonColor',
           type: 'text',
-          label: 'Color de fondo del botón de resultado',
+          label: 'Color de fondo del botón de resultado (IMC < 25)',
           admin: {
             description: 'Hex, rgb, rgba o nombre.',
             placeholder: '#2563eb',
@@ -356,7 +430,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
         {
           name: 'resultButtonTextColor',
           type: 'text',
-          label: 'Color del texto del botón de resultado',
+          label: 'Color del texto del botón de resultado (IMC < 25)',
           admin: {
             description: 'Hex, rgb, rgba o nombre.',
             placeholder: '#ffffff',

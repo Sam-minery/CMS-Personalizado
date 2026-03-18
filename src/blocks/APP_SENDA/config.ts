@@ -27,6 +27,43 @@ export const AppSendaBlockConfig: Block = {
       },
     },
     {
+      name: 'backgroundImage',
+      type: 'group',
+      label: 'Imagen de fondo',
+      admin: {
+        description: 'Opcional. Si se define, se muestra como fondo del bloque.',
+      },
+      fields: [
+        {
+          name: 'useMedia',
+          type: 'checkbox',
+          label: 'Usar imagen subida',
+          defaultValue: true,
+        },
+        {
+          name: 'mediaImage',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Imagen de fondo',
+          admin: {
+            condition: (_: unknown, siblingData: { useMedia?: boolean }) =>
+              siblingData?.useMedia === true,
+            description: 'Seleccione una imagen de la librería',
+          },
+        },
+        {
+          name: 'src',
+          type: 'text',
+          label: 'URL de la imagen',
+          admin: {
+            condition: (_: unknown, siblingData: { useMedia?: boolean }) =>
+              siblingData?.useMedia === false,
+            description: 'URL externa de la imagen cuando no se usa imagen subida',
+          },
+        },
+      ],
+    },
+    {
       name: 'backgroundColor',
       type: 'text',
       label: 'Color de fondo del bloque',
@@ -116,26 +153,98 @@ export const AppSendaBlockConfig: Block = {
     },
     {
       name: 'image1',
-      type: 'upload',
-      relationTo: 'media',
+      type: 'group',
       label: 'Imagen 1 (ej. código QR)',
       admin: {
         description: 'Primera imagen, se muestra a la izquierda en escritorio.',
       },
+      fields: [
+        {
+          name: 'useMedia',
+          type: 'checkbox',
+          label: 'Usar imagen subida',
+          defaultValue: true,
+        },
+        {
+          name: 'mediaImage',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Imagen',
+          admin: {
+            condition: (_: unknown, siblingData: { useMedia?: boolean }) =>
+              siblingData?.useMedia === true,
+            description: 'Seleccione una imagen de la librería',
+          },
+        },
+        {
+          name: 'src',
+          type: 'text',
+          label: 'URL de la imagen',
+          admin: {
+            condition: (_: unknown, siblingData: { useMedia?: boolean }) =>
+              siblingData?.useMedia === false,
+            description: 'URL externa de la imagen cuando no se usa imagen subida',
+          },
+        },
+        {
+          name: 'alt',
+          type: 'text',
+          label: 'Texto alternativo',
+          admin: {
+            description: 'Descripción de la imagen para accesibilidad.',
+          },
+        },
+      ],
     },
     {
       name: 'image2',
-      type: 'upload',
-      relationTo: 'media',
+      type: 'group',
       label: 'Imagen 2 (ej. móvil con app)',
       admin: {
-        description: 'Segunda imagen, se muestra a la derecha en escritorio.',
+        description: 'Segunda imagen, se muestra en móvil.',
       },
+      fields: [
+        {
+          name: 'useMedia',
+          type: 'checkbox',
+          label: 'Usar imagen subida',
+          defaultValue: true,
+        },
+        {
+          name: 'mediaImage',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Imagen',
+          admin: {
+            condition: (_: unknown, siblingData: { useMedia?: boolean }) =>
+              siblingData?.useMedia === true,
+            description: 'Seleccione una imagen de la librería',
+          },
+        },
+        {
+          name: 'src',
+          type: 'text',
+          label: 'URL de la imagen',
+          admin: {
+            condition: (_: unknown, siblingData: { useMedia?: boolean }) =>
+              siblingData?.useMedia === false,
+            description: 'URL externa de la imagen cuando no se usa imagen subida',
+          },
+        },
+        {
+          name: 'alt',
+          type: 'text',
+          label: 'Texto alternativo',
+          admin: {
+            description: 'Descripción de la imagen para accesibilidad.',
+          },
+        },
+      ],
     },
     {
       name: 'contentBelowImages',
       type: 'richText',
-      label: 'Texto debajo de las imágenes',
+      label: 'Segundo campo de texto',
       editor: lexicalEditor({
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
@@ -146,7 +255,7 @@ export const AppSendaBlockConfig: Block = {
         ],
       }),
       admin: {
-        description: 'Texto que aparece debajo de las dos imágenes (ej. instrucciones de descarga).',
+        description: 'Segundo campo de texto (ej. instrucciones de descarga).',
       },
     },
     {

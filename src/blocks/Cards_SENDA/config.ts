@@ -58,6 +58,15 @@ export const SendaCardsBlockConfig: Block = {
       },
     },
     {
+      name: 'headerContentMaxWidth',
+      type: 'text',
+      label: 'Ancho máximo del encabezado',
+      admin: {
+        description: 'max-width del contenedor del título y descripción. Si es solo un número (ej: 420) se interpreta como px; si incluye unidades (px, rem, 80%, etc.) se usa tal cual.',
+        placeholder: '420, 28rem, 65%',
+      },
+    },
+    {
       name: 'backgroundColor',
       type: 'text',
       label: 'Color de fondo',
@@ -190,7 +199,7 @@ export const SendaCardsBlockConfig: Block = {
           value: 'lg',
         },
         {
-          label: 'Personalizado (rem)',
+          label: 'Personalizado (rem o px)',
           value: 'custom',
         },
       ],
@@ -198,20 +207,20 @@ export const SendaCardsBlockConfig: Block = {
     {
       name: 'customCardWidth',
       type: 'text',
-      label: 'Ancho personalizado (rem)',
+      label: 'Ancho personalizado (rem o px)',
       admin: {
-        description: 'Ancho de la card en rem (ej: 18rem). Solo se usa si el tamaño es \"Personalizado\"',
-        placeholder: '18rem',
+        description: 'Ancho de la card. Con unidad: 18rem, 360px. Sin unidad: número < 100 → rem (ej: 25); ≥ 100 → px (ej: 400). Solo se usa si el tamaño es "Personalizado"',
+        placeholder: '18rem o 360px',
         condition: (_: unknown, siblingData: { cardSize?: string }) => siblingData?.cardSize === 'custom',
       },
     },
     {
       name: 'customCardHeight',
       type: 'text',
-      label: 'Altura personalizada (rem)',
+      label: 'Altura personalizada (rem o px)',
       admin: {
-        description: 'Altura de la card en rem (ej: 32rem). Solo se usa si el tamaño es \"Personalizado\"',
-        placeholder: '32rem',
+        description: 'Altura de la card. Con unidad: 32rem, 516px. Sin unidad: número < 100 → rem; ≥ 100 → px. Solo se usa si el tamaño es "Personalizado"',
+        placeholder: '32rem o 516px',
         condition: (_: unknown, siblingData: { cardSize?: string }) => siblingData?.cardSize === 'custom',
       },
     },

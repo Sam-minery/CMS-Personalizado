@@ -59,10 +59,62 @@ function sanitizeAnchorId(value: string | null | undefined, fallback: string): s
   return s || fallback
 }
 
+/** Grupo imagen de fondo: subida (media) o URL externa (src). Misma lógica que BloqueIMC_SENDA. */
+type BackgroundImageGroup = {
+  useMedia?: boolean | null
+  mediaImage?: ImageMedia | null
+  src?: string | null
+}
+
+/** Grupo para imagen 1 e imagen 2: subida (media) o URL externa (src), con alt. Misma lógica que Layout_SENDA. */
+type ContentImageGroup = {
+  useMedia?: boolean | null
+  mediaImage?: ImageMedia | null
+  src?: string | null
+  alt?: string | null
+}
+
 type ButtonItem = {
   title?: string | null
   link?: LinkType | null
   iconSVG?: string | null
+}
+
+function getBackgroundImageUrl(group: BackgroundImageGroup | null | undefined): string {
+  if (!group) return ''
+  if (group.useMedia && group.mediaImage && typeof group.mediaImage === 'object') {
+    return getImageUrl(group.mediaImage)
+  }
+  if (typeof group.src === 'string' && group.src.trim()) return group.src.trim()
+  return ''
+}
+
+function getContentImageUrl(
+  group: ContentImageGroup | ImageMedia | null | undefined,
+): string {
+  if (!group) return ''
+  const g = group as ContentImageGroup
+  if ('useMedia' in g && g.useMedia && g.mediaImage && typeof g.mediaImage === 'object') {
+    return getImageUrl(g.mediaImage)
+  }
+  if ('src' in g && typeof g.src === 'string' && g.src.trim()) return g.src.trim()
+  /* Compatibilidad con datos antiguos: image1/image2 como upload directo */
+  if (typeof group === 'object' && 'url' in group) return getImageUrl(group as ImageMedia)
+  return ''
+}
+
+function getContentImageAlt(
+  group: ContentImageGroup | ImageMedia | null | undefined,
+  fallback: string,
+): string {
+  if (!group) return fallback
+  const g = group as ContentImageGroup
+  if ('useMedia' in g && g.useMedia && g.mediaImage && typeof g.mediaImage === 'object') {
+    return (g.mediaImage as { alt?: string }).alt ?? g.alt ?? fallback
+  }
+  if ('alt' in g && typeof g.alt === 'string' && g.alt.trim()) return g.alt.trim()
+  if (typeof group === 'object' && 'alt' in group) return (group as { alt?: string }).alt ?? fallback
+  return fallback
 }
 
 export type AppSendaBlockProps = {
@@ -70,6 +122,7 @@ export type AppSendaBlockProps = {
   anchorId?: string | null
   content?: DefaultTypedEditorState | null
   contentBelowImages?: DefaultTypedEditorState | null
+  backgroundImage?: BackgroundImageGroup | null
   backgroundColor?: string | null
   cardBackgroundColor?: string | null
   contentColor?: string | null
@@ -77,8 +130,9 @@ export type AppSendaBlockProps = {
   contentBelowImagesColor?: string | null
   buttonsBackgroundColor?: string | null
   buttonsTextColor?: string | null
-  image1?: ImageMedia
-  image2?: ImageMedia
+  /** Grupo (useMedia/mediaImage/src/alt) o legacy: upload directo (ImageMedia) */
+  image1?: ContentImageGroup | ImageMedia | null
+  image2?: ContentImageGroup | ImageMedia | null
   buttons?: ButtonItem[] | null
   fontFamily?: string | null
   useCustomFont?: boolean | null
@@ -91,6 +145,7 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
     anchorId,
     content,
     contentBelowImages,
+    backgroundImage,
     backgroundColor,
     cardBackgroundColor,
     contentColor,
@@ -192,16 +247,27 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
       `${sel} .app-senda-btn, ${sel} .app-senda-btn * { color: ${buttonsTextColor || '#ffffff'} !important; }`,
     )
 
+    /* En móvil forzar alineación a la izquierda aunque en el admin el RichText esté centrado */
+    styles.push(`
+      @media (max-width: 767px) {
+        ${sel} .app-senda-content-richtext,
+        ${sel} .app-senda-content-richtext *,
+        ${sel} .app-senda-below-richtext,
+        ${sel} .app-senda-below-richtext * { text-align: left !important; }
+      }
+    `)
+
     return styles.length > 0 ? styles.join('\n') : ''
   }
 
   const combinedStyles = buildStyles()
   const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined
 
-  const image1Url = getImageUrl(image1)
-  const image2Url = getImageUrl(image2)
-  const image1Alt = getImageAlt(image1)
-  const image2Alt = getImageAlt(image2)
+  const image1Url = getContentImageUrl(image1)
+  const image2Url = getContentImageUrl(image2)
+  const image1Alt = getContentImageAlt(image1, 'App image 1')
+  const image2Alt = getContentImageAlt(image2, 'App image 2')
+  const backgroundImageUrl = getBackgroundImageUrl(backgroundImage)
 
   const titleRichTextClasses = cn(
     'app-senda-content-richtext [&_h1]:text-2xl [&_h2]:text-xl [&_h3]:text-lg [&_p]:text-[15px] [&_p]:leading-relaxed [&_*]:text-left',
@@ -220,15 +286,26 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
       <section
         id={sanitizeAnchorId(anchorId, 'app-senda')}
         data-app-senda-block={styleId}
-        className="app-senda-section px-[5%] py-10 md:py-14"
-        style={backgroundColor ? { backgroundColor } : undefined}
+        className="app-senda-section min-h-[840px] px-[5%] py-10 md:py-14 flex items-center"
+        style={{
+          ...(backgroundColor ? { backgroundColor } : {}),
+          ...(backgroundImageUrl
+            ? {
+                backgroundImage: `url(${backgroundImageUrl})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+              }
+            : {}),
+        }}
       >
         <div className="container mx-auto">
           <div
-            className="app-senda-card mx-auto flex w-full flex-col gap-6 rounded-2xl bg-white p-6 shadow-lg min-h-[472px] max-w-[327px] md:max-w-[1100px] md:min-h-[764px] md:gap-8 md:p-10"
+            className="app-senda-card mx-auto flex w-full flex-col gap-6 rounded-2xl bg-white p-6 shadow-lg min-h-[1174px] max-w-[327px] md:min-h-[720px] md:max-w-[1100px] md:w-full md:gap-8 md:p-10"
             style={cardBackgroundColor ? { backgroundColor: cardBackgroundColor } : undefined}
           >
-            <div className="order-1 mx-auto mb-3 w-full max-w-[279px] min-h-[272px] text-left md:max-w-[563px] md:min-h-[214px]">
+            {/* Primer campo de texto: móvil 279×80, desktop 924×56. En móvil más separado del borde superior. */}
+            <div className="order-1 mx-auto mb-3 mt-6 w-full max-w-[279px] min-h-[80px] text-left md:mt-0 md:w-full md:max-w-[924px] md:min-h-[56px]">
               {content && (
                 <RichText
                   data={content}
@@ -240,7 +317,7 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
             </div>
 
             {buttonList.length > 0 && (
-              <div className="order-2 mx-auto flex h-[38px] w-[248px] items-center justify-between gap-2 md:order-4 md:mt-0 md:h-[48px] md:w-auto md:gap-4">
+              <div className="order-3 mx-auto flex h-[38px] w-[248px] min-w-[248px] items-center justify-between gap-2 md:order-4 md:mt-0 md:h-[48px] md:w-auto md:min-w-0 md:gap-4">
                 {buttonList.map((button, index) => {
                   const linkData = button?.link
                   if (!linkData) return null
@@ -272,41 +349,48 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
               </div>
             )}
 
-            <div className="order-3 flex w-[327px] min-w-[327px] -mx-6 flex-wrap items-center justify-center gap-6 md:mx-0 md:w-auto md:min-w-0 md:order-2 md:gap-10">
+            {/* Tablet/ventanas medias (768–1279px): texto e imagen apilados. Desktop (xl 1280+): en fila 940×416. */}
+            <div className="order-2 mx-auto flex w-full min-w-0 max-w-[279px] -mt-16 flex-col gap-6 md:max-w-[940px] md:min-w-0 md:items-center xl:-mt-8 xl:min-h-[416px] xl:flex-row xl:items-center xl:justify-between xl:overflow-hidden xl:gap-10">
+              {/* Segundo RichText: móvil 279×566; tablet apilado; desktop (xl) 505×416 */}
+              {contentBelowImages ? (
+                <div className="w-full min-h-[566px] min-w-0 max-w-[279px] flex-1 text-left md:max-w-[505px] md:min-h-0 xl:min-h-[416px] xl:max-w-[505px] xl:shrink">
+                  <RichText
+                    data={contentBelowImages}
+                    enableGutter={false}
+                    className={belowRichTextClasses}
+                    style={contentBelowImagesColor ? { color: contentBelowImagesColor } : undefined}
+                  />
+                </div>
+              ) : null}
+
+              {/* Imagen 1: tablet apilada debajo del texto; desktop (xl) a la derecha. */}
               {image1Url ? (
-                <div className="relative hidden shrink-0 items-center justify-center md:flex md:h-[268px] md:w-[404px]">
+                <div className="relative hidden min-w-0 items-center justify-center md:flex md:h-[345px] md:w-[407px] md:max-w-[407px] xl:shrink">
                   <Image
                     src={image1Url}
                     alt={image1Alt}
                     fill
                     className="object-contain"
-                    sizes="(max-width: 768px) 327px, 404px"
-                  />
-                </div>
-              ) : null}
-              {image2Url ? (
-                <div className="relative flex h-[520px] w-full shrink-0 items-center justify-center md:hidden">
-                  <Image
-                    src={image2Url}
-                    alt={image2Alt}
-                    fill
-                    className="object-contain"
-                    sizes="327px"
+                    sizes="(max-width: 768px) 327px, (max-width: 1279px) 407px, 407px"
                   />
                 </div>
               ) : null}
             </div>
 
-            {contentBelowImages && (
-              <div className="order-4 mx-auto w-full text-left max-w-[279px] min-h-[120px] md:order-3 md:max-w-[563px] md:min-h-[60px]">
-                <RichText
-                  data={contentBelowImages}
-                  enableGutter={false}
-                  className={belowRichTextClasses}
-                  style={contentBelowImagesColor ? { color: contentBelowImagesColor } : undefined}
-                />
+            {/* Imagen 2: solo móvil, última (order-4). Contenedor 327×334, imagen 279×334 */}
+            {image2Url ? (
+              <div className="order-4 flex h-[334px] w-full max-w-[327px] shrink-0 items-center justify-center md:hidden">
+                <div className="relative h-[334px] w-full max-w-[279px]">
+                  <Image
+                    src={image2Url}
+                    alt={image2Alt}
+                    fill
+                    className="object-contain"
+                    sizes="279px"
+                  />
+                </div>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </section>

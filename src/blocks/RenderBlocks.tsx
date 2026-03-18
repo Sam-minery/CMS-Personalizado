@@ -48,6 +48,9 @@ const allBlockComponents: Record<string, React.ComponentType<any>> = {
   cta: dynamic(() => import('@/blocks/CallToAction/Component').then((m) => m.CallToActionBlock)),
   cta_custom_2: dynamic(() => import('@/blocks/CTA_custom_2/Component').then((m) => m.CTA_custom_2Block)),
   cta1Senda: dynamic(() => import('@/blocks/CTA1_SENDA/Component').then((m) => m.CTA1SendaBlock)),
+  cta1SendaAlter: dynamic(() =>
+    import('@/blocks/CTA1_SENDA_Alter/Component').then((m) => m.CTA1SendaAlterBlock),
+  ),
   cta2Senda: dynamic(() => import('@/blocks/CTA2_SENDA/Component').then((m) => m.CTA2SendaBlock)),
   cardsSenda: dynamic(() => import('@/blocks/Cards_SENDA/Component').then((m) => m.SendaCardsBlockComponent)),
   multiFormSenda: dynamic(() =>
