@@ -192,6 +192,15 @@ export const hero: Field = {
       admin: { condition: (_, { type } = {}) => type === 'heroSenda' },
       label: 'Botón debajo de la imagen',
       fields: [
+        {
+          name: 'useVidivAgent',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            description: 'Si está activo, en el front se muestra el widget del agente Vidiv en esta posición (sin enlace ni estilos de botón).',
+          },
+          label: 'Activar agent',
+        },
         link({ appearances: false }),
         {
           name: 'iconSVG',

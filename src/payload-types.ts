@@ -259,6 +259,10 @@ export interface Page {
         }[]
       | null;
     heroSendaImageButton?: {
+      /**
+       * Si está activo, en el front se muestra el widget del agente Vidiv en esta posición (sin enlace ni estilos de botón).
+       */
+      useVidivAgent?: boolean | null;
       link: {
         type?: ('reference' | 'custom') | null;
         newTab?: boolean | null;
@@ -3008,6 +3012,7 @@ export interface PagesSelect<T extends boolean = true> {
         heroSendaImageButton?:
           | T
           | {
+              useVidivAgent?: T;
               link?:
                 | T
                 | {

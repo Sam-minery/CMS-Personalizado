@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
+import Script from 'next/script'
 import RichText from '@/components/RichText'
 import { CMSLink } from '@/components/Link'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
@@ -51,7 +52,7 @@ type Props = {
   links?: LinkItem[]
   heroSendaLeftButtons?: HeroSendaButton[] | null
   heroSendaImage?: HeroSendaImage | null
-  heroSendaImageButton?: { link?: HeroSendaLink; iconSVG?: string | null } | null
+  heroSendaImageButton?: { link?: HeroSendaLink; iconSVG?: string | null; useVidivAgent?: boolean | null } | null
   heroSendaBackgroundColor?: string | null
   heroSendaTextColor?: string | null
   heroSendaBoldTextColor?: string | null
@@ -215,6 +216,8 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
     : (Array.isArray(links) ? links.slice(0, 2).map((item) => ({ link: item.link, appearance: 'default' as const, size: 'sm' as const, iconSVG: null })) : [])
   const imageButtonLink = heroSendaImageButton?.link
   const imageButtonIconSVG = heroSendaImageButton?.iconSVG
+  const useVidivAgent = heroSendaImageButton?.useVidivAgent === true
+  const showImageButtonArea = useVidivAgent || imageButtonLink != null
 
   const [footerInView, setFooterInView] = useState(false)
   useEffect(() => {
@@ -230,6 +233,13 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
 
   return (
     <>
+      {useVidivAgent && (
+        <Script
+          src="https://app.vidiv.net/widget.js"
+          strategy="afterInteractive"
+          type="text/javascript"
+        />
+      )}
       {combinedStyles && <style>{combinedStyles}</style>}
       <section
         id="hero-senda"
@@ -303,32 +313,36 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
               )}
             </div>
           </div>
-          {/* Tercer botón: posición fija; se oculta cuando el footer entra en pantalla para no taparlo */}
-          {imageButtonLink != null && (
+          {/* Tercer botón o widget Vidiv: posición fija; se oculta cuando el footer entra en pantalla para no taparlo */}
+          {showImageButtonArea && (
             <div
               className={`hero-senda-image-btn-wrap fixed bottom-6 right-6 z-40 flex justify-end transition-opacity duration-300 ${footerInView ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
             >
-              <CMSLink
-                {...(imageButtonLink as React.ComponentProps<typeof CMSLink>)}
-                label={undefined}
-                appearance="outline"
-                size="lg"
-                className="hero-senda-btn-image text-base md:text-lg p-3 md:p-4 md:px-6 md:py-3"
-                style={fontStyle}
-              >
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="hidden md:inline">
-                    {fontStyle ? <span style={fontStyle}>{(imageButtonLink as HeroSendaLink).label ?? ''}</span> : ((imageButtonLink as HeroSendaLink).label ?? '')}
+              {useVidivAgent ? (
+                React.createElement('vidiv-agent', { slug: 'senda-health-draft' })
+              ) : (
+                <CMSLink
+                  {...(imageButtonLink as React.ComponentProps<typeof CMSLink>)}
+                  label={undefined}
+                  appearance="outline"
+                  size="lg"
+                  className="hero-senda-btn-image text-base md:text-lg p-3 md:p-4 md:px-6 md:py-3"
+                  style={fontStyle}
+                >
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="hidden md:inline">
+                      {fontStyle ? <span style={fontStyle}>{(imageButtonLink as HeroSendaLink).label ?? ''}</span> : ((imageButtonLink as HeroSendaLink).label ?? '')}
+                    </span>
+                    {imageButtonIconSVG ? (
+                      <span
+                        className="inline-flex shrink-0 w-8 h-8 md:w-9 md:h-9 [&_svg]:w-full [&_svg]:h-full"
+                        dangerouslySetInnerHTML={{ __html: sanitizeSVG(imageButtonIconSVG) }}
+                        aria-hidden
+                      />
+                    ) : null}
                   </span>
-                  {imageButtonIconSVG ? (
-                    <span
-                      className="inline-flex shrink-0 w-8 h-8 md:w-9 md:h-9 [&_svg]:w-full [&_svg]:h-full"
-                      dangerouslySetInnerHTML={{ __html: sanitizeSVG(imageButtonIconSVG) }}
-                      aria-hidden
-                    />
-                  ) : null}
-                </span>
-              </CMSLink>
+                </CMSLink>
+              )}
             </div>
           )}
         </div>
