@@ -312,6 +312,10 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
     styles.push(
       `[data-ps-font="${styleId}"] .pricing-senda-plan-icon svg { max-width: 100% !important; max-height: 100% !important; width: auto !important; height: auto !important; object-fit: contain !important; display: block !important; margin: auto; }`,
     )
+    /* Desktop: contenedor y grid más anchos (solo a partir de 1024px). El .container limita el ancho; lo ampliamos solo aquí. */
+    styles.push(
+      `@media (min-width: 1024px) { [data-ps-font="${styleId}"] .pricing-senda-container { max-width: 86rem !important; } [data-ps-font="${styleId}"] .pricing-senda-plans-grid { max-width: none !important; width: 100% !important; } }`,
+    )
 
     return styles.join('\n')
   }
@@ -361,7 +365,8 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
           <div
             className="absolute inset-0 rounded-xl pointer-events-none"
             style={{
-              background: 'linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.03) 35%, rgba(0,0,0,0.03) 65%, rgba(0,0,0,0.22) 100%)',
+              background:
+                'linear-gradient(to bottom, transparent 0%, transparent 50%, rgba(0,0,0,0.03) 65%, rgba(0,0,0,0.22) 100%)',
             }}
             aria-hidden
           />
@@ -439,7 +444,7 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
         className="px-[5%] py-16 md:py-24 lg:py-28"
         style={backgroundColor ? { backgroundColor } : undefined}
       >
-        <div className="container">
+        <div className="pricing-senda-container container">
           <div className="mb-12 md:mb-16 lg:mb-20 w-full pricing-senda-main-richtext" style={fontStyle}>
             {richText && (
               <div className="w-full [&_h1]:text-5xl [&_h1]:font-bold [&_h1]:md:text-7xl [&_h1]:lg:text-8xl [&_h2]:text-4xl [&_h2]:font-bold [&_h2]:md:text-6xl [&_h2]:lg:text-7xl [&_h3]:text-3xl [&_h3]:font-bold [&_h3]:md:text-5xl [&_h3]:lg:text-6xl [&_h4]:font-bold [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6">
@@ -449,7 +454,7 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
           </div>
 
           {Array.isArray(plans) && plans.length > 0 && (
-            <div className="mx-auto grid max-w-xl grid-cols-1 gap-8 md:gap-10 lg:gap-12">
+            <div className="pricing-senda-plans-grid mx-auto grid w-full max-w-xl grid-cols-1 gap-8 md:gap-10 lg:gap-12">
               {plans.map((plan, index) => renderPlan(plan, index))}
             </div>
           )}

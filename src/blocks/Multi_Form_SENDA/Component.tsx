@@ -250,7 +250,7 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
       <section
         id={sanitizeAnchorId(anchorId, 'multi-form-senda')}
         data-mf-senda-font={styleId}
-        className="relative w-full pt-20 pb-16 md:pt-24 md:pb-20 lg:pt-28 lg:pb-24 px-6 md:px-8 lg:px-10 bg-cover bg-center bg-no-repeat"
+        className="relative w-full pt-24 pb-16 md:pt-28 md:pb-20 lg:pt-32 lg:pb-24 px-6 md:px-8 lg:px-10 bg-cover bg-center bg-no-repeat"
         style={{
           ...(backgroundColor != null && backgroundColor !== ''
             ? { backgroundColor: backgroundColor as React.CSSProperties['backgroundColor'] }
@@ -372,7 +372,7 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
                 </div>
                 {/* Botón de paso: enlace o confirmar opción */}
                 {currentStep.convertStepButtonToLink && hasValidStepButtonLink(currentStep.stepButtonLink) && currentStep.stepButtonLink ? (
-                  <div className="mt-6 lg:flex lg:justify-center">
+                  <div className="mt-10 lg:flex lg:justify-center">
                     <CMSLink
                       type={currentStep.stepButtonLink.type ?? undefined}
                       reference={
@@ -387,31 +387,28 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
                       }
                       url={currentStep.stepButtonLink.url ?? undefined}
                       newTab={currentStep.stepButtonLink.newTab ?? undefined}
-                      appearance="default"
-                      size="default"
-                      className="mf-senda-step-btn inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-semibold transition-all hover:opacity-90"
+                      appearance="inline"
+                      className="mf-senda-step-btn mf-senda-step-btn-link inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-semibold no-underline transition-all hover:opacity-90"
                       style={{
                         ...fontStyle,
                         backgroundColor: (selectedOptionInCurrentStep === null ? (currentStep.stepButtonBackgroundColor ?? buttonBackgroundColor) : buttonBackgroundColor) as React.CSSProperties['backgroundColor'],
                         ['--mf-senda-step-btn-color' as string]: (selectedOptionInCurrentStep === null ? (currentStep.stepButtonTextColor ?? buttonTextColor) : buttonTextColor),
                       }}
                     >
-                      <span className="inline-flex items-center gap-2">
-                        {(currentStep.stepButtonLink.label?.trim() || currentStep.stepButtonLabel?.trim() || 'Continuar')}
-                        {currentStep.stepButtonIconSVG?.trim() ? (
-                          <span
-                            className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                            dangerouslySetInnerHTML={{
-                              __html: sanitizeSVG(currentStep.stepButtonIconSVG).replace(/\sheight=["'][^"']*["']/gi, ''),
-                            }}
-                            aria-hidden
-                          />
-                        ) : null}
-                      </span>
+                      {(currentStep.stepButtonLink.label?.trim() || currentStep.stepButtonLabel?.trim() || 'Continuar')}
+                      {currentStep.stepButtonIconSVG?.trim() ? (
+                        <span
+                          className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                          dangerouslySetInnerHTML={{
+                            __html: sanitizeSVG(currentStep.stepButtonIconSVG).replace(/\sheight=["'][^"']*["']/gi, ''),
+                          }}
+                          aria-hidden
+                        />
+                      ) : null}
                     </CMSLink>
                   </div>
                 ) : (
-                  <div className="mt-6 lg:flex lg:justify-center">
+                  <div className="mt-10 lg:flex lg:justify-center">
                     <button
                       type="button"
                       disabled={selectedOptionInCurrentStep === null}

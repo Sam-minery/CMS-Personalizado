@@ -211,12 +211,9 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
   const mainImageAlt = getImageAlt(image)
   const buttonItems = Array.isArray(buttons) ? buttons.slice(0, 2) : []
 
-  const textContainerClass = invertLayout
-    ? 'order-1 lg:order-2'
-    : 'order-2 lg:order-1'
-  const imageContainerClass = invertLayout
-    ? 'order-2 lg:order-1'
-    : 'order-1 lg:order-2'
+  /** Sin invertir: móvil imagen arriba; desktop texto izq / imagen dcha. Invertido: móvil imagen arriba; desktop imagen izq / texto dcha. */
+  const textContainerClass = invertLayout ? 'order-2 lg:order-2' : 'order-2 lg:order-1'
+  const imageContainerClass = invertLayout ? 'order-1 lg:order-1' : 'order-1 lg:order-2'
 
   return (
     <>

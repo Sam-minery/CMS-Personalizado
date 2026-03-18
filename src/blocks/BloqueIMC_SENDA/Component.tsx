@@ -307,7 +307,7 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
       <div
         id={sectionId}
         data-bloque-imc-senda-font={styleId}
-        className="relative w-full min-w-0 min-h-screen flex items-start justify-center px-4 md:px-6 pt-12 pb-12 overflow-x-hidden md:h-[690px] md:min-h-[690px]"
+        className="relative w-full min-w-0 min-h-screen flex items-start justify-center px-4 md:px-6 pt-24 pb-12 overflow-x-hidden md:pt-28 md:pb-12 md:h-[690px] md:min-h-[690px]"
         style={{
           background: showResult || showHighBMI ? backgroundColor || '#f5f5f5' : defaultBackground,
           ...(backgroundImageUrl

@@ -179,6 +179,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
         styles.push(
           `[data-hero-senda-font="${styleId}"] .hero-senda-btn-secondary, [data-hero-senda-font="${styleId}"] .hero-senda-btn-secondary * { color: ${heroSendaButton2TextColor} !important; }`,
         )
+        btn2Rules.push(`border: 1px solid color-mix(in srgb, ${heroSendaButton2TextColor} 60%, transparent) !important;`)
       }
       styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-secondary { ${btn2Rules.join(' ')} }`)
     } else {
@@ -265,7 +266,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                   />
                 </div>
               )}
-              {leftButtons.length > 0 && (
+              {leftButtons.length === 2 && (
                 <div className="mt-6 flex flex-wrap gap-4 md:mt-8">
                   {leftButtons.map((item, index) => {
                     const link = (item as HeroSendaButton).link ?? (item as LinkItem).link
@@ -313,6 +314,39 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
               )}
             </div>
           </div>
+          {/* Un solo botón izquierda: centrado en la parte inferior del hero */}
+          {leftButtons.length === 1 && (() => {
+            const item = leftButtons[0]
+            const link = (item as HeroSendaButton).link ?? (item as LinkItem).link
+            const label = (link as HeroSendaLink)?.label ?? (item as HeroSendaButton).title ?? 'Button'
+            const appearance = (item as HeroSendaButton).appearance ?? 'default'
+            const size = (item as HeroSendaButton).size ?? 'sm'
+            const iconSVG = (item as HeroSendaButton).iconSVG ?? null
+            const btnClassName = appearance === 'default' ? 'hero-senda-btn-default' : appearance === 'secondary' ? 'hero-senda-btn-secondary' : undefined
+            return (
+              <div className="mt-10 md:mt-12 flex justify-center">
+                <CMSLink
+                  {...(link as React.ComponentProps<typeof CMSLink>)}
+                  label={undefined}
+                  appearance={appearance}
+                  size={size}
+                  className={btnClassName}
+                  style={fontStyle}
+                >
+                  <span className="inline-flex items-center gap-1.5">
+                    {fontStyle ? <span style={fontStyle}>{label}</span> : label}
+                    {iconSVG ? (
+                      <span
+                        className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                        dangerouslySetInnerHTML={{ __html: sanitizeSVG(iconSVG) }}
+                        aria-hidden
+                      />
+                    ) : null}
+                  </span>
+                </CMSLink>
+              </div>
+            )
+          })()}
           {/* Tercer botón o widget Vidiv: posición fija; se oculta cuando el footer entra en pantalla para no taparlo */}
           {showImageButtonArea && (
             <div

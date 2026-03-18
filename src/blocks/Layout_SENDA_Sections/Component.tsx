@@ -257,7 +257,7 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
           key={index}
           {...(section.link as React.ComponentProps<typeof CMSLink>)}
           appearance="inline"
-          className="block cursor-pointer rounded-lg p-4 transition-all duration-200 hover:bg-gray-50 hover:shadow-md"
+          className="block cursor-pointer rounded-lg py-4 pl-2 pr-4 transition-all duration-200 hover:bg-gray-50 hover:shadow-md sm:pl-2.5 md:p-4"
         >
           {sectionContent}
         </CMSLink>
@@ -265,7 +265,7 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
     }
 
     return (
-      <div key={index} className="rounded-lg p-4">
+      <div key={index} className="rounded-lg py-4 pl-2 pr-4 sm:pl-2.5 md:p-4">
         {sectionContent}
       </div>
     )
@@ -277,11 +277,11 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
       <section
         id={sanitizeAnchorId(anchorId, 'layout-senda-sections')}
         data-lss-font={styleId}
-        className="px-[5%] py-16 md:py-24 lg:py-28"
+        className="pl-2 pr-[5%] py-16 sm:pl-3 md:px-[5%] md:py-24 lg:py-20"
         style={backgroundColor ? { backgroundColor } : undefined}
       >
         <div className="container">
-          <div className="mb-12 md:mb-18 lg:mb-20 w-full" style={fontStyle}>
+          <div className="mb-12 md:mb-18 lg:mb-14 w-full" style={fontStyle}>
             {richText && (
               <div className="lss-main-richtext w-full [&_h1]:text-5xl [&_h1]:font-bold [&_h1]:md:text-7xl [&_h1]:lg:text-8xl [&_h2]:text-4xl [&_h2]:font-bold [&_h2]:md:text-6xl [&_h2]:lg:text-7xl [&_h3]:text-3xl [&_h3]:font-bold [&_h3]:md:text-5xl [&_h3]:lg:text-6xl [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6">
                 <RichText data={richText} enableGutter={false} enableProse={false} />
@@ -290,13 +290,13 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
           </div>
 
           {Array.isArray(sections) && sections.length > 0 && (
-            <div className="grid grid-cols-1 gap-y-12 md:grid-cols-2 md:gap-x-8 md:gap-y-16 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-y-12 md:grid-cols-2 md:gap-x-8 md:gap-y-16 lg:grid-cols-4 lg:gap-y-12">
               {sections.map((section, index) => renderSection(section, index))}
             </div>
           )}
 
           {Array.isArray(buttons) && buttons.length > 0 && (
-            <div className="mt-12 flex flex-wrap items-center gap-4 md:mt-18 lg:mt-20">
+            <div className="mt-12 flex flex-wrap items-center gap-4 md:mt-18 lg:mt-14">
               {buttons.map((button, index) => {
                 const isSecondButton = index === 1
                 if (isSecondButton) {

@@ -462,24 +462,23 @@ export const SendaCardsBlockComponent: React.FC<
     },
   }
 
+  /** URL de imagen/avatar: misma lógica que Hero_SENDA — usar la URL del media tal cual desde la API, sin getMediaUrl, para evitar 400 en producción (getClientSideURL en SSR puede generar URLs incorrectas). */
   const cardData: CardData[] =
     cards && cards.length > 0
       ? cards.map((card: NonNullable<SendaCardsBlock['cards']>[number], cardIndex: number) => {
           const mediaDoc =
             card.image && typeof card.image === 'object' ? (card.image as Media) : undefined
-          const mediaUrl = getMediaUrl(
-            mediaDoc?.sizes?.large?.url || mediaDoc?.sizes?.medium?.url || mediaDoc?.url || null,
-          )
+          const mediaUrl =
+            mediaDoc?.sizes?.large?.url || mediaDoc?.sizes?.medium?.url || mediaDoc?.url || ''
           const avatarDoc =
             card.avatarImage && typeof card.avatarImage === 'object'
               ? (card.avatarImage as Media)
               : undefined
-          const avatarUrl = getMediaUrl(
+          const avatarUrl =
             avatarDoc?.sizes?.thumbnail?.url ||
-              avatarDoc?.sizes?.small?.url ||
-              avatarDoc?.url ||
-              null,
-          )
+            avatarDoc?.sizes?.small?.url ||
+            avatarDoc?.url ||
+            ''
           const hasExpandedContent = !isRichTextEmpty(card.expandedContent)
           const rawId = (card as { id?: string }).id
           const cardKey = `card-${cardIndex}-${rawId ?? 'noid'}`

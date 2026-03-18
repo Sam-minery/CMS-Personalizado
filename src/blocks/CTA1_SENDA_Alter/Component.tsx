@@ -126,6 +126,20 @@ function sanitizeCssColor(value: string | null | undefined): string {
   return safe || ''
 }
 
+/**
+ * Degradado ~70/30 (principal / secundario). OKLCH + color-mix para transición suave.
+ */
+function buildCtaSendaAlterGradient(
+  direction: string,
+  startColor: string,
+  endColor: string,
+): string {
+  const a = sanitizeCssColor(startColor) || startColor.trim()
+  const b = sanitizeCssColor(endColor) || endColor.trim()
+  if (!a || !b) return ''
+  return `linear-gradient(${direction} in oklch, ${a} 0%, ${a} 44%, color-mix(in oklch, ${a} 91%, ${b}) 54%, color-mix(in oklch, ${a} 72%, ${b}) 64%, color-mix(in oklch, ${a} 48%, ${b}) 74%, ${b} 88%, ${b} 100%)`
+}
+
 function getMediaUrlSafe(media: MediaLike | null | undefined): string {
   if (!media || typeof media === 'number') return ''
   const m = media as { url?: string; sizes?: { large?: { url?: string }; medium?: { url?: string } } }
@@ -595,7 +609,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                 <div
                   className="absolute inset-0"
                   style={{
-                    backgroundImage: `linear-gradient(${
+                    backgroundImage: buildCtaSendaAlterGradient(
                       gradientDirection === 'to-left'
                         ? 'to left'
                         : gradientDirection === 'to-bottom'
@@ -606,8 +620,10 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                               ? '135deg'
                               : gradientDirection === 'diagonal-up'
                                 ? '45deg'
-                                : 'to right'
-                    }, ${gradientStartColor} 0%, ${gradientEndColor} 100%)`,
+                                : 'to right',
+                      gradientStartColor,
+                      gradientEndColor,
+                    ),
                   }}
                 />
               ) : backgroundColor ? (
@@ -628,7 +644,11 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
       {/* Popup teléfono */}
       {usePhonePopup && popup && isPhonePopupOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto px-4 pb-8 sm:px-6"
+          style={{
+            paddingTop:
+              'max(8rem, calc(env(safe-area-inset-top, 0px) + 6rem))',
+          }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="phone-popup-title"
@@ -669,8 +689,12 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                 width: '100%',
                 background:
                   popup.gradientStartColor && popup.gradientEndColor
-                    ? `linear-gradient(${popupGradientDir}, ${popup.gradientStartColor} 0%, ${popup.gradientEndColor} 100%)`
-                    : 'linear-gradient(to bottom right, #1e3a5f 0%, #4a2c7a 100%)',
+                    ? buildCtaSendaAlterGradient(
+                        popupGradientDir,
+                        popup.gradientStartColor,
+                        popup.gradientEndColor,
+                      )
+                    : buildCtaSendaAlterGradient('to bottom right', '#1e3a5f', '#4a2c7a'),
               }}
             >
             {/* Título y descripción: móvil 303×120 centrado; desktop sin restricción */}

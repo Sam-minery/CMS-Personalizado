@@ -181,10 +181,10 @@ export const FAQSendaBlock: React.FC<FAQSendaProps> = (props) => {
       <section
         id={sanitizeAnchorId(anchorId, 'faq-senda')}
         data-fs-font={styleId}
-        className="px-3 py-16 md:px-[5%] md:py-24 lg:py-28"
+        className="px-2 py-16 sm:px-3 md:px-[5%] md:py-24 lg:py-28"
         style={backgroundColor ? { backgroundColor } : undefined}
       >
-        <div className="container max-w-lg">
+        <div className="faq-senda-inner container w-full max-w-xl md:max-w-2xl lg:max-w-4xl">
           <div
             className="faq-senda-main-richtext mb-12 text-center md:mb-16 lg:mb-20"
             style={fontStyle}
@@ -196,7 +196,7 @@ export const FAQSendaBlock: React.FC<FAQSendaProps> = (props) => {
             )}
           </div>
 
-          <div className="faq-senda-accordion-wrapper px-2 py-4 md:p-5">
+          <div className="faq-senda-accordion-wrapper px-1 py-4 sm:px-2 md:p-5">
             <Accordion type="multiple" className="grid items-start justify-stretch gap-2">
               {questionsList.map((q, index) => {
                 const iconSvg = q?.iconSVG?.trim()

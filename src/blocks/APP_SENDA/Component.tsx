@@ -235,7 +235,7 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
     }
     if (contentBelowImagesColor) {
       styles.push(
-        `${sel} .app-senda-below-richtext, ${sel} .app-senda-below-richtext p, ${sel} .app-senda-below-richtext h1, ${sel} .app-senda-below-richtext h2, ${sel} .app-senda-below-richtext h3, ${sel} .app-senda-below-richtext span, ${sel} .app-senda-below-richtext a { color: ${contentBelowImagesColor} !important; }`,
+        `${sel} .app-senda-below-richtext, ${sel} .app-senda-below-richtext p, ${sel} .app-senda-below-richtext h1, ${sel} .app-senda-below-richtext h2, ${sel} .app-senda-below-richtext h3, ${sel} .app-senda-below-richtext h4, ${sel} .app-senda-below-richtext h5, ${sel} .app-senda-below-richtext h6, ${sel} .app-senda-below-richtext li, ${sel} .app-senda-below-richtext span:not(strong):not(b), ${sel} .app-senda-below-richtext a { color: ${contentBelowImagesColor} !important; }`,
       )
     }
     const btnRules: string[] = [
@@ -275,7 +275,8 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
   )
   const belowRichTextClasses = cn(
     'app-senda-below-richtext [&_p]:text-[15px] [&_p]:leading-relaxed [&_*]:text-left',
-    !contentBelowImagesColor && '[&_p]:text-neutral-700',
+    !contentBelowImagesColor &&
+      '[&_p]:text-neutral-700 [&_h1]:text-neutral-800 [&_h2]:text-neutral-800 [&_h3]:text-neutral-800 [&_h4]:text-neutral-800 [&_h5]:text-neutral-800 [&_h6]:text-neutral-800',
   )
 
   const buttonList = Array.isArray(buttons) ? buttons.slice(0, 2) : []
@@ -286,7 +287,7 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
       <section
         id={sanitizeAnchorId(anchorId, 'app-senda')}
         data-app-senda-block={styleId}
-        className="app-senda-section min-h-[840px] px-[5%] py-10 md:py-14 flex items-center"
+        className="app-senda-section min-h-[840px] px-[5%] pt-20 pb-10 md:pt-24 md:pb-14 flex items-center"
         style={{
           ...(backgroundColor ? { backgroundColor } : {}),
           ...(backgroundImageUrl
