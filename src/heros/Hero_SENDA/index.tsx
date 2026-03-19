@@ -195,7 +195,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
       if (typo?.h4) styles.push(`${richSel} h4 { font-size: ${typo.h4} !important; }`)
       if (typo?.h5) styles.push(`${richSel} h5 { font-size: ${typo.h5} !important; }`)
       if (typo?.h6) styles.push(`${richSel} h6 { font-size: ${typo.h6} !important; }`)
-      if (typo?.body) styles.push(`${richSel} p, ${richSel} li, ${richSel} span { font-size: ${typo.body} !important; }`)
+      if (typo?.body) styles.push(`${richSel} p, ${richSel} li { font-size: ${typo.body} !important; }`)
       if (typo?.caption) {
         styles.push(`${richSel} .caption { font-size: ${typo.caption} !important; }`)
         styles.push(
