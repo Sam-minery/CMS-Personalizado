@@ -189,14 +189,20 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
       const typo = fontGroupObj.typography
       const sel = `[data-hero-senda-font="${styleId}"]`
       const richSel = `${sel} .hero-senda-richtext, ${sel} .payload-richtext`
-      if (typo?.h1) styles.push(`${richSel} h1 { font-weight: ${typo.h1} !important; }`)
-      if (typo?.h2) styles.push(`${richSel} h2 { font-weight: ${typo.h2} !important; }`)
-      if (typo?.h3) styles.push(`${richSel} h3 { font-weight: ${typo.h3} !important; }`)
-      if (typo?.h4) styles.push(`${richSel} h4 { font-weight: ${typo.h4} !important; }`)
-      if (typo?.h5) styles.push(`${richSel} h5 { font-weight: ${typo.h5} !important; }`)
-      if (typo?.h6) styles.push(`${richSel} h6 { font-weight: ${typo.h6} !important; }`)
-      if (typo?.body) styles.push(`${richSel} p, ${richSel} span { font-weight: ${typo.body} !important; }`)
-      if (typo?.caption) styles.push(`${richSel} [data-text-size="caption"] { font-weight: ${typo.caption} !important; }`)
+      if (typo?.h1) styles.push(`${richSel} h1 { font-size: ${typo.h1} !important; }`)
+      if (typo?.h2) styles.push(`${richSel} h2 { font-size: ${typo.h2} !important; }`)
+      if (typo?.h3) styles.push(`${richSel} h3 { font-size: ${typo.h3} !important; }`)
+      if (typo?.h4) styles.push(`${richSel} h4 { font-size: ${typo.h4} !important; }`)
+      if (typo?.h5) styles.push(`${richSel} h5 { font-size: ${typo.h5} !important; }`)
+      if (typo?.h6) styles.push(`${richSel} h6 { font-size: ${typo.h6} !important; }`)
+      if (typo?.body) styles.push(`${richSel} p, ${richSel} li, ${richSel} span { font-size: ${typo.body} !important; }`)
+      if (typo?.caption) {
+        styles.push(`${richSel} .caption { font-size: ${typo.caption} !important; }`)
+        styles.push(
+          `${richSel} p .caption, ${richSel} .payload-richtext .caption, ${richSel} span.caption { font-size: ${typo.caption} !important; }`,
+        )
+        styles.push(`${sel} [data-text-size="caption"] { font-size: ${typo.caption} !important; }`)
+      }
       const weightMap: Record<string, string> = {
         light: '300',
         regular: '400',
