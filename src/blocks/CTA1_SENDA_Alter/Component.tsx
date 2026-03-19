@@ -660,27 +660,26 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
             aria-hidden
           />
           <div className="relative w-full max-w-[351px] md:max-w-[928px]" style={{ width: '100%' }}>
-            {/* Cerrar fuera del panel del popup; sin fondo circular */}
+            {/* Cerrar fuera del panel del popup; sin fondo circular. Siempre SVG inline para que dev y prod se vean igual (el SVG del CMS en prod puede verse como "/"). */}
             <button
               type="button"
               onClick={closePhonePopup}
               className="absolute -top-10 right-0 z-[120] flex h-10 w-10 items-center justify-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] transition-opacity hover:opacity-90 md:-top-11 md:right-1 md:h-11 md:w-11"
               aria-label="Cerrar"
             >
-              {popup.closeButtonSVG?.trim() ? (
-                <span
-                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center overflow-visible text-white [&_svg]:block [&_svg]:max-h-7 [&_svg]:max-w-7 [&_svg]:min-h-[1.25rem] [&_svg]:min-w-[1.25rem]"
-                  dangerouslySetInnerHTML={{ __html: sanitizeSVG(popup.closeButtonSVG) }}
-                />
-              ) : (
-                <span
-                  className="relative inline-block h-5 w-5 shrink-0 md:h-6 md:w-6"
-                  aria-hidden
-                >
-                  <span className="absolute left-1/2 top-1/2 block h-0.5 w-4 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full bg-current md:w-[1.125rem]" />
-                  <span className="absolute left-1/2 top-1/2 block h-0.5 w-4 -translate-x-1/2 -translate-y-1/2 -rotate-45 rounded-full bg-current md:w-[1.125rem]" />
-                </span>
-              )}
+              <svg
+                className="h-6 w-6 shrink-0 md:h-7 md:w-7"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
             </button>
             <div
               className={cn(
