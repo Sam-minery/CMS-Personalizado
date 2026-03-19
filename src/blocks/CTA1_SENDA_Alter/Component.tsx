@@ -660,9 +660,31 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
             aria-hidden
           />
           <div className="relative w-full max-w-[351px] md:max-w-[928px]" style={{ width: '100%' }}>
+            {/* Cerrar fuera del panel del popup; sin fondo circular */}
+            <button
+              type="button"
+              onClick={closePhonePopup}
+              className="absolute -top-10 right-0 z-[120] flex h-10 w-10 items-center justify-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] transition-opacity hover:opacity-90 md:-top-11 md:right-1 md:h-11 md:w-11"
+              aria-label="Cerrar"
+            >
+              {popup.closeButtonSVG?.trim() ? (
+                <span
+                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center overflow-visible text-white [&_svg]:block [&_svg]:max-h-7 [&_svg]:max-w-7 [&_svg]:min-h-[1.25rem] [&_svg]:min-w-[1.25rem]"
+                  dangerouslySetInnerHTML={{ __html: sanitizeSVG(popup.closeButtonSVG) }}
+                />
+              ) : (
+                <span
+                  className="relative inline-block h-5 w-5 shrink-0 md:h-6 md:w-6"
+                  aria-hidden
+                >
+                  <span className="absolute left-1/2 top-1/2 block h-0.5 w-4 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full bg-current md:w-[1.125rem]" />
+                  <span className="absolute left-1/2 top-1/2 block h-0.5 w-4 -translate-x-1/2 -translate-y-1/2 -rotate-45 rounded-full bg-current md:w-[1.125rem]" />
+                </span>
+              )}
+            </button>
             <div
               className={cn(
-                'relative w-full overflow-hidden rounded-2xl p-6 pt-14 md:p-8 md:pt-16 text-white shadow-xl flex flex-col justify-center',
+                'relative w-full overflow-hidden rounded-2xl p-6 pt-8 md:p-8 md:pt-10 text-white shadow-xl flex flex-col justify-center',
                 'max-w-[351px] min-h-[660px] md:max-w-[928px] md:min-h-[692px]',
               )}
               style={{
@@ -677,24 +699,6 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                     : buildCtaSendaAlterGradient('to bottom right', '#1e3a5f', '#4a2c7a'),
               }}
             >
-              {/* Cerrar: dentro del modal (evita recorte por overflow y navbar); icono relleno para que no parezca "/" en móvil */}
-              <button
-                type="button"
-                onClick={closePhonePopup}
-                className="absolute top-3 right-3 z-30 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/25 text-white shadow-sm backdrop-blur-sm transition-opacity hover:bg-black/35 hover:opacity-100 md:top-5 md:right-5 md:h-12 md:w-12"
-                aria-label="Cerrar"
-              >
-                {popup.closeButtonSVG?.trim() ? (
-                  <span
-                    className="inline-flex h-7 w-7 shrink-0 items-center justify-center [&_svg]:block [&_svg]:h-full [&_svg]:w-full [&_svg]:max-h-full [&_svg]:max-w-full"
-                    dangerouslySetInnerHTML={{ __html: sanitizeSVG(popup.closeButtonSVG) }}
-                  />
-                ) : (
-                  <svg className="h-6 w-6 shrink-0 md:h-7 md:w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
-                  </svg>
-                )}
-              </button>
             {/* Título y descripción: móvil 303×120 centrado; desktop sin restricción */}
             {(() => {
               const titleColor = sanitizeCssColor(popup.titleTextColor) || '#ffffff'

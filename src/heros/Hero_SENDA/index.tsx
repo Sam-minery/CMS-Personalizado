@@ -283,6 +283,9 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                     const iconSVG = (item as HeroSendaButton).iconSVG ?? null
                     const btnClassName = appearance === 'default' ? 'hero-senda-btn-default' : appearance === 'secondary' ? 'hero-senda-btn-secondary' : undefined
                     const twoCols = leftButtons.length === 2
+                    // Una sola línea, sin salirse del botón: nowrap + truncate; en móvil con 2 botones texto más pequeño para que quepa
+                    const labelClass =
+                      'min-w-0 truncate text-center max-lg:text-xs max-lg:leading-tight lg:text-base lg:leading-normal'
                     return (
                       <CMSLink
                         key={index}
@@ -292,39 +295,28 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                         size={size}
                         className={
                           twoCols
-                            ? `${btnClassName ?? ''} max-lg:min-w-0 max-lg:flex-1 max-lg:basis-0 max-lg:justify-center lg:inline-flex lg:w-auto lg:flex-none lg:shrink-0`.trim()
-                            : btnClassName
+                            ? `${btnClassName ?? ''} max-lg:min-w-0 max-lg:flex-1 max-lg:basis-0 max-lg:justify-center max-lg:overflow-hidden lg:inline-flex lg:w-auto lg:flex-none lg:shrink-0`.trim()
+                            : `${btnClassName ?? ''} max-lg:overflow-hidden`.trim()
                         }
                         style={fontStyle}
                       >
                         <span
                           className={
                             twoCols
-                              ? 'inline-flex max-w-full items-center justify-center gap-1 sm:gap-1.5 lg:max-w-none lg:justify-start'
-                              : 'inline-flex items-center gap-1.5'
+                              ? 'inline-flex min-w-0 max-w-full flex-1 flex-row flex-nowrap items-center justify-center gap-1.5 overflow-hidden lg:flex-initial lg:justify-start'
+                              : 'inline-flex min-w-0 max-w-full flex-row flex-nowrap items-center justify-center gap-1.5 overflow-hidden'
                           }
                         >
                           {fontStyle ? (
-                            <span
-                              className={
-                                twoCols
-                                  ? 'truncate text-center text-sm sm:text-base lg:overflow-visible lg:whitespace-normal lg:text-base'
-                                  : ''
-                              }
-                              style={fontStyle}
-                            >
-                              {label}
-                            </span>
-                          ) : twoCols ? (
-                            <span className="truncate text-center text-sm sm:text-base lg:overflow-visible lg:whitespace-normal lg:text-base">
+                            <span className={labelClass} style={fontStyle}>
                               {label}
                             </span>
                           ) : (
-                            label
+                            <span className={labelClass}>{label}</span>
                           )}
                           {iconSVG ? (
                             <span
-                              className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                              className="inline-flex shrink-0 w-5 h-5 flex-shrink-0 [&_svg]:w-full [&_svg]:h-full"
                               dangerouslySetInnerHTML={{ __html: sanitizeSVG(iconSVG) }}
                               aria-hidden
                             />
