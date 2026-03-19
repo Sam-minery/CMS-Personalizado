@@ -12,11 +12,47 @@ import {
   lexicalEditor,
   OrderedListFeature,
   ParagraphFeature,
+  SubscriptFeature,
+  TextStateFeature,
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
 import { link } from '@/fields/link'
 import { linkGroup } from '@/fields/linkGroup'
+
+/** Pesos y tamaño "texto pequeño" para rich text (Hero SENDA y otros que usen el mismo editor). */
+const heroRichTextState = {
+  weight: {
+    light: { label: 'Light', css: { 'font-weight': '300' } },
+    regular: { label: 'Regular', css: { 'font-weight': '400' } },
+    medium: { label: 'Medium', css: { 'font-weight': '500' } },
+    semibold: { label: 'Semibold', css: { 'font-weight': '600' } },
+    heavy: { label: 'Heavy', css: { 'font-weight': '800' } },
+  },
+  size: {
+    caption: { label: 'Texto pequeño', css: {} },
+  },
+} as const
+
+const heroRichTextEditor = () =>
+  lexicalEditor({
+    features: ({ rootFeatures }) => [
+      ...rootFeatures,
+      ParagraphFeature(),
+      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
+      AlignFeature(),
+      IndentFeature(),
+      UnorderedListFeature(),
+      OrderedListFeature(),
+      ChecklistFeature(),
+      BlockquoteFeature(),
+      HorizontalRuleFeature(),
+      SubscriptFeature(),
+      TextStateFeature({ state: heroRichTextState }),
+      FixedToolbarFeature(),
+      InlineToolbarFeature(),
+    ],
+  })
 
 export const hero: Field = {
   name: 'hero',
@@ -74,24 +110,7 @@ export const hero: Field = {
     {
       name: 'richText',
       type: 'richText',
-      editor: lexicalEditor({
-        features: ({ rootFeatures }) => {
-          return [
-            ...rootFeatures,
-            ParagraphFeature(),
-            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-            AlignFeature(),
-            IndentFeature(),
-            UnorderedListFeature(),
-            OrderedListFeature(),
-            ChecklistFeature(),
-            BlockquoteFeature(),
-            HorizontalRuleFeature(),
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
-          ]
-        },
-      }),
+      editor: heroRichTextEditor(),
       label: false,
     },
     linkGroup({
@@ -264,12 +283,29 @@ export const hero: Field = {
       label: 'Color de texto botón 3 (Hero SENDA)',
     },
     {
+      name: 'heroSendaUseFontGroup',
+      type: 'checkbox',
+      label: 'Usar grupo de fuentes (Hero SENDA)',
+      admin: { condition: (_, { type } = {}) => type === 'heroSenda' },
+      defaultValue: false,
+    },
+    {
+      name: 'heroSendaFontGroup',
+      type: 'relationship',
+      relationTo: 'font-groups',
+      label: 'Grupo de fuentes (Hero SENDA)',
+      admin: {
+        condition: (_, siblingData) => siblingData?.type === 'heroSenda' && siblingData?.heroSendaUseFontGroup === true,
+      },
+    },
+    {
       name: 'heroSendaFontFamily',
       type: 'select',
       label: 'Tipografía (Hero SENDA)',
       admin: {
-        condition: (_, { type } = {}) => type === 'heroSenda',
-        description: 'Selecciona una tipografía. Se ignora si usas fuente personalizada.',
+        condition: (_, siblingData) =>
+          siblingData?.type === 'heroSenda' && siblingData?.heroSendaUseFontGroup !== true,
+        description: 'Selecciona una tipografía. Se ignora si usas grupo de fuentes o fuente personalizada.',
       },
       options: [
         { label: 'Por defecto', value: 'default' },
@@ -294,7 +330,10 @@ export const hero: Field = {
       name: 'heroSendaUseCustomFont',
       type: 'checkbox',
       label: 'Usar fuente personalizada (Hero SENDA)',
-      admin: { condition: (_, { type } = {}) => type === 'heroSenda' },
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData?.type === 'heroSenda' && siblingData?.heroSendaUseFontGroup !== true,
+      },
       defaultValue: false,
     },
     {
@@ -303,7 +342,10 @@ export const hero: Field = {
       relationTo: 'fonts',
       label: 'Archivo de fuente (Hero SENDA)',
       admin: {
-        condition: (_, siblingData) => siblingData?.type === 'heroSenda' && siblingData?.heroSendaUseCustomFont === true,
+        condition: (_, siblingData) =>
+          siblingData?.type === 'heroSenda' &&
+          siblingData?.heroSendaUseFontGroup !== true &&
+          siblingData?.heroSendaUseCustomFont === true,
       },
     },
     {
@@ -311,7 +353,10 @@ export const hero: Field = {
       type: 'text',
       label: 'Nombre de la fuente (Hero SENDA)',
       admin: {
-        condition: (_, siblingData) => siblingData?.type === 'heroSenda' && siblingData?.heroSendaUseCustomFont === true,
+        condition: (_, siblingData) =>
+          siblingData?.type === 'heroSenda' &&
+          siblingData?.heroSendaUseFontGroup !== true &&
+          siblingData?.heroSendaUseCustomFont === true,
       },
     },
     // Campos específicos para Header138

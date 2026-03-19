@@ -18,6 +18,39 @@ type FontFile = {
   name?: string
 }
 
+/** Variante de font group -> font-weight y font-style para @font-face */
+const FONT_GROUP_VARIANT_CSS: Record<string, { weight: string; style: string }> = {
+  regular: { weight: '400', style: 'normal' },
+  regularItalic: { weight: '400', style: 'italic' },
+  medium: { weight: '500', style: 'normal' },
+  mediumItalic: { weight: '500', style: 'italic' },
+  semibold: { weight: '600', style: 'normal' },
+  semiboldItalic: { weight: '600', style: 'italic' },
+  bold: { weight: '700', style: 'normal' },
+  boldItalic: { weight: '700', style: 'italic' },
+  light: { weight: '300', style: 'normal' },
+  lightItalic: { weight: '300', style: 'italic' },
+  heavy: { weight: '800', style: 'normal' },
+  heavyItalic: { weight: '800', style: 'italic' },
+}
+
+type FontGroupFontEntry = { font?: FontFile | number; variant?: string }
+
+type FontGroupData = {
+  fontFamilyName?: string | null
+  fonts?: FontGroupFontEntry[] | null
+  typography?: {
+    h1?: string | null
+    h2?: string | null
+    h3?: string | null
+    h4?: string | null
+    h5?: string | null
+    h6?: string | null
+    body?: string | null
+    caption?: string | null
+  } | null
+}
+
 type HeroSendaLink = {
   type?: 'custom' | 'reference' | null
   url?: string | null
@@ -62,6 +95,8 @@ type Props = {
   heroSendaButton2TextColor?: string | null
   heroSendaButton3BackgroundColor?: string | null
   heroSendaButton3TextColor?: string | null
+  heroSendaUseFontGroup?: boolean | null
+  heroSendaFontGroup?: FontGroupData | number | null
   heroSendaFontFamily?: string | null
   heroSendaUseCustomFont?: boolean
   heroSendaCustomFontFile?: FontFile | number | null
@@ -84,14 +119,19 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
     heroSendaButton2TextColor,
     heroSendaButton3BackgroundColor,
     heroSendaButton3TextColor,
+    heroSendaUseFontGroup,
+    heroSendaFontGroup,
     heroSendaFontFamily,
     heroSendaUseCustomFont,
     heroSendaCustomFontFile,
     heroSendaCustomFontName,
   } = props
 
-  const uniqueId = React.useId().replace(/:/g, '-')
-  const styleId = `hero-senda-${uniqueId}`
+  const styleId = 'hero-senda'
+  const fontGroupObj =
+    heroSendaUseFontGroup && heroSendaFontGroup && typeof heroSendaFontGroup === 'object'
+      ? (heroSendaFontGroup as FontGroupData)
+      : null
 
   const customFontFileObj =
     heroSendaCustomFontFile && typeof heroSendaCustomFontFile === 'object'
@@ -103,12 +143,13 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
     (customFontFileObj?.filename ? customFontFileObj.filename.replace(/\.[^.]+$/, '') : undefined)
 
   const getFontFamily = () => {
+    if (fontGroupObj?.fontFamilyName) return `"${fontGroupObj.fontFamilyName.replace(/"/g, '\\"')}"`
     if (heroSendaUseCustomFont && customFontFamilyName) return `"${customFontFamilyName}"`
     if (heroSendaFontFamily && heroSendaFontFamily !== 'default') return heroSendaFontFamily
     return undefined
   }
   const selectedFontFamily = getFontFamily()
-  useGoogleFont(selectedFontFamily)
+  useGoogleFont(fontGroupObj ? undefined : selectedFontFamily)
 
   const fontFileUrl = customFontFileObj?.url
     ? getMediaUrl(customFontFileObj.url).replace(/([^:]\/)\/+/g, '$1')
@@ -120,7 +161,54 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
 
   const buildStyles = () => {
     const styles: string[] = []
-    if (heroSendaUseCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
+    const fontFamilyName = fontGroupObj?.fontFamilyName?.trim()
+
+    if (fontGroupObj && fontFamilyName) {
+      const escapedName = fontFamilyName.replace(/"/g, '\\"')
+      const fontEntries = (fontGroupObj.fonts || []).filter(
+        (e): e is FontGroupFontEntry & { font: FontFile } =>
+          e?.font != null && typeof e.font === 'object' && e.font?.url != null,
+      )
+      for (const entry of fontEntries) {
+        const url = getMediaUrl(entry.font.url).replace(/([^:]\/)\/+/g, '$1')
+        const variant = entry.variant || 'regular'
+        const { weight, style } = FONT_GROUP_VARIANT_CSS[variant] ?? { weight: '400', style: 'normal' }
+        styles.push(`
+          @font-face {
+            font-family: "${escapedName}";
+            src: url("${url}") format("woff2"), url("${url}") format("woff");
+            font-weight: ${weight};
+            font-style: ${style};
+            font-display: swap;
+          }
+        `)
+      }
+      styles.push(
+        `[data-hero-senda-font="${styleId}"], [data-hero-senda-font="${styleId}"] *, [data-hero-senda-font="${styleId}"] a, [data-hero-senda-font="${styleId}"] button, [data-hero-senda-font="${styleId}"] span { font-family: "${escapedName}" !important; }`,
+      )
+      const typo = fontGroupObj.typography
+      const sel = `[data-hero-senda-font="${styleId}"]`
+      const richSel = `${sel} .hero-senda-richtext, ${sel} .payload-richtext`
+      if (typo?.h1) styles.push(`${richSel} h1 { font-weight: ${typo.h1} !important; }`)
+      if (typo?.h2) styles.push(`${richSel} h2 { font-weight: ${typo.h2} !important; }`)
+      if (typo?.h3) styles.push(`${richSel} h3 { font-weight: ${typo.h3} !important; }`)
+      if (typo?.h4) styles.push(`${richSel} h4 { font-weight: ${typo.h4} !important; }`)
+      if (typo?.h5) styles.push(`${richSel} h5 { font-weight: ${typo.h5} !important; }`)
+      if (typo?.h6) styles.push(`${richSel} h6 { font-weight: ${typo.h6} !important; }`)
+      if (typo?.body) styles.push(`${richSel} p, ${richSel} span { font-weight: ${typo.body} !important; }`)
+      if (typo?.caption) styles.push(`${richSel} [data-text-size="caption"] { font-weight: ${typo.caption} !important; }`)
+      const weightMap: Record<string, string> = {
+        light: '300',
+        regular: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700',
+        heavy: '800',
+      }
+      for (const [key, w] of Object.entries(weightMap)) {
+        styles.push(`${sel} [data-text-weight="${key}"] { font-weight: ${w} !important; }`)
+      }
+    } else if (heroSendaUseCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
       styles.push(`
         @font-face {
           font-family: "${customFontFamilyName.replace(/"/g, '\\"')}";
@@ -130,25 +218,14 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
           font-display: swap;
         }
       `)
-    }
-    const containerRules: string[] = []
-    if (heroSendaUseCustomFont && customFontFamilyName && isValidFontFile) {
-      containerRules.push(`font-family: "${customFontFamilyName.replace(/"/g, '\\"')}" !important;`)
-    } else if (selectedFontFamily && !heroSendaUseCustomFont) {
-      containerRules.push(`font-family: ${selectedFontFamily} !important;`)
-    }
-    if (containerRules.length > 0) {
-      const fontValue =
-        heroSendaUseCustomFont && customFontFamilyName && isValidFontFile
-          ? `"${customFontFamilyName.replace(/"/g, '\\"')}"`
-          : selectedFontFamily && !heroSendaUseCustomFont
-            ? selectedFontFamily
-            : ''
-      if (fontValue) {
-        styles.push(
-          `[data-hero-senda-font="${styleId}"], [data-hero-senda-font="${styleId}"] *, [data-hero-senda-font="${styleId}"] a, [data-hero-senda-font="${styleId}"] button, [data-hero-senda-font="${styleId}"] span { font-family: ${fontValue} !important; }`,
-        )
-      }
+      const fontValue = `"${customFontFamilyName.replace(/"/g, '\\"')}"`
+      styles.push(
+        `[data-hero-senda-font="${styleId}"], [data-hero-senda-font="${styleId}"] *, [data-hero-senda-font="${styleId}"] a, [data-hero-senda-font="${styleId}"] button, [data-hero-senda-font="${styleId}"] span { font-family: ${fontValue} !important; }`,
+      )
+    } else if (selectedFontFamily) {
+      styles.push(
+        `[data-hero-senda-font="${styleId}"], [data-hero-senda-font="${styleId}"] *, [data-hero-senda-font="${styleId}"] a, [data-hero-senda-font="${styleId}"] button, [data-hero-senda-font="${styleId}"] span { font-family: ${selectedFontFamily} !important; }`,
+      )
     }
     if (heroSendaTextColor) {
       styles.push(
