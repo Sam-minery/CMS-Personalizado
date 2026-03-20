@@ -644,11 +644,11 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
       {/* Popup teléfono */}
       {usePhonePopup && popup && isPhonePopupOpen && (
         <div
-          className="fixed inset-0 z-[110] flex items-center justify-center overflow-y-auto px-4 pb-8 sm:px-6"
-          style={{
-            paddingTop:
-              'max(12.5rem, calc(env(safe-area-inset-top, 0px) + 9.5rem))',
-          }}
+          className={cn(
+            'fixed inset-0 z-[1100] flex justify-center overflow-y-auto px-4 pb-8 sm:px-6',
+            'max-md:items-start max-md:pt-[max(4.25rem,calc(env(safe-area-inset-top,0px)+3.5rem))]',
+            'md:items-center md:py-4',
+          )}
           role="dialog"
           aria-modal="true"
           aria-labelledby="phone-popup-title"
