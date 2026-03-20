@@ -40,19 +40,174 @@ type FontGroupFontEntry = {
   variant?: string
 }
 
+/** Tamaños de tipografía (escritorio o móvil) alineados con la colección font-groups. */
+type FontGroupTypography = {
+  h1?: string | null
+  h2?: string | null
+  h3?: string | null
+  h4?: string | null
+  h5?: string | null
+  h6?: string | null
+  body?: string | null
+  lists?: string | null
+  caption?: string | null
+}
+
+/** Márgenes del grupo `headingMargins` en font-groups (mismo uso escritorio/móvil). */
+type FontGroupHeadingMargins = {
+  h1MarginTop?: string | null
+  h1MarginBottom?: string | null
+  h2MarginTop?: string | null
+  h2MarginBottom?: string | null
+  h3MarginTop?: string | null
+  h3MarginBottom?: string | null
+  h4MarginTop?: string | null
+  h4MarginBottom?: string | null
+  h5MarginTop?: string | null
+  h5MarginBottom?: string | null
+  h6MarginTop?: string | null
+  h6MarginBottom?: string | null
+  bodyMarginTop?: string | null
+  bodyMarginBottom?: string | null
+  listsMarginTop?: string | null
+  listsMarginBottom?: string | null
+}
+
+/** Interlineados del grupo `lineHeights` (sin caption: hereda del contenedor). */
+type FontGroupLineHeights = {
+  h1?: string | null
+  h2?: string | null
+  h3?: string | null
+  h4?: string | null
+  h5?: string | null
+  h6?: string | null
+  body?: string | null
+  lists?: string | null
+}
+
 type FontGroupData = {
   fontFamilyName?: string | null
   fonts?: FontGroupFontEntry[] | null
-  typography?: {
-    h1?: string | null
-    h2?: string | null
-    h3?: string | null
-    h4?: string | null
-    h5?: string | null
-    h6?: string | null
-    body?: string | null
-    caption?: string | null
-  } | null
+  typography?: FontGroupTypography | null
+  /** Si hay valores aquí, en viewport estrecho sustituyen a `typography` solo donde estén rellenados. */
+  typographyMobile?: FontGroupTypography | null
+  headingMargins?: FontGroupHeadingMargins | null
+  lineHeights?: FontGroupLineHeights | null
+}
+
+/** Por debajo de `md` de Tailwind (min-width 768px) → vista móvil. */
+const PRICING_SENDA_FONT_GROUP_MOBILE_MAX = '767px'
+
+/** Tamaños de párrafo vs ítems de lista según font-group (body / lists). */
+function appendTypographyBodyListSizeRules(
+  typo: FontGroupTypography | null | undefined,
+  mainRichtext: string,
+  planRichtext: string,
+  payloadRichtext: string,
+  emit: (css: string) => void,
+): void {
+  const t = (v: string | null | undefined) => (typeof v === 'string' ? v.trim() : '') || ''
+  const bodyV = t(typo?.body)
+  const listsV = t(typo?.lists)
+  if (bodyV && listsV) {
+    emit(
+      `${mainRichtext} p, ${planRichtext} p, ${payloadRichtext} p { font-size: ${bodyV} !important; }`,
+    )
+    emit(
+      `${mainRichtext} li, ${planRichtext} li, ${payloadRichtext} li { font-size: ${listsV} !important; }`,
+    )
+    return
+  }
+  if (bodyV) {
+    emit(
+      `${mainRichtext} p, ${mainRichtext} li, ${planRichtext} p, ${planRichtext} li, ${payloadRichtext} p, ${payloadRichtext} li { font-size: ${bodyV} !important; }`,
+    )
+    return
+  }
+  if (listsV) {
+    emit(
+      `${mainRichtext} li, ${planRichtext} li, ${payloadRichtext} li { font-size: ${listsV} !important; }`,
+    )
+  }
+}
+
+function trimFontGroupValue(v: string | null | undefined): string {
+  return (typeof v === 'string' ? v.trim() : '') || ''
+}
+
+function appendFontGroupHeadingMarginRules(
+  margins: FontGroupHeadingMargins | null | undefined,
+  mainRichtext: string,
+  planRichtext: string,
+  payloadRichtext: string,
+  emit: (css: string) => void,
+): void {
+  if (!margins) return
+  const m = margins
+  for (let n = 1; n <= 6; n++) {
+    const mtKey = `h${n}MarginTop` as keyof FontGroupHeadingMargins
+    const mbKey = `h${n}MarginBottom` as keyof FontGroupHeadingMargins
+    const mt = trimFontGroupValue(m[mtKey] as string | null | undefined)
+    const mb = trimFontGroupValue(m[mbKey] as string | null | undefined)
+    if (!mt && !mb) continue
+    const parts: string[] = []
+    if (mt) parts.push(`margin-top: ${mt} !important;`)
+    if (mb) parts.push(`margin-bottom: ${mb} !important;`)
+    emit(
+      `${mainRichtext} h${n}, ${planRichtext} h${n}, ${payloadRichtext} h${n} { ${parts.join(' ')} }`,
+    )
+  }
+  const bmt = trimFontGroupValue(m.bodyMarginTop)
+  const bmb = trimFontGroupValue(m.bodyMarginBottom)
+  if (bmt || bmb) {
+    const parts: string[] = []
+    if (bmt) parts.push(`margin-top: ${bmt} !important;`)
+    if (bmb) parts.push(`margin-bottom: ${bmb} !important;`)
+    emit(
+      `${mainRichtext} p, ${planRichtext} p, ${payloadRichtext} p { ${parts.join(' ')} }`,
+    )
+  }
+  const lmt = trimFontGroupValue(m.listsMarginTop)
+  const lmb = trimFontGroupValue(m.listsMarginBottom)
+  if (lmt || lmb) {
+    const parts: string[] = []
+    if (lmt) parts.push(`margin-top: ${lmt} !important;`)
+    if (lmb) parts.push(`margin-bottom: ${lmb} !important;`)
+    emit(
+      `${mainRichtext} ul, ${mainRichtext} ol, ${planRichtext} ul, ${planRichtext} ol, ${payloadRichtext} ul, ${payloadRichtext} ol { ${parts.join(' ')} }`,
+    )
+  }
+}
+
+function appendFontGroupLineHeightRules(
+  lineHeights: FontGroupLineHeights | null | undefined,
+  mainRichtext: string,
+  planRichtext: string,
+  payloadRichtext: string,
+  emit: (css: string) => void,
+): void {
+  if (!lineHeights) return
+  const lh = lineHeights
+  for (let n = 1; n <= 6; n++) {
+    const key = `h${n}` as keyof FontGroupLineHeights
+    const v = trimFontGroupValue(lh[key] as string | null | undefined)
+    if (!v) continue
+    emit(
+      `${mainRichtext} h${n}, ${planRichtext} h${n}, ${payloadRichtext} h${n} { line-height: ${v} !important; }`,
+    )
+  }
+  const bodyLh = trimFontGroupValue(lh.body)
+  if (bodyLh) {
+    emit(
+      `${mainRichtext} p, ${planRichtext} p, ${payloadRichtext} p { line-height: ${bodyLh} !important; }`,
+    )
+  }
+  const listsLh = trimFontGroupValue(lh.lists)
+  if (listsLh) {
+    emit(
+      `${mainRichtext} ul, ${mainRichtext} ol, ${mainRichtext} li, ${planRichtext} ul, ${planRichtext} ol, ${planRichtext} li, ${payloadRichtext} ul, ${payloadRichtext} ol, ${payloadRichtext} li { line-height: ${listsLh} !important; }`,
+    )
+  }
 }
 
 type PlanElement = {
@@ -226,10 +381,9 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
           styles.push(`${mainRichtext} h5, ${planRichtext} h5, ${payloadRichtext} h5 { font-size: ${typo.h5} !important; }`)
         if (typo.h6)
           styles.push(`${mainRichtext} h6, ${planRichtext} h6, ${payloadRichtext} h6 { font-size: ${typo.h6} !important; }`)
-        if (typo.body)
-          styles.push(
-            `${mainRichtext} p, ${mainRichtext} li, ${planRichtext} p, ${planRichtext} li, ${payloadRichtext} p, ${payloadRichtext} li { font-size: ${typo.body} !important; }`,
-          )
+        appendTypographyBodyListSizeRules(typo, mainRichtext, planRichtext, payloadRichtext, (rule) =>
+          styles.push(rule),
+        )
         if (typo.caption) {
           styles.push(`${mainRichtext} .caption, ${planRichtext} .caption, ${payloadRichtext} .caption { font-size: ${typo.caption} !important; }`)
           styles.push(
@@ -240,6 +394,74 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
           )
         }
       }
+
+      const typoMob = fontGroupObj.typographyMobile
+      if (typoMob) {
+        const mobRules: string[] = []
+        const t = (v: string | null | undefined) => (typeof v === 'string' ? v.trim() : '') || ''
+        if (t(typoMob.h1))
+          mobRules.push(
+            `${mainRichtext} h1, ${planRichtext} h1, ${payloadRichtext} h1 { font-size: ${t(typoMob.h1)} !important; }`,
+          )
+        if (t(typoMob.h2))
+          mobRules.push(
+            `${mainRichtext} h2, ${planRichtext} h2, ${payloadRichtext} h2 { font-size: ${t(typoMob.h2)} !important; }`,
+          )
+        if (t(typoMob.h3))
+          mobRules.push(
+            `${mainRichtext} h3, ${planRichtext} h3, ${payloadRichtext} h3 { font-size: ${t(typoMob.h3)} !important; }`,
+          )
+        if (t(typoMob.h4))
+          mobRules.push(
+            `${mainRichtext} h4, ${planRichtext} h4, ${payloadRichtext} h4 { font-size: ${t(typoMob.h4)} !important; }`,
+          )
+        if (t(typoMob.h5))
+          mobRules.push(
+            `${mainRichtext} h5, ${planRichtext} h5, ${payloadRichtext} h5 { font-size: ${t(typoMob.h5)} !important; }`,
+          )
+        if (t(typoMob.h6))
+          mobRules.push(
+            `${mainRichtext} h6, ${planRichtext} h6, ${payloadRichtext} h6 { font-size: ${t(typoMob.h6)} !important; }`,
+          )
+
+        appendTypographyBodyListSizeRules(typoMob, mainRichtext, planRichtext, payloadRichtext, (rule) =>
+          mobRules.push(rule),
+        )
+
+        const capM = t(typoMob.caption)
+        if (capM) {
+          mobRules.push(
+            `${mainRichtext} .caption, ${planRichtext} .caption, ${payloadRichtext} .caption { font-size: ${capM} !important; }`,
+          )
+          mobRules.push(
+            `${mainRichtext} p .caption, ${mainRichtext} .payload-richtext .caption, ${mainRichtext} span.caption, ${planRichtext} p .caption, ${planRichtext} span.caption, ${payloadRichtext} span.caption { font-size: ${capM} !important; }`,
+          )
+          mobRules.push(
+            `[data-ps-font="${styleId}"] [data-text-size="caption"] { font-size: ${capM} !important; }`,
+          )
+        }
+
+        if (mobRules.length > 0) {
+          styles.push(
+            `@media (max-width: ${PRICING_SENDA_FONT_GROUP_MOBILE_MAX}) {\n${mobRules.join('\n')}\n}`,
+          )
+        }
+      }
+
+      appendFontGroupHeadingMarginRules(
+        fontGroupObj.headingMargins,
+        mainRichtext,
+        planRichtext,
+        payloadRichtext,
+        (rule) => styles.push(rule),
+      )
+      appendFontGroupLineHeightRules(
+        fontGroupObj.lineHeights,
+        mainRichtext,
+        planRichtext,
+        payloadRichtext,
+        (rule) => styles.push(rule),
+      )
     } else if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
       styles.push(`
         @font-face {

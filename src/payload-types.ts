@@ -681,7 +681,7 @@ export interface FontGroup {
       }[]
     | null;
   /**
-   * Tamaños que se aplicarán a los elementos de texto cuando un bloque use este grupo. Usa unidades como rem, px (ej: 2rem, 1.5rem, 16px).
+   * Tamaños por defecto / escritorio. Usa unidades como rem, px (ej: 2rem, 1.5rem, 16px). Los bloques que consuman este grupo aplicarán estos valores según su implementación.
    */
   typography?: {
     h1?: string | null;
@@ -690,8 +690,141 @@ export interface FontGroup {
     h4?: string | null;
     h5?: string | null;
     h6?: string | null;
+    /**
+     * Solo párrafos. Las listas tienen su propio campo.
+     */
     body?: string | null;
+    /**
+     * Tamaño para contenido en listas (ul, ol, li).
+     */
+    lists?: string | null;
     caption?: string | null;
+  };
+  /**
+   * Opcional. Mismos conceptos que en escritorio, para pantallas pequeñas.
+   */
+  typographyMobile?: {
+    h1?: string | null;
+    h2?: string | null;
+    h3?: string | null;
+    h4?: string | null;
+    h5?: string | null;
+    h6?: string | null;
+    /**
+     * Solo párrafos. Las listas tienen su propio campo.
+     */
+    body?: string | null;
+    /**
+     * Tamaño para contenido en listas (ul, ol, li).
+     */
+    lists?: string | null;
+    caption?: string | null;
+  };
+  /**
+   * Margen superior e inferior (margin-top / margin-bottom) para H1–H6, párrafos y listas (ul/ol). Mismos valores en escritorio y móvil. Unidades como rem, px o 0.
+   */
+  headingMargins?: {
+    /**
+     * margin-top del elemento (CSS).
+     */
+    h1MarginTop?: string | null;
+    /**
+     * margin-bottom del elemento (CSS).
+     */
+    h1MarginBottom?: string | null;
+    /**
+     * margin-top del elemento (CSS).
+     */
+    h2MarginTop?: string | null;
+    /**
+     * margin-bottom del elemento (CSS).
+     */
+    h2MarginBottom?: string | null;
+    /**
+     * margin-top del elemento (CSS).
+     */
+    h3MarginTop?: string | null;
+    /**
+     * margin-bottom del elemento (CSS).
+     */
+    h3MarginBottom?: string | null;
+    /**
+     * margin-top del elemento (CSS).
+     */
+    h4MarginTop?: string | null;
+    /**
+     * margin-bottom del elemento (CSS).
+     */
+    h4MarginBottom?: string | null;
+    /**
+     * margin-top del elemento (CSS).
+     */
+    h5MarginTop?: string | null;
+    /**
+     * margin-bottom del elemento (CSS).
+     */
+    h5MarginBottom?: string | null;
+    /**
+     * margin-top del elemento (CSS).
+     */
+    h6MarginTop?: string | null;
+    /**
+     * margin-bottom del elemento (CSS).
+     */
+    h6MarginBottom?: string | null;
+    /**
+     * margin-top para párrafos <p> (CSS).
+     */
+    bodyMarginTop?: string | null;
+    /**
+     * margin-bottom para párrafos <p> (CSS).
+     */
+    bodyMarginBottom?: string | null;
+    /**
+     * margin-top para listas <ul> y <ol> (CSS).
+     */
+    listsMarginTop?: string | null;
+    /**
+     * margin-bottom para listas <ul> y <ol> (CSS).
+     */
+    listsMarginBottom?: string | null;
+  };
+  /**
+   * Un valor por tipo de texto (H1–H6, párrafos, listas): line-height en CSS (número, rem, px o %). El texto pequeño / caption no tiene campo aquí: solo cambia tamaño y hereda interlineado y márgenes del elemento contenedor (p, h1, lista, etc.). Mismo juego escritorio/móvil salvo que el bloque decida otro comportamiento.
+   */
+  lineHeights?: {
+    /**
+     * line-height para H1 (entre líneas del mismo encabezado).
+     */
+    h1?: string | null;
+    /**
+     * line-height para H2.
+     */
+    h2?: string | null;
+    /**
+     * line-height para H3.
+     */
+    h3?: string | null;
+    /**
+     * line-height para H4.
+     */
+    h4?: string | null;
+    /**
+     * line-height para H5.
+     */
+    h5?: string | null;
+    /**
+     * line-height para H6.
+     */
+    h6?: string | null;
+    /**
+     * line-height para párrafos <p>.
+     */
+    body?: string | null;
+    /**
+     * line-height para listas (ul, ol, li).
+     */
+    lists?: string | null;
   };
   /**
    * Si está activado, todos los archivos de fuentes de este grupo se precargarán en el front (en cada página) para evitar que el texto se muestre con otra fuente al recargar.
@@ -4419,7 +4552,53 @@ export interface FontGroupsSelect<T extends boolean = true> {
         h5?: T;
         h6?: T;
         body?: T;
+        lists?: T;
         caption?: T;
+      };
+  typographyMobile?:
+    | T
+    | {
+        h1?: T;
+        h2?: T;
+        h3?: T;
+        h4?: T;
+        h5?: T;
+        h6?: T;
+        body?: T;
+        lists?: T;
+        caption?: T;
+      };
+  headingMargins?:
+    | T
+    | {
+        h1MarginTop?: T;
+        h1MarginBottom?: T;
+        h2MarginTop?: T;
+        h2MarginBottom?: T;
+        h3MarginTop?: T;
+        h3MarginBottom?: T;
+        h4MarginTop?: T;
+        h4MarginBottom?: T;
+        h5MarginTop?: T;
+        h5MarginBottom?: T;
+        h6MarginTop?: T;
+        h6MarginBottom?: T;
+        bodyMarginTop?: T;
+        bodyMarginBottom?: T;
+        listsMarginTop?: T;
+        listsMarginBottom?: T;
+      };
+  lineHeights?:
+    | T
+    | {
+        h1?: T;
+        h2?: T;
+        h3?: T;
+        h4?: T;
+        h5?: T;
+        h6?: T;
+        body?: T;
+        lists?: T;
       };
   preloadFonts?: T;
   updatedAt?: T;
