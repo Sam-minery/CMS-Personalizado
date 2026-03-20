@@ -8,6 +8,16 @@ import { CMSLink } from '@/components/Link'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
+import {
+  appendFontGroupHeadingMarginRules,
+  appendFontGroupLineHeightRules,
+  appendTypographyBodyListSizeRules,
+  FONT_GROUP_RICHTEXT_MOBILE_MAX,
+  trimFontGroupValue,
+  type FontGroupHeadingMargins,
+  type FontGroupLineHeights,
+  type FontGroupTypography,
+} from '@/utilities/fontGroupRichTextCss'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import type { Media, Page, Post } from '@/payload-types'
 
@@ -39,16 +49,27 @@ type FontGroupFontEntry = { font?: FontFile | number; variant?: string }
 type FontGroupData = {
   fontFamilyName?: string | null
   fonts?: FontGroupFontEntry[] | null
-  typography?: {
-    h1?: string | null
-    h2?: string | null
-    h3?: string | null
-    h4?: string | null
-    h5?: string | null
-    h6?: string | null
-    body?: string | null
-    caption?: string | null
-  } | null
+  typography?: FontGroupTypography | null
+  typographyMobile?: FontGroupTypography | null
+  headingMargins?: FontGroupHeadingMargins | null
+  lineHeights?: FontGroupLineHeights | null
+}
+
+/** API / live preview: `{ relationTo, value }` o documento plano del font-group. */
+function normalizeHeroFontGroup(raw: unknown): FontGroupData | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+  let o = raw as Record<string, unknown>
+  const rel = o.relationTo
+  const inner = o.value
+  if (
+    inner &&
+    typeof inner === 'object' &&
+    !Array.isArray(inner) &&
+    (rel === 'font-groups' || rel === 'fontGroups')
+  ) {
+    o = inner as Record<string, unknown>
+  }
+  return o as FontGroupData
 }
 
 type HeroSendaLink = {
@@ -130,8 +151,13 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
   const styleId = 'hero-senda'
   const fontGroupObj =
     heroSendaUseFontGroup && heroSendaFontGroup && typeof heroSendaFontGroup === 'object'
-      ? (heroSendaFontGroup as FontGroupData)
+      ? normalizeHeroFontGroup(heroSendaFontGroup)
       : null
+
+  /** Misma condición que Pricing SENDA: tipografía CMS solo con familia + fuentes cargadas. */
+  const fontGroupTypographyActive = Boolean(
+    fontGroupObj?.fontFamilyName?.trim() && Array.isArray(fontGroupObj.fonts),
+  )
 
   const customFontFileObj =
     heroSendaCustomFontFile && typeof heroSendaCustomFontFile === 'object'
@@ -149,7 +175,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
     return undefined
   }
   const selectedFontFamily = getFontFamily()
-  useGoogleFont(fontGroupObj ? undefined : selectedFontFamily)
+  useGoogleFont(fontGroupTypographyActive ? undefined : selectedFontFamily)
 
   const fontFileUrl = customFontFileObj?.url
     ? getMediaUrl(customFontFileObj.url).replace(/([^:]\/)\/+/g, '$1')
@@ -161,10 +187,15 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
 
   const buildStyles = () => {
     const styles: string[] = []
-    const fontFamilyName = fontGroupObj?.fontFamilyName?.trim()
+    const sel = `[data-hero-senda-font="${styleId}"]`
+    const mainRichtext = `${sel} .hero-senda-richtext`
+    const planRichtext = mainRichtext
+    const payloadRichtext = `${sel} .payload-richtext`
+    /** Botones default/secondary (columna izq. + copia centrada en desktop). */
+    const heroLeftBtnLabels = `${sel} .hero-senda-btn-default .hero-senda-btn-label, ${sel} .hero-senda-btn-secondary .hero-senda-btn-label`
 
-    if (fontGroupObj && fontFamilyName) {
-      const escapedName = fontFamilyName.replace(/"/g, '\\"')
+    if (fontGroupTypographyActive && fontGroupObj) {
+      const familyName = fontGroupObj.fontFamilyName!.replace(/"/g, '\\"')
       const fontEntries = (fontGroupObj.fonts || []).filter(
         (e): e is FontGroupFontEntry & { font: FontFile } =>
           e?.font != null && typeof e.font === 'object' && e.font?.url != null,
@@ -173,36 +204,132 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
         const url = getMediaUrl(entry.font.url).replace(/([^:]\/)\/+/g, '$1')
         const variant = entry.variant || 'regular'
         const { weight, style } = FONT_GROUP_VARIANT_CSS[variant] ?? { weight: '400', style: 'normal' }
+        const formatMatch = url.match(/\.(woff2?|ttf|otf)(\?.*)?$/i)
+        const format = formatMatch
+          ? formatMatch[1].toLowerCase() === 'woff2'
+            ? 'woff2'
+            : formatMatch[1].toLowerCase() === 'woff'
+              ? 'woff'
+              : formatMatch[1].toLowerCase() === 'ttf'
+                ? 'truetype'
+                : 'opentype'
+          : 'woff2'
+        if (!formatMatch) continue
         styles.push(`
           @font-face {
-            font-family: "${escapedName}";
-            src: url("${url}") format("woff2"), url("${url}") format("woff");
+            font-family: "${familyName}";
+            src: url("${url}") format("${format}");
             font-weight: ${weight};
             font-style: ${style};
             font-display: swap;
           }
         `)
       }
+      const fontValue = `"${fontGroupObj.fontFamilyName!.replace(/"/g, '\\"')}"`
       styles.push(
-        `[data-hero-senda-font="${styleId}"], [data-hero-senda-font="${styleId}"] *, [data-hero-senda-font="${styleId}"] a, [data-hero-senda-font="${styleId}"] button, [data-hero-senda-font="${styleId}"] span { font-family: "${escapedName}" !important; }`,
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${fontValue} !important; }`,
       )
+
       const typo = fontGroupObj.typography
-      const sel = `[data-hero-senda-font="${styleId}"]`
-      const richSel = `${sel} .hero-senda-richtext, ${sel} .payload-richtext`
-      if (typo?.h1) styles.push(`${richSel} h1 { font-size: ${typo.h1} !important; }`)
-      if (typo?.h2) styles.push(`${richSel} h2 { font-size: ${typo.h2} !important; }`)
-      if (typo?.h3) styles.push(`${richSel} h3 { font-size: ${typo.h3} !important; }`)
-      if (typo?.h4) styles.push(`${richSel} h4 { font-size: ${typo.h4} !important; }`)
-      if (typo?.h5) styles.push(`${richSel} h5 { font-size: ${typo.h5} !important; }`)
-      if (typo?.h6) styles.push(`${richSel} h6 { font-size: ${typo.h6} !important; }`)
-      if (typo?.body) styles.push(`${richSel} p, ${richSel} li { font-size: ${typo.body} !important; }`)
-      if (typo?.caption) {
-        styles.push(`${richSel} .caption { font-size: ${typo.caption} !important; }`)
-        styles.push(
-          `${richSel} p .caption, ${richSel} .payload-richtext .caption, ${richSel} span.caption { font-size: ${typo.caption} !important; }`,
+      if (typo) {
+        if (typo.h1)
+          styles.push(`${mainRichtext} h1, ${payloadRichtext} h1 { font-size: ${typo.h1} !important; }`)
+        if (typo.h2)
+          styles.push(`${mainRichtext} h2, ${payloadRichtext} h2 { font-size: ${typo.h2} !important; }`)
+        if (typo.h3)
+          styles.push(`${mainRichtext} h3, ${payloadRichtext} h3 { font-size: ${typo.h3} !important; }`)
+        if (typo.h4)
+          styles.push(`${mainRichtext} h4, ${payloadRichtext} h4 { font-size: ${typo.h4} !important; }`)
+        if (typo.h5)
+          styles.push(`${mainRichtext} h5, ${payloadRichtext} h5 { font-size: ${typo.h5} !important; }`)
+        if (typo.h6)
+          styles.push(`${mainRichtext} h6, ${payloadRichtext} h6 { font-size: ${typo.h6} !important; }`)
+        appendTypographyBodyListSizeRules(typo, mainRichtext, planRichtext, payloadRichtext, (rule) =>
+          styles.push(rule),
         )
-        styles.push(`${sel} [data-text-size="caption"] { font-size: ${typo.caption} !important; }`)
+        if (typo.caption) {
+          styles.push(
+            `${mainRichtext} .caption, ${payloadRichtext} .caption { font-size: ${typo.caption} !important; }`,
+          )
+          styles.push(
+            `${mainRichtext} p .caption, ${mainRichtext} .payload-richtext .caption, ${mainRichtext} span.caption, ${payloadRichtext} span.caption { font-size: ${typo.caption} !important; }`,
+          )
+          styles.push(`${sel} [data-text-size="caption"] { font-size: ${typo.caption} !important; }`)
+        }
       }
+
+      const bodyBtnDesk = trimFontGroupValue(fontGroupObj.typography?.body)
+      if (bodyBtnDesk) {
+        styles.push(`${heroLeftBtnLabels} { font-size: ${bodyBtnDesk} !important; }`)
+      }
+
+      const typoMob = fontGroupObj.typographyMobile
+      if (typoMob) {
+        const mobRules: string[] = []
+        const t = (v: string | null | undefined) => (typeof v === 'string' ? v.trim() : '') || ''
+        if (t(typoMob.h1))
+          mobRules.push(`${mainRichtext} h1, ${payloadRichtext} h1 { font-size: ${t(typoMob.h1)} !important; }`)
+        if (t(typoMob.h2))
+          mobRules.push(`${mainRichtext} h2, ${payloadRichtext} h2 { font-size: ${t(typoMob.h2)} !important; }`)
+        if (t(typoMob.h3))
+          mobRules.push(`${mainRichtext} h3, ${payloadRichtext} h3 { font-size: ${t(typoMob.h3)} !important; }`)
+        if (t(typoMob.h4))
+          mobRules.push(`${mainRichtext} h4, ${payloadRichtext} h4 { font-size: ${t(typoMob.h4)} !important; }`)
+        if (t(typoMob.h5))
+          mobRules.push(`${mainRichtext} h5, ${payloadRichtext} h5 { font-size: ${t(typoMob.h5)} !important; }`)
+        if (t(typoMob.h6))
+          mobRules.push(`${mainRichtext} h6, ${payloadRichtext} h6 { font-size: ${t(typoMob.h6)} !important; }`)
+
+        appendTypographyBodyListSizeRules(typoMob, mainRichtext, planRichtext, payloadRichtext, (rule) =>
+          mobRules.push(rule),
+        )
+
+        const capM = t(typoMob.caption)
+        if (capM) {
+          mobRules.push(
+            `${mainRichtext} .caption, ${payloadRichtext} .caption { font-size: ${capM} !important; }`,
+          )
+          mobRules.push(
+            `${mainRichtext} p .caption, ${mainRichtext} .payload-richtext .caption, ${mainRichtext} span.caption, ${payloadRichtext} span.caption { font-size: ${capM} !important; }`,
+          )
+          mobRules.push(`${sel} [data-text-size="caption"] { font-size: ${capM} !important; }`)
+        }
+
+        const bodyMobBtn = t(typoMob.body)
+        if (bodyMobBtn) {
+          mobRules.push(`${heroLeftBtnLabels} { font-size: ${bodyMobBtn} !important; }`)
+        }
+
+        if (mobRules.length > 0) {
+          styles.push(
+            `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) {\n${mobRules.join('\n')}\n}`,
+          )
+        }
+      }
+
+      appendFontGroupHeadingMarginRules(
+        fontGroupObj.headingMargins,
+        mainRichtext,
+        planRichtext,
+        payloadRichtext,
+        (rule) => styles.push(rule),
+      )
+      appendFontGroupLineHeightRules(
+        fontGroupObj.lineHeights,
+        mainRichtext,
+        planRichtext,
+        payloadRichtext,
+        (rule) => styles.push(rule),
+      )
+
+      const bodyLhBtn = trimFontGroupValue(fontGroupObj.lineHeights?.body)
+      if (bodyLhBtn) {
+        styles.push(`${heroLeftBtnLabels} { line-height: ${bodyLhBtn} !important; }`)
+      }
+
+      styles.push(
+        `${mainRichtext} h1, ${mainRichtext} h2, ${mainRichtext} h3, ${mainRichtext} h4, ${payloadRichtext} h1, ${payloadRichtext} h2, ${payloadRichtext} h3, ${payloadRichtext} h4 { letter-spacing: 0.02em; }`,
+      )
       const weightMap: Record<string, string> = {
         light: '300',
         regular: '400',
@@ -213,6 +340,9 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
       }
       for (const [key, w] of Object.entries(weightMap)) {
         styles.push(`${sel} [data-text-weight="${key}"] { font-weight: ${w} !important; }`)
+        styles.push(
+          `${mainRichtext} [data-text-weight="${key}"], ${payloadRichtext} [data-text-weight="${key}"] { font-weight: ${w} !important; }`,
+        )
       }
     } else if (heroSendaUseCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
       styles.push(`
@@ -226,11 +356,11 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
       `)
       const fontValue = `"${customFontFamilyName.replace(/"/g, '\\"')}"`
       styles.push(
-        `[data-hero-senda-font="${styleId}"], [data-hero-senda-font="${styleId}"] *, [data-hero-senda-font="${styleId}"] a, [data-hero-senda-font="${styleId}"] button, [data-hero-senda-font="${styleId}"] span { font-family: ${fontValue} !important; }`,
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${fontValue} !important; }`,
       )
     } else if (selectedFontFamily) {
       styles.push(
-        `[data-hero-senda-font="${styleId}"], [data-hero-senda-font="${styleId}"] *, [data-hero-senda-font="${styleId}"] a, [data-hero-senda-font="${styleId}"] button, [data-hero-senda-font="${styleId}"] span { font-family: ${selectedFontFamily} !important; }`,
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${selectedFontFamily} !important; }`,
       )
     }
     if (heroSendaTextColor) {
@@ -280,6 +410,9 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
     } else {
       styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-image { border-radius: 1.25rem !important; padding: 1.25rem 2rem !important; min-height: 4rem !important; display: inline-flex !important; align-items: center !important; }`)
     }
+    styles.push(
+      `${sel} sub, ${sel} sup { font-weight: 700 !important; vertical-align: baseline !important; font-size: 0.75em; line-height: 1.2; }`,
+    )
     return styles.length > 0 ? styles.join('\n') : ''
   }
 
@@ -340,7 +473,13 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
           <div className="grid grid-cols-1 gap-x-20 gap-y-12 md:gap-y-16 lg:grid-cols-2 lg:items-center [&>.hero-senda-col-left]:order-1 [&>.hero-senda-col-right]:order-2">
             <div className="hero-senda-col-left" style={fontStyle}>
               {richText && (
-                <div className="hero-senda-richtext mb-5 md:mb-6 text-lg md:text-xl [&_h1]:text-6xl [&_h1]:font-bold [&_h1]:md:text-9xl [&_h1]:lg:text-10xl [&_h2]:text-5xl [&_h2]:font-bold [&_h2]:md:text-8xl [&_h2]:lg:text-9xl [&_h3]:text-4xl [&_h3]:font-bold [&_h3]:md:text-7xl [&_h3]:lg:text-8xl [&_h4]:text-3xl [&_h4]:font-bold [&_h4]:md:text-6xl [&_h4]:lg:text-7xl [&_p]:text-lg [&_p]:md:text-xl [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:text-lg [&_ul]:md:text-xl [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:text-lg [&_ol]:md:text-xl [&_li]:text-lg [&_li]:md:text-xl">
+                <div
+                  className={
+                    fontGroupTypographyActive
+                      ? 'hero-senda-richtext mb-5 md:mb-6 [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-bold [&_h4]:font-bold [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6'
+                      : 'hero-senda-richtext mb-5 md:mb-6 text-lg md:text-xl [&_h1]:text-6xl [&_h1]:font-bold [&_h1]:md:text-9xl [&_h1]:lg:text-10xl [&_h2]:text-5xl [&_h2]:font-bold [&_h2]:md:text-8xl [&_h2]:lg:text-9xl [&_h3]:text-4xl [&_h3]:font-bold [&_h3]:md:text-7xl [&_h3]:lg:text-8xl [&_h4]:text-3xl [&_h4]:font-bold [&_h4]:md:text-6xl [&_h4]:lg:text-7xl [&_p]:text-lg [&_p]:md:text-xl [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:text-lg [&_ul]:md:text-xl [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:text-lg [&_ol]:md:text-xl [&_li]:text-lg [&_li]:md:text-xl'
+                  }
+                >
                   <RichText
                     className=""
                     data={richText}
@@ -366,9 +505,10 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                     const iconSVG = (item as HeroSendaButton).iconSVG ?? null
                     const btnClassName = appearance === 'default' ? 'hero-senda-btn-default' : appearance === 'secondary' ? 'hero-senda-btn-secondary' : undefined
                     const twoCols = leftButtons.length === 2
-                    // Una sola línea, sin salirse del botón: nowrap + truncate; en móvil con 2 botones texto más pequeño para que quepa
-                    const labelClass =
-                      'min-w-0 truncate text-center max-lg:text-xs max-lg:leading-tight lg:text-base lg:leading-normal'
+                    // Con font group el tamaño lo marca el CMS (texto normal); sin Tailwind text-xs/base para no pisarlo.
+                    const labelClass = fontGroupTypographyActive
+                      ? 'hero-senda-btn-label min-w-0 truncate text-center leading-normal'
+                      : 'min-w-0 truncate text-center max-lg:text-xs max-lg:leading-tight lg:text-base lg:leading-normal'
                     return (
                       <CMSLink
                         key={index}
@@ -444,7 +584,18 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                   style={fontStyle}
                 >
                   <span className="inline-flex items-center gap-1.5">
-                    {fontStyle ? <span style={fontStyle}>{label}</span> : label}
+                    {fontStyle ? (
+                      <span
+                        className={fontGroupTypographyActive ? 'hero-senda-btn-label' : undefined}
+                        style={fontStyle}
+                      >
+                        {label}
+                      </span>
+                    ) : fontGroupTypographyActive ? (
+                      <span className="hero-senda-btn-label">{label}</span>
+                    ) : (
+                      label
+                    )}
                     {iconSVG ? (
                       <span
                         className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
