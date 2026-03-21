@@ -325,7 +325,7 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
                   alt={mainImageAlt}
                   width={800}
                   height={600}
-                  className="w-full rounded-xl object-cover"
+                  className="w-full rounded-3xl object-cover"
                 />
               )}
             </div>

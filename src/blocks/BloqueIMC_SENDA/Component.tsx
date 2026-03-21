@@ -590,14 +590,14 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
             >
               <div className="w-full max-w-[1100px] mx-auto px-4 md:px-0 flex justify-center min-w-0">
                 <div
-                  className="rounded-3xl flex items-center justify-center w-full max-w-[327px] min-h-[722px] p-6 box-border md:w-full md:max-w-[1100px] md:min-h-[472px] md:h-[540px] md:p-10"
+                  className="rounded-3xl flex items-center justify-center w-full max-w-[327px] min-h-0 p-6 pb-12 box-border md:w-full md:max-w-[1100px] md:min-h-[472px] md:h-[540px] md:p-10"
                   style={{
                     backgroundColor: defaultHighBMICardBackground,
                     ...fontStyle,
                   }}
                 >
-                  <div className="flex flex-col items-start justify-between w-full h-full max-w-full min-w-0 md:max-w-[908px] md:items-center">
-                    <div className="flex flex-col items-start justify-center w-full max-w-[279px] min-h-[190px] min-w-0 text-left md:max-w-[492px] md:w-full md:min-h-[128px] md:items-center md:text-center">
+                  <div className="flex flex-col items-start justify-start gap-y-3 w-full max-w-full min-w-0 md:max-w-[908px] md:items-center md:justify-between md:gap-y-0 md:h-full">
+                    <div className="flex flex-col items-start justify-center w-full max-w-[279px] min-h-0 min-w-0 text-left md:max-w-[492px] md:w-full md:min-h-[128px] md:items-center md:text-center">
                       {bmi !== null && (
                         <div
                           className="mb-6 w-full max-w-[675px] md:h-[52px] flex flex-wrap items-baseline justify-start text-left md:justify-center md:text-center md:mb-6"
@@ -638,9 +638,9 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                       ) : null}
                     </div>
 
-                    <div className="w-full max-w-[279px] md:max-w-[492px] h-[1px] my-4 md:my-5 bg-[#BDB6A8] shrink-0" />
+                    <div className="w-full max-w-[279px] md:max-w-[492px] h-[1px] my-2 md:my-5 bg-[#BDB6A8] shrink-0" />
 
-                    <div className="w-full max-w-[279px] min-h-[342px] min-w-0 md:max-w-[492px] md:w-full md:min-h-[211px] flex flex-col md:flex-row gap-2 md:gap-6 md:items-center items-start">
+                    <div className="w-full max-w-[279px] min-h-0 min-w-0 md:max-w-[492px] md:w-full md:min-h-[211px] flex flex-col md:flex-row gap-2 md:gap-6 md:items-center items-start">
                       {highBMIImageUrl ? (
                         <div className="flex justify-start md:justify-start shrink-0">
                           <div className="relative w-[127px] h-[118px] md:w-[176px] md:h-[163px] rounded-2xl overflow-hidden">
@@ -656,7 +656,7 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
 
                       {highBMINameAndDescription ? (
                         <div
-                          className="flex flex-col justify-center text-left min-w-0 flex-1 -mt-4 md:mt-0 w-[247px] max-w-full h-[88px] overflow-hidden md:w-auto md:h-auto md:overflow-visible ml-4 md:ml-0 text-sm md:text-base leading-relaxed [&_h1]:text-lg [&_h1]:md:text-xl [&_h2]:text-base [&_h2]:md:text-lg [&_h3]:text-sm [&_h3]:md:text-base"
+                          className="flex flex-col justify-center text-left min-w-0 flex-1 mt-1 md:mt-0 w-[247px] max-w-full min-h-0 overflow-visible md:w-auto md:h-auto ml-4 md:ml-0 text-sm md:text-base leading-relaxed [&_h1]:text-lg [&_h1]:md:text-xl [&_h2]:text-base [&_h2]:md:text-lg [&_h3]:text-sm [&_h3]:md:text-base"
                           style={{ color: defaultHighBMITextColor }}
                         >
                           <RichText
@@ -668,10 +668,10 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                       ) : null}
                     </div>
 
-                    <div className="w-full max-w-[279px] md:max-w-[492px] h-[1px] my-4 md:my-5 bg-[#BDB6A8] shrink-0" />
+                    <div className="w-full max-w-[279px] md:max-w-[492px] h-[1px] mt-6 mb-2 md:my-5 bg-[#BDB6A8] shrink-0" />
 
                     {highBMIButton && highBMIButton.length > 0 ? (
-                      <div className="flex justify-center w-full">
+                      <div className="flex justify-center w-full mt-4 md:mt-0">
                         {highBMIButton.map((buttonItem, index) => {
                           const iconSvg = buttonItem.iconSVG?.trim()
                             ? sanitizeSVG(buttonItem.iconSVG)
