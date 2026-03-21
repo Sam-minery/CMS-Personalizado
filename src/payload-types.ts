@@ -5371,6 +5371,14 @@ export interface Header {
     boldTextColor?: string | null;
     buttonBackgroundColor?: string | null;
     buttonTextColor?: string | null;
+    /**
+     * Sube regular + bold (u otras variantes) en Font Groups: mismo nombre de familia y pesos distintos. El enlace activo (ancla en pantalla) usa negrita real. Tamaño del texto normal (body) para enlaces y botones.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * En el grupo, añade al menos las variantes regular y bold vinculadas a archivos .woff2/.ttf, etc.
+     */
+    fontGroup?: (number | null) | FontGroup;
     fontFamily?:
       | (
           | 'default'
@@ -6534,6 +6542,8 @@ export interface HeaderSelect<T extends boolean = true> {
         boldTextColor?: T;
         buttonBackgroundColor?: T;
         buttonTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
         fontFamily?: T;
         useCustomFont?: T;
         customFontFile?: T;

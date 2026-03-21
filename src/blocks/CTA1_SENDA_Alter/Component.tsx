@@ -683,7 +683,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
             </button>
             <div
               className={cn(
-                'relative w-full overflow-hidden rounded-2xl p-6 pt-8 md:p-8 md:pt-10 text-white shadow-xl flex flex-col justify-center',
+                'relative w-full overflow-hidden rounded-3xl p-6 pt-8 md:p-8 md:pt-10 text-white shadow-xl flex flex-col justify-center',
                 'max-w-[351px] min-h-[660px] md:max-w-[928px] md:min-h-[692px]',
               )}
               style={{

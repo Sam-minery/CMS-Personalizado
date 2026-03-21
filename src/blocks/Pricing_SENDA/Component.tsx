@@ -429,12 +429,12 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
 
     const planContent = (
       <div
-        className={`pricing-senda-plan pricing-senda-plan-${index} relative grid grid-cols-1 gap-5 rounded-xl p-5 md:grid-cols-2 md:grid-rows-1 md:gap-6 md:p-6 lg:gap-6 lg:p-7 shadow-[0_0_24px_rgba(255,255,255,0.55),0_0_48px_rgba(255,255,255,0.25)]`}
+        className={`pricing-senda-plan pricing-senda-plan-${index} relative grid grid-cols-1 gap-5 rounded-3xl p-5 md:grid-cols-2 md:grid-rows-1 md:gap-6 md:p-6 lg:gap-6 lg:p-7 shadow-[0_0_24px_rgba(255,255,255,0.55),0_0_48px_rgba(255,255,255,0.25)]`}
         style={planStyle}
       >
         {gradientActive && (
           <div
-            className="absolute inset-0 rounded-xl pointer-events-none"
+            className="absolute inset-0 rounded-3xl pointer-events-none"
             style={{
               background:
                 'linear-gradient(to bottom, transparent 0%, transparent 50%, rgba(0,0,0,0.03) 65%, rgba(0,0,0,0.22) 100%)',

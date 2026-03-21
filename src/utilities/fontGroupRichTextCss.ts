@@ -213,3 +213,19 @@ export function appendFontGroupLineHeightRules(
     )
   }
 }
+
+/** Variante de font-group → font-weight y font-style para @font-face (Pricing, Hero, Navbar SENDA, …). */
+export const FONT_GROUP_VARIANT_CSS: Record<string, { weight: string; style: string }> = {
+  regular: { weight: '400', style: 'normal' },
+  regularItalic: { weight: '400', style: 'italic' },
+  medium: { weight: '500', style: 'normal' },
+  mediumItalic: { weight: '500', style: 'italic' },
+  semibold: { weight: '600', style: 'normal' },
+  semiboldItalic: { weight: '600', style: 'italic' },
+  bold: { weight: '700', style: 'normal' },
+  boldItalic: { weight: '700', style: 'italic' },
+  light: { weight: '300', style: 'normal' },
+  lightItalic: { weight: '300', style: 'italic' },
+  heavy: { weight: '800', style: 'normal' },
+  heavyItalic: { weight: '800', style: 'italic' },
+}

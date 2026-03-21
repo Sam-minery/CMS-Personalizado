@@ -252,6 +252,8 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
           buttonBackgroundColor={c.buttonBackgroundColor ?? undefined}
           buttonTextColor={c.buttonTextColor ?? undefined}
           fontFamily={c.fontFamily ?? undefined}
+          useFontGroup={c.useFontGroup ?? false}
+          fontGroup={c.fontGroup ?? undefined}
           useCustomFont={c.useCustomFont ?? false}
           customFontFile={
             c.customFontFile && typeof c.customFontFile === 'object'

@@ -307,7 +307,10 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
       <div
         id={sectionId}
         data-bloque-imc-senda-font={styleId}
-        className="relative w-full min-w-0 min-h-screen flex items-start justify-center px-4 md:px-6 pt-24 pb-12 overflow-x-hidden md:pt-28 md:pb-12 md:h-[690px] md:min-h-[690px]"
+        className={cn(
+          'relative w-full min-w-0 min-h-screen flex items-start justify-center px-4 md:px-6 pt-24 pb-12 overflow-x-clip overflow-y-visible md:pt-28 md:pb-12 md:min-h-[690px]',
+          showHighBMI ? 'md:h-auto' : 'md:h-[690px]',
+        )}
         style={{
           background: showResult || showHighBMI ? backgroundColor || '#f5f5f5' : defaultBackground,
           ...(backgroundImageUrl
@@ -590,13 +593,13 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
             >
               <div className="w-full max-w-[1100px] mx-auto px-4 md:px-0 flex justify-center min-w-0">
                 <div
-                  className="rounded-3xl flex items-center justify-center w-full max-w-[327px] min-h-0 p-6 pb-12 box-border md:w-full md:max-w-[1100px] md:min-h-[472px] md:h-[540px] md:p-10"
+                  className="rounded-3xl flex items-center justify-center w-full max-w-[327px] min-h-0 p-6 pb-12 box-border md:w-full md:max-w-[1100px] md:min-h-[472px] md:h-auto md:p-10"
                   style={{
                     backgroundColor: defaultHighBMICardBackground,
                     ...fontStyle,
                   }}
                 >
-                  <div className="flex flex-col items-start justify-start gap-y-3 w-full max-w-full min-w-0 md:max-w-[908px] md:items-center md:justify-between md:gap-y-0 md:h-full">
+                  <div className="flex flex-col items-start justify-start gap-y-3 w-full max-w-full min-w-0 md:max-w-[908px] md:items-center md:justify-between md:gap-y-0 md:min-h-0">
                     <div className="flex flex-col items-start justify-center w-full max-w-[279px] min-h-0 min-w-0 text-left md:max-w-[492px] md:w-full md:min-h-[128px] md:items-center md:text-center">
                       {bmi !== null && (
                         <div

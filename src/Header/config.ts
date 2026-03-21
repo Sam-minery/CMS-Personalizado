@@ -815,6 +815,27 @@ export const Header: GlobalConfig = {
           label: 'Color del texto de botones',
         },
         {
+          name: 'useFontGroup',
+          type: 'checkbox',
+          label: 'Usar grupo de fuentes',
+          defaultValue: false,
+          admin: {
+            description:
+              'Sube regular + bold (u otras variantes) en Font Groups: mismo nombre de familia y pesos distintos. El enlace activo (ancla en pantalla) usa negrita real. Tamaño del texto normal (body) para enlaces y botones.',
+          },
+        },
+        {
+          name: 'fontGroup',
+          type: 'relationship',
+          relationTo: 'font-groups',
+          label: 'Grupo de fuentes',
+          admin: {
+            condition: (_, siblingData) => siblingData?.useFontGroup === true,
+            description:
+              'En el grupo, añade al menos las variantes regular y bold vinculadas a archivos .woff2/.ttf, etc.',
+          },
+        },
+        {
           name: 'fontFamily',
           type: 'select',
           label: 'Familia de fuente',
@@ -836,12 +857,19 @@ export const Header: GlobalConfig = {
             { label: 'Poppins', value: '"Poppins", sans-serif' },
             { label: 'Raleway', value: '"Raleway", sans-serif' },
           ],
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useFontGroup !== true && siblingData?.useCustomFont !== true,
+          },
         },
         {
           name: 'useCustomFont',
           type: 'checkbox',
           label: 'Usar fuente personalizada',
           defaultValue: false,
+          admin: {
+            condition: (_, siblingData) => siblingData?.useFontGroup !== true,
+          },
         },
         {
           name: 'customFontFile',
@@ -849,7 +877,8 @@ export const Header: GlobalConfig = {
           relationTo: 'fonts',
           label: 'Archivo de fuente',
           admin: {
-            condition: (_, siblingData) => siblingData?.useCustomFont === true,
+            condition: (_, siblingData) =>
+              siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
           },
         },
         {
@@ -857,7 +886,8 @@ export const Header: GlobalConfig = {
           type: 'text',
           label: 'Nombre de la fuente personalizada',
           admin: {
-            condition: (_, siblingData) => siblingData?.useCustomFont === true,
+            condition: (_, siblingData) =>
+              siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
           },
         },
         {

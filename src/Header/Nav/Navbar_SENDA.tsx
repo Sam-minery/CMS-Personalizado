@@ -11,6 +11,13 @@ import Image from "next/image";
 import { useGoogleFont } from "@/utilities/useGoogleFont";
 import { getMediaUrl } from "@/utilities/getMediaUrl";
 import { sanitizeSVG } from "@/utilities/sanitizeHTML";
+import { cn } from "@/utilities/ui";
+import {
+  FONT_GROUP_RICHTEXT_MOBILE_MAX,
+  FONT_GROUP_VARIANT_CSS,
+  trimFontGroupValue,
+} from "@/utilities/fontGroupRichTextCss";
+import type { Font, FontGroup } from "@/payload-types";
 
 type ImageProps = {
   useMedia?: boolean;
@@ -60,6 +67,40 @@ type FontFile = {
   name?: string;
 };
 
+function normalizeNavbarFontGroup(raw: unknown): FontGroup | null {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  let o = raw as Record<string, unknown>;
+  const rel = o.relationTo;
+  const inner = o.value;
+  if (
+    inner &&
+    typeof inner === "object" &&
+    !Array.isArray(inner) &&
+    (rel === "font-groups" || rel === "fontGroups")
+  ) {
+    o = inner as Record<string, unknown>;
+  }
+  return o as unknown as FontGroup;
+}
+
+/** Texto de enlaces/botones: clase body del font group + fontFamily inline si aplica. */
+function NavbarTextLabel({
+  text,
+  fontStyle,
+  fg,
+}: {
+  text: string;
+  fontStyle?: React.CSSProperties;
+  fg: boolean;
+}) {
+  if (!fg && !fontStyle) return <>{text}</>;
+  return (
+    <span className={cn(fg && "navbar-senda-fg-body-text")} style={fontStyle}>
+      {text}
+    </span>
+  );
+}
+
 type Props = {
   logo: ImageProps;
   navLinks: NavLink[];
@@ -70,6 +111,8 @@ type Props = {
   buttonBackgroundColor?: string;
   buttonTextColor?: string;
   fontFamily?: string;
+  useFontGroup?: boolean | null;
+  fontGroup?: FontGroup | number | null;
   useCustomFont?: boolean;
   customFontFile?: FontFile | null;
   customFontName?: string | null;
@@ -114,6 +157,8 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
     buttonBackgroundColor,
     buttonTextColor,
     fontFamily,
+    useFontGroup,
+    fontGroup,
     useCustomFont,
     customFontFile,
     customFontName,
@@ -125,53 +170,137 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
   const uniqueId = React.useId().replace(/:/g, "-");
   const styleId = `navbar-senda-${uniqueId}`;
 
+  const fontGroupObj =
+    useFontGroup && fontGroup && typeof fontGroup === "object"
+      ? normalizeNavbarFontGroup(fontGroup)
+      : null;
+  const fontGroupTypographyActive = Boolean(
+    fontGroupObj?.fontFamilyName?.trim() &&
+      Array.isArray(fontGroupObj.fonts) &&
+      fontGroupObj.fonts.some((e) => e?.font && typeof e.font === "object"),
+  );
+
+  /** Nombre CSS de la fuente subida: campo del CMS o nombre del archivo de media (como Hero/Pricing). */
+  const customFontFamilyName =
+    customFontName?.trim() ||
+    customFontFile?.name?.trim() ||
+    (customFontFile?.filename ? customFontFile.filename.replace(/\.[^.]+$/, "") : undefined);
+
   const getFontFamily = () => {
-    if (useCustomFont && customFontName) return `"${customFontName}"`;
+    if (fontGroupTypographyActive && fontGroupObj?.fontFamilyName) {
+      return `"${fontGroupObj.fontFamilyName.replace(/"/g, '\\"')}"`;
+    }
+    if (useCustomFont && customFontFamilyName) return `"${customFontFamilyName.replace(/"/g, '\\"')}"`;
     if (fontFamily && fontFamily !== "default") return fontFamily;
     return undefined;
   };
   const selectedFontFamily = getFontFamily();
-  useGoogleFont(selectedFontFamily);
+  useGoogleFont(
+    fontGroupTypographyActive || useCustomFont ? undefined : selectedFontFamily,
+  );
 
   const fontFileUrl = customFontFile?.url ? getMediaUrl(customFontFile.url).replace(/([^:]\/)\/+/g, "$1") : null;
+  const fontFileNameOrUrl = customFontFile?.filename || customFontFile?.url || fontFileUrl || "";
   const isValidFontFile =
-    fontFileUrl &&
-    customFontFile?.filename &&
-    /\.(woff|woff2|ttf|otf)$/i.test(customFontFile.filename);
+    Boolean(fontFileUrl) && /\.(woff|woff2|ttf|otf)(\?.*)?$/i.test(fontFileNameOrUrl);
 
   const buildStyles = () => {
     const styles: string[] = [];
-    if (useCustomFont && fontFileUrl && customFontName && isValidFontFile) {
-      styles.push(`
+    const scope = `[data-navbar-senda-font="${styleId}"]`;
+    const pushFontScopes = (fontValue: string) => {
+      styles.push(
+        `${scope}, ${scope} *, ${scope} a, ${scope} button, ${scope} span, #${styleId}, #${styleId} *, #${styleId} a, #${styleId} button, #${styleId} span { font-family: ${fontValue} !important; }`,
+      );
+      styles.push(
+        `.navbar-senda-font-root, .navbar-senda-font-root *, .navbar-senda-font-root a, .navbar-senda-font-root button, .navbar-senda-font-root span { font-family: ${fontValue} !important; }`,
+      );
+    };
+
+    if (fontGroupTypographyActive && fontGroupObj?.fontFamilyName) {
+      const familyCss = fontGroupObj.fontFamilyName.replace(/"/g, '\\"');
+      for (const entry of fontGroupObj.fonts || []) {
+        const font = entry?.font;
+        if (!font || typeof font === "number") continue;
+        const url = (font as Font).url;
+        if (url == null || url === "") continue;
+        const fontUrl = getMediaUrl(url).replace(/([^:]\/)\/+/g, "$1");
+        const variant = entry.variant || "regular";
+        const { weight, style: fontStyleCss } = FONT_GROUP_VARIANT_CSS[variant] ?? {
+          weight: "400",
+          style: "normal",
+        };
+        const formatMatch = fontUrl.match(/\.(woff2?|ttf|otf)(\?.*)?$/i);
+        if (!formatMatch) continue;
+        const ext = formatMatch[1].toLowerCase();
+        const format =
+          ext === "woff2"
+            ? "woff2"
+            : ext === "woff"
+              ? "woff"
+              : ext === "ttf"
+                ? "truetype"
+                : "opentype";
+        styles.push(`
         @font-face {
-          font-family: "${customFontName.replace(/"/g, '\\"')}";
-          src: url("${fontFileUrl}") format("woff2"), url("${fontFileUrl}") format("woff");
-          font-weight: normal;
+          font-family: "${familyCss}";
+          src: url("${fontUrl}") format("${format}");
+          font-weight: ${weight};
+          font-style: ${fontStyleCss};
+          font-display: swap;
+        }
+      `);
+      }
+      pushFontScopes(`"${familyCss}"`);
+
+      const fgBody = `${scope} .navbar-senda-fg-body-text`;
+      const bodyDesk = trimFontGroupValue(fontGroupObj.typography?.body);
+      if (bodyDesk) {
+        styles.push(`${fgBody} { font-size: ${bodyDesk} !important; }`);
+      }
+      const mobBody = trimFontGroupValue(fontGroupObj.typographyMobile?.body);
+      if (mobBody) {
+        styles.push(
+          `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) { ${fgBody} { font-size: ${mobBody} !important; } }`,
+        );
+      }
+      const bodyLh = trimFontGroupValue(fontGroupObj.lineHeights?.body);
+      if (bodyLh) {
+        styles.push(`${fgBody} { line-height: ${bodyLh} !important; }`);
+      }
+      // Enlace activo (ancla): usar el glifo bold del grupo (p. ej. 700), no faux-bold de un solo archivo.
+      styles.push(
+        `${scope} .font-bold, ${scope} .font-bold.navbar-senda-fg-body-text { font-weight: 700 !important; }`,
+      );
+    } else if (useCustomFont && customFontFamilyName) {
+      const familyCss = customFontFamilyName.replace(/"/g, '\\"');
+      if (fontFileUrl && isValidFontFile) {
+        const formatMatch = fontFileUrl.match(/\.(woff2?|ttf|otf)(\?.*)?$/i);
+        const ext = formatMatch ? formatMatch[1].toLowerCase() : "";
+        const format =
+          ext === "woff2"
+            ? "woff2"
+            : ext === "woff"
+              ? "woff"
+              : ext === "ttf"
+                ? "truetype"
+                : ext === "otf"
+                  ? "opentype"
+                  : "woff2";
+        if (formatMatch) {
+          styles.push(`
+        @font-face {
+          font-family: "${familyCss}";
+          src: url("${fontFileUrl}") format("${format}");
+          font-weight: 100 900;
           font-style: normal;
           font-display: swap;
         }
       `);
-    }
-    const containerRules: string[] = [];
-    if (useCustomFont && customFontName && isValidFontFile) {
-      containerRules.push(`font-family: "${customFontName.replace(/"/g, '\\"')}" !important;`);
-    } else if (selectedFontFamily && !useCustomFont) {
-      containerRules.push(`font-family: ${selectedFontFamily} !important;`);
-    }
-    if (containerRules.length > 0) {
-      const fontValue = useCustomFont && customFontName && isValidFontFile
-        ? `"${customFontName.replace(/"/g, '\\"')}"`
-        : selectedFontFamily && !useCustomFont
-          ? selectedFontFamily
-          : "";
-      if (fontValue) {
-        styles.push(
-          `#${styleId}, #${styleId} *, #${styleId} a, #${styleId} button, #${styleId} span { font-family: ${fontValue} !important; }`
-        );
-        styles.push(
-          `.navbar-senda-font-root, .navbar-senda-font-root *, .navbar-senda-font-root a, .navbar-senda-font-root button { font-family: ${fontValue} !important; }`
-        );
+        }
       }
+      pushFontScopes(`"${familyCss}"`);
+    } else if (selectedFontFamily && !useCustomFont && !fontGroupTypographyActive) {
+      pushFontScopes(selectedFontFamily);
     }
     if (textColor) {
       styles.push(
@@ -339,25 +468,32 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
             <div className="flex items-center">
               {navLinks.map((navLink, index) =>
                 navLink.subMenuLinks && navLink.subMenuLinks.length > 0 ? (
-                  <SubMenu key={index} navLink={navLink} isMobile={false} dropdownBgColor={backgroundColor} linkFontStyle={fontStyle} activeAnchorId={activeAnchorId} />
+                  <SubMenu key={index} navLink={navLink} isMobile={false} dropdownBgColor={backgroundColor} linkFontStyle={fontStyle} fontGroupTypographyActive={fontGroupTypographyActive} activeAnchorId={activeAnchorId} />
                 ) : navLink.link?.type === "anchor" && navLink.link?.anchorId ? (
                   <button
                     key={index}
                     type="button"
-                    className={`block py-3 px-4 py-2 text-base cursor-pointer bg-transparent border-0 transition-transform duration-150 active:scale-[0.98] active:opacity-90 ${activeAnchorId === navLink.link!.anchorId!.trim() ? "font-bold" : ""}`}
+                    className={cn(
+                      "block py-3 px-4 py-2 cursor-pointer bg-transparent border-0 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+                      !fontGroupTypographyActive && "text-base",
+                      activeAnchorId === navLink.link!.anchorId!.trim() ? "font-bold" : "",
+                    )}
                     style={fontStyle}
                     onClick={() => scrollToAnchor(navLink.link!.anchorId!)}
                   >
-                    {fontStyle ? <span style={fontStyle}>{navLink.title}</span> : navLink.title}
+                    <NavbarTextLabel text={navLink.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                   </button>
                 ) : (
                   <CMSLink
                     key={index}
                     {...(navLink.link as React.ComponentProps<typeof CMSLink>)}
-                    className="block py-3 px-4 py-2 text-base transition-transform duration-150 active:scale-[0.98] active:opacity-90"
+                    className={cn(
+                      "block py-3 px-4 py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+                      !fontGroupTypographyActive && "text-base",
+                    )}
                     style={fontStyle}
                   >
-                    {fontStyle ? <span style={fontStyle}>{navLink.title}</span> : navLink.title}
+                    <NavbarTextLabel text={navLink.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                   </CMSLink>
                 )
               )}
@@ -373,7 +509,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                       onClick={() => scrollToAnchor(button.link!.anchorId!)}
                     >
                       <span className="inline-flex items-center gap-1.5">
-                        {fontStyle ? <span style={fontStyle}>{button.title}</span> : button.title}
+                        <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                         {button.iconSVG ? (
                           <span
                             className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
@@ -393,7 +529,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                       style={fontStyle}
                     >
                       <span className="inline-flex items-center gap-1.5">
-                        {fontStyle ? <span style={fontStyle}>{button.title}</span> : button.title}
+                        <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                         {button.iconSVG ? (
                           <span
                             className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
@@ -423,7 +559,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                       onClick={() => scrollToAnchor(firstButton!.link!.anchorId!)}
                     >
                       <span className="inline-flex items-center gap-1.5">
-                        {fontStyle ? <span style={fontStyle}>{firstButton.title}</span> : firstButton.title}
+                        <NavbarTextLabel text={firstButton.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                         {firstButton.iconSVG ? (
                           <span
                             className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
@@ -442,7 +578,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                       style={fontStyle}
                     >
                       <span className="inline-flex items-center gap-1.5">
-                        {fontStyle ? <span style={fontStyle}>{firstButton.title}</span> : firstButton.title}
+                        <NavbarTextLabel text={firstButton.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                         {firstButton.iconSVG ? (
                           <span
                             className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
@@ -489,25 +625,36 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                   {navLinks.map((navLink, index) => (
                     <div key={index} className="border-b border-gray-200 py-3">
                       {navLink.subMenuLinks && navLink.subMenuLinks.length > 0 ? (
-                            <SubMenu navLink={navLink} isMobile={true} dropdownBgColor={isMobileMenuOpen ? undefined : backgroundColor} linkFontStyle={fontStyle} onCloseMenu={() => setIsMobileMenuOpen(false)} activeAnchorId={activeAnchorId} />
+                            <SubMenu navLink={navLink} isMobile={true} dropdownBgColor={isMobileMenuOpen ? undefined : backgroundColor} linkFontStyle={fontStyle} fontGroupTypographyActive={fontGroupTypographyActive} onCloseMenu={() => setIsMobileMenuOpen(false)} activeAnchorId={activeAnchorId} />
                           ) : navLink.link?.type === "anchor" && navLink.link?.anchorId ? (
                             <div>
                               <button
                                 type="button"
-                                className={`block w-full py-2 text-left text-base cursor-pointer bg-transparent border-0 transition-transform duration-150 active:scale-[0.98] active:opacity-90 ${activeAnchorId === navLink.link!.anchorId!.trim() ? "font-bold" : ""}`}
+                                className={cn(
+                                  "block w-full py-2 text-left cursor-pointer bg-transparent border-0 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+                                  !fontGroupTypographyActive && "text-base",
+                                  activeAnchorId === navLink.link!.anchorId!.trim() ? "font-bold" : "",
+                                )}
                                 style={fontStyle}
                                 onClick={() => {
                                   scrollToAnchor(navLink.link!.anchorId!);
                                   setIsMobileMenuOpen(false);
                                 }}
                               >
-                                {fontStyle ? <span style={fontStyle}>{navLink.title}</span> : navLink.title}
+                                <NavbarTextLabel text={navLink.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                               </button>
                             </div>
                           ) : (
                             <div onClick={() => setIsMobileMenuOpen(false)}>
-                              <CMSLink {...(navLink.link as React.ComponentProps<typeof CMSLink>)} className="block py-2 text-base transition-transform duration-150 active:scale-[0.98] active:opacity-90" style={fontStyle}>
-                                {fontStyle ? <span style={fontStyle}>{navLink.title}</span> : navLink.title}
+                              <CMSLink
+                                {...(navLink.link as React.ComponentProps<typeof CMSLink>)}
+                                className={cn(
+                                  "block py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+                                  !fontGroupTypographyActive && "text-base",
+                                )}
+                                style={fontStyle}
+                              >
+                                <NavbarTextLabel text={navLink.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                               </CMSLink>
                             </div>
                           )}
@@ -519,7 +666,11 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                             <Button
                               size={firstButton.size}
                               variant={firstButton.variant}
-                              className={firstButton.variant === "default" ? "navbar-senda-btn-default w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs" : "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs"}
+                              className={cn(
+                                "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0",
+                                !fontGroupTypographyActive && "text-xs",
+                                firstButton.variant === "default" && "navbar-senda-btn-default",
+                              )}
                               style={fontStyle}
                               onClick={() => {
                                 scrollToAnchor(firstButton!.link!.anchorId!);
@@ -527,7 +678,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                               }}
                             >
                               <span className="inline-flex items-center gap-1.5">
-                                {fontStyle ? <span style={fontStyle}>{firstButton.title}</span> : firstButton.title}
+                                <NavbarTextLabel text={firstButton.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                                 {firstButton.iconSVG ? (
                                   <span
                                     className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
@@ -543,11 +694,15 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                                 {...(firstButton.link as React.ComponentProps<typeof CMSLink>)}
                                 size={firstButton.size}
                                 appearance={firstButton.variant}
-                                className={firstButton.variant === "default" ? "navbar-senda-btn-default w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs" : "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs"}
+                                className={cn(
+                                  "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0",
+                                  !fontGroupTypographyActive && "text-xs",
+                                  firstButton.variant === "default" && "navbar-senda-btn-default",
+                                )}
                                 style={fontStyle}
                               >
                                 <span className="inline-flex items-center gap-1.5">
-                                  {fontStyle ? <span style={fontStyle}>{firstButton.title}</span> : firstButton.title}
+                                  <NavbarTextLabel text={firstButton.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                                   {firstButton.iconSVG ? (
                                     <span
                                       className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
@@ -569,7 +724,11 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                                 key={index}
                                 size={button.size}
                                 variant={button.variant}
-                                className={button.variant === "default" ? "navbar-senda-btn-default w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs" : "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs"}
+                                className={cn(
+                                  "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0",
+                                  !fontGroupTypographyActive && "text-xs",
+                                  button.variant === "default" && "navbar-senda-btn-default",
+                                )}
                                 style={fontStyle}
                                 onClick={() => {
                                   scrollToAnchor(button.link!.anchorId!);
@@ -577,7 +736,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                                 }}
                               >
                                 <span className="inline-flex items-center gap-1.5">
-                                  {fontStyle ? <span style={fontStyle}>{button.title}</span> : button.title}
+                                  <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                                   {button.iconSVG ? (
                                     <span
                                       className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
@@ -593,11 +752,15 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                                   {...(button.link as React.ComponentProps<typeof CMSLink>)}
                                   size={button.size}
                                   appearance={button.variant}
-                                  className={button.variant === "default" ? "navbar-senda-btn-default w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs" : "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0 text-xs"}
+                                  className={cn(
+                                    "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0",
+                                    !fontGroupTypographyActive && "text-xs",
+                                    button.variant === "default" && "navbar-senda-btn-default",
+                                  )}
                                   style={fontStyle}
                                 >
                                   <span className="inline-flex items-center gap-1.5">
-                                    {fontStyle ? <span style={fontStyle}>{button.title}</span> : button.title}
+                                    <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                                     {button.iconSVG ? (
                                       <span
                                         className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
@@ -628,6 +791,7 @@ const SubMenu = ({
   isMobile,
   dropdownBgColor,
   linkFontStyle,
+  fontGroupTypographyActive = false,
   onCloseMenu,
   activeAnchorId,
 }: {
@@ -635,6 +799,7 @@ const SubMenu = ({
   isMobile: boolean;
   dropdownBgColor?: string;
   linkFontStyle?: React.CSSProperties;
+  fontGroupTypographyActive?: boolean;
   onCloseMenu?: () => void;
   activeAnchorId?: string | null;
 }) => {
@@ -655,11 +820,14 @@ const SubMenu = ({
       onMouseLeave={() => !isMobile && setIsDropdownOpen(false)}
     >
       <button
-        className="flex w-full items-center justify-between gap-2 py-3 text-left text-md lg:flex-none lg:justify-start lg:px-4 lg:py-2 lg:text-base transition-transform duration-150 active:scale-[0.98] active:opacity-90"
+        className={cn(
+          "flex w-full items-center justify-between gap-2 py-3 text-left lg:flex-none lg:justify-start lg:px-4 lg:py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+          !fontGroupTypographyActive && "text-md lg:text-base",
+        )}
         onClick={() => setIsDropdownOpen((prev) => !prev)}
         style={linkFontStyle}
       >
-        <span style={linkFontStyle}>{navLink.title}</span>
+        <NavbarTextLabel text={navLink.title} fontStyle={linkFontStyle} fg={fontGroupTypographyActive} />
         <motion.span
           variants={{ rotated: { rotate: 180 }, initial: { rotate: 0 } }}
           animate={isDropdownOpen ? "rotated" : "initial"}
@@ -687,20 +855,27 @@ const SubMenu = ({
                 <button
                   key={index}
                   type="button"
-                  className={`block w-full py-3 pl-[5%] text-left text-md cursor-pointer bg-transparent border-0 lg:px-4 lg:py-2 lg:text-base transition-transform duration-150 active:scale-[0.98] active:opacity-90 ${activeAnchorId === subLink.link.anchorId.trim() ? "font-bold" : ""}`}
+                  className={cn(
+                    "block w-full py-3 pl-[5%] text-left cursor-pointer bg-transparent border-0 lg:px-4 lg:py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+                    !fontGroupTypographyActive && "text-md lg:text-base",
+                    activeAnchorId === subLink.link.anchorId.trim() ? "font-bold" : "",
+                  )}
                   style={linkFontStyle}
                   onClick={() => handleSubLinkClick(subLink)}
                 >
-                  {linkFontStyle ? <span style={linkFontStyle}>{subLink.title}</span> : subLink.title}
+                  <NavbarTextLabel text={subLink.title} fontStyle={linkFontStyle} fg={fontGroupTypographyActive} />
                 </button>
               ) : (
                 <div key={index} onClick={() => isMobile && onCloseMenu?.()}>
                   <CMSLink
                     {...(subLink.link as React.ComponentProps<typeof CMSLink>)}
-                    className="block py-3 pl-[5%] text-md lg:px-4 lg:py-2 lg:text-base transition-transform duration-150 active:scale-[0.98] active:opacity-90"
+                    className={cn(
+                      "block py-3 pl-[5%] lg:px-4 lg:py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+                      !fontGroupTypographyActive && "text-md lg:text-base",
+                    )}
                     style={linkFontStyle}
                   >
-                    {linkFontStyle ? <span style={linkFontStyle}>{subLink.title}</span> : subLink.title}
+                    <NavbarTextLabel text={subLink.title} fontStyle={linkFontStyle} fg={fontGroupTypographyActive} />
                   </CMSLink>
                 </div>
               )
@@ -759,6 +934,8 @@ export const Navbar_SENDADefaults: Props = {
   buttonBackgroundColor: undefined,
   buttonTextColor: undefined,
   fontFamily: undefined,
+  useFontGroup: false,
+  fontGroup: undefined,
   useCustomFont: false,
   customFontFile: undefined,
   customFontName: undefined,
