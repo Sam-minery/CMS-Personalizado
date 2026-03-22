@@ -8,6 +8,17 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
+import {
+  appendFontGroupHeadingMarginRules,
+  appendFontGroupLineHeightRules,
+  appendTypographyBodyListSizeRules,
+  FONT_GROUP_RICHTEXT_MOBILE_MAX,
+  FONT_GROUP_VARIANT_CSS,
+  trimFontGroupValue,
+  type FontGroupHeadingMargins,
+  type FontGroupLineHeights,
+  type FontGroupTypography,
+} from '@/utilities/fontGroupRichTextCss'
 
 /** Tipos locales para no depender de payload-types (evita fallos de build si el bloque no está en projectConfig). */
 type MediaLike = {
@@ -76,6 +87,37 @@ type FontFile = {
   name?: string
 }
 
+type FontGroupFontEntry = { font?: FontFile | number; variant?: string }
+
+type FontGroupData = {
+  fontFamilyName?: string | null
+  fonts?: FontGroupFontEntry[] | null
+  typography?: FontGroupTypography | null
+  typographyMobile?: FontGroupTypography | null
+  headingMargins?: FontGroupHeadingMargins | null
+  lineHeights?: FontGroupLineHeights | null
+}
+
+function normalizeCta1FontGroup(raw: unknown): FontGroupData | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+  let o = raw as Record<string, unknown>
+  const rel = o.relationTo
+  const inner = o.value
+  if (
+    inner &&
+    typeof inner === 'object' &&
+    !Array.isArray(inner) &&
+    (rel === 'font-groups' || rel === 'fontGroups')
+  ) {
+    o = inner as Record<string, unknown>
+  }
+  return o as FontGroupData
+}
+
+/** Contenedor RichText / payload para reglas `.cta1-senda-richtext` del font group. */
+const CTA_FG_RICHTEXT =
+  'cta1-senda-richtext [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-bold [&_h4]:font-bold [&_h5]:font-bold [&_h6]:font-bold [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6'
+
 export type CTA1SendaAlterBlockProps = {
   /** Título y descripción en un único richText (área 929×120) */
   title?: DefaultTypedEditorState | null
@@ -105,6 +147,8 @@ export type CTA1SendaAlterBlockProps = {
   blockHeightMode?: 'auto' | 'viewport' | 'custom' | null
   customBlockHeightPx?: number | null
   anchorId?: string | null
+  useFontGroup?: boolean | null
+  fontGroup?: FontGroupData | number | null
   fontFamily?: string | null
   useCustomFont?: boolean | null
   customFontFile?: FontFile | number | null
@@ -188,6 +232,8 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
   blockHeightMode = 'viewport',
   customBlockHeightPx,
   anchorId,
+  useFontGroup,
+  fontGroup,
   fontFamily,
   useCustomFont,
   customFontFile,
@@ -249,6 +295,15 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
           ? 'to bottom'
           : 'to bottom right'
 
+  const fontGroupObj =
+    useFontGroup && fontGroup && typeof fontGroup === 'object'
+      ? normalizeCta1FontGroup(fontGroup)
+      : null
+
+  const fontGroupTypographyActive = Boolean(
+    fontGroupObj?.fontFamilyName?.trim() && Array.isArray(fontGroupObj.fonts),
+  )
+
   const customFontFileObj =
     customFontFile && typeof customFontFile === 'object' ? customFontFile : null
   const customFontFamilyName =
@@ -259,13 +314,14 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
       : undefined)
 
   const getFontFamily = () => {
+    if (fontGroupObj?.fontFamilyName) return `"${fontGroupObj.fontFamilyName.replace(/"/g, '\\"')}"`
     if (useCustomFont && customFontFamilyName) return `"${customFontFamilyName}"`
     if (fontFamily && fontFamily !== 'default') return fontFamily
     return undefined
   }
 
   const selectedFontFamily = getFontFamily()
-  useGoogleFont(selectedFontFamily)
+  useGoogleFont(fontGroupTypographyActive ? undefined : selectedFontFamily)
 
   const fontFileUrl = customFontFileObj?.url
     ? getMediaUrl(customFontFileObj.url).replace(/([^:]\/)\/+/g, '$1')
@@ -276,8 +332,167 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
 
   const buildStyles = () => {
     const styles: string[] = []
+    const sel = `[data-cta1-senda-font="${styleId}"]`
+    const mainRichtext = `${sel} .cta1-senda-richtext`
+    const planRichtext = mainRichtext
+    const payloadRichtext = `${sel} .payload-richtext`
+    /** Texto de botones de sección + botón del popup: tamaño/interlineado “body” del font group. */
+    const cta1BtnLabels = `${sel} .cta1-senda-buttons .cta1-senda-btn-label, ${sel} .cta1-popup-btn-label`
 
-    if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
+    if (fontGroupTypographyActive && fontGroupObj) {
+      const familyName = fontGroupObj.fontFamilyName!.replace(/"/g, '\\"')
+      const fontEntries = (fontGroupObj.fonts || []).filter(
+        (e): e is FontGroupFontEntry & { font: FontFile } =>
+          e?.font != null && typeof e.font === 'object' && e.font?.url != null,
+      )
+      for (const entry of fontEntries) {
+        const url = getMediaUrl(entry.font.url).replace(/([^:]\/)\/+/g, '$1')
+        const variant = entry.variant || 'regular'
+        const { weight, style: fontStyleCss } = FONT_GROUP_VARIANT_CSS[variant] ?? {
+          weight: '400',
+          style: 'normal',
+        }
+        const formatMatch = url.match(/\.(woff2?|ttf|otf)(\?.*)?$/i)
+        const format = formatMatch
+          ? formatMatch[1].toLowerCase() === 'woff2'
+            ? 'woff2'
+            : formatMatch[1].toLowerCase() === 'woff'
+              ? 'woff'
+              : formatMatch[1].toLowerCase() === 'ttf'
+                ? 'truetype'
+                : 'opentype'
+          : 'woff2'
+        if (!formatMatch) continue
+        styles.push(`
+          @font-face {
+            font-family: "${familyName}";
+            src: url("${url}") format("${format}");
+            font-weight: ${weight};
+            font-style: ${fontStyleCss};
+            font-display: swap;
+          }
+        `)
+      }
+      const fontValue = `"${fontGroupObj.fontFamilyName!.replace(/"/g, '\\"')}"`
+      styles.push(
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${fontValue} !important; }`,
+      )
+
+      const typo = fontGroupObj.typography
+      if (typo) {
+        if (typo.h1)
+          styles.push(`${mainRichtext} h1, ${payloadRichtext} h1 { font-size: ${typo.h1} !important; }`)
+        if (typo.h2)
+          styles.push(`${mainRichtext} h2, ${payloadRichtext} h2 { font-size: ${typo.h2} !important; }`)
+        if (typo.h3)
+          styles.push(`${mainRichtext} h3, ${payloadRichtext} h3 { font-size: ${typo.h3} !important; }`)
+        if (typo.h4)
+          styles.push(`${mainRichtext} h4, ${payloadRichtext} h4 { font-size: ${typo.h4} !important; }`)
+        if (typo.h5)
+          styles.push(`${mainRichtext} h5, ${payloadRichtext} h5 { font-size: ${typo.h5} !important; }`)
+        if (typo.h6)
+          styles.push(`${mainRichtext} h6, ${payloadRichtext} h6 { font-size: ${typo.h6} !important; }`)
+        appendTypographyBodyListSizeRules(typo, mainRichtext, planRichtext, payloadRichtext, (rule) =>
+          styles.push(rule),
+        )
+        if (typo.caption) {
+          styles.push(
+            `${mainRichtext} .caption, ${payloadRichtext} .caption { font-size: ${typo.caption} !important; }`,
+          )
+          styles.push(
+            `${mainRichtext} p .caption, ${mainRichtext} .payload-richtext .caption, ${mainRichtext} span.caption, ${payloadRichtext} span.caption { font-size: ${typo.caption} !important; }`,
+          )
+          styles.push(`${sel} [data-text-size="caption"] { font-size: ${typo.caption} !important; }`)
+        }
+      }
+
+      const bodyBtnDesk = trimFontGroupValue(fontGroupObj.typography?.body)
+      if (bodyBtnDesk) {
+        styles.push(`${cta1BtnLabels} { font-size: ${bodyBtnDesk} !important; }`)
+      }
+
+      const typoMob = fontGroupObj.typographyMobile
+      if (typoMob) {
+        const mobRules: string[] = []
+        const t = (v: string | null | undefined) => (typeof v === 'string' ? v.trim() : '') || ''
+        if (t(typoMob.h1))
+          mobRules.push(`${mainRichtext} h1, ${payloadRichtext} h1 { font-size: ${t(typoMob.h1)} !important; }`)
+        if (t(typoMob.h2))
+          mobRules.push(`${mainRichtext} h2, ${payloadRichtext} h2 { font-size: ${t(typoMob.h2)} !important; }`)
+        if (t(typoMob.h3))
+          mobRules.push(`${mainRichtext} h3, ${payloadRichtext} h3 { font-size: ${t(typoMob.h3)} !important; }`)
+        if (t(typoMob.h4))
+          mobRules.push(`${mainRichtext} h4, ${payloadRichtext} h4 { font-size: ${t(typoMob.h4)} !important; }`)
+        if (t(typoMob.h5))
+          mobRules.push(`${mainRichtext} h5, ${payloadRichtext} h5 { font-size: ${t(typoMob.h5)} !important; }`)
+        if (t(typoMob.h6))
+          mobRules.push(`${mainRichtext} h6, ${payloadRichtext} h6 { font-size: ${t(typoMob.h6)} !important; }`)
+
+        appendTypographyBodyListSizeRules(typoMob, mainRichtext, planRichtext, payloadRichtext, (rule) =>
+          mobRules.push(rule),
+        )
+
+        const capM = t(typoMob.caption)
+        if (capM) {
+          mobRules.push(
+            `${mainRichtext} .caption, ${payloadRichtext} .caption { font-size: ${capM} !important; }`,
+          )
+          mobRules.push(
+            `${mainRichtext} p .caption, ${mainRichtext} .payload-richtext .caption, ${mainRichtext} span.caption, ${payloadRichtext} span.caption { font-size: ${capM} !important; }`,
+          )
+          mobRules.push(`${sel} [data-text-size="caption"] { font-size: ${capM} !important; }`)
+        }
+
+        const bodyMobBtn = t(typoMob.body)
+        if (bodyMobBtn) {
+          mobRules.push(`${cta1BtnLabels} { font-size: ${bodyMobBtn} !important; }`)
+        }
+
+        if (mobRules.length > 0) {
+          styles.push(
+            `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) {\n${mobRules.join('\n')}\n}`,
+          )
+        }
+      }
+
+      appendFontGroupHeadingMarginRules(
+        fontGroupObj.headingMargins,
+        mainRichtext,
+        planRichtext,
+        payloadRichtext,
+        (rule) => styles.push(rule),
+      )
+      appendFontGroupLineHeightRules(
+        fontGroupObj.lineHeights,
+        mainRichtext,
+        planRichtext,
+        payloadRichtext,
+        (rule) => styles.push(rule),
+      )
+
+      const bodyLhBtn = trimFontGroupValue(fontGroupObj.lineHeights?.body)
+      if (bodyLhBtn) {
+        styles.push(`${cta1BtnLabels} { line-height: ${bodyLhBtn} !important; }`)
+      }
+
+      styles.push(
+        `${mainRichtext} h1, ${mainRichtext} h2, ${mainRichtext} h3, ${mainRichtext} h4, ${payloadRichtext} h1, ${payloadRichtext} h2, ${payloadRichtext} h3, ${payloadRichtext} h4 { letter-spacing: 0.02em; }`,
+      )
+      const weightMap: Record<string, string> = {
+        light: '300',
+        regular: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700',
+        heavy: '800',
+      }
+      for (const [key, w] of Object.entries(weightMap)) {
+        styles.push(`${sel} [data-text-weight="${key}"] { font-weight: ${w} !important; }`)
+        styles.push(
+          `${mainRichtext} [data-text-weight="${key}"], ${payloadRichtext} [data-text-weight="${key}"] { font-weight: ${w} !important; }`,
+        )
+      }
+    } else if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
       styles.push(`
         @font-face {
           font-family: "${customFontFamilyName.replace(/"/g, '\\"')}";
@@ -287,18 +502,13 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
           font-display: swap;
         }
       `)
-    }
-
-    const fontValue =
-      useCustomFont && customFontFamilyName && isValidFontFile
-        ? `"${customFontFamilyName.replace(/"/g, '\\"')}"`
-        : selectedFontFamily && !useCustomFont
-          ? selectedFontFamily
-          : ''
-
-    if (fontValue) {
+      const fontValue = `"${customFontFamilyName.replace(/"/g, '\\"')}"`
       styles.push(
-        `[data-cta1-senda-font="${styleId}"], [data-cta1-senda-font="${styleId}"] *, [data-cta1-senda-font="${styleId}"] a, [data-cta1-senda-font="${styleId}"] button, [data-cta1-senda-font="${styleId}"] span { font-family: ${fontValue} !important; }`,
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${fontValue} !important; }`,
+      )
+    } else if (selectedFontFamily) {
+      styles.push(
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${selectedFontFamily} !important; }`,
       )
     }
 
@@ -306,7 +516,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
       // Aplicar solo a elementos de contenido (p, h1, span, a, ul, ol, li), excluyendo todo lo que esté dentro de .cta1-senda-buttons,
       // y sin aplicar a section/div para que el área de botones no herede el color y el color por botón se aplique bien
       styles.push(
-        `[data-cta1-senda-font="${styleId}"] p:not(.cta1-senda-buttons p), [data-cta1-senda-font="${styleId}"] h1:not(.cta1-senda-buttons h1), [data-cta1-senda-font="${styleId}"] h2:not(.cta1-senda-buttons h2), [data-cta1-senda-font="${styleId}"] h3:not(.cta1-senda-buttons h3), [data-cta1-senda-font="${styleId}"] h4:not(.cta1-senda-buttons h4), [data-cta1-senda-font="${styleId}"] h5:not(.cta1-senda-buttons h5), [data-cta1-senda-font="${styleId}"] h6:not(.cta1-senda-buttons h6), [data-cta1-senda-font="${styleId}"] span:not(strong):not(b):not(.cta1-senda-buttons span), [data-cta1-senda-font="${styleId}"] a:not(.cta1-senda-buttons a), [data-cta1-senda-font="${styleId}"] ul:not(.cta1-senda-buttons ul), [data-cta1-senda-font="${styleId}"] ol:not(.cta1-senda-buttons ol), [data-cta1-senda-font="${styleId}"] li:not(.cta1-senda-buttons li) { color: ${textColor} !important; }`,
+        `[data-cta1-senda-font="${styleId}"] p:not(.cta1-senda-buttons p), [data-cta1-senda-font="${styleId}"] h1:not(.cta1-senda-buttons h1), [data-cta1-senda-font="${styleId}"] h2:not(.cta1-senda-buttons h2), [data-cta1-senda-font="${styleId}"] h3:not(.cta1-senda-buttons h3), [data-cta1-senda-font="${styleId}"] h4:not(.cta1-senda-buttons h4), [data-cta1-senda-font="${styleId}"] h5:not(.cta1-senda-buttons h5), [data-cta1-senda-font="${styleId}"] h6:not(.cta1-senda-buttons h6), [data-cta1-senda-font="${styleId}"] span:not(strong):not(b):not(.cta1-senda-buttons span):not(.cta1-popup-btn-label), [data-cta1-senda-font="${styleId}"] a:not(.cta1-senda-buttons a):not(.cta1-popup-submit), [data-cta1-senda-font="${styleId}"] ul:not(.cta1-senda-buttons ul), [data-cta1-senda-font="${styleId}"] ol:not(.cta1-senda-buttons ol), [data-cta1-senda-font="${styleId}"] li:not(.cta1-senda-buttons li) { color: ${textColor} !important; }`,
       )
     }
     if (boldTextColor) {
@@ -321,6 +531,10 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
     // Los textos descriptivos de secciones usan su propio color (labelTextColor); forzar herencia
     styles.push(
       `[data-cta1-senda-font="${styleId}"] .cta1-senda-section-label * { color: inherit !important; }`,
+    )
+
+    styles.push(
+      `${sel} sub, ${sel} sup { font-weight: 700 !important; vertical-align: baseline !important; font-size: 0.75em; line-height: 1.2; }`,
     )
 
     return styles.length > 0 ? styles.join('\n') : ''
@@ -338,12 +552,17 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
 
   const sectionId = sanitizeAnchorId(anchorId) || undefined
 
+  const cta1SectionBtnClass = cn(
+    'inline-flex items-center justify-center rounded-xl font-medium border border-white/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
+    !fontGroupTypographyActive && 'text-base',
+  )
+
   return (
     <>
       {combinedStyles ? <style>{combinedStyles}</style> : null}
+      <div data-cta1-senda-font={styleId}>
       <section
         id={sectionId}
-        data-cta1-senda-font={styleId}
         className={cn(
           'relative px-[5%] overflow-hidden flex items-center justify-center py-10 md:py-0',
           heightClasses,
@@ -355,14 +574,17 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
           <div
             className={cn(
               'w-full mx-auto text-center min-h-[120px] flex flex-col justify-center',
+              fontGroupTypographyActive && CTA_FG_RICHTEXT,
               !textColor &&
                 !boldTextColor &&
                 'text-white [&_p]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_h4]:text-white [&_h5]:text-white [&_h6]:text-white [&_span]:text-white [&_div]:text-white [&_strong]:text-white [&_em]:text-white [&_a]:text-white [&_ul]:text-white [&_ol]:text-white [&_li]:text-white',
-              '[&_p]:text-lg md:text-xl [&_p]:leading-relaxed',
-              '[&_h1]:text-3xl md:text-4xl [&_h1]:leading-tight [&_h1]:font-bold',
-              '[&_h2]:text-2xl md:text-3xl [&_h2]:leading-tight [&_h2]:font-bold',
-              '[&_h3]:text-xl md:text-2xl [&_h3]:font-semibold',
-              '[&_h4]:text-lg md:text-xl [&_h4]:font-semibold',
+              !fontGroupTypographyActive && [
+                '[&_p]:text-lg md:text-xl [&_p]:leading-relaxed',
+                '[&_h1]:text-3xl md:text-4xl [&_h1]:leading-tight [&_h1]:font-bold',
+                '[&_h2]:text-2xl md:text-3xl [&_h2]:leading-tight [&_h2]:font-bold',
+                '[&_h3]:text-xl md:text-2xl [&_h3]:font-semibold',
+                '[&_h4]:text-lg md:text-xl [&_h4]:font-semibold',
+              ],
             )}
             style={{
               maxWidth: 929,
@@ -370,10 +592,16 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
               ...(textColor ? { color: textColor } : {}),
             }}
           >
-            {title ? <RichText data={title} enableGutter={false} /> : null}
+            {title ? <RichText data={title} enableGutter={false} enableProse={false} /> : null}
             {description ? (
-              <div className="mt-2 [&_.RichText]:text-base md:[&_.RichText]:text-lg">
-                <RichText data={description} enableGutter={false} />
+              <div
+                className={cn(
+                  'mt-2',
+                  !fontGroupTypographyActive && '[&_.RichText]:text-base md:[&_.RichText]:text-lg',
+                  fontGroupTypographyActive && CTA_FG_RICHTEXT,
+                )}
+              >
+                <RichText data={description} enableGutter={false} enableProse={false} />
               </div>
             ) : null}
           </div>
@@ -391,7 +619,8 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
               {(videocallSection?.labelRichText || videocallSection?.label) ? (
                 <div
                   className={cn(
-                    'cta1-senda-section-label text-lg md:text-xl font-normal mb-5 [&_.RichText]:text-inherit w-full text-center',
+                    'cta1-senda-section-label font-normal mb-5 [&_.RichText]:text-inherit w-full text-center',
+                    fontGroupTypographyActive ? CTA_FG_RICHTEXT : 'text-lg md:text-xl',
                   )}
                   style={{
                     color:
@@ -401,7 +630,11 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                   }}
                 >
                   {videocallSection.labelRichText ? (
-                    <RichText data={videocallSection.labelRichText} enableGutter={false} />
+                    <RichText
+                      data={videocallSection.labelRichText}
+                      enableGutter={false}
+                      enableProse={false}
+                    />
                   ) : (
                     <p>{videocallSection?.label}</p>
                   )}
@@ -417,7 +650,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                     <CMSLink
                       {...linkProps}
                       appearance="inline"
-                      className="inline-flex items-center justify-center rounded-xl text-base font-medium border border-white/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2"
+                      className={cta1SectionBtnClass}
                       style={{
                         ...fontStyle,
                         width: 180,
@@ -426,7 +659,9 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                         color: fg,
                       }}
                     >
-                      {linkLabel ? <span>{linkLabel}</span> : null}
+                      {linkLabel ? (
+                        <span className="cta1-senda-btn-label leading-normal">{linkLabel}</span>
+                      ) : null}
                       {videocallSection.iconSVG?.trim() ? (
                         <span
                           className="ml-2 inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
@@ -451,7 +686,8 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
               {(phoneSection?.labelRichText || phoneSection?.label) ? (
                 <div
                   className={cn(
-                    'cta1-senda-section-label text-lg md:text-xl font-normal mb-5 [&_.RichText]:text-inherit w-full text-center',
+                    'cta1-senda-section-label font-normal mb-5 [&_.RichText]:text-inherit w-full text-center',
+                    fontGroupTypographyActive ? CTA_FG_RICHTEXT : 'text-lg md:text-xl',
                   )}
                   style={{
                     color:
@@ -461,7 +697,11 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                   }}
                 >
                   {phoneSection.labelRichText ? (
-                    <RichText data={phoneSection.labelRichText} enableGutter={false} />
+                    <RichText
+                      data={phoneSection.labelRichText}
+                      enableGutter={false}
+                      enableProse={false}
+                    />
                   ) : (
                     <p>{phoneSection?.label}</p>
                   )}
@@ -472,7 +712,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                     <button
                       type="button"
                       onClick={openPhonePopup}
-                      className="inline-flex items-center justify-center rounded-xl text-base font-medium border border-white/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2"
+                      className={cta1SectionBtnClass}
                       style={{
                         ...fontStyle,
                         width: 180,
@@ -487,7 +727,9 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                     const linkLabel = link?.label
                     return (
                       <>
-                        {linkLabel ? <span>{linkLabel}</span> : null}
+                        {linkLabel ? (
+                          <span className="cta1-senda-btn-label leading-normal">{linkLabel}</span>
+                        ) : null}
                         {phoneSection?.iconSVG?.trim() ? (
                           <span
                             className="ml-2 inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
@@ -515,7 +757,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                       <CMSLink
                         {...linkProps}
                         appearance="inline"
-                        className="inline-flex items-center justify-center rounded-xl text-base font-medium border border-white/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2"
+                        className={cta1SectionBtnClass}
                         style={{
                           ...fontStyle,
                           width: 180,
@@ -524,7 +766,9 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                           color: fg,
                         }}
                       >
-                        {linkLabel ? <span>{linkLabel}</span> : null}
+                        {linkLabel ? (
+                          <span className="cta1-senda-btn-label leading-normal">{linkLabel}</span>
+                        ) : null}
                         {phoneSection.iconSVG?.trim() ? (
                           <span
                             className="ml-2 inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
@@ -641,7 +885,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
         </div>
       </section>
 
-      {/* Popup teléfono */}
+      {/* Popup teléfono (dentro del root con data-cta1-senda-font para font groups) */}
       {usePhonePopup && popup && isPhonePopupOpen && (
         <div
           className={cn(
@@ -706,7 +950,9 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                 <div
                   id="phone-popup-title"
                   className={cn(
-                    'w-full max-w-[303px] min-h-[120px] mx-auto text-center mb-6 md:w-[668px] md:min-h-[104px] md:max-w-[668px] md:text-left [&_.RichText]:text-xl md:[&_.RichText]:text-2xl [&_.RichText]:font-semibold',
+                    'w-full max-w-[303px] min-h-[120px] mx-auto text-center mb-6 md:w-[668px] md:min-h-[104px] md:max-w-[668px] md:text-left',
+                    !fontGroupTypographyActive &&
+                      '[&_.RichText]:text-xl md:[&_.RichText]:text-2xl [&_.RichText]:font-semibold',
                     boldColor && `popup-title-bold-${styleId}`,
                   )}
                   style={{ color: titleColor }}
@@ -715,8 +961,10 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                     .popup-title-${styleId}, .popup-title-${styleId} * { color: ${titleColor} !important; }
                     ${boldColor ? `.popup-title-bold-${styleId} strong, .popup-title-bold-${styleId} b { color: ${boldColor} !important; }` : ''}
                   `}</style>
-                  <span className={`popup-title-${styleId}`}>
-                    {popup.title ? <RichText data={popup.title} enableGutter={false} /> : null}
+                  <span className={cn(`popup-title-${styleId}`, fontGroupTypographyActive && CTA_FG_RICHTEXT)}>
+                    {popup.title ? (
+                      <RichText data={popup.title} enableGutter={false} enableProse={false} />
+                    ) : null}
                   </span>
                 </div>
               )
@@ -771,7 +1019,10 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                       <CMSLink
                         {...linkProps}
                         appearance="inline"
-                        className="rounded-xl text-base font-medium transition-colors inline-flex items-center justify-center border border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2"
+                        className={cn(
+                          'cta1-popup-submit rounded-xl font-medium transition-colors inline-flex items-center justify-center border border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
+                          !fontGroupTypographyActive && 'text-base',
+                        )}
                         style={{
                           ...fontStyle,
                           width: 120,
@@ -780,13 +1031,18 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                           color: fg,
                         }}
                       >
-                        {linkLabel ? linkLabel : 'Enviar'}
+                        <span className="cta1-popup-btn-label leading-normal">
+                          {linkLabel ? linkLabel : 'Enviar'}
+                        </span>
                       </CMSLink>
                     )
                   })()
                 ) : (
                   <span
-                    className="rounded-xl text-base font-medium inline-flex items-center justify-center border border-white/40 cursor-not-allowed opacity-70"
+                    className={cn(
+                      'rounded-xl font-medium inline-flex items-center justify-center border border-white/40 cursor-not-allowed opacity-70',
+                      !fontGroupTypographyActive && 'text-base',
+                    )}
                     style={{
                       ...fontStyle,
                       width: 120,
@@ -795,7 +1051,9 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                       color: sanitizeCssColor(popup.button?.textColor) || '#ffffff',
                     }}
                   >
-                    {(popup.button?.link as { label?: string })?.label || 'Enviar'}
+                    <span className="cta1-popup-btn-label leading-normal">
+                      {(popup.button?.link as { label?: string })?.label || 'Enviar'}
+                    </span>
                   </span>
                 )
               ) : null}
@@ -810,24 +1068,44 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                 />
                 <label
                   htmlFor={`${styleId}-popup-terms`}
-                  className={`flex-1 text-sm [&_.RichText]:text-sm popup-terms-${styleId}`}
+                  className={cn(
+                    `flex-1 popup-terms-${styleId}`,
+                    !fontGroupTypographyActive && 'text-sm [&_.RichText]:text-sm',
+                  )}
                 >
                   <style>{`
                     .popup-terms-${styleId}, .popup-terms-${styleId} * { color: ${sanitizeCssColor(popup.termsTextColor) || 'rgba(255,255,255,0.9)'} !important; }
                   `}</style>
-                  {popup.termsRichText ? <RichText data={popup.termsRichText} enableGutter={false} /> : null}
+                  {popup.termsRichText ? (
+                    <div className={cn(fontGroupTypographyActive && CTA_FG_RICHTEXT)}>
+                      <RichText
+                        data={popup.termsRichText}
+                        enableGutter={false}
+                        enableProse={false}
+                      />
+                    </div>
+                  ) : null}
                 </label>
               </div>
 
               </div>
 
               {/* Protección de datos: móvil 303×112; desktop 548×64 (altura ajustada) */}
-              <div className={`w-full max-w-[303px] min-h-[112px] mx-auto mt-4 md:w-[548px] md:min-h-[64px] md:max-w-[548px] [&_a]:underline popup-dp-${styleId}`}>
+              <div
+                className={cn(
+                  `w-full max-w-[303px] min-h-[112px] mx-auto mt-4 md:w-[548px] md:min-h-[64px] md:max-w-[548px] [&_a]:underline popup-dp-${styleId}`,
+                  fontGroupTypographyActive && CTA_FG_RICHTEXT,
+                )}
+              >
                 <style>{`
                   .popup-dp-${styleId}, .popup-dp-${styleId} * { color: ${sanitizeCssColor(popup.dataProtectionTextColor) || 'rgba(255,255,255,0.8)'} !important; }
                 `}</style>
                 {popup.dataProtectionRichText ? (
-                  <RichText data={popup.dataProtectionRichText} enableGutter={false} />
+                  <RichText
+                    data={popup.dataProtectionRichText}
+                    enableGutter={false}
+                    enableProse={false}
+                  />
                 ) : null}
               </div>
             </form>
@@ -835,6 +1113,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
           </div>
         </div>
       )}
+      </div>
     </>
   )
 }

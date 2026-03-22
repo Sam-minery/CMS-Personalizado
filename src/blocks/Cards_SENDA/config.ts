@@ -2,13 +2,54 @@ import type { Block } from 'payload'
 
 import {
   AlignFeature,
+  BlockquoteFeature,
+  ChecklistFeature,
   FixedToolbarFeature,
   HeadingFeature,
+  HorizontalRuleFeature,
+  IndentFeature,
   InlineToolbarFeature,
-  OrderedListFeature,
-  UnorderedListFeature,
   lexicalEditor,
+  OrderedListFeature,
+  ParagraphFeature,
+  SubscriptFeature,
+  TextStateFeature,
+  UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
+
+/** Pesos y tamaño "texto pequeño" alineados con Hero / Pricing SENDA (font groups). */
+const cardsSendaRichTextState = {
+  weight: {
+    light: { label: 'Light', css: { 'font-weight': '300' } },
+    regular: { label: 'Regular', css: { 'font-weight': '400' } },
+    medium: { label: 'Medium', css: { 'font-weight': '500' } },
+    semibold: { label: 'Semibold', css: { 'font-weight': '600' } },
+    heavy: { label: 'Heavy', css: { 'font-weight': '800' } },
+  },
+  size: {
+    caption: { label: 'Texto pequeño', css: {} },
+  },
+} as const
+
+const cardsRichTextEditor = () =>
+  lexicalEditor({
+    features: ({ rootFeatures }) => [
+      ...rootFeatures,
+      ParagraphFeature(),
+      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
+      AlignFeature(),
+      IndentFeature(),
+      UnorderedListFeature(),
+      OrderedListFeature(),
+      ChecklistFeature(),
+      BlockquoteFeature(),
+      HorizontalRuleFeature(),
+      SubscriptFeature(),
+      TextStateFeature({ state: cardsSendaRichTextState }),
+      FixedToolbarFeature(),
+      InlineToolbarFeature(),
+    ],
+  })
 
 export const SendaCardsBlockConfig: Block = {
   slug: 'cardsSenda',
@@ -34,19 +75,7 @@ export const SendaCardsBlockConfig: Block = {
       admin: {
         description: 'Contenido del encabezado del bloque (título, descripción, etc.). Un solo campo para todo el texto.',
       },
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => {
-          return [
-            ...defaultFeatures,
-            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-            AlignFeature(),
-            OrderedListFeature(),
-            UnorderedListFeature(),
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
-          ]
-        },
-      }),
+      editor: cardsRichTextEditor(),
     },
     {
       name: 'headerContentColor',
@@ -83,11 +112,31 @@ export const SendaCardsBlockConfig: Block = {
       label: 'Color del texto en negrita',
     },
     {
+      name: 'useFontGroup',
+      type: 'checkbox',
+      label: 'Usar grupo de fuentes',
+      defaultValue: false,
+      admin: {
+        description: 'Activa para elegir un grupo (Font Groups) en lugar de una sola fuente. Los tamaños e interlineados del grupo se aplican a todos los RichText del bloque.',
+      },
+    },
+    {
+      name: 'fontGroup',
+      type: 'relationship',
+      relationTo: 'font-groups',
+      label: 'Grupo de fuentes',
+      admin: {
+        condition: (_, siblingData) => siblingData?.useFontGroup === true,
+        description: 'Selecciona un grupo creado en Font Groups. Tipografía, márgenes e interlineados del CMS se aplican al encabezado y al contenido de cada card.',
+      },
+    },
+    {
       name: 'fontFamily',
       type: 'select',
       label: 'Tipografía',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) => !siblingData?.useCustomFont,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          !siblingData?.useFontGroup && !siblingData?.useCustomFont,
       },
       options: [
         { label: 'Por defecto', value: 'default' },
@@ -113,6 +162,9 @@ export const SendaCardsBlockConfig: Block = {
       type: 'checkbox',
       label: 'Usar fuente personalizada',
       defaultValue: false,
+      admin: {
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean }) => siblingData?.useFontGroup !== true,
+      },
     },
     {
       name: 'customFontFile',
@@ -120,7 +172,8 @@ export const SendaCardsBlockConfig: Block = {
       relationTo: 'fonts',
       label: 'Archivo de fuente',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) => siblingData?.useCustomFont === true,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
       },
     },
     {
@@ -128,7 +181,8 @@ export const SendaCardsBlockConfig: Block = {
       type: 'text',
       label: 'Nombre de la fuente personalizada',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) => siblingData?.useCustomFont === true,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
       },
     },
     {
@@ -244,19 +298,7 @@ export const SendaCardsBlockConfig: Block = {
           type: 'richText',
           label: 'Título de la card',
           required: true,
-          editor: lexicalEditor({
-            features: ({ defaultFeatures }) => {
-              return [
-                ...defaultFeatures,
-                HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                AlignFeature(),
-                OrderedListFeature(),
-                UnorderedListFeature(),
-                FixedToolbarFeature(),
-                InlineToolbarFeature(),
-              ]
-            },
-          }),
+          editor: cardsRichTextEditor(),
         },
         {
           name: 'titleColor',
@@ -285,19 +327,7 @@ export const SendaCardsBlockConfig: Block = {
             description:
               'Contenido que se mostrará al hacer clic en el botón "+".',
           },
-          editor: lexicalEditor({
-            features: ({ defaultFeatures }) => {
-              return [
-                ...defaultFeatures,
-                HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                AlignFeature(),
-                OrderedListFeature(),
-                UnorderedListFeature(),
-                FixedToolbarFeature(),
-                InlineToolbarFeature(),
-              ]
-            },
-          }),
+          editor: cardsRichTextEditor(),
         },
         {
           name: 'expandedContentColor',
@@ -316,19 +346,7 @@ export const SendaCardsBlockConfig: Block = {
             description:
               'Texto que se mostrará en la cara trasera de la tarjeta cuando se dé la vuelta.',
           },
-          editor: lexicalEditor({
-            features: ({ defaultFeatures }) => {
-              return [
-                ...defaultFeatures,
-                HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                AlignFeature(),
-                OrderedListFeature(),
-                UnorderedListFeature(),
-                FixedToolbarFeature(),
-                InlineToolbarFeature(),
-              ]
-            },
-          }),
+          editor: cardsRichTextEditor(),
         },
         {
           name: 'backBackgroundColor',

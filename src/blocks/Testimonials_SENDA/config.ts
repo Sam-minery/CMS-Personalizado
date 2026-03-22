@@ -2,13 +2,53 @@ import type { Block } from 'payload'
 
 import {
   AlignFeature,
+  BlockquoteFeature,
+  ChecklistFeature,
   FixedToolbarFeature,
   HeadingFeature,
+  HorizontalRuleFeature,
+  IndentFeature,
   InlineToolbarFeature,
-  OrderedListFeature,
-  UnorderedListFeature,
   lexicalEditor,
+  OrderedListFeature,
+  ParagraphFeature,
+  SubscriptFeature,
+  TextStateFeature,
+  UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
+
+const testimonialsSendaRichTextState = {
+  weight: {
+    light: { label: 'Light', css: { 'font-weight': '300' } },
+    regular: { label: 'Regular', css: { 'font-weight': '400' } },
+    medium: { label: 'Medium', css: { 'font-weight': '500' } },
+    semibold: { label: 'Semibold', css: { 'font-weight': '600' } },
+    heavy: { label: 'Heavy', css: { 'font-weight': '800' } },
+  },
+  size: {
+    caption: { label: 'Texto pequeño', css: {} },
+  },
+} as const
+
+const testimonialsRichTextEditor = () =>
+  lexicalEditor({
+    features: ({ rootFeatures }) => [
+      ...rootFeatures,
+      ParagraphFeature(),
+      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
+      AlignFeature(),
+      IndentFeature(),
+      UnorderedListFeature(),
+      OrderedListFeature(),
+      ChecklistFeature(),
+      BlockquoteFeature(),
+      HorizontalRuleFeature(),
+      SubscriptFeature(),
+      TextStateFeature({ state: testimonialsSendaRichTextState }),
+      FixedToolbarFeature(),
+      InlineToolbarFeature(),
+    ],
+  })
 
 export const TestimonialsSendaBlockConfig: Block = {
   slug: 'testimonialsSenda',
@@ -36,19 +76,7 @@ export const TestimonialsSendaBlockConfig: Block = {
         description:
           'Título principal del bloque de testimonios (ej: "Profesionales que conocen de cerca el proceso")',
       },
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => {
-          return [
-            ...defaultFeatures,
-            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-            AlignFeature(),
-            OrderedListFeature(),
-            UnorderedListFeature(),
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
-          ]
-        },
-      }),
+      editor: testimonialsRichTextEditor(),
     },
     {
       name: 'titleColor',
@@ -72,12 +100,32 @@ export const TestimonialsSendaBlockConfig: Block = {
       },
     },
     {
+      name: 'useFontGroup',
+      type: 'checkbox',
+      label: 'Usar grupo de fuentes',
+      defaultValue: false,
+      admin: {
+        description:
+          'Tipografía y tamaños del Font Group se aplican al título del bloque y al contenido de cada tarjeta (cita y nombre/profesión).',
+      },
+    },
+    {
+      name: 'fontGroup',
+      type: 'relationship',
+      relationTo: 'font-groups',
+      label: 'Grupo de fuentes',
+      admin: {
+        condition: (_, siblingData) => siblingData?.useFontGroup === true,
+        description: 'Grupo creado en Font Groups.',
+      },
+    },
+    {
       name: 'fontFamily',
       type: 'select',
       label: 'Tipografía',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) =>
-          !siblingData?.useCustomFont,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          !siblingData?.useFontGroup && !siblingData?.useCustomFont,
       },
       options: [
         { label: 'Por defecto', value: 'default' },
@@ -103,6 +151,10 @@ export const TestimonialsSendaBlockConfig: Block = {
       type: 'checkbox',
       label: 'Usar fuente personalizada',
       defaultValue: false,
+      admin: {
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean }) =>
+          siblingData?.useFontGroup !== true,
+      },
     },
     {
       name: 'customFontFile',
@@ -110,8 +162,8 @@ export const TestimonialsSendaBlockConfig: Block = {
       relationTo: 'fonts',
       label: 'Archivo de fuente',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) =>
-          siblingData?.useCustomFont === true,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
       },
     },
     {
@@ -119,8 +171,8 @@ export const TestimonialsSendaBlockConfig: Block = {
       type: 'text',
       label: 'Nombre de la fuente personalizada',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) =>
-          siblingData?.useCustomFont === true,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
       },
     },
     {
@@ -254,19 +306,7 @@ export const TestimonialsSendaBlockConfig: Block = {
           admin: {
             description: 'Texto principal del testimonio: cita entre comillas y/o descripción',
           },
-          editor: lexicalEditor({
-            features: ({ defaultFeatures }) => {
-              return [
-                ...defaultFeatures,
-                HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                AlignFeature(),
-                OrderedListFeature(),
-                UnorderedListFeature(),
-                FixedToolbarFeature(),
-                InlineToolbarFeature(),
-              ]
-            },
-          }),
+          editor: testimonialsRichTextEditor(),
         },
         {
           name: 'titleAndDescriptionColor',
@@ -285,17 +325,7 @@ export const TestimonialsSendaBlockConfig: Block = {
           admin: {
             description: 'Nombre en negrita y profesión (ej: en mayúsculas)',
           },
-          editor: lexicalEditor({
-            features: ({ defaultFeatures }) => {
-              return [
-                ...defaultFeatures,
-                HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                AlignFeature(),
-                FixedToolbarFeature(),
-                InlineToolbarFeature(),
-              ]
-            },
-          }),
+          editor: testimonialsRichTextEditor(),
         },
         {
           name: 'nameAndProfessionColor',

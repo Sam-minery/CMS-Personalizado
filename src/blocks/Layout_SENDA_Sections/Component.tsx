@@ -7,8 +7,20 @@ import { CMSLink } from '@/components/Link'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
+import { cn } from '@/utilities/ui'
 import { RxChevronRight } from 'react-icons/rx'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
+import {
+  appendFontGroupHeadingMarginRules,
+  appendFontGroupLineHeightRules,
+  appendTypographyBodyListSizeRules,
+  FONT_GROUP_RICHTEXT_MOBILE_MAX,
+  FONT_GROUP_VARIANT_CSS,
+  trimFontGroupValue,
+  type FontGroupHeadingMargins,
+  type FontGroupLineHeights,
+  type FontGroupTypography,
+} from '@/utilities/fontGroupRichTextCss'
 
 /** Tipos locales: sin depender de payload-types para que el bloque no falle si no está en enabledBlockSlugs. */
 type FontFile = {
@@ -17,6 +29,36 @@ type FontFile = {
   filename?: string
   name?: string
 }
+
+type FontGroupFontEntry = { font?: FontFile | number; variant?: string }
+
+type FontGroupData = {
+  fontFamilyName?: string | null
+  fonts?: FontGroupFontEntry[] | null
+  typography?: FontGroupTypography | null
+  typographyMobile?: FontGroupTypography | null
+  headingMargins?: FontGroupHeadingMargins | null
+  lineHeights?: FontGroupLineHeights | null
+}
+
+function normalizeLssFontGroup(raw: unknown): FontGroupData | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+  let o = raw as Record<string, unknown>
+  const rel = o.relationTo
+  const inner = o.value
+  if (
+    inner &&
+    typeof inner === 'object' &&
+    !Array.isArray(inner) &&
+    (rel === 'font-groups' || rel === 'fontGroups')
+  ) {
+    o = inner as Record<string, unknown>
+  }
+  return o as FontGroupData
+}
+
+const LSS_FG_RICHTEXT =
+  'lss-richtext [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-bold [&_h4]:font-bold [&_h5]:font-bold [&_h6]:font-bold [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6'
 
 type LinkType = {
   type?: 'reference' | 'custom' | null
@@ -71,6 +113,8 @@ type LayoutSendaSectionsProps = {
   boldTextColor?: string | null
   buttonBackgroundColor?: string | null
   buttonTextColor?: string | null
+  useFontGroup?: boolean | null
+  fontGroup?: FontGroupData | number | null
   fontFamily?: string | null
   useCustomFont?: boolean | null
   customFontFile?: FontFile | number | null
@@ -104,6 +148,8 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
     boldTextColor,
     buttonBackgroundColor,
     buttonTextColor,
+    useFontGroup,
+    fontGroup,
     fontFamily,
     useCustomFont,
     customFontFile,
@@ -113,6 +159,15 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
   const uniqueId = React.useId().replace(/:/g, '-')
   const styleId = `layout-senda-sections-${uniqueId}`
 
+  const fontGroupObj =
+    useFontGroup && fontGroup && typeof fontGroup === 'object'
+      ? normalizeLssFontGroup(fontGroup)
+      : null
+
+  const fontGroupTypographyActive = Boolean(
+    fontGroupObj?.fontFamilyName?.trim() && Array.isArray(fontGroupObj.fonts),
+  )
+
   const customFontFileObj =
     customFontFile && typeof customFontFile === 'object' ? customFontFile : null
   const customFontFamilyName =
@@ -121,13 +176,14 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
     (customFontFileObj?.filename ? customFontFileObj.filename.replace(/\.[^.]+$/, '') : undefined)
 
   const getFontFamily = () => {
+    if (fontGroupObj?.fontFamilyName) return `"${fontGroupObj.fontFamilyName.replace(/"/g, '\\"')}"`
     if (useCustomFont && customFontFamilyName) return `"${customFontFamilyName}"`
     if (fontFamily && fontFamily !== 'default') return fontFamily
     return undefined
   }
 
   const selectedFontFamily = getFontFamily()
-  useGoogleFont(selectedFontFamily)
+  useGoogleFont(fontGroupTypographyActive ? undefined : selectedFontFamily)
 
   const fontFileUrl = customFontFileObj?.url
     ? getMediaUrl(customFontFileObj.url).replace(/([^:]\/)\/+/g, '$1')
@@ -137,8 +193,166 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
 
   const buildStyles = () => {
     const styles: string[] = []
+    const sel = `[data-lss-font="${styleId}"]`
+    const mainRichtext = `${sel} .lss-richtext`
+    const planRichtext = mainRichtext
+    const payloadRichtext = `${sel} .payload-richtext`
+    const lssBtnLabels = `${sel} .lss-btn-label`
 
-    if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
+    if (fontGroupTypographyActive && fontGroupObj) {
+      const familyName = fontGroupObj.fontFamilyName!.replace(/"/g, '\\"')
+      const fontEntries = (fontGroupObj.fonts || []).filter(
+        (e): e is FontGroupFontEntry & { font: FontFile } =>
+          e?.font != null && typeof e.font === 'object' && e.font?.url != null,
+      )
+      for (const entry of fontEntries) {
+        const url = getMediaUrl(entry.font.url).replace(/([^:]\/)\/+/g, '$1')
+        const variant = entry.variant || 'regular'
+        const { weight, style: fontStyleCss } = FONT_GROUP_VARIANT_CSS[variant] ?? {
+          weight: '400',
+          style: 'normal',
+        }
+        const formatMatch = url.match(/\.(woff2?|ttf|otf)(\?.*)?$/i)
+        const format = formatMatch
+          ? formatMatch[1].toLowerCase() === 'woff2'
+            ? 'woff2'
+            : formatMatch[1].toLowerCase() === 'woff'
+              ? 'woff'
+              : formatMatch[1].toLowerCase() === 'ttf'
+                ? 'truetype'
+                : 'opentype'
+          : 'woff2'
+        if (!formatMatch) continue
+        styles.push(`
+          @font-face {
+            font-family: "${familyName}";
+            src: url("${url}") format("${format}");
+            font-weight: ${weight};
+            font-style: ${fontStyleCss};
+            font-display: swap;
+          }
+        `)
+      }
+      const fontValue = `"${fontGroupObj.fontFamilyName!.replace(/"/g, '\\"')}"`
+      styles.push(
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${fontValue} !important; }`,
+      )
+
+      const typo = fontGroupObj.typography
+      if (typo) {
+        if (typo.h1)
+          styles.push(`${mainRichtext} h1, ${payloadRichtext} h1 { font-size: ${typo.h1} !important; }`)
+        if (typo.h2)
+          styles.push(`${mainRichtext} h2, ${payloadRichtext} h2 { font-size: ${typo.h2} !important; }`)
+        if (typo.h3)
+          styles.push(`${mainRichtext} h3, ${payloadRichtext} h3 { font-size: ${typo.h3} !important; }`)
+        if (typo.h4)
+          styles.push(`${mainRichtext} h4, ${payloadRichtext} h4 { font-size: ${typo.h4} !important; }`)
+        if (typo.h5)
+          styles.push(`${mainRichtext} h5, ${payloadRichtext} h5 { font-size: ${typo.h5} !important; }`)
+        if (typo.h6)
+          styles.push(`${mainRichtext} h6, ${payloadRichtext} h6 { font-size: ${typo.h6} !important; }`)
+        appendTypographyBodyListSizeRules(typo, mainRichtext, planRichtext, payloadRichtext, (rule) =>
+          styles.push(rule),
+        )
+        if (typo.caption) {
+          styles.push(
+            `${mainRichtext} .caption, ${payloadRichtext} .caption { font-size: ${typo.caption} !important; }`,
+          )
+          styles.push(
+            `${mainRichtext} p .caption, ${mainRichtext} .payload-richtext .caption, ${mainRichtext} span.caption, ${payloadRichtext} span.caption { font-size: ${typo.caption} !important; }`,
+          )
+          styles.push(`${sel} [data-text-size="caption"] { font-size: ${typo.caption} !important; }`)
+        }
+      }
+
+      const bodyBtnDesk = trimFontGroupValue(fontGroupObj.typography?.body)
+      if (bodyBtnDesk) {
+        styles.push(`${lssBtnLabels} { font-size: ${bodyBtnDesk} !important; }`)
+      }
+
+      const typoMob = fontGroupObj.typographyMobile
+      if (typoMob) {
+        const mobRules: string[] = []
+        const t = (v: string | null | undefined) => (typeof v === 'string' ? v.trim() : '') || ''
+        if (t(typoMob.h1))
+          mobRules.push(`${mainRichtext} h1, ${payloadRichtext} h1 { font-size: ${t(typoMob.h1)} !important; }`)
+        if (t(typoMob.h2))
+          mobRules.push(`${mainRichtext} h2, ${payloadRichtext} h2 { font-size: ${t(typoMob.h2)} !important; }`)
+        if (t(typoMob.h3))
+          mobRules.push(`${mainRichtext} h3, ${payloadRichtext} h3 { font-size: ${t(typoMob.h3)} !important; }`)
+        if (t(typoMob.h4))
+          mobRules.push(`${mainRichtext} h4, ${payloadRichtext} h4 { font-size: ${t(typoMob.h4)} !important; }`)
+        if (t(typoMob.h5))
+          mobRules.push(`${mainRichtext} h5, ${payloadRichtext} h5 { font-size: ${t(typoMob.h5)} !important; }`)
+        if (t(typoMob.h6))
+          mobRules.push(`${mainRichtext} h6, ${payloadRichtext} h6 { font-size: ${t(typoMob.h6)} !important; }`)
+
+        appendTypographyBodyListSizeRules(typoMob, mainRichtext, planRichtext, payloadRichtext, (rule) =>
+          mobRules.push(rule),
+        )
+
+        const capM = t(typoMob.caption)
+        if (capM) {
+          mobRules.push(
+            `${mainRichtext} .caption, ${payloadRichtext} .caption { font-size: ${capM} !important; }`,
+          )
+          mobRules.push(
+            `${mainRichtext} p .caption, ${mainRichtext} .payload-richtext .caption, ${mainRichtext} span.caption, ${payloadRichtext} span.caption { font-size: ${capM} !important; }`,
+          )
+          mobRules.push(`${sel} [data-text-size="caption"] { font-size: ${capM} !important; }`)
+        }
+
+        const bodyMobBtn = t(typoMob.body)
+        if (bodyMobBtn) {
+          mobRules.push(`${lssBtnLabels} { font-size: ${bodyMobBtn} !important; }`)
+        }
+
+        if (mobRules.length > 0) {
+          styles.push(
+            `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) {\n${mobRules.join('\n')}\n}`,
+          )
+        }
+      }
+
+      appendFontGroupHeadingMarginRules(
+        fontGroupObj.headingMargins,
+        mainRichtext,
+        planRichtext,
+        payloadRichtext,
+        (rule) => styles.push(rule),
+      )
+      appendFontGroupLineHeightRules(
+        fontGroupObj.lineHeights,
+        mainRichtext,
+        planRichtext,
+        payloadRichtext,
+        (rule) => styles.push(rule),
+      )
+
+      const bodyLhBtn = trimFontGroupValue(fontGroupObj.lineHeights?.body)
+      if (bodyLhBtn) {
+        styles.push(`${lssBtnLabels} { line-height: ${bodyLhBtn} !important; }`)
+      }
+
+      styles.push(
+        `${mainRichtext} h1, ${mainRichtext} h2, ${mainRichtext} h3, ${mainRichtext} h4, ${payloadRichtext} h1, ${payloadRichtext} h2, ${payloadRichtext} h3, ${payloadRichtext} h4 { letter-spacing: 0.02em; }`,
+      )
+      const weightMap: Record<string, string> = {
+        light: '300',
+        regular: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700',
+        heavy: '800',
+      }
+      for (const [key, w] of Object.entries(weightMap)) {
+        styles.push(`${sel} [data-text-weight="${key}"] { font-weight: ${w} !important; }`)
+        styles.push(
+          `${mainRichtext} [data-text-weight="${key}"], ${payloadRichtext} [data-text-weight="${key}"] { font-weight: ${w} !important; }`,
+        )
+      }
+    } else if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
       styles.push(`
         @font-face {
           font-family: "${customFontFamilyName.replace(/"/g, '\\"')}";
@@ -148,34 +362,29 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
           font-display: swap;
         }
       `)
-    }
-
-    const fontValue =
-      useCustomFont && customFontFamilyName && isValidFontFile
-        ? `"${customFontFamilyName.replace(/"/g, '\\"')}"`
-        : selectedFontFamily && !useCustomFont
-          ? selectedFontFamily
-          : ''
-
-    if (fontValue) {
+      const fontValue = `"${customFontFamilyName.replace(/"/g, '\\"')}"`
       styles.push(
-        `[data-lss-font="${styleId}"], [data-lss-font="${styleId}"] *, [data-lss-font="${styleId}"] a, [data-lss-font="${styleId}"] button, [data-lss-font="${styleId}"] span { font-family: ${fontValue} !important; }`,
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${fontValue} !important; }`,
+      )
+    } else if (selectedFontFamily) {
+      styles.push(
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${selectedFontFamily} !important; }`,
       )
     }
 
     styles.push(
-      `@media (max-width: 767px) { [data-lss-font="${styleId}"] .lss-main-richtext, [data-lss-font="${styleId}"] .lss-main-richtext * { text-align: left !important; } }`,
+      `@media (max-width: 767px) { ${sel} .lss-main-richtext, ${sel} .lss-main-richtext * { text-align: left !important; } }`,
     )
 
     if (textColor) {
       styles.push(
-        `[data-lss-font="${styleId}"], [data-lss-font="${styleId}"] p, [data-lss-font="${styleId}"] h1, [data-lss-font="${styleId}"] h2, [data-lss-font="${styleId}"] h3, [data-lss-font="${styleId}"] h4, [data-lss-font="${styleId}"] h5, [data-lss-font="${styleId}"] h6, [data-lss-font="${styleId}"] li, [data-lss-font="${styleId}"] span:not(strong):not(b), [data-lss-font="${styleId}"] a { color: ${textColor} !important; }`,
+        `${sel}, ${sel} p, ${sel} h1, ${sel} h2, ${sel} h3, ${sel} h4, ${sel} h5, ${sel} h6, ${sel} li, ${sel} span:not(strong):not(b):not(.lss-btn-label), ${sel} a { color: ${textColor} !important; }`,
       )
     }
 
     if (boldTextColor) {
       styles.push(
-        `[data-lss-font="${styleId}"] strong, [data-lss-font="${styleId}"] b { color: ${boldTextColor} !important; }`,
+        `${sel} strong, ${sel} b { color: ${boldTextColor} !important; }`,
       )
     }
 
@@ -183,18 +392,22 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
       const btnRules: string[] = ['border-radius: 0.75rem !important;']
       if (buttonBackgroundColor)
         btnRules.push(`background-color: ${buttonBackgroundColor} !important;`)
-      styles.push(`[data-lss-font="${styleId}"] .lss-btn-filled { ${btnRules.join(' ')} }`)
+      styles.push(`${sel} .lss-btn-filled { ${btnRules.join(' ')} }`)
 
       if (buttonTextColor) {
         styles.push(
-          `[data-lss-font="${styleId}"] .lss-btn-filled, [data-lss-font="${styleId}"] .lss-btn-filled * { color: ${buttonTextColor} !important; }`,
+          `${sel} .lss-btn-filled, ${sel} .lss-btn-filled * { color: ${buttonTextColor} !important; }`,
         )
       }
     } else {
-      styles.push(`[data-lss-font="${styleId}"] .lss-btn-filled { border-radius: 0.75rem !important; }`)
+      styles.push(`${sel} .lss-btn-filled { border-radius: 0.75rem !important; }`)
     }
 
-    return styles.join('\n')
+    styles.push(
+      `${sel} sub, ${sel} sup { font-weight: 700 !important; vertical-align: baseline !important; font-size: 0.75em; line-height: 1.2; }`,
+    )
+
+    return styles.length > 0 ? styles.join('\n') : ''
   }
 
   const combinedStyles = buildStyles()
@@ -244,7 +457,14 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
           </div>
         )}
         {section.richText && (
-          <div className="min-w-0 [&_h1]:m-0 [&_h1]:text-xl [&_h1]:font-bold [&_h2]:m-0 [&_h2]:text-lg [&_h2]:font-bold [&_h3]:m-0 [&_p]:m-0 [&_ul]:mt-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:mt-1 [&_ol]:list-decimal [&_ol]:pl-5">
+          <div
+            className={cn(
+              'min-w-0',
+              fontGroupTypographyActive && LSS_FG_RICHTEXT,
+              !fontGroupTypographyActive &&
+                '[&_h1]:m-0 [&_h1]:text-xl [&_h1]:font-bold [&_h2]:m-0 [&_h2]:text-lg [&_h2]:font-bold [&_h3]:m-0 [&_p]:m-0 [&_ul]:mt-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:mt-1 [&_ol]:list-decimal [&_ol]:pl-5',
+            )}
+          >
             <RichText data={section.richText} enableGutter={false} enableProse={false} />
           </div>
         )}
@@ -283,7 +503,14 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
         <div className="container">
           <div className="mb-12 md:mb-18 lg:mb-14 w-full" style={fontStyle}>
             {richText && (
-              <div className="lss-main-richtext w-full [&_h1]:text-5xl [&_h1]:font-bold [&_h1]:md:text-7xl [&_h1]:lg:text-8xl [&_h2]:text-4xl [&_h2]:font-bold [&_h2]:md:text-6xl [&_h2]:lg:text-7xl [&_h3]:text-3xl [&_h3]:font-bold [&_h3]:md:text-5xl [&_h3]:lg:text-6xl [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6">
+              <div
+                className={cn(
+                  'lss-main-richtext w-full',
+                  fontGroupTypographyActive && LSS_FG_RICHTEXT,
+                  !fontGroupTypographyActive &&
+                    '[&_h1]:text-5xl [&_h1]:font-bold [&_h1]:md:text-7xl [&_h1]:lg:text-8xl [&_h2]:text-4xl [&_h2]:font-bold [&_h2]:md:text-6xl [&_h2]:lg:text-7xl [&_h3]:text-3xl [&_h3]:font-bold [&_h3]:md:text-5xl [&_h3]:lg:text-6xl [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6',
+                )}
+              >
                 <RichText data={richText} enableGutter={false} enableProse={false} />
               </div>
             )}
@@ -311,14 +538,26 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
                     </CMSLink>
                   )
                 }
+                const link = button.link as React.ComponentProps<typeof CMSLink> & { label?: string }
+                const { label: linkLabel, ...linkProps } = link
                 return (
                   <CMSLink
                     key={index}
-                    {...(button.link as React.ComponentProps<typeof CMSLink>)}
+                    {...linkProps}
+                    label={undefined}
                     appearance="secondary"
                     className="lss-btn-filled"
                     style={fontStyle}
-                  />
+                  >
+                    <span
+                      className={cn(
+                        'lss-btn-label',
+                        fontGroupTypographyActive && 'leading-normal',
+                      )}
+                    >
+                      {linkLabel ?? 'Button'}
+                    </span>
+                  </CMSLink>
                 )
               })}
             </div>

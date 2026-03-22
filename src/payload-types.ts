@@ -1319,6 +1319,14 @@ export interface CTA1SendaAlterBlock {
    */
   gradientEndColor?: string | null;
   gradientDirection?: ('to-right' | 'to-left' | 'to-bottom' | 'to-top' | 'diagonal-down' | 'diagonal-up') | null;
+  /**
+   * Tipografía, tamaños e interlineados del Font Group se aplican a todos los RichText del bloque. Los textos de los botones de sección y del botón del popup usan el tamaño de “texto normal” (body) del grupo.
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Grupo creado en Font Groups.
+   */
+  fontGroup?: (number | null) | FontGroup;
   fontFamily?:
     | (
         | 'default'
@@ -1403,6 +1411,14 @@ export interface CTA2SendaBlock {
   backgroundColor?: string | null;
   textColor?: string | null;
   boldTextColor?: string | null;
+  /**
+   * Tipografía y tamaños del Font Group se aplican al RichText principal y al texto de los botones.
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Grupo creado en Font Groups.
+   */
+  fontGroup?: (number | null) | FontGroup;
   buttonBackgroundColor?: string | null;
   buttonTextColor?: string | null;
   fontFamily?:
@@ -1471,6 +1487,14 @@ export interface CardsSendaBlock {
    */
   backgroundColor?: string | null;
   boldTextColor?: string | null;
+  /**
+   * Activa para elegir un grupo (Font Groups) en lugar de una sola fuente. Los tamaños e interlineados del grupo se aplican a todos los RichText del bloque.
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Selecciona un grupo creado en Font Groups. Tipografía, márgenes e interlineados del CMS se aplican al encabezado y al contenido de cada card.
+   */
+  fontGroup?: (number | null) | FontGroup;
   fontFamily?:
     | (
         | 'default'
@@ -1919,6 +1943,14 @@ export interface LayoutSendaBlock {
   backgroundColor?: string | null;
   textColor?: string | null;
   boldTextColor?: string | null;
+  /**
+   * Tipografía y tamaños del Font Group se aplican al RichText principal y a los subheadings. Las etiquetas de los botones usan el tamaño de “texto normal” (body) del grupo.
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Grupo creado en Font Groups.
+   */
+  fontGroup?: (number | null) | FontGroup;
   buttonBackgroundColor?: string | null;
   buttonTextColor?: string | null;
   fontFamily?:
@@ -2062,6 +2094,14 @@ export interface LayoutSendaSectionsBlock {
   backgroundColor?: string | null;
   textColor?: string | null;
   boldTextColor?: string | null;
+  /**
+   * Tipografía y tamaños del Font Group se aplican al RichText principal y al de cada sección. El primer botón (estilo relleno) usa el tamaño de “texto normal” (body) del grupo.
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Grupo creado en Font Groups.
+   */
+  fontGroup?: (number | null) | FontGroup;
   buttonBackgroundColor?: string | null;
   buttonTextColor?: string | null;
   fontFamily?:
@@ -2336,6 +2376,14 @@ export interface FAQSendaBlock {
   questionsSectionBorderColor?: string | null;
   textColor?: string | null;
   boldTextColor?: string | null;
+  /**
+   * Tipografía y tamaños del Font Group se aplican al RichText principal y a preguntas y respuestas del acordeón.
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Grupo creado en Font Groups.
+   */
+  fontGroup?: (number | null) | FontGroup;
   fontFamily?:
     | (
         | 'default'
@@ -2397,6 +2445,14 @@ export interface TestimonialsSendaBlock {
    * Color de fondo del bloque. Hex, rgb, rgba, hsl o nombre (ej: white, transparent).
    */
   backgroundColor?: string | null;
+  /**
+   * Tipografía y tamaños del Font Group se aplican al título del bloque y al contenido de cada tarjeta (cita y nombre/profesión).
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Grupo creado en Font Groups.
+   */
+  fontGroup?: (number | null) | FontGroup;
   fontFamily?:
     | (
         | 'default'
@@ -3833,6 +3889,8 @@ export interface CTA1SendaAlterBlockSelect<T extends boolean = true> {
   gradientStartColor?: T;
   gradientEndColor?: T;
   gradientDirection?: T;
+  useFontGroup?: T;
+  fontGroup?: T;
   fontFamily?: T;
   useCustomFont?: T;
   customFontFile?: T;
@@ -3869,6 +3927,8 @@ export interface CTA2SendaBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
   textColor?: T;
   boldTextColor?: T;
+  useFontGroup?: T;
+  fontGroup?: T;
   buttonBackgroundColor?: T;
   buttonTextColor?: T;
   fontFamily?: T;
@@ -3889,6 +3949,8 @@ export interface CardsSendaBlockSelect<T extends boolean = true> {
   headerContentMaxWidth?: T;
   backgroundColor?: T;
   boldTextColor?: T;
+  useFontGroup?: T;
+  fontGroup?: T;
   fontFamily?: T;
   useCustomFont?: T;
   customFontFile?: T;
@@ -4035,6 +4097,8 @@ export interface LayoutSendaBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
   textColor?: T;
   boldTextColor?: T;
+  useFontGroup?: T;
+  fontGroup?: T;
   buttonBackgroundColor?: T;
   buttonTextColor?: T;
   fontFamily?: T;
@@ -4094,6 +4158,8 @@ export interface LayoutSendaSectionsBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
   textColor?: T;
   boldTextColor?: T;
+  useFontGroup?: T;
+  fontGroup?: T;
   buttonBackgroundColor?: T;
   buttonTextColor?: T;
   fontFamily?: T;
@@ -4200,6 +4266,8 @@ export interface FAQSendaBlockSelect<T extends boolean = true> {
   questionsSectionBorderColor?: T;
   textColor?: T;
   boldTextColor?: T;
+  useFontGroup?: T;
+  fontGroup?: T;
   fontFamily?: T;
   useCustomFont?: T;
   customFontFile?: T;
@@ -4216,6 +4284,8 @@ export interface TestimonialsSendaBlockSelect<T extends boolean = true> {
   title?: T;
   titleColor?: T;
   backgroundColor?: T;
+  useFontGroup?: T;
+  fontGroup?: T;
   fontFamily?: T;
   useCustomFont?: T;
   customFontFile?: T;

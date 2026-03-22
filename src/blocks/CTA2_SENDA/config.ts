@@ -13,17 +13,31 @@ import {
   OrderedListFeature,
   ParagraphFeature,
   SubscriptFeature,
+  TextStateFeature,
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
 import { link } from '@/fields/link'
+
+const cta2SendaRichTextState = {
+  weight: {
+    light: { label: 'Light', css: { 'font-weight': '300' } },
+    regular: { label: 'Regular', css: { 'font-weight': '400' } },
+    medium: { label: 'Medium', css: { 'font-weight': '500' } },
+    semibold: { label: 'Semibold', css: { 'font-weight': '600' } },
+    heavy: { label: 'Heavy', css: { 'font-weight': '800' } },
+  },
+  size: {
+    caption: { label: 'Texto pequeño', css: {} },
+  },
+} as const
 
 const richTextEditor = () =>
   lexicalEditor({
     features: ({ rootFeatures }) => [
       ...rootFeatures,
       ParagraphFeature(),
-      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
       AlignFeature(),
       IndentFeature(),
       UnorderedListFeature(),
@@ -32,6 +46,7 @@ const richTextEditor = () =>
       BlockquoteFeature(),
       HorizontalRuleFeature(),
       SubscriptFeature(),
+      TextStateFeature({ state: cta2SendaRichTextState }),
       FixedToolbarFeature(),
       InlineToolbarFeature(),
     ],
@@ -130,6 +145,26 @@ export const CTA2SendaBlock: Block = {
       label: 'Color del texto en negrita',
     },
     {
+      name: 'useFontGroup',
+      type: 'checkbox',
+      label: 'Usar grupo de fuentes',
+      defaultValue: false,
+      admin: {
+        description:
+          'Tipografía y tamaños del Font Group se aplican al RichText principal y al texto de los botones.',
+      },
+    },
+    {
+      name: 'fontGroup',
+      type: 'relationship',
+      relationTo: 'font-groups',
+      label: 'Grupo de fuentes',
+      admin: {
+        condition: (_, siblingData) => siblingData?.useFontGroup === true,
+        description: 'Grupo creado en Font Groups.',
+      },
+    },
+    {
       name: 'buttonBackgroundColor',
       type: 'text',
       label: 'Color de fondo de los botones',
@@ -144,7 +179,8 @@ export const CTA2SendaBlock: Block = {
       type: 'select',
       label: 'Tipografía',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) => !siblingData?.useCustomFont,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          !siblingData?.useFontGroup && !siblingData?.useCustomFont,
       },
       options: [
         { label: 'Por defecto', value: 'default' },
@@ -170,6 +206,10 @@ export const CTA2SendaBlock: Block = {
       type: 'checkbox',
       label: 'Usar fuente personalizada',
       defaultValue: false,
+      admin: {
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean }) =>
+          siblingData?.useFontGroup !== true,
+      },
     },
     {
       name: 'customFontFile',
@@ -177,7 +217,8 @@ export const CTA2SendaBlock: Block = {
       relationTo: 'fonts',
       label: 'Archivo de fuente',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) => siblingData?.useCustomFont === true,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
       },
     },
     {
@@ -185,7 +226,8 @@ export const CTA2SendaBlock: Block = {
       type: 'text',
       label: 'Nombre de la fuente personalizada',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) => siblingData?.useCustomFont === true,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
       },
     },
   ],

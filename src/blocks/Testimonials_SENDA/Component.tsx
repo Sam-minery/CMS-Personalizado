@@ -10,6 +10,16 @@ import RichText from '@/components/RichText'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
+import {
+  appendFontGroupHeadingMarginRules,
+  appendFontGroupLineHeightRules,
+  appendTypographyBodyListSizeRules,
+  FONT_GROUP_RICHTEXT_MOBILE_MAX,
+  FONT_GROUP_VARIANT_CSS,
+  type FontGroupHeadingMargins,
+  type FontGroupLineHeights,
+  type FontGroupTypography,
+} from '@/utilities/fontGroupRichTextCss'
 
 /** Breakpoint carrusel: 1280px. Por debajo = modo scroll. */
 const SCROLL_MODE_MAX_WIDTH = 1279
@@ -39,11 +49,43 @@ type FontFile = {
   name?: string
 }
 
+type FontGroupFontEntry = { font?: FontFile | number; variant?: string }
+
+type FontGroupData = {
+  fontFamilyName?: string | null
+  fonts?: FontGroupFontEntry[] | null
+  typography?: FontGroupTypography | null
+  typographyMobile?: FontGroupTypography | null
+  headingMargins?: FontGroupHeadingMargins | null
+  lineHeights?: FontGroupLineHeights | null
+}
+
+function normalizeTestimonialsFontGroup(raw: unknown): FontGroupData | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+  let o = raw as Record<string, unknown>
+  const rel = o.relationTo
+  const inner = o.value
+  if (
+    inner &&
+    typeof inner === 'object' &&
+    !Array.isArray(inner) &&
+    (rel === 'font-groups' || rel === 'fontGroups')
+  ) {
+    o = inner as Record<string, unknown>
+  }
+  return o as FontGroupData
+}
+
+const TESTIMONIALS_FG_RICHTEXT =
+  'testimonials-senda-richtext [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-bold [&_h4]:font-bold [&_h5]:font-bold [&_h6]:font-bold [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6'
+
 type TestimonialsSendaBlockProps = {
   title?: DefaultTypedEditorState | null
   titleColor?: string | null
   backgroundColor?: string | null
   anchorId?: string | null
+  useFontGroup?: boolean | null
+  fontGroup?: FontGroupData | number | null
   fontFamily?: string | null
   useCustomFont?: boolean | null
   customFontFile?: FontFile | number | null
@@ -128,7 +170,8 @@ const TestimonialCard: React.FC<{
   index: number
   cardHeight: string
   isMobileView: boolean
-}> = ({ testimonial, index, cardHeight, isMobileView }) => {
+  fontGroupTypographyActive: boolean
+}> = ({ testimonial, index, cardHeight, isMobileView, fontGroupTypographyActive }) => {
   const cardRef = useRef<HTMLDivElement>(null)
   const titleDescStyle: React.CSSProperties = testimonial.titleAndDescriptionColor
     ? { color: testimonial.titleAndDescriptionColor }
@@ -148,7 +191,7 @@ const TestimonialCard: React.FC<{
         delay: 0.08 * index,
         ease: 'easeOut',
       }}
-      className="relative flex flex-col rounded-2xl overflow-hidden bg-white shadow-sm w-full flex-shrink-0"
+      className="relative flex flex-col rounded-3xl overflow-hidden bg-white shadow-sm w-full flex-shrink-0"
       style={{
         height: heightStyle,
         minHeight: isMobileView ? MOBILE_CARD_HEIGHT : undefined,
@@ -172,21 +215,40 @@ const TestimonialCard: React.FC<{
         className="flex-1 flex flex-col px-5 -mt-1 pb-5"
         style={titleDescStyle}
       >
-        <div className="w-full max-w-[356px] h-[260px] overflow-hidden mx-auto mt-6">
+        <div
+          className={cn(
+            'w-full max-w-[356px] h-[260px] overflow-hidden mx-auto mt-6',
+            fontGroupTypographyActive && TESTIMONIALS_FG_RICHTEXT,
+          )}
+        >
           <RichText
             data={testimonial.titleAndDescription}
             enableGutter={false}
             enableProse={false}
-            className="text-base md:text-lg font-semibold [text-wrap:balance] [&_p]:mb-2 [&_p:last-child]:mb-0 [&_h1]:text-xl [&_h2]:text-lg [&_h3]:text-base"
+            className={
+              fontGroupTypographyActive
+                ? '[text-wrap:balance]'
+                : 'text-base md:text-lg font-semibold [text-wrap:balance] [&_p]:mb-2 [&_p:last-child]:mb-0 [&_h1]:text-xl [&_h2]:text-lg [&_h3]:text-base'
+            }
           />
         </div>
 
-        <div className="w-full max-w-[356px] mx-auto -mt-1" style={nameStyle}>
+        <div
+          className={cn(
+            'w-full max-w-[356px] mx-auto -mt-1',
+            fontGroupTypographyActive && TESTIMONIALS_FG_RICHTEXT,
+          )}
+          style={nameStyle}
+        >
           <RichText
             data={testimonial.nameAndProfession}
             enableGutter={false}
             enableProse={false}
-            className="text-sm [&_p]:font-bold [&_p]:mb-0.5 [&_p:last-child]:text-xs [&_p:last-child]:uppercase [&_p:last-child]:font-normal [&_p:last-child]:opacity-80"
+            className={
+              fontGroupTypographyActive
+                ? ''
+                : 'text-sm [&_p]:font-bold [&_p]:mb-0.5 [&_p:last-child]:text-xs [&_p:last-child]:uppercase [&_p:last-child]:font-normal [&_p:last-child]:opacity-80'
+            }
           />
         </div>
       </div>
@@ -199,6 +261,8 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
   titleColor,
   backgroundColor,
   anchorId,
+  useFontGroup,
+  fontGroup,
   fontFamily,
   useCustomFont,
   customFontFile,
@@ -223,6 +287,15 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
   const uniqueId = React.useId().replace(/:/g, '-')
   const styleId = `testimonials-senda-${uniqueId}`
 
+  const fontGroupObj =
+    useFontGroup && fontGroup && typeof fontGroup === 'object'
+      ? normalizeTestimonialsFontGroup(fontGroup)
+      : null
+
+  const fontGroupTypographyActive = Boolean(
+    fontGroupObj?.fontFamilyName?.trim() && Array.isArray(fontGroupObj.fonts),
+  )
+
   const customFontFileObj =
     customFontFile && typeof customFontFile === 'object' ? customFontFile : null
   const customFontFamilyName =
@@ -233,13 +306,14 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
       : undefined)
 
   const getFontFamily = () => {
+    if (fontGroupObj?.fontFamilyName) return `"${fontGroupObj.fontFamilyName.replace(/"/g, '\\"')}"`
     if (useCustomFont && customFontFamilyName) return `"${customFontFamilyName}"`
     if (fontFamily && fontFamily !== 'default') return fontFamily
     return undefined
   }
 
   const selectedFontFamily = getFontFamily()
-  useGoogleFont(selectedFontFamily)
+  useGoogleFont(fontGroupTypographyActive ? undefined : selectedFontFamily)
 
   const fontFileUrl = customFontFileObj?.url
     ? getMediaUrl(customFontFileObj.url).replace(/([^:]\/)\/+/g, '$1')
@@ -250,8 +324,150 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
 
   const buildStyles = () => {
     const styles: string[] = []
+    const sel = `[data-testimonials-senda-font="${styleId}"]`
+    const mainRichtext = `${sel} .testimonials-senda-richtext`
+    const planRichtext = mainRichtext
+    const payloadRichtext = `${sel} .payload-richtext`
 
-    if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
+    if (fontGroupTypographyActive && fontGroupObj) {
+      const familyName = fontGroupObj.fontFamilyName!.replace(/"/g, '\\"')
+      const fontEntries = (fontGroupObj.fonts || []).filter(
+        (e): e is FontGroupFontEntry & { font: FontFile } =>
+          e?.font != null && typeof e.font === 'object' && e.font?.url != null,
+      )
+      for (const entry of fontEntries) {
+        const url = getMediaUrl(entry.font.url).replace(/([^:]\/)\/+/g, '$1')
+        const variant = entry.variant || 'regular'
+        const { weight, style: fontStyleCss } = FONT_GROUP_VARIANT_CSS[variant] ?? {
+          weight: '400',
+          style: 'normal',
+        }
+        const formatMatch = url.match(/\.(woff2?|ttf|otf)(\?.*)?$/i)
+        const format = formatMatch
+          ? formatMatch[1].toLowerCase() === 'woff2'
+            ? 'woff2'
+            : formatMatch[1].toLowerCase() === 'woff'
+              ? 'woff'
+              : formatMatch[1].toLowerCase() === 'ttf'
+                ? 'truetype'
+                : 'opentype'
+          : 'woff2'
+        if (!formatMatch) continue
+        styles.push(`
+          @font-face {
+            font-family: "${familyName}";
+            src: url("${url}") format("${format}");
+            font-weight: ${weight};
+            font-style: ${fontStyleCss};
+            font-display: swap;
+          }
+        `)
+      }
+      const fontValue = `"${fontGroupObj.fontFamilyName!.replace(/"/g, '\\"')}"`
+      styles.push(
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${fontValue} !important; }`,
+      )
+
+      const typo = fontGroupObj.typography
+      if (typo) {
+        if (typo.h1)
+          styles.push(`${mainRichtext} h1, ${payloadRichtext} h1 { font-size: ${typo.h1} !important; }`)
+        if (typo.h2)
+          styles.push(`${mainRichtext} h2, ${payloadRichtext} h2 { font-size: ${typo.h2} !important; }`)
+        if (typo.h3)
+          styles.push(`${mainRichtext} h3, ${payloadRichtext} h3 { font-size: ${typo.h3} !important; }`)
+        if (typo.h4)
+          styles.push(`${mainRichtext} h4, ${payloadRichtext} h4 { font-size: ${typo.h4} !important; }`)
+        if (typo.h5)
+          styles.push(`${mainRichtext} h5, ${payloadRichtext} h5 { font-size: ${typo.h5} !important; }`)
+        if (typo.h6)
+          styles.push(`${mainRichtext} h6, ${payloadRichtext} h6 { font-size: ${typo.h6} !important; }`)
+        appendTypographyBodyListSizeRules(typo, mainRichtext, planRichtext, payloadRichtext, (rule) =>
+          styles.push(rule),
+        )
+        if (typo.caption) {
+          styles.push(
+            `${mainRichtext} .caption, ${payloadRichtext} .caption { font-size: ${typo.caption} !important; }`,
+          )
+          styles.push(
+            `${mainRichtext} p .caption, ${mainRichtext} .payload-richtext .caption, ${mainRichtext} span.caption, ${payloadRichtext} span.caption { font-size: ${typo.caption} !important; }`,
+          )
+          styles.push(`${sel} [data-text-size="caption"] { font-size: ${typo.caption} !important; }`)
+        }
+      }
+
+      const typoMob = fontGroupObj.typographyMobile
+      if (typoMob) {
+        const mobRules: string[] = []
+        const t = (v: string | null | undefined) => (typeof v === 'string' ? v.trim() : '') || ''
+        if (t(typoMob.h1))
+          mobRules.push(`${mainRichtext} h1, ${payloadRichtext} h1 { font-size: ${t(typoMob.h1)} !important; }`)
+        if (t(typoMob.h2))
+          mobRules.push(`${mainRichtext} h2, ${payloadRichtext} h2 { font-size: ${t(typoMob.h2)} !important; }`)
+        if (t(typoMob.h3))
+          mobRules.push(`${mainRichtext} h3, ${payloadRichtext} h3 { font-size: ${t(typoMob.h3)} !important; }`)
+        if (t(typoMob.h4))
+          mobRules.push(`${mainRichtext} h4, ${payloadRichtext} h4 { font-size: ${t(typoMob.h4)} !important; }`)
+        if (t(typoMob.h5))
+          mobRules.push(`${mainRichtext} h5, ${payloadRichtext} h5 { font-size: ${t(typoMob.h5)} !important; }`)
+        if (t(typoMob.h6))
+          mobRules.push(`${mainRichtext} h6, ${payloadRichtext} h6 { font-size: ${t(typoMob.h6)} !important; }`)
+
+        appendTypographyBodyListSizeRules(typoMob, mainRichtext, planRichtext, payloadRichtext, (rule) =>
+          mobRules.push(rule),
+        )
+
+        const capM = t(typoMob.caption)
+        if (capM) {
+          mobRules.push(
+            `${mainRichtext} .caption, ${payloadRichtext} .caption { font-size: ${capM} !important; }`,
+          )
+          mobRules.push(
+            `${mainRichtext} p .caption, ${mainRichtext} .payload-richtext .caption, ${mainRichtext} span.caption, ${payloadRichtext} span.caption { font-size: ${capM} !important; }`,
+          )
+          mobRules.push(`${sel} [data-text-size="caption"] { font-size: ${capM} !important; }`)
+        }
+
+        if (mobRules.length > 0) {
+          styles.push(
+            `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) {\n${mobRules.join('\n')}\n}`,
+          )
+        }
+      }
+
+      appendFontGroupHeadingMarginRules(
+        fontGroupObj.headingMargins,
+        mainRichtext,
+        planRichtext,
+        payloadRichtext,
+        (rule) => styles.push(rule),
+      )
+      appendFontGroupLineHeightRules(
+        fontGroupObj.lineHeights,
+        mainRichtext,
+        planRichtext,
+        payloadRichtext,
+        (rule) => styles.push(rule),
+      )
+
+      styles.push(
+        `${mainRichtext} h1, ${mainRichtext} h2, ${mainRichtext} h3, ${mainRichtext} h4, ${payloadRichtext} h1, ${payloadRichtext} h2, ${payloadRichtext} h3, ${payloadRichtext} h4 { letter-spacing: 0.02em; }`,
+      )
+      const weightMap: Record<string, string> = {
+        light: '300',
+        regular: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700',
+        heavy: '800',
+      }
+      for (const [key, w] of Object.entries(weightMap)) {
+        styles.push(`${sel} [data-text-weight="${key}"] { font-weight: ${w} !important; }`)
+        styles.push(
+          `${mainRichtext} [data-text-weight="${key}"], ${payloadRichtext} [data-text-weight="${key}"] { font-weight: ${w} !important; }`,
+        )
+      }
+    } else if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
       styles.push(`
         @font-face {
           font-family: "${customFontFamilyName.replace(/"/g, '\\"')}";
@@ -261,26 +477,25 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
           font-display: swap;
         }
       `)
-    }
-
-    const fontValue =
-      useCustomFont && customFontFamilyName && isValidFontFile
-        ? `"${customFontFamilyName.replace(/"/g, '\\"')}"`
-        : selectedFontFamily && !useCustomFont
-          ? selectedFontFamily
-          : ''
-
-    if (fontValue) {
+      const fontValue = `"${customFontFamilyName.replace(/"/g, '\\"')}"`
       styles.push(
-        `[data-testimonials-senda-font="${styleId}"], [data-testimonials-senda-font="${styleId}"] *, [data-testimonials-senda-font="${styleId}"] p, [data-testimonials-senda-font="${styleId}"] h1, [data-testimonials-senda-font="${styleId}"] h2, [data-testimonials-senda-font="${styleId}"] h3, [data-testimonials-senda-font="${styleId}"] h4 { font-family: ${fontValue} !important; }`,
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${fontValue} !important; }`,
+      )
+    } else if (selectedFontFamily) {
+      styles.push(
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${selectedFontFamily} !important; }`,
       )
     }
 
     if (titleColor) {
       styles.push(
-        `[data-testimonials-senda-font="${styleId}"] .testimonials-senda-title { color: ${titleColor} !important; }`,
+        `${sel} .testimonials-senda-title { color: ${titleColor} !important; }`,
       )
     }
+
+    styles.push(
+      `${sel} sub, ${sel} sup { font-weight: 700 !important; vertical-align: baseline !important; font-size: 0.75em; line-height: 1.2; }`,
+    )
 
     return styles.length > 0 ? styles.join('\n') : ''
   }
@@ -641,7 +856,12 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
         {hasTitle && (
           <div className="mb-10 md:mb-12 text-center max-w-4xl mx-auto">
             <div
-              className="testimonials-senda-title [&_h1]:text-3xl [&_h1]:md:text-4xl [&_h2]:text-2xl [&_h2]:md:text-3xl [&_h3]:text-xl [&_h3]:md:text-2xl font-bold"
+              className={cn(
+                'testimonials-senda-title',
+                fontGroupTypographyActive && TESTIMONIALS_FG_RICHTEXT,
+                !fontGroupTypographyActive &&
+                  '[&_h1]:text-3xl [&_h1]:md:text-4xl [&_h2]:text-2xl [&_h2]:md:text-3xl [&_h3]:text-xl [&_h3]:md:text-2xl font-bold',
+              )}
               style={titleColor ? { color: titleColor } : undefined}
             >
               <RichText
@@ -699,6 +919,7 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
                   index={index}
                   cardHeight={selectedHeight}
                   isMobileView={isMobileView}
+                  fontGroupTypographyActive={fontGroupTypographyActive}
                 />
               </div>
             ))}

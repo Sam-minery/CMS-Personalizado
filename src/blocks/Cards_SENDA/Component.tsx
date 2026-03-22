@@ -11,6 +11,54 @@ import RichText from '@/components/RichText'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
+import {
+  appendFontGroupHeadingMarginRules,
+  appendFontGroupLineHeightRules,
+  appendTypographyBodyListSizeRules,
+  FONT_GROUP_RICHTEXT_MOBILE_MAX,
+  FONT_GROUP_VARIANT_CSS,
+  type FontGroupHeadingMargins,
+  type FontGroupLineHeights,
+  type FontGroupTypography,
+} from '@/utilities/fontGroupRichTextCss'
+
+type FontFile = {
+  id?: string | number
+  url?: string
+  filename?: string
+  name?: string
+}
+
+type FontGroupFontEntry = { font?: FontFile | number; variant?: string }
+
+type FontGroupData = {
+  fontFamilyName?: string | null
+  fonts?: FontGroupFontEntry[] | null
+  typography?: FontGroupTypography | null
+  typographyMobile?: FontGroupTypography | null
+  headingMargins?: FontGroupHeadingMargins | null
+  lineHeights?: FontGroupLineHeights | null
+}
+
+function normalizeCardsFontGroup(raw: unknown): FontGroupData | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+  let o = raw as Record<string, unknown>
+  const rel = o.relationTo
+  const inner = o.value
+  if (
+    inner &&
+    typeof inner === 'object' &&
+    !Array.isArray(inner) &&
+    (rel === 'font-groups' || rel === 'fontGroups')
+  ) {
+    o = inner as Record<string, unknown>
+  }
+  return o as FontGroupData
+}
+
+/** Wrapper RichText: selectores `.cards-senda-richtext` para CSS del font group (mismo patrón que Hero). */
+const CARDS_FG_RICHTEXT =
+  'cards-senda-richtext [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-bold [&_h4]:font-bold [&_h5]:font-bold [&_h6]:font-bold [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6'
 
 // Tipo del bloque (alineado con config: anchorId, fuentes, colores extra en cards)
 type SendaCardsBlock = {
@@ -41,9 +89,11 @@ type SendaCardsBlock = {
   }> | null
   backgroundColor?: string | null
   boldTextColor?: string | null
+  useFontGroup?: boolean | null
+  fontGroup?: FontGroupData | number | null
   fontFamily?: string | null
   useCustomFont?: boolean | null
-  customFontFile?: { url?: string; filename?: string; name?: string } | number | null
+  customFontFile?: FontFile | number | null
   customFontName?: string | null
   cardsGap?: 'xs' | 'sm' | 'medium' | 'lg' | 'xl' | 'custom' | null
   customGap?: string | null
@@ -76,7 +126,8 @@ const SendaCard: React.FC<{
   cardHeight: string
   isFlipped: boolean
   onToggleFlip: () => void
-}> = ({ card, index, cardHeight, isFlipped, onToggleFlip }) => {
+  fontGroupTypographyActive: boolean
+}> = ({ card, index, cardHeight, isFlipped, onToggleFlip, fontGroupTypographyActive }) => {
   const cardRef = useRef<HTMLDivElement | null>(null)
   const isInView = useInView(cardRef, {
     margin: '0px 0px -40% 0px',
@@ -142,12 +193,19 @@ const SendaCard: React.FC<{
             )}
           </div>
 
-          <div className="relative z-20 px-6 pt-6 pb-4" style={titleStyle}>
+          <div
+            className={cn('relative z-20 px-6 pt-6 pb-4', fontGroupTypographyActive && CARDS_FG_RICHTEXT)}
+            style={titleStyle}
+          >
             <RichText
               data={card.title}
               enableGutter={false}
               enableProse={false}
-              className="text-xl md:text-2xl font-bold [text-wrap:balance]"
+              className={
+                fontGroupTypographyActive
+                  ? '[text-wrap:balance]'
+                  : 'text-xl md:text-2xl font-bold [text-wrap:balance]'
+              }
             />
           </div>
 
@@ -201,12 +259,22 @@ const SendaCard: React.FC<{
                   </div>
                 )}
 
-                <div className="text-sm md:text-base leading-relaxed" style={expandedContentStyle}>
+                <div
+                  className={cn(
+                    'leading-relaxed',
+                    fontGroupTypographyActive ? CARDS_FG_RICHTEXT : 'text-sm md:text-base',
+                  )}
+                  style={expandedContentStyle}
+                >
                   <RichText
                     data={card.expandedContent}
                     enableGutter={false}
                     enableProse={false}
-                    className="[&_h1]:text-2xl [&_h1]:md:text-3xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-2 [&_h2]:text-xl [&_h2]:md:text-2xl [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:mt-2 [&_h3]:text-lg [&_h3]:md:text-xl [&_h3]:font-bold [&_h3]:mb-2 [&_h3]:mt-2 [&_h4]:text-base [&_h4]:md:text-lg [&_h4]:font-bold [&_h4]:mb-2 [&_h4]:mt-2 [&_p]:mb-2 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-4 [&_li]:mb-1 [&_li]:pl-1"
+                    className={
+                      fontGroupTypographyActive
+                        ? ''
+                        : '[&_h1]:text-2xl [&_h1]:md:text-3xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-2 [&_h2]:text-xl [&_h2]:md:text-2xl [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:mt-2 [&_h3]:text-lg [&_h3]:md:text-xl [&_h3]:font-bold [&_h3]:mb-2 [&_h3]:mt-2 [&_h4]:text-base [&_h4]:md:text-lg [&_h4]:font-bold [&_h4]:mb-2 [&_h4]:mt-2 [&_p]:mb-2 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-4 [&_li]:mb-1 [&_li]:pl-1'
+                    }
                   />
                 </div>
               </motion.div>
@@ -227,12 +295,19 @@ const SendaCard: React.FC<{
           }}
         >
           <div className="flex-1 min-h-0 overflow-y-auto flex items-start">
-            <div className="w-full" style={backContentStyle}>
+            <div
+              className={cn('w-full', fontGroupTypographyActive && CARDS_FG_RICHTEXT)}
+              style={backContentStyle}
+            >
               <RichText
                 data={card.backContent}
                 enableGutter={false}
                 enableProse={false}
-                className="text-base md:text-lg font-semibold [&_h1]:text-3xl [&_h1]:md:text-4xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:mt-2 [&_h2]:text-2xl [&_h2]:md:text-3xl [&_h2]:font-bold [&_h2]:mb-3 [&_h2]:mt-2 [&_h3]:text-xl [&_h3]:md:text-2xl [&_h3]:font-bold [&_h3]:mb-2 [&_h3]:mt-2 [&_h4]:text-lg [&_h4]:md:text-xl [&_h4]:font-bold [&_h4]:mb-2 [&_h4]:mt-2 [&_p]:mb-3 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-4 [&_li]:mb-1 [&_li]:pl-1"
+                className={
+                  fontGroupTypographyActive
+                    ? ''
+                    : 'text-base md:text-lg font-semibold [&_h1]:text-3xl [&_h1]:md:text-4xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:mt-2 [&_h2]:text-2xl [&_h2]:md:text-3xl [&_h2]:font-bold [&_h2]:mb-3 [&_h2]:mt-2 [&_h3]:text-xl [&_h3]:md:text-2xl [&_h3]:font-bold [&_h3]:mb-2 [&_h3]:mt-2 [&_h4]:text-lg [&_h4]:md:text-xl [&_h4]:font-bold [&_h4]:mb-2 [&_h4]:mt-2 [&_p]:mb-3 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-4 [&_li]:mb-1 [&_li]:pl-1'
+                }
               />
             </div>
           </div>
@@ -270,6 +345,8 @@ export const SendaCardsBlockComponent: React.FC<
   customCardHeight,
   backgroundColor,
   boldTextColor,
+  useFontGroup,
+  fontGroup,
   fontFamily,
   useCustomFont,
   customFontFile,
@@ -281,6 +358,15 @@ export const SendaCardsBlockComponent: React.FC<
   const uniqueId = React.useId().replace(/:/g, '-')
   const styleId = `cards-senda-${uniqueId}`
 
+  const fontGroupObj =
+    useFontGroup && fontGroup && typeof fontGroup === 'object'
+      ? normalizeCardsFontGroup(fontGroup)
+      : null
+
+  const fontGroupTypographyActive = Boolean(
+    fontGroupObj?.fontFamilyName?.trim() && Array.isArray(fontGroupObj.fonts),
+  )
+
   const customFontFileObj =
     customFontFile && typeof customFontFile === 'object' ? customFontFile : null
   const customFontFamilyName =
@@ -289,13 +375,14 @@ export const SendaCardsBlockComponent: React.FC<
     (customFontFileObj?.filename ? customFontFileObj.filename.replace(/\.[^.]+$/, '') : undefined)
 
   const getFontFamily = () => {
+    if (fontGroupObj?.fontFamilyName) return `"${fontGroupObj.fontFamilyName.replace(/"/g, '\\"')}"`
     if (useCustomFont && customFontFamilyName) return `"${customFontFamilyName}"`
     if (fontFamily && fontFamily !== 'default') return fontFamily
     return undefined
   }
 
   const selectedFontFamily = getFontFamily()
-  useGoogleFont(selectedFontFamily)
+  useGoogleFont(fontGroupTypographyActive ? undefined : selectedFontFamily)
 
   const fontFileUrl = customFontFileObj?.url
     ? getMediaUrl(customFontFileObj.url).replace(/([^:]\/)\/+/g, '$1')
@@ -306,7 +393,150 @@ export const SendaCardsBlockComponent: React.FC<
 
   const buildStyles = () => {
     const styles: string[] = []
-    if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
+    const sel = `[data-cards-senda-font="${styleId}"]`
+    const mainRichtext = `${sel} .cards-senda-richtext`
+    const planRichtext = mainRichtext
+    const payloadRichtext = `${sel} .payload-richtext`
+
+    if (fontGroupTypographyActive && fontGroupObj) {
+      const familyName = fontGroupObj.fontFamilyName!.replace(/"/g, '\\"')
+      const fontEntries = (fontGroupObj.fonts || []).filter(
+        (e): e is FontGroupFontEntry & { font: FontFile } =>
+          e?.font != null && typeof e.font === 'object' && e.font?.url != null,
+      )
+      for (const entry of fontEntries) {
+        const url = getMediaUrl(entry.font.url).replace(/([^:]\/)\/+/g, '$1')
+        const variant = entry.variant || 'regular'
+        const { weight, style: fontStyleCss } = FONT_GROUP_VARIANT_CSS[variant] ?? {
+          weight: '400',
+          style: 'normal',
+        }
+        const formatMatch = url.match(/\.(woff2?|ttf|otf)(\?.*)?$/i)
+        const format = formatMatch
+          ? formatMatch[1].toLowerCase() === 'woff2'
+            ? 'woff2'
+            : formatMatch[1].toLowerCase() === 'woff'
+              ? 'woff'
+              : formatMatch[1].toLowerCase() === 'ttf'
+                ? 'truetype'
+                : 'opentype'
+          : 'woff2'
+        if (!formatMatch) continue
+        styles.push(`
+          @font-face {
+            font-family: "${familyName}";
+            src: url("${url}") format("${format}");
+            font-weight: ${weight};
+            font-style: ${fontStyleCss};
+            font-display: swap;
+          }
+        `)
+      }
+      const fontValue = `"${fontGroupObj.fontFamilyName!.replace(/"/g, '\\"')}"`
+      styles.push(
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${fontValue} !important; }`,
+      )
+
+      const typo = fontGroupObj.typography
+      if (typo) {
+        if (typo.h1)
+          styles.push(`${mainRichtext} h1, ${payloadRichtext} h1 { font-size: ${typo.h1} !important; }`)
+        if (typo.h2)
+          styles.push(`${mainRichtext} h2, ${payloadRichtext} h2 { font-size: ${typo.h2} !important; }`)
+        if (typo.h3)
+          styles.push(`${mainRichtext} h3, ${payloadRichtext} h3 { font-size: ${typo.h3} !important; }`)
+        if (typo.h4)
+          styles.push(`${mainRichtext} h4, ${payloadRichtext} h4 { font-size: ${typo.h4} !important; }`)
+        if (typo.h5)
+          styles.push(`${mainRichtext} h5, ${payloadRichtext} h5 { font-size: ${typo.h5} !important; }`)
+        if (typo.h6)
+          styles.push(`${mainRichtext} h6, ${payloadRichtext} h6 { font-size: ${typo.h6} !important; }`)
+        appendTypographyBodyListSizeRules(typo, mainRichtext, planRichtext, payloadRichtext, (rule) =>
+          styles.push(rule),
+        )
+        if (typo.caption) {
+          styles.push(
+            `${mainRichtext} .caption, ${payloadRichtext} .caption { font-size: ${typo.caption} !important; }`,
+          )
+          styles.push(
+            `${mainRichtext} p .caption, ${mainRichtext} .payload-richtext .caption, ${mainRichtext} span.caption, ${payloadRichtext} span.caption { font-size: ${typo.caption} !important; }`,
+          )
+          styles.push(`${sel} [data-text-size="caption"] { font-size: ${typo.caption} !important; }`)
+        }
+      }
+
+      const typoMob = fontGroupObj.typographyMobile
+      if (typoMob) {
+        const mobRules: string[] = []
+        const t = (v: string | null | undefined) => (typeof v === 'string' ? v.trim() : '') || ''
+        if (t(typoMob.h1))
+          mobRules.push(`${mainRichtext} h1, ${payloadRichtext} h1 { font-size: ${t(typoMob.h1)} !important; }`)
+        if (t(typoMob.h2))
+          mobRules.push(`${mainRichtext} h2, ${payloadRichtext} h2 { font-size: ${t(typoMob.h2)} !important; }`)
+        if (t(typoMob.h3))
+          mobRules.push(`${mainRichtext} h3, ${payloadRichtext} h3 { font-size: ${t(typoMob.h3)} !important; }`)
+        if (t(typoMob.h4))
+          mobRules.push(`${mainRichtext} h4, ${payloadRichtext} h4 { font-size: ${t(typoMob.h4)} !important; }`)
+        if (t(typoMob.h5))
+          mobRules.push(`${mainRichtext} h5, ${payloadRichtext} h5 { font-size: ${t(typoMob.h5)} !important; }`)
+        if (t(typoMob.h6))
+          mobRules.push(`${mainRichtext} h6, ${payloadRichtext} h6 { font-size: ${t(typoMob.h6)} !important; }`)
+
+        appendTypographyBodyListSizeRules(typoMob, mainRichtext, planRichtext, payloadRichtext, (rule) =>
+          mobRules.push(rule),
+        )
+
+        const capM = t(typoMob.caption)
+        if (capM) {
+          mobRules.push(
+            `${mainRichtext} .caption, ${payloadRichtext} .caption { font-size: ${capM} !important; }`,
+          )
+          mobRules.push(
+            `${mainRichtext} p .caption, ${mainRichtext} .payload-richtext .caption, ${mainRichtext} span.caption, ${payloadRichtext} span.caption { font-size: ${capM} !important; }`,
+          )
+          mobRules.push(`${sel} [data-text-size="caption"] { font-size: ${capM} !important; }`)
+        }
+
+        if (mobRules.length > 0) {
+          styles.push(
+            `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) {\n${mobRules.join('\n')}\n}`,
+          )
+        }
+      }
+
+      appendFontGroupHeadingMarginRules(
+        fontGroupObj.headingMargins,
+        mainRichtext,
+        planRichtext,
+        payloadRichtext,
+        (rule) => styles.push(rule),
+      )
+      appendFontGroupLineHeightRules(
+        fontGroupObj.lineHeights,
+        mainRichtext,
+        planRichtext,
+        payloadRichtext,
+        (rule) => styles.push(rule),
+      )
+
+      styles.push(
+        `${mainRichtext} h1, ${mainRichtext} h2, ${mainRichtext} h3, ${mainRichtext} h4, ${payloadRichtext} h1, ${payloadRichtext} h2, ${payloadRichtext} h3, ${payloadRichtext} h4 { letter-spacing: 0.02em; }`,
+      )
+      const weightMap: Record<string, string> = {
+        light: '300',
+        regular: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700',
+        heavy: '800',
+      }
+      for (const [key, w] of Object.entries(weightMap)) {
+        styles.push(`${sel} [data-text-weight="${key}"] { font-weight: ${w} !important; }`)
+        styles.push(
+          `${mainRichtext} [data-text-weight="${key}"], ${payloadRichtext} [data-text-weight="${key}"] { font-weight: ${w} !important; }`,
+        )
+      }
+    } else if (useCustomFont && fontFileUrl && customFontFamilyName && isValidFontFile) {
       styles.push(`
         @font-face {
           font-family: "${customFontFamilyName.replace(/"/g, '\\"')}";
@@ -316,24 +546,27 @@ export const SendaCardsBlockComponent: React.FC<
           font-display: swap;
         }
       `)
-    }
-    const fontValue =
-      useCustomFont && customFontFamilyName && isValidFontFile
-        ? `"${customFontFamilyName.replace(/"/g, '\\"')}"`
-        : selectedFontFamily && !useCustomFont
-          ? selectedFontFamily
-          : ''
-    if (fontValue) {
+      const fontValue = `"${customFontFamilyName.replace(/"/g, '\\"')}"`
       styles.push(
-        `[data-cards-senda-font="${styleId}"], [data-cards-senda-font="${styleId}"] *, [data-cards-senda-font="${styleId}"] a, [data-cards-senda-font="${styleId}"] button, [data-cards-senda-font="${styleId}"] span { font-family: ${fontValue} !important; }`,
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${fontValue} !important; }`,
+      )
+    } else if (selectedFontFamily) {
+      styles.push(
+        `${sel}, ${sel} *, ${sel} a, ${sel} button, ${sel} span, ${payloadRichtext}, ${payloadRichtext} * { font-family: ${selectedFontFamily} !important; }`,
       )
     }
+
     if (boldTextColor) {
       styles.push(
         `[data-cards-senda-font="${styleId}"] strong, [data-cards-senda-font="${styleId}"] b { color: ${boldTextColor} !important; }`,
       )
     }
-    return styles.join('\n')
+
+    styles.push(
+      `${sel} sub, ${sel} sup { font-weight: 700 !important; vertical-align: baseline !important; font-size: 0.75em; line-height: 1.2; }`,
+    )
+
+    return styles.length > 0 ? styles.join('\n') : ''
   }
 
   const combinedStyles = buildStyles()
@@ -591,7 +824,7 @@ export const SendaCardsBlockComponent: React.FC<
         data-desktop-gap={cardsGap === 'custom' ? safeDesktopGap : undefined}
         className={cn(
           'relative w-full py-12 md:py-16 lg:py-20 px-0 overflow-x-hidden',
-          'font-sans',
+          !selectedFontFamily && 'font-sans',
         )}
         style={{
           ...backgroundStyle,
@@ -757,14 +990,21 @@ export const SendaCardsBlockComponent: React.FC<
               <div className="senda-cards-header-box" style={headerTextContainerStyle}>
                 {hasNewContent && (
                   <div
-                    className="mb-10 md:mb-12 leading-relaxed"
+                    className={cn(
+                      'mb-10 md:mb-12 leading-relaxed',
+                      fontGroupTypographyActive && CARDS_FG_RICHTEXT,
+                    )}
                     style={headerContentColor ? { color: headerContentColor } : {}}
                   >
                     <RichText
                       data={headerContent}
                       enableGutter={false}
                       enableProse={false}
-                      className="[&_h1]:text-3xl [&_h1]:md:text-4xl [&_h1]:lg:text-5xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:mt-2 [&_h2]:text-2xl [&_h2]:md:text-3xl [&_h2]:font-bold [&_h2]:mb-3 [&_h2]:mt-2 [&_h3]:text-xl [&_h3]:md:text-2xl [&_h3]:font-bold [&_h3]:mb-2 [&_h3]:mt-2 [&_h4]:text-lg [&_h4]:md:text-xl [&_h4]:font-bold [&_h4]:mb-2 [&_h4]:mt-2 [&_p]:text-base [&_p]:md:text-lg [&_p]:mb-3 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-4 [&_li]:mb-1 [&_li]:pl-1"
+                      className={
+                        fontGroupTypographyActive
+                          ? ''
+                          : '[&_h1]:text-3xl [&_h1]:md:text-4xl [&_h1]:lg:text-5xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:mt-2 [&_h2]:text-2xl [&_h2]:md:text-3xl [&_h2]:font-bold [&_h2]:mb-3 [&_h2]:mt-2 [&_h3]:text-xl [&_h3]:md:text-2xl [&_h3]:font-bold [&_h3]:mb-2 [&_h3]:mt-2 [&_h4]:text-lg [&_h4]:md:text-xl [&_h4]:font-bold [&_h4]:mb-2 [&_h4]:mt-2 [&_p]:text-base [&_p]:md:text-lg [&_p]:mb-3 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-4 [&_li]:mb-1 [&_li]:pl-1'
+                      }
                     />
                   </div>
                 )}
@@ -772,27 +1012,38 @@ export const SendaCardsBlockComponent: React.FC<
                   <>
                     {hasLegacyTitle && (
                       <div
-                        className="mb-4 md:mb-5"
+                        className={cn('mb-4 md:mb-5', fontGroupTypographyActive && CARDS_FG_RICHTEXT)}
                         style={titleColor ? { color: titleColor } : {}}
                       >
                         <RichText
                           data={title}
                           enableGutter={false}
                           enableProse={false}
-                          className="text-3xl md:text-4xl lg:text-5xl font-bold"
+                          className={
+                            fontGroupTypographyActive
+                              ? ''
+                              : 'text-3xl md:text-4xl lg:text-5xl font-bold'
+                          }
                         />
                       </div>
                     )}
                     {hasLegacyDescription && (
                       <div
-                        className="mb-10 md:mb-12 leading-relaxed"
+                        className={cn(
+                          'mb-10 md:mb-12 leading-relaxed',
+                          fontGroupTypographyActive && CARDS_FG_RICHTEXT,
+                        )}
                         style={descriptionColor ? { color: descriptionColor } : {}}
                       >
                         <RichText
                           data={description}
                           enableGutter={false}
                           enableProse={false}
-                          className="text-base md:text-lg [&_h1]:text-3xl [&_h1]:md:text-4xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:mt-2 [&_h2]:text-2xl [&_h2]:md:text-3xl [&_h2]:font-bold [&_h2]:mb-3 [&_h2]:mt-2 [&_h3]:text-xl [&_h3]:md:text-2xl [&_h3]:font-bold [&_h3]:mb-2 [&_h3]:mt-2 [&_h4]:text-lg [&_h4]:md:text-xl [&_h4]:font-bold [&_h4]:mb-2 [&_h4]:mt-2 [&_p]:mb-3 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-4 [&_li]:mb-1 [&_li]:pl-1"
+                          className={
+                            fontGroupTypographyActive
+                              ? ''
+                              : 'text-base md:text-lg [&_h1]:text-3xl [&_h1]:md:text-4xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:mt-2 [&_h2]:text-2xl [&_h2]:md:text-3xl [&_h2]:font-bold [&_h2]:mb-3 [&_h2]:mt-2 [&_h3]:text-xl [&_h3]:md:text-2xl [&_h3]:font-bold [&_h3]:mb-2 [&_h3]:mt-2 [&_h4]:text-lg [&_h4]:md:text-xl [&_h4]:font-bold [&_h4]:mb-2 [&_h4]:mt-2 [&_p]:mb-3 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-4 [&_li]:mb-1 [&_li]:pl-1'
+                          }
                         />
                       </div>
                     )}
@@ -829,6 +1080,7 @@ export const SendaCardsBlockComponent: React.FC<
                     isFlipped={flippedCardIndex === index}
                     onToggleFlip={() => handleToggleFlip(index)}
                     cardHeight={selectedHeight}
+                    fontGroupTypographyActive={fontGroupTypographyActive}
                   />
                 </div>
               ))}

@@ -2,13 +2,56 @@ import type { Block } from 'payload'
 
 import {
   AlignFeature,
+  BlockquoteFeature,
+  ChecklistFeature,
   FixedToolbarFeature,
   HeadingFeature,
+  HorizontalRuleFeature,
+  IndentFeature,
   InlineToolbarFeature,
   lexicalEditor,
+  OrderedListFeature,
+  ParagraphFeature,
+  SubscriptFeature,
+  TextStateFeature,
+  UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
 import { link } from '@/fields/link'
+
+/** Pesos y “texto pequeño” alineados con Hero / Cards SENDA (font groups). */
+const cta1SendaRichTextState = {
+  weight: {
+    light: { label: 'Light', css: { 'font-weight': '300' } },
+    regular: { label: 'Regular', css: { 'font-weight': '400' } },
+    medium: { label: 'Medium', css: { 'font-weight': '500' } },
+    semibold: { label: 'Semibold', css: { 'font-weight': '600' } },
+    heavy: { label: 'Heavy', css: { 'font-weight': '800' } },
+  },
+  size: {
+    caption: { label: 'Texto pequeño', css: {} },
+  },
+} as const
+
+const cta1RichTextEditor = () =>
+  lexicalEditor({
+    features: ({ rootFeatures }) => [
+      ...rootFeatures,
+      ParagraphFeature(),
+      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
+      AlignFeature(),
+      IndentFeature(),
+      UnorderedListFeature(),
+      OrderedListFeature(),
+      ChecklistFeature(),
+      BlockquoteFeature(),
+      HorizontalRuleFeature(),
+      SubscriptFeature(),
+      TextStateFeature({ state: cta1SendaRichTextState }),
+      FixedToolbarFeature(),
+      InlineToolbarFeature(),
+    ],
+  })
 
 export const CTA1SendaAlterBlock: Block = {
   slug: 'cta1SendaAlter',
@@ -28,17 +71,7 @@ export const CTA1SendaAlterBlock: Block = {
       type: 'richText',
       required: true,
       label: 'Título y descripción',
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => {
-          return [
-            ...defaultFeatures,
-            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
-            AlignFeature(),
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
-          ]
-        },
-      }),
+      editor: cta1RichTextEditor(),
       admin: {
         description: 'Contenido de cabecera (título y descripción en un único bloque). Se muestra en área 929×120px.',
       },
@@ -133,14 +166,7 @@ export const CTA1SendaAlterBlock: Block = {
           name: 'labelRichText',
           type: 'richText',
           label: 'Texto descriptivo',
-          editor: lexicalEditor({
-            features: ({ defaultFeatures }) => [
-              ...defaultFeatures,
-              AlignFeature(),
-              FixedToolbarFeature(),
-              InlineToolbarFeature(),
-            ],
-          }),
+          editor: cta1RichTextEditor(),
           admin: { description: 'Ej: "Videollamada gratuita". RichText con formato.' },
         },
         {
@@ -213,14 +239,7 @@ export const CTA1SendaAlterBlock: Block = {
           name: 'labelRichText',
           type: 'richText',
           label: 'Texto descriptivo',
-          editor: lexicalEditor({
-            features: ({ defaultFeatures }) => [
-              ...defaultFeatures,
-              AlignFeature(),
-              FixedToolbarFeature(),
-              InlineToolbarFeature(),
-            ],
-          }),
+          editor: cta1RichTextEditor(),
           admin: { description: 'Ej: "Te llamamos por teléfono". RichText con formato.' },
         },
         {
@@ -283,15 +302,7 @@ export const CTA1SendaAlterBlock: Block = {
               type: 'richText',
               label: 'Título del popup',
               required: true,
-              editor: lexicalEditor({
-                features: ({ defaultFeatures }) => [
-                  ...defaultFeatures,
-                  HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3'] }),
-                  AlignFeature(),
-                  FixedToolbarFeature(),
-                  InlineToolbarFeature(),
-                ],
-              }),
+              editor: cta1RichTextEditor(),
               admin: {
                 description: 'Ej: "Déjanos tus datos y te llamamos lo antes posible"',
                 condition: (_, siblingData) => siblingData?.usePopup === true,
@@ -365,14 +376,7 @@ export const CTA1SendaAlterBlock: Block = {
               name: 'termsRichText',
               type: 'richText',
               label: 'Texto términos y condiciones (junto al checkbox)',
-              editor: lexicalEditor({
-                features: ({ defaultFeatures }) => [
-                  ...defaultFeatures,
-                  AlignFeature(),
-                  FixedToolbarFeature(),
-                  InlineToolbarFeature(),
-                ],
-              }),
+              editor: cta1RichTextEditor(),
               admin: {
                 description: 'Texto que aparece junto al checkbox. Ej: "He leído y acepto las instrucciones del tratamiento."',
                 condition: (_, siblingData) => siblingData?.usePopup === true,
@@ -392,14 +396,7 @@ export const CTA1SendaAlterBlock: Block = {
               name: 'dataProtectionRichText',
               type: 'richText',
               label: 'Información sobre Protección de Datos',
-              editor: lexicalEditor({
-                features: ({ defaultFeatures }) => [
-                  ...defaultFeatures,
-                  AlignFeature(),
-                  FixedToolbarFeature(),
-                  InlineToolbarFeature(),
-                ],
-              }),
+              editor: cta1RichTextEditor(),
               admin: {
                 description: 'Texto legal que se muestra debajo del formulario.',
                 condition: (_, siblingData) => siblingData?.usePopup === true,
@@ -543,11 +540,31 @@ export const CTA1SendaAlterBlock: Block = {
       },
     },
     {
+      name: 'useFontGroup',
+      type: 'checkbox',
+      label: 'Usar grupo de fuentes',
+      defaultValue: false,
+      admin: {
+        description:
+          'Tipografía, tamaños e interlineados del Font Group se aplican a todos los RichText del bloque. Los textos de los botones de sección y del botón del popup usan el tamaño de “texto normal” (body) del grupo.',
+      },
+    },
+    {
+      name: 'fontGroup',
+      type: 'relationship',
+      relationTo: 'font-groups',
+      label: 'Grupo de fuentes',
+      admin: {
+        condition: (_, siblingData) => siblingData?.useFontGroup === true,
+        description: 'Grupo creado en Font Groups.',
+      },
+    },
+    {
       name: 'fontFamily',
       type: 'select',
       label: 'Tipografía',
       admin: {
-        condition: (_, siblingData) => !siblingData?.useCustomFont,
+        condition: (_, siblingData) => !siblingData?.useFontGroup && !siblingData?.useCustomFont,
       },
       options: [
         { label: 'Por defecto', value: 'default' },
@@ -573,6 +590,9 @@ export const CTA1SendaAlterBlock: Block = {
       type: 'checkbox',
       label: 'Usar fuente personalizada',
       defaultValue: false,
+      admin: {
+        condition: (_, siblingData) => siblingData?.useFontGroup !== true,
+      },
     },
     {
       name: 'customFontFile',
@@ -580,7 +600,8 @@ export const CTA1SendaAlterBlock: Block = {
       relationTo: 'fonts',
       label: 'Archivo de fuente',
       admin: {
-        condition: (_, siblingData) => siblingData?.useCustomFont === true,
+        condition: (_, siblingData) =>
+          siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
       },
     },
     {
@@ -588,7 +609,8 @@ export const CTA1SendaAlterBlock: Block = {
       type: 'text',
       label: 'Nombre de la fuente personalizada',
       admin: {
-        condition: (_, siblingData) => siblingData?.useCustomFont === true,
+        condition: (_, siblingData) =>
+          siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
       },
     },
   ],
