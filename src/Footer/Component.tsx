@@ -125,6 +125,8 @@ export async function Footer() {
         backgroundColor={footerSendaConfig.backgroundColor}
         textColor={footerSendaConfig.textColor}
         boldTextColor={footerSendaConfig.boldTextColor}
+        useFontGroup={footerSendaConfig.useFontGroup}
+        fontGroup={footerSendaConfig.fontGroup}
         fontFamily={footerSendaConfig.fontFamily}
         useCustomFont={footerSendaConfig.useCustomFont}
         customFontFile={footerSendaConfig.customFontFile}

@@ -2,24 +2,51 @@ import type { Block, GroupField } from 'payload'
 
 import {
   AlignFeature,
+  BlockquoteFeature,
+  ChecklistFeature,
   FixedToolbarFeature,
   HeadingFeature,
+  HorizontalRuleFeature,
+  IndentFeature,
   InlineToolbarFeature,
   lexicalEditor,
   OrderedListFeature,
+  ParagraphFeature,
+  SubscriptFeature,
+  TextStateFeature,
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
 import { link } from '@/fields/link'
 
+const multiFormSendaRichTextState = {
+  weight: {
+    light: { label: 'Light', css: { 'font-weight': '300' } },
+    regular: { label: 'Regular', css: { 'font-weight': '400' } },
+    medium: { label: 'Medium', css: { 'font-weight': '500' } },
+    semibold: { label: 'Semibold', css: { 'font-weight': '600' } },
+    heavy: { label: 'Heavy', css: { 'font-weight': '800' } },
+  },
+  size: {
+    caption: { label: 'Texto pequeño', css: {} },
+  },
+} as const
+
 const richTextEditor = () =>
   lexicalEditor({
-    features: ({ defaultFeatures }) => [
-      ...defaultFeatures,
-      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+    features: ({ rootFeatures }) => [
+      ...rootFeatures,
+      ParagraphFeature(),
+      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
       AlignFeature(),
-      OrderedListFeature(),
+      IndentFeature(),
       UnorderedListFeature(),
+      OrderedListFeature(),
+      ChecklistFeature(),
+      BlockquoteFeature(),
+      HorizontalRuleFeature(),
+      SubscriptFeature(),
+      TextStateFeature({ state: multiFormSendaRichTextState }),
       FixedToolbarFeature(),
       InlineToolbarFeature(),
     ],
@@ -311,6 +338,26 @@ export const MultiFormSendaBlock: Block = {
       label: 'Color del texto en negrita',
     },
     {
+      name: 'useFontGroup',
+      type: 'checkbox',
+      label: 'Usar grupo de fuentes',
+      defaultValue: false,
+      admin: {
+        description:
+          'Tipografía y tamaños del Font Group se aplican a introducción, pasos, opciones, cierre y texto de botones.',
+      },
+    },
+    {
+      name: 'fontGroup',
+      type: 'relationship',
+      relationTo: 'font-groups',
+      label: 'Grupo de fuentes',
+      admin: {
+        condition: (_, siblingData) => siblingData?.useFontGroup === true,
+        description: 'Grupo creado en Font Groups.',
+      },
+    },
+    {
       name: 'buttonBackgroundColor',
       type: 'text',
       label: 'Color de fondo de los botones',
@@ -325,7 +372,8 @@ export const MultiFormSendaBlock: Block = {
       type: 'select',
       label: 'Tipografía',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) => !siblingData?.useCustomFont,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          !siblingData?.useFontGroup && !siblingData?.useCustomFont,
       },
       options: [
         { label: 'Por defecto', value: 'default' },
@@ -345,6 +393,10 @@ export const MultiFormSendaBlock: Block = {
       type: 'checkbox',
       label: 'Usar fuente personalizada',
       defaultValue: false,
+      admin: {
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean }) =>
+          siblingData?.useFontGroup !== true,
+      },
     },
     {
       name: 'customFontFile',
@@ -352,7 +404,8 @@ export const MultiFormSendaBlock: Block = {
       relationTo: 'fonts',
       label: 'Archivo de fuente',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) => siblingData?.useCustomFont === true,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
       },
     },
     {
@@ -360,7 +413,8 @@ export const MultiFormSendaBlock: Block = {
       type: 'text',
       label: 'Nombre de la fuente personalizada',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) => siblingData?.useCustomFont === true,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
       },
     },
   ],

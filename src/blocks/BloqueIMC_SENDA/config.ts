@@ -2,13 +2,55 @@ import type { Block } from 'payload'
 
 import {
   AlignFeature,
+  BlockquoteFeature,
+  ChecklistFeature,
   FixedToolbarFeature,
   HeadingFeature,
+  HorizontalRuleFeature,
+  IndentFeature,
   InlineToolbarFeature,
   lexicalEditor,
+  OrderedListFeature,
+  ParagraphFeature,
+  SubscriptFeature,
+  TextStateFeature,
+  UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
 import { link } from '@/fields/link'
+
+const imcSendaRichTextState = {
+  weight: {
+    light: { label: 'Light', css: { 'font-weight': '300' } },
+    regular: { label: 'Regular', css: { 'font-weight': '400' } },
+    medium: { label: 'Medium', css: { 'font-weight': '500' } },
+    semibold: { label: 'Semibold', css: { 'font-weight': '600' } },
+    heavy: { label: 'Heavy', css: { 'font-weight': '800' } },
+  },
+  size: {
+    caption: { label: 'Texto pequeño', css: {} },
+  },
+} as const
+
+const imcRichTextEditor = () =>
+  lexicalEditor({
+    features: ({ rootFeatures }) => [
+      ...rootFeatures,
+      ParagraphFeature(),
+      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
+      AlignFeature(),
+      IndentFeature(),
+      UnorderedListFeature(),
+      OrderedListFeature(),
+      ChecklistFeature(),
+      BlockquoteFeature(),
+      HorizontalRuleFeature(),
+      SubscriptFeature(),
+      TextStateFeature({ state: imcSendaRichTextState }),
+      FixedToolbarFeature(),
+      InlineToolbarFeature(),
+    ],
+  })
 
 export const BloqueIMCSendaBlockConfig: Block = {
   slug: 'bloqueIMCSenda',
@@ -73,17 +115,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
       admin: {
         description: 'Título principal del bloque (ej: "Calcula tu IMC")',
       },
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => {
-          return [
-            ...defaultFeatures,
-            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-            AlignFeature(),
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
-          ]
-        },
-      }),
+      editor: imcRichTextEditor(),
     },
     {
       name: 'description',
@@ -93,17 +125,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
       admin: {
         description: 'Texto descriptivo que aparece debajo del título',
       },
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => {
-          return [
-            ...defaultFeatures,
-            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-            AlignFeature(),
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
-          ]
-        },
-      }),
+      editor: imcRichTextEditor(),
     },
     {
       name: 'heightLabel',
@@ -148,17 +170,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
         description:
           'Contenido que se mostrará cuando el IMC sea inferior a 25. Puedes usar {bmi} como placeholder para mostrar el valor del IMC.',
       },
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => {
-          return [
-            ...defaultFeatures,
-            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-            AlignFeature(),
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
-          ]
-        },
-      }),
+      editor: imcRichTextEditor(),
     },
     {
       name: 'resultButton (IMC < 25)',
@@ -190,17 +202,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
             description:
               'Contenido que se mostrará cuando el IMC sea superior o igual a 25 (ej: "Un IMC superior a 25 se considera sobrepeso...")',
           },
-          editor: lexicalEditor({
-            features: ({ defaultFeatures }) => {
-              return [
-                ...defaultFeatures,
-                HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                AlignFeature(),
-                FixedToolbarFeature(),
-                InlineToolbarFeature(),
-              ]
-            },
-          }),
+          editor: imcRichTextEditor(),
         },
         {
           name: 'highBMIImage',
@@ -255,17 +257,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
             description:
               'Texto del profesional: nombre y descripción en un solo bloque (ej: nombre en título y descripción en párrafo)',
           },
-          editor: lexicalEditor({
-            features: ({ defaultFeatures }) => {
-              return [
-                ...defaultFeatures,
-                HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                AlignFeature(),
-                FixedToolbarFeature(),
-                InlineToolbarFeature(),
-              ]
-            },
-          }),
+          editor: imcRichTextEditor(),
         },
         {
           name: 'highBMIButton',
@@ -288,12 +280,32 @@ export const BloqueIMCSendaBlockConfig: Block = {
       ],
     },
     {
+      name: 'useFontGroup',
+      type: 'checkbox',
+      label: 'Usar grupo de fuentes',
+      defaultValue: false,
+      admin: {
+        description:
+          'Tipografía del Font Group en títulos, descripciones, resultados y textos de botones (calcular, resultado, IMC alto).',
+      },
+    },
+    {
+      name: 'fontGroup',
+      type: 'relationship',
+      relationTo: 'font-groups',
+      label: 'Grupo de fuentes',
+      admin: {
+        condition: (_, siblingData) => siblingData?.useFontGroup === true,
+        description: 'Grupo creado en Font Groups.',
+      },
+    },
+    {
       name: 'fontFamily',
       type: 'select',
       label: 'Tipografía',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) =>
-          !siblingData?.useCustomFont,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          !siblingData?.useFontGroup && !siblingData?.useCustomFont,
       },
       options: [
         { label: 'Por defecto', value: 'default' },
@@ -319,6 +331,10 @@ export const BloqueIMCSendaBlockConfig: Block = {
       type: 'checkbox',
       label: 'Usar fuente personalizada',
       defaultValue: false,
+      admin: {
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean }) =>
+          siblingData?.useFontGroup !== true,
+      },
     },
     {
       name: 'customFontFile',
@@ -326,8 +342,8 @@ export const BloqueIMCSendaBlockConfig: Block = {
       relationTo: 'fonts',
       label: 'Archivo de fuente',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) =>
-          siblingData?.useCustomFont === true,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
       },
     },
     {
@@ -335,8 +351,8 @@ export const BloqueIMCSendaBlockConfig: Block = {
       type: 'text',
       label: 'Nombre de la fuente personalizada',
       admin: {
-        condition: (_: unknown, siblingData: { useCustomFont?: boolean }) =>
-          siblingData?.useCustomFont === true,
+        condition: (_: unknown, siblingData: { useFontGroup?: boolean; useCustomFont?: boolean }) =>
+          siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
       },
     },
     {

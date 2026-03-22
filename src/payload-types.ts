@@ -1823,6 +1823,14 @@ export interface MultiFormSendaBlock {
   formBackgroundColor?: string | null;
   textColor?: string | null;
   boldTextColor?: string | null;
+  /**
+   * Tipografía y tamaños del Font Group se aplican a introducción, pasos, opciones, cierre y texto de botones.
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Grupo creado en Font Groups.
+   */
+  fontGroup?: (number | null) | FontGroup;
   buttonBackgroundColor?: string | null;
   buttonTextColor?: string | null;
   fontFamily?:
@@ -2770,6 +2778,14 @@ export interface BloqueIMCSendaBlock {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Tipografía del Font Group en títulos, descripciones, resultados y textos de botones (calcular, resultado, IMC alto).
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Grupo creado en Font Groups.
+   */
+  fontGroup?: (number | null) | FontGroup;
   fontFamily?:
     | (
         | 'default'
@@ -3011,6 +3027,14 @@ export interface AppSendaBlock {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Tipografía del Font Group en ambos RichText y en el texto de los botones (App Store / Google Play).
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Grupo creado en Font Groups.
+   */
+  fontGroup?: (number | null) | FontGroup;
   fontFamily?:
     | (
         | 'default'
@@ -4038,6 +4062,8 @@ export interface MultiFormSendaBlockSelect<T extends boolean = true> {
   formBackgroundColor?: T;
   textColor?: T;
   boldTextColor?: T;
+  useFontGroup?: T;
+  fontGroup?: T;
   buttonBackgroundColor?: T;
   buttonTextColor?: T;
   fontFamily?: T;
@@ -4375,6 +4401,8 @@ export interface BloqueIMCSendaBlockSelect<T extends boolean = true> {
         iconSVG?: T;
         id?: T;
       };
+  useFontGroup?: T;
+  fontGroup?: T;
   fontFamily?: T;
   useCustomFont?: T;
   customFontFile?: T;
@@ -4449,6 +4477,8 @@ export interface AppSendaBlockSelect<T extends boolean = true> {
         iconSVG?: T;
         id?: T;
       };
+  useFontGroup?: T;
+  fontGroup?: T;
   fontFamily?: T;
   useCustomFont?: T;
   customFontFile?: T;
@@ -6256,6 +6286,14 @@ export interface Footer {
     backgroundColor?: string | null;
     textColor?: string | null;
     boldTextColor?: string | null;
+    /**
+     * Tipografía del Font Group en todos los RichText del footer (columnas, redes, enlaces inferiores y texto legal).
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
     fontFamily?:
       | (
           | 'default'
@@ -7086,6 +7124,8 @@ export interface FooterSelect<T extends boolean = true> {
         backgroundColor?: T;
         textColor?: T;
         boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
         fontFamily?: T;
         useCustomFont?: T;
         customFontFile?: T;

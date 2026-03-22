@@ -13,18 +13,32 @@ import {
   OrderedListFeature,
   ParagraphFeature,
   SubscriptFeature,
+  TextStateFeature,
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 import { link } from '@/fields/link'
 import { simpleLink } from '@/fields/simpleLink'
 import { revalidateFooter } from './hooks/revalidateFooter'
 
+const footerSendaRichTextState = {
+  weight: {
+    light: { label: 'Light', css: { 'font-weight': '300' } },
+    regular: { label: 'Regular', css: { 'font-weight': '400' } },
+    medium: { label: 'Medium', css: { 'font-weight': '500' } },
+    semibold: { label: 'Semibold', css: { 'font-weight': '600' } },
+    heavy: { label: 'Heavy', css: { 'font-weight': '800' } },
+  },
+  size: {
+    caption: { label: 'Texto pequeño', css: {} },
+  },
+} as const
+
 const footerSendaRichTextEditor = () =>
   lexicalEditor({
     features: ({ rootFeatures }) => [
       ...rootFeatures,
       ParagraphFeature(),
-      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }),
       AlignFeature(),
       IndentFeature(),
       UnorderedListFeature(),
@@ -33,6 +47,7 @@ const footerSendaRichTextEditor = () =>
       BlockquoteFeature(),
       HorizontalRuleFeature(),
       SubscriptFeature(),
+      TextStateFeature({ state: footerSendaRichTextState }),
       FixedToolbarFeature(),
       InlineToolbarFeature(),
     ],
@@ -938,10 +953,32 @@ export const Footer: GlobalConfig = {
           label: 'Color del texto en negrita',
         },
         {
+          name: 'useFontGroup',
+          type: 'checkbox',
+          label: 'Usar grupo de fuentes',
+          defaultValue: false,
+          admin: {
+            description:
+              'Tipografía del Font Group en todos los RichText del footer (columnas, redes, enlaces inferiores y texto legal).',
+          },
+        },
+        {
+          name: 'fontGroup',
+          type: 'relationship',
+          relationTo: 'font-groups',
+          label: 'Grupo de fuentes',
+          admin: {
+            condition: (_, siblingData) => siblingData?.useFontGroup === true,
+            description: 'Grupo creado en Font Groups.',
+          },
+        },
+        {
           name: 'fontFamily',
           type: 'select',
           label: 'Tipografía',
-          admin: { condition: (_, siblingData) => !siblingData?.useCustomFont },
+          admin: {
+            condition: (_, siblingData) => !siblingData?.useFontGroup && !siblingData?.useCustomFont,
+          },
           options: [
             { label: 'Por defecto', value: 'default' },
             { label: 'Arial', value: 'Arial, sans-serif' },
@@ -966,19 +1003,28 @@ export const Footer: GlobalConfig = {
           type: 'checkbox',
           label: 'Usar fuente personalizada',
           defaultValue: false,
+          admin: {
+            condition: (_, siblingData) => siblingData?.useFontGroup !== true,
+          },
         },
         {
           name: 'customFontFile',
           type: 'upload',
           relationTo: 'fonts',
           label: 'Archivo de fuente',
-          admin: { condition: (_, siblingData) => siblingData?.useCustomFont === true },
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
+          },
         },
         {
           name: 'customFontName',
           type: 'text',
           label: 'Nombre de la fuente personalizada',
-          admin: { condition: (_, siblingData) => siblingData?.useCustomFont === true },
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
+          },
         },
       ],
       admin: {
