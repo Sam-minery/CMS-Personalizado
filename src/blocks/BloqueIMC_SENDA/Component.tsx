@@ -6,6 +6,7 @@ import Image from 'next/image'
 import RichText from '@/components/RichText'
 import { CMSLink } from '@/components/Link'
 import { cn } from '@/utilities/ui'
+import { sendaBlockButtonNativeClassName } from '@/utilities/sendaBlockButtonClasses'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
@@ -658,7 +659,10 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                   <button
                     type="button"
                     onClick={calculateBMI}
-                    className="imc-senda-btn rounded-xl font-medium flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm text-white shrink-0 w-[149px] min-w-[149px] max-w-[149px] h-[38px] min-h-[38px] max-h-[38px] md:w-[153px] md:min-w-[153px] md:max-w-none md:h-[48px] md:min-h-[48px] md:max-h-none whitespace-nowrap"
+                    className={cn(
+                      'imc-senda-btn text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium',
+                      sendaBlockButtonNativeClassName,
+                    )}
                     style={{
                       backgroundColor: height && weight ? defaultHighBMIButtonColor : defaultCalculateButtonColor,
                       color: height && weight ? defaultHighBMIButtonTextColor : defaultCalculateButtonTextColor,
@@ -755,9 +759,15 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                           : ''
                         const linkProps = buttonItem.link as React.ComponentProps<typeof CMSLink>
                         return (
-                          <div
+                          <CMSLink
                             key={index}
-                            className="imc-senda-result-btn inline-flex items-center justify-center rounded-xl text-sm md:text-base font-medium transition-opacity hover:opacity-90 w-[154px] h-[38px] md:w-[170px] md:h-[48px]"
+                            {...linkProps}
+                            label={undefined}
+                            appearance="inline"
+                            className={cn(
+                              'imc-senda-result-btn transition-opacity hover:opacity-90 font-medium',
+                              sendaBlockButtonNativeClassName,
+                            )}
                             style={{
                               ...(defaultResultButtonColor && {
                                 backgroundColor: defaultResultButtonColor,
@@ -768,24 +778,17 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                               ...fontStyle,
                             }}
                           >
-                            <CMSLink
-                              {...linkProps}
-                              label={undefined}
-                              appearance="inline"
-                              className="inline-flex items-center justify-center gap-2 w-full h-full"
-                            >
-                              <span className="imc-senda-btn-label inline-flex items-center justify-center gap-2 w-full h-full">
-                                {iconSvg ? (
-                                  <span
-                                    className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                                    aria-hidden
-                                    dangerouslySetInnerHTML={{ __html: iconSvg }}
-                                  />
-                                ) : null}
-                                {linkProps.label?.trim() || 'Continuar'}
-                              </span>
-                            </CMSLink>
-                          </div>
+                            <span className="imc-senda-btn-label inline-flex items-center justify-center gap-2">
+                              {iconSvg ? (
+                                <span
+                                  className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                                  aria-hidden
+                                  dangerouslySetInnerHTML={{ __html: iconSvg }}
+                                />
+                              ) : null}
+                              {linkProps.label?.trim() || 'Continuar'}
+                            </span>
+                          </CMSLink>
                         )
                       })}
                     </div>
@@ -920,9 +923,15 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                             : ''
                           const linkProps = buttonItem.link as React.ComponentProps<typeof CMSLink>
                           return (
-                            <div
+                            <CMSLink
                               key={index}
-                              className="imc-senda-high-btn inline-flex items-center justify-center rounded-xl text-sm md:text-base font-medium transition-opacity hover:opacity-90 w-[164px] h-[38px] md:w-[207px] md:h-[48px]"
+                              {...linkProps}
+                              label={undefined}
+                              appearance="inline"
+                              className={cn(
+                                'imc-senda-high-btn transition-opacity hover:opacity-90 font-medium',
+                                sendaBlockButtonNativeClassName,
+                              )}
                               style={{
                                 ...(defaultHighBMIButtonColor && {
                                   backgroundColor: defaultHighBMIButtonColor,
@@ -933,24 +942,17 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                                 ...fontStyle,
                               }}
                             >
-                              <CMSLink
-                                {...linkProps}
-                                label={undefined}
-                                appearance="inline"
-                                className="inline-flex items-center justify-center gap-2 w-full h-full"
-                              >
-                                <span className="imc-senda-btn-label inline-flex items-center justify-center gap-2 w-full h-full">
-                                  {iconSvg ? (
-                                    <span
-                                      className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                                      aria-hidden
-                                      dangerouslySetInnerHTML={{ __html: iconSvg }}
-                                    />
-                                  ) : null}
-                                  {linkProps.label?.trim() || 'Continuar'}
-                                </span>
-                              </CMSLink>
-                            </div>
+                              <span className="imc-senda-btn-label inline-flex items-center justify-center gap-2">
+                                {iconSvg ? (
+                                  <span
+                                    className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                                    aria-hidden
+                                    dangerouslySetInnerHTML={{ __html: iconSvg }}
+                                  />
+                                ) : null}
+                                {linkProps.label?.trim() || 'Continuar'}
+                              </span>
+                            </CMSLink>
                           )
                         })}
                       </div>

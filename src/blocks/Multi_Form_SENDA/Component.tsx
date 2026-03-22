@@ -7,6 +7,10 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { cn } from '@/utilities/ui'
+import {
+  sendaBlockButtonNativeClassName,
+  sendaBlockButtonPrimitiveClassName,
+} from '@/utilities/sendaBlockButtonClasses'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import {
   appendFontGroupHeadingMarginRules,
@@ -542,7 +546,10 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
                   <button
                     type="button"
                     onClick={() => setFormStarted(true)}
-                    className="mf-senda-btn inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-semibold transition-all hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400"
+                    className={cn(
+                      'mf-senda-btn transition-all hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400',
+                      sendaBlockButtonNativeClassName,
+                    )}
                     style={fontStyle}
                   >
                     <span className="mf-senda-btn-label inline-flex items-center gap-2">
@@ -625,7 +632,10 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
                       url={currentStep.stepButtonLink.url ?? undefined}
                       newTab={currentStep.stepButtonLink.newTab ?? undefined}
                       appearance="inline"
-                      className="mf-senda-step-btn mf-senda-step-btn-link inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-semibold no-underline transition-all hover:opacity-90"
+                      className={cn(
+                        'mf-senda-step-btn mf-senda-step-btn-link no-underline transition-all hover:opacity-90',
+                        sendaBlockButtonNativeClassName,
+                      )}
                       style={{
                         ...fontStyle,
                         backgroundColor: (selectedOptionInCurrentStep === null
@@ -665,7 +675,10 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
                         setCurrentStepIndex((i) => i + 1)
                         setSelectedOptionInCurrentStep(null)
                       }}
-                      className="mf-senda-step-btn inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-semibold transition-all hover:opacity-90 focus:outline-none disabled:cursor-not-allowed"
+                      className={cn(
+                        'mf-senda-step-btn transition-all hover:opacity-90 focus:outline-none disabled:cursor-not-allowed',
+                        sendaBlockButtonNativeClassName,
+                      )}
                       style={{
                         ...fontStyle,
                         backgroundColor: (selectedOptionInCurrentStep === null
@@ -722,8 +735,11 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
                       url={endButtonLink.url ?? undefined}
                       newTab={endButtonLink.newTab ?? undefined}
                       appearance="default"
-                      size="default"
-                      className="mf-senda-btn inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-semibold transition-all hover:opacity-90"
+                      size="clear"
+                      className={cn(
+                        'mf-senda-btn transition-all hover:opacity-90',
+                        sendaBlockButtonPrimitiveClassName,
+                      )}
                       style={fontStyle}
                     >
                       <span className="mf-senda-btn-label inline-flex items-center gap-2">

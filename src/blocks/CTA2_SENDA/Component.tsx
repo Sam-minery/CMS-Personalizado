@@ -8,6 +8,7 @@ import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
+import { sendaBlockButtonPrimitiveClassName } from '@/utilities/sendaBlockButtonClasses'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import {
   appendFontGroupHeadingMarginRules,
@@ -435,7 +436,7 @@ export const CTA2SendaBlock: React.FC<Props> = (props) => {
                 >
                   {buttonItems.map((button, index) => {
                     const appearance = button?.appearance ?? (index === 0 ? 'default' : 'secondary')
-                    const size = button?.size ?? (appearance === 'link' ? 'clear' : 'sm')
+                    const size = appearance === 'link' ? (button?.size ?? 'clear') : 'clear'
                     const iconSVG = button?.iconSVG ?? null
                     const btnClassName =
                       appearance === 'default'
@@ -453,10 +454,13 @@ export const CTA2SendaBlock: React.FC<Props> = (props) => {
                         label={undefined}
                         appearance={appearance}
                         size={size}
-                        className={btnClassName}
+                        className={cn(
+                          appearance !== 'link' && sendaBlockButtonPrimitiveClassName,
+                          btnClassName,
+                        )}
                         style={fontStyle}
                       >
-                        <span className="cta2-senda-btn-label inline-flex items-center gap-1.5">
+                        <span className="cta2-senda-btn-label inline-flex items-center gap-2">
                           {button?.link?.label ?? 'Button'}
                           {iconSVG ? (
                             <span

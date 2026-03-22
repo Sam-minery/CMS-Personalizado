@@ -10,6 +10,7 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { cn } from '@/utilities/ui'
+import { sendaBlockButtonNativeClassName } from '@/utilities/sendaBlockButtonClasses'
 import {
   appendFontGroupHeadingMarginRules,
   appendFontGroupLineHeightRules,
@@ -540,7 +541,7 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
             </div>
 
             {buttonList.length > 0 && (
-              <div className="app-senda-buttons order-3 mx-auto flex h-[38px] w-[248px] min-w-[248px] items-center justify-between gap-2 md:order-4 md:mt-0 md:h-[48px] md:w-auto md:min-w-0 md:gap-4">
+              <div className="app-senda-buttons order-3 mx-auto flex w-full max-w-[279px] flex-wrap items-center justify-center gap-3 md:order-4 md:mt-0 md:max-w-none md:gap-4">
                 {buttonList.map((button, index) => {
                   const linkData = button?.link
                   if (!linkData) return null
@@ -553,13 +554,13 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
                       label={undefined}
                       appearance="inline"
                       className={cn(
-                        'app-senda-btn inline-flex h-[38px] w-[120px] items-center justify-center gap-1.5 rounded-xl text-sm font-medium shadow-sm transition-colors hover:opacity-90',
-                        'md:h-[48px] md:w-[138px] md:text-base',
+                        'app-senda-btn shadow-sm transition-colors hover:opacity-90',
+                        sendaBlockButtonNativeClassName,
                         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
                       )}
                       style={fontStyle}
                     >
-                      <span className="app-senda-btn-label inline-flex items-center justify-center gap-1.5">
+                      <span className="app-senda-btn-label inline-flex items-center justify-center gap-2">
                         {text}
                         {iconSVG ? (
                           <span

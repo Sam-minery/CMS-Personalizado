@@ -12,6 +12,7 @@ import { useGoogleFont } from "@/utilities/useGoogleFont";
 import { getMediaUrl } from "@/utilities/getMediaUrl";
 import { sanitizeSVG } from "@/utilities/sanitizeHTML";
 import { cn } from "@/utilities/ui";
+import { sendaBlockButtonPrimitiveClassName } from "@/utilities/sendaBlockButtonClasses";
 import {
   FONT_GROUP_RICHTEXT_MOBILE_MAX,
   FONT_GROUP_VARIANT_CSS,
@@ -502,13 +503,16 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                   button.link?.type === "anchor" && button.link?.anchorId ? (
                     <Button
                       key={index}
-                      size={button.size}
+                      size={button.variant === "link" ? button.size : "clear"}
                       variant={button.variant}
-                      className={button.variant === "default" ? "navbar-senda-btn-default" : undefined}
+                      className={cn(
+                        button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                        button.variant === "default" && "navbar-senda-btn-default",
+                      )}
                       style={fontStyle}
                       onClick={() => scrollToAnchor(button.link!.anchorId!)}
                     >
-                      <span className="inline-flex items-center gap-1.5">
+                      <span className="inline-flex items-center gap-2">
                         <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                         {button.iconSVG ? (
                           <span
@@ -523,12 +527,15 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                     <CMSLink
                       key={index}
                       {...(button.link as React.ComponentProps<typeof CMSLink>)}
-                      size={button.size}
+                      size={button.variant === "link" ? button.size : "clear"}
                       appearance={button.variant}
-                      className={button.variant === "default" ? "navbar-senda-btn-default" : undefined}
+                      className={cn(
+                        button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                        button.variant === "default" && "navbar-senda-btn-default",
+                      )}
                       style={fontStyle}
                     >
-                      <span className="inline-flex items-center gap-1.5">
+                      <span className="inline-flex items-center gap-2">
                         <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                         {button.iconSVG ? (
                           <span
@@ -552,13 +559,16 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                 {showMobileTopBarItems && firstButton &&
                   (firstButton.link?.type === "anchor" && firstButton.link?.anchorId ? (
                     <Button
-                      size={firstButton.size}
+                      size={firstButton.variant === "link" ? firstButton.size : "clear"}
                       variant={firstButton.variant}
-                      className={firstButton.variant === "default" ? "navbar-senda-btn-default" : undefined}
+                      className={cn(
+                        firstButton.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                        firstButton.variant === "default" && "navbar-senda-btn-default",
+                      )}
                       style={fontStyle}
                       onClick={() => scrollToAnchor(firstButton!.link!.anchorId!)}
                     >
-                      <span className="inline-flex items-center gap-1.5">
+                      <span className="inline-flex items-center gap-2">
                         <NavbarTextLabel text={firstButton.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                         {firstButton.iconSVG ? (
                           <span
@@ -572,12 +582,15 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                   ) : (
                     <CMSLink
                       {...(firstButton.link as React.ComponentProps<typeof CMSLink>)}
-                      size={firstButton.size}
+                      size={firstButton.variant === "link" ? firstButton.size : "clear"}
                       appearance={firstButton.variant}
-                      className={firstButton.variant === "default" ? "navbar-senda-btn-default" : undefined}
+                      className={cn(
+                        firstButton.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                        firstButton.variant === "default" && "navbar-senda-btn-default",
+                      )}
                       style={fontStyle}
                     >
-                      <span className="inline-flex items-center gap-1.5">
+                      <span className="inline-flex items-center gap-2">
                         <NavbarTextLabel text={firstButton.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                         {firstButton.iconSVG ? (
                           <span
@@ -664,11 +677,11 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                         <div className="mt-12 pt-16 flex justify-center">
                           {firstButton.link?.type === "anchor" && firstButton.link?.anchorId ? (
                             <Button
-                              size={firstButton.size}
+                              size={firstButton.variant === "link" ? firstButton.size : "clear"}
                               variant={firstButton.variant}
                               className={cn(
-                                "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0",
-                                !fontGroupTypographyActive && "text-xs",
+                                firstButton.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                                !fontGroupTypographyActive && firstButton.variant === "link" && "text-xs",
                                 firstButton.variant === "default" && "navbar-senda-btn-default",
                               )}
                               style={fontStyle}
@@ -677,7 +690,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                                 setIsMobileMenuOpen(false);
                               }}
                             >
-                              <span className="inline-flex items-center gap-1.5">
+                              <span className="inline-flex items-center gap-2">
                                 <NavbarTextLabel text={firstButton.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                                 {firstButton.iconSVG ? (
                                   <span
@@ -692,16 +705,16 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                             <div onClick={() => setIsMobileMenuOpen(false)}>
                               <CMSLink
                                 {...(firstButton.link as React.ComponentProps<typeof CMSLink>)}
-                                size={firstButton.size}
+                                size={firstButton.variant === "link" ? firstButton.size : "clear"}
                                 appearance={firstButton.variant}
                                 className={cn(
-                                  "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0",
-                                  !fontGroupTypographyActive && "text-xs",
+                                  firstButton.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                                  !fontGroupTypographyActive && firstButton.variant === "link" && "text-xs",
                                   firstButton.variant === "default" && "navbar-senda-btn-default",
                                 )}
                                 style={fontStyle}
                               >
-                                <span className="inline-flex items-center gap-1.5">
+                                <span className="inline-flex items-center gap-2">
                                   <NavbarTextLabel text={firstButton.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                                   {firstButton.iconSVG ? (
                                     <span
@@ -722,11 +735,11 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                             button.link?.type === "anchor" && button.link?.anchorId ? (
                               <Button
                                 key={index}
-                                size={button.size}
+                                size={button.variant === "link" ? button.size : "clear"}
                                 variant={button.variant}
                                 className={cn(
-                                  "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0",
-                                  !fontGroupTypographyActive && "text-xs",
+                                  button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                                  !fontGroupTypographyActive && button.variant === "link" && "text-xs",
                                   button.variant === "default" && "navbar-senda-btn-default",
                                 )}
                                 style={fontStyle}
@@ -735,7 +748,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                                   setIsMobileMenuOpen(false);
                                 }}
                               >
-                                <span className="inline-flex items-center gap-1.5">
+                                <span className="inline-flex items-center gap-2">
                                   <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                                   {button.iconSVG ? (
                                     <span
@@ -750,16 +763,16 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                               <div key={index} onClick={() => setIsMobileMenuOpen(false)}>
                                 <CMSLink
                                   {...(button.link as React.ComponentProps<typeof CMSLink>)}
-                                  size={button.size}
+                                  size={button.variant === "link" ? button.size : "clear"}
                                   appearance={button.variant}
                                   className={cn(
-                                    "w-[148px] h-[38px] min-h-[38px] flex items-center justify-center shrink-0",
-                                    !fontGroupTypographyActive && "text-xs",
+                                    button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                                    !fontGroupTypographyActive && button.variant === "link" && "text-xs",
                                     button.variant === "default" && "navbar-senda-btn-default",
                                   )}
                                   style={fontStyle}
                                 >
-                                  <span className="inline-flex items-center gap-1.5">
+                                  <span className="inline-flex items-center gap-2">
                                     <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
                                     {button.iconSVG ? (
                                       <span

@@ -8,6 +8,8 @@ import { CMSLink } from '@/components/Link'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
+import { sendaBlockButtonPrimitiveClassName } from '@/utilities/sendaBlockButtonClasses'
+import { cn } from '@/utilities/ui'
 import {
   appendFontGroupHeadingMarginRules,
   appendFontGroupLineHeightRules,
@@ -501,33 +503,38 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                     const link = (item as HeroSendaButton).link ?? (item as LinkItem).link
                     const label = (link as HeroSendaLink)?.label ?? (item as HeroSendaButton).title ?? 'Button'
                     const appearance = (item as HeroSendaButton).appearance ?? (index === 0 ? 'default' : 'secondary')
-                    const size = (item as HeroSendaButton).size ?? 'sm'
                     const iconSVG = (item as HeroSendaButton).iconSVG ?? null
                     const btnClassName = appearance === 'default' ? 'hero-senda-btn-default' : appearance === 'secondary' ? 'hero-senda-btn-secondary' : undefined
                     const twoCols = leftButtons.length === 2
                     // Con font group el tamaño lo marca el CMS (texto normal); sin Tailwind text-xs/base para no pisarlo.
                     const labelClass = fontGroupTypographyActive
-                      ? 'hero-senda-btn-label min-w-0 truncate text-center leading-normal'
-                      : 'min-w-0 truncate text-center max-lg:text-xs max-lg:leading-tight lg:text-base lg:leading-normal'
+                      ? cn('hero-senda-btn-label text-center leading-normal', twoCols && 'min-w-0 truncate')
+                      : cn(
+                          'text-center',
+                          twoCols && 'min-w-0 truncate',
+                          !fontGroupTypographyActive && 'max-lg:text-xs max-lg:leading-tight lg:text-base lg:leading-normal',
+                        )
                     return (
                       <CMSLink
                         key={index}
                         {...(link as React.ComponentProps<typeof CMSLink>)}
                         label={undefined}
                         appearance={appearance}
-                        size={size}
-                        className={
-                          twoCols
-                            ? `${btnClassName ?? ''} max-lg:min-w-0 max-lg:flex-1 max-lg:basis-0 max-lg:justify-center max-lg:overflow-hidden lg:inline-flex lg:w-auto lg:flex-none lg:shrink-0`.trim()
-                            : `${btnClassName ?? ''} max-lg:overflow-hidden`.trim()
-                        }
+                        size="clear"
+                        className={cn(
+                          sendaBlockButtonPrimitiveClassName,
+                          btnClassName,
+                          twoCols &&
+                            'max-lg:min-w-0 max-lg:flex-1 max-lg:basis-0 max-lg:justify-center max-lg:overflow-hidden lg:inline-flex lg:w-auto lg:flex-none lg:shrink-0',
+                          !twoCols && 'max-lg:overflow-hidden',
+                        )}
                         style={fontStyle}
                       >
                         <span
                           className={
                             twoCols
-                              ? 'inline-flex min-w-0 max-w-full flex-1 flex-row flex-nowrap items-center justify-center gap-1.5 overflow-hidden lg:flex-initial lg:justify-start'
-                              : 'inline-flex min-w-0 max-w-full flex-row flex-nowrap items-center justify-center gap-1.5 overflow-hidden'
+                              ? 'inline-flex min-w-0 max-w-full flex-1 flex-row flex-nowrap items-center justify-center gap-2 overflow-hidden lg:flex-initial lg:justify-start'
+                              : 'inline-flex min-w-0 max-w-full flex-row flex-nowrap items-center justify-center gap-2 overflow-hidden'
                           }
                         >
                           {fontStyle ? (
@@ -570,7 +577,6 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
             const link = (item as HeroSendaButton).link ?? (item as LinkItem).link
             const label = (link as HeroSendaLink)?.label ?? (item as HeroSendaButton).title ?? 'Button'
             const appearance = (item as HeroSendaButton).appearance ?? 'default'
-            const size = (item as HeroSendaButton).size ?? 'sm'
             const iconSVG = (item as HeroSendaButton).iconSVG ?? null
             const btnClassName = appearance === 'default' ? 'hero-senda-btn-default' : appearance === 'secondary' ? 'hero-senda-btn-secondary' : undefined
             return (
@@ -579,11 +585,11 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                   {...(link as React.ComponentProps<typeof CMSLink>)}
                   label={undefined}
                   appearance={appearance}
-                  size={size}
-                  className={btnClassName}
+                  size="clear"
+                  className={cn(sendaBlockButtonPrimitiveClassName, btnClassName)}
                   style={fontStyle}
                 >
-                  <span className="inline-flex items-center gap-1.5">
+                  <span className="inline-flex items-center gap-2">
                     {fontStyle ? (
                       <span
                         className={fontGroupTypographyActive ? 'hero-senda-btn-label' : undefined}
@@ -620,17 +626,17 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                   {...(imageButtonLink as React.ComponentProps<typeof CMSLink>)}
                   label={undefined}
                   appearance="outline"
-                  size="lg"
-                  className="hero-senda-btn-image text-base md:text-lg p-3 md:p-4 md:px-6 md:py-3"
+                  size="clear"
+                  className={cn(sendaBlockButtonPrimitiveClassName, 'hero-senda-btn-image')}
                   style={fontStyle}
                 >
-                  <span className="inline-flex items-center gap-1.5">
+                  <span className="inline-flex items-center gap-2">
                     <span className="hidden md:inline">
                       {fontStyle ? <span style={fontStyle}>{(imageButtonLink as HeroSendaLink).label ?? ''}</span> : ((imageButtonLink as HeroSendaLink).label ?? '')}
                     </span>
                     {imageButtonIconSVG ? (
                       <span
-                        className="inline-flex shrink-0 w-8 h-8 md:w-9 md:h-9 [&_svg]:w-full [&_svg]:h-full"
+                        className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
                         dangerouslySetInnerHTML={{ __html: sanitizeSVG(imageButtonIconSVG) }}
                         aria-hidden
                       />

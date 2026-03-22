@@ -7,6 +7,7 @@ import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
+import { sendaBlockButtonNativeClassName } from '@/utilities/sendaBlockButtonClasses'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import {
   appendFontGroupHeadingMarginRules,
@@ -553,7 +554,8 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
   const sectionId = sanitizeAnchorId(anchorId) || undefined
 
   const cta1SectionBtnClass = cn(
-    'inline-flex items-center justify-center rounded-xl font-medium border border-white/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
+    sendaBlockButtonNativeClassName,
+    'font-medium border border-white/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
     !fontGroupTypographyActive && 'text-base',
   )
 
@@ -653,8 +655,6 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                       className={cta1SectionBtnClass}
                       style={{
                         ...fontStyle,
-                        width: 180,
-                        height: 48,
                         backgroundColor: bg,
                         color: fg,
                       }}
@@ -664,7 +664,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                       ) : null}
                       {videocallSection.iconSVG?.trim() ? (
                         <span
-                          className="ml-2 inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                          className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
                           style={{ color: fg }}
                           aria-hidden
                           dangerouslySetInnerHTML={{
@@ -715,8 +715,6 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                       className={cta1SectionBtnClass}
                       style={{
                         ...fontStyle,
-                        width: 180,
-                        height: 48,
                         backgroundColor:
                           sanitizeCssColor(phoneSection?.buttonBackgroundColor) || 'rgba(255,255,255,0.2)',
                         color: sanitizeCssColor(phoneSection?.buttonTextColor) || '#ffffff',
@@ -732,7 +730,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                         ) : null}
                         {phoneSection?.iconSVG?.trim() ? (
                           <span
-                            className="ml-2 inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                            className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
                             style={{ color: phoneSection?.buttonTextColor || '#ffffff' }}
                             aria-hidden
                             dangerouslySetInnerHTML={{
@@ -760,8 +758,6 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                         className={cta1SectionBtnClass}
                         style={{
                           ...fontStyle,
-                          width: 180,
-                          height: 48,
                           backgroundColor: bg,
                           color: fg,
                         }}
@@ -771,7 +767,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                         ) : null}
                         {phoneSection.iconSVG?.trim() ? (
                           <span
-                            className="ml-2 inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                            className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
                             style={{ color: fg }}
                             aria-hidden
                             dangerouslySetInnerHTML={{
@@ -1020,13 +1016,12 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                         {...linkProps}
                         appearance="inline"
                         className={cn(
-                          'cta1-popup-submit rounded-xl font-medium transition-colors inline-flex items-center justify-center border border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
+                          sendaBlockButtonNativeClassName,
+                          'cta1-popup-submit font-medium transition-colors border border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
                           !fontGroupTypographyActive && 'text-base',
                         )}
                         style={{
                           ...fontStyle,
-                          width: 120,
-                          height: 48,
                           backgroundColor: bg,
                           color: fg,
                         }}
@@ -1040,13 +1035,12 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                 ) : (
                   <span
                     className={cn(
-                      'rounded-xl font-medium inline-flex items-center justify-center border border-white/40 cursor-not-allowed opacity-70',
+                      sendaBlockButtonNativeClassName,
+                      'font-medium border border-white/40 cursor-not-allowed opacity-70',
                       !fontGroupTypographyActive && 'text-base',
                     )}
                     style={{
                       ...fontStyle,
-                      width: 120,
-                      height: 48,
                       backgroundColor: sanitizeCssColor(popup.button?.backgroundColor) || 'rgba(255,255,255,0.15)',
                       color: sanitizeCssColor(popup.button?.textColor) || '#ffffff',
                     }}
