@@ -28,12 +28,15 @@ const MOBILE_VIEW_MAX_WIDTH = 1023
 const MOBILE_CARD_WIDTH_PX = 355
 const MOBILE_CARD_HEIGHT = 603
 
+/** Px para scroll/grid; sin unidad: &lt;100 → rem (ej. 18 = 18rem), ≥100 → px — alineado con Cards_SENDA / config. */
 function parseWidthToPx(value: string): number {
   const s = (value || '').trim()
-  if (s.endsWith('rem')) return parseFloat(s) * 16 || MOBILE_CARD_WIDTH_PX
-  if (s.endsWith('px')) return parseFloat(s) || MOBILE_CARD_WIDTH_PX
-  if (/^\d+(\.\d+)?$/.test(s)) return parseFloat(s)
-  return parseFloat(s) * 16 || MOBILE_CARD_WIDTH_PX
+  if (!s) return MOBILE_CARD_WIDTH_PX
+  if (s.endsWith('rem')) return Math.round(parseFloat(s) * 16) || MOBILE_CARD_WIDTH_PX
+  if (s.endsWith('px')) return Math.round(parseFloat(s)) || MOBILE_CARD_WIDTH_PX
+  const n = parseFloat(s)
+  if (!Number.isFinite(n)) return MOBILE_CARD_WIDTH_PX
+  return n < 100 ? Math.round(n * 16) : Math.round(n)
 }
 
 /** Tipos locales para no depender de payload-types (evita fallos de build si el bloque no está en projectConfig). */
@@ -493,6 +496,15 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
       )
     }
 
+    styles.push(`
+      @media (max-width: 767px) {
+        ${sel} .testimonials-senda-title,
+        ${sel} .testimonials-senda-title * {
+          text-align: left !important;
+        }
+      }
+    `)
+
     styles.push(
       `${sel} sub, ${sel} sup { font-weight: 700 !important; vertical-align: baseline !important; font-size: 0.75em; line-height: 1.2; }`,
     )
@@ -511,9 +523,9 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
 
   let selectedWidth: string
   let selectedHeight: string
-  if (cardSize === 'custom' && customCardWidth && customCardHeight) {
-    selectedWidth = customCardWidth
-    selectedHeight = customCardHeight
+  if (cardSize === 'custom' && customCardWidth?.trim()) {
+    selectedWidth = customCardWidth.trim()
+    selectedHeight = customCardHeight?.trim() || sizeMap.md.height
   } else {
     const key: 'sm' | 'md' | 'lg' =
       cardSize === 'sm' || cardSize === 'md' || cardSize === 'lg' ? cardSize : 'md'
@@ -521,6 +533,8 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
     selectedWidth = preset.width
     selectedHeight = preset.height
   }
+
+  const testimonialGridWidthPx = parseWidthToPx(selectedWidth)
 
   const getCurrentGap = () => {
     if (typeof window === 'undefined' || !scrollContainerRef.current) return 0
@@ -542,8 +556,7 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
         }))
       : []
 
-  const getCardWidthPx = () =>
-    isMobileView ? MOBILE_CARD_WIDTH_PX : parseWidthToPx(selectedWidth)
+  const getCardWidthPx = () => parseWidthToPx(selectedWidth)
 
   /** Paso de scroll = una card + gap. Solo en modo scroll. */
   const getScrollStep = () => {
@@ -743,7 +756,7 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
      row-gap: var(--senda-testimonials-desktop-gap, ${safeDesktopGap}) !important;
    }
    .senda-testimonials-carousel-wrapper:not(.senda-testimonials-is-carousel) .${gapId}.senda-testimonials-grid {
-     grid-template-columns: repeat(auto-fit, minmax(360px, 420px)) !important;
+     grid-template-columns: repeat(auto-fit, minmax(${testimonialGridWidthPx}px, ${testimonialGridWidthPx}px)) !important;
      justify-content: center !important;
    }
    .senda-testimonials-carousel-wrapper:not(.senda-testimonials-is-carousel) .senda-testimonials-grid .senda-testimonials-card-cell {
@@ -775,11 +788,11 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
  .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel .senda-testimonials-card-cell {
    flex-shrink: 0 !important;
  }
- /* Solo en móvil: tamaño fijo de card (355px x 603px) */
+ /* Móvil carrusel: ancho según --senda-testimonial-card-width (config / tamaño card) */
  .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel.senda-testimonials-mobile .senda-testimonials-card-cell {
-   min-width: 355px !important;
-   max-width: 355px !important;
-   width: 355px !important;
+   width: var(--senda-testimonial-card-width, ${MOBILE_CARD_WIDTH_PX}px) !important;
+   min-width: var(--senda-testimonial-card-width, ${MOBILE_CARD_WIDTH_PX}px) !important;
+   max-width: var(--senda-testimonial-card-width, ${MOBILE_CARD_WIDTH_PX}px) !important;
  }
  /* 4+ testimonios: padding simétrico para que el primer y último card tengan el mismo espacio a izquierda y derecha.
   * scroll-padding evita que la primera/última card se peguen al borde al hacer snap. */
@@ -854,7 +867,7 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
         />
 
         {hasTitle && (
-          <div className="mb-10 md:mb-12 text-center max-w-4xl mx-auto">
+          <div className="mb-10 md:mb-12 w-full max-w-4xl mx-auto text-left md:text-center">
             <div
               className={cn(
                 'testimonials-senda-title',
@@ -882,10 +895,12 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
           )}
           ref={wrapperRef}
           style={
-            useScrollMode && testimonialData.length > 3 && !isMobileView
+            useScrollMode
               ? {
                   ['--senda-testimonial-card-width' as string]: selectedWidth,
-                  ['--senda-testimonial-scroll-gap' as string]: safeDesktopGap,
+                  ...(testimonialData.length > 3 && !isMobileView
+                    ? { ['--senda-testimonial-scroll-gap' as string]: safeDesktopGap }
+                    : {}),
                 }
               : undefined
           }
@@ -905,12 +920,11 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
                 key={index}
                 className={cn(
                   'senda-testimonials-card-cell flex-shrink-0',
-                  isMobileView && 'w-[355px] min-w-[355px] max-w-[355px]',
                   index === testimonialData.length - 1 && 'senda-testimonials-card-cell-last',
                 )}
                 style={
-                  !isMobileView
-                    ? { width: selectedWidth, minWidth: selectedWidth }
+                  useScrollMode && !isMobileView
+                    ? { width: selectedWidth, minWidth: selectedWidth, maxWidth: selectedWidth }
                     : undefined
                 }
               >

@@ -120,6 +120,17 @@ function sanitizeAnchorId(value: string | null | undefined, fallback: string): s
   return s || fallback
 }
 
+/** Convierte el ancho configurado (rem/px/número) a px para scroll y grid; alineado con la descripción del campo en config. */
+function cardsCssWidthToScrollPx(widthCss: string): number {
+  const s = (widthCss || '').trim()
+  if (!s) return 355
+  if (s.endsWith('rem')) return Math.round((parseFloat(s) || 0) * 16) || 355
+  if (s.endsWith('px')) return Math.round(parseFloat(s) || 0) || 355
+  const n = parseFloat(s)
+  if (!Number.isFinite(n)) return 355
+  return n < 100 ? Math.round(n * 16) : Math.round(n)
+}
+
 const SendaCard: React.FC<{
   card: CardData
   index: number
@@ -583,6 +594,27 @@ export const SendaCardsBlockComponent: React.FC<
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
+  const cardSizeMap: Record<'sm' | 'md' | 'lg', { width: string; height: string }> = {
+    sm: { width: '16rem', height: '30rem' },
+    md: { width: '18rem', height: '32rem' },
+    lg: { width: '20rem', height: '34rem' },
+  }
+
+  let selectedWidth: string
+  let selectedHeight: string
+  if (cardSize === 'custom' && customCardWidth?.trim()) {
+    selectedWidth = customCardWidth.trim()
+    selectedHeight = customCardHeight?.trim() || cardSizeMap.md.height
+  } else {
+    const presetKey: 'sm' | 'md' | 'lg' =
+      cardSize === 'sm' || cardSize === 'md' || cardSize === 'lg' ? cardSize : 'md'
+    const presetSize = cardSizeMap[presetKey]
+    selectedWidth = presetSize.width
+    selectedHeight = presetSize.height
+  }
+
+  const cardsScrollWidthPx = cardsCssWidthToScrollPx(selectedWidth)
+
   const getCurrentGap = () => {
     if (typeof window === 'undefined' || !scrollContainerRef.current) return 0
     const style = window.getComputedStyle(scrollContainerRef.current)
@@ -595,12 +627,10 @@ export const SendaCardsBlockComponent: React.FC<
     setFlippedCardIndex(flippedCardIndex === index ? null : index)
   }
 
-  const CARD_WIDTH_SCROLL = 355
-
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
       const gap = getCurrentGap()
-      const step = CARD_WIDTH_SCROLL + gap
+      const step = cardsScrollWidthPx + gap
       scrollContainerRef.current.scrollBy({
         left: -step,
         behavior: 'smooth',
@@ -611,32 +641,12 @@ export const SendaCardsBlockComponent: React.FC<
   const scrollRight = () => {
     if (scrollContainerRef.current) {
       const gap = getCurrentGap()
-      const step = CARD_WIDTH_SCROLL + gap
+      const step = cardsScrollWidthPx + gap
       scrollContainerRef.current.scrollBy({
         left: step,
         behavior: 'smooth',
       })
     }
-  }
-
-  const sizeMap: Record<'sm' | 'md' | 'lg', { width: string; height: string }> = {
-    sm: { width: '16rem', height: '30rem' },
-    md: { width: '18rem', height: '32rem' },
-    lg: { width: '20rem', height: '34rem' },
-  }
-
-  let selectedWidth: string
-  let selectedHeight: string
-
-  if (cardSize === 'custom' && customCardWidth && customCardHeight) {
-    selectedWidth = customCardWidth
-    selectedHeight = customCardHeight
-  } else {
-    const presetKey: 'sm' | 'md' | 'lg' =
-      cardSize === 'sm' || cardSize === 'md' || cardSize === 'lg' ? cardSize : 'md'
-    const presetSize = sizeMap[presetKey]
-    selectedWidth = presetSize.width
-    selectedHeight = presetSize.height
   }
 
   const isRichTextEmpty = (value?: DefaultTypedEditorState | null): boolean => {
@@ -742,7 +752,7 @@ export const SendaCardsBlockComponent: React.FC<
       setCanScrollLeft(scrollLeftVal > 0)
       setCanScrollRight(scrollLeftVal < scrollWidth - clientWidth - 1)
       const gap = getCurrentGap()
-      const step = CARD_WIDTH_SCROLL + gap
+      const step = cardsScrollWidthPx + gap
       const calculatedIndex = step > 0 ? Math.round(scrollLeftVal / step) : 0
       setCurrentCardIndex(Math.min(calculatedIndex, cardData.length - 1))
     }
@@ -759,7 +769,7 @@ export const SendaCardsBlockComponent: React.FC<
         window.removeEventListener('resize', checkScrollability)
       }
     }
-  }, [cardData.length])
+  }, [cardData.length, cardsScrollWidthPx])
 
   const backgroundStyle: React.CSSProperties = {
     backgroundColor: backgroundColor || 'transparent',
@@ -798,13 +808,12 @@ export const SendaCardsBlockComponent: React.FC<
 
   const calculateMaxCardsWidth = (): string => {
     const numCards = cardData.length
-    if (numCards === 0) return '420px'
-    const cardMaxWidth = 420
+    if (numCards === 0) return `${cardsScrollWidthPx}px`
     const gaps = numCards > 1 ? numCards - 1 : 0
     const gapValue = desktopGap.includes('rem')
       ? parseFloat(desktopGap) * 16
       : parseFloat(desktopGap) || 0
-    const totalWidth = numCards * cardMaxWidth + gaps * gapValue
+    const totalWidth = numCards * cardsScrollWidthPx + gaps * gapValue
     return `${totalWidth}px`
   }
 
@@ -850,7 +859,7 @@ export const SendaCardsBlockComponent: React.FC<
  @media (min-width: 1220px) {
  .senda-cards-desktop-content {
  display: grid !important;
- grid-template-columns: repeat(auto-fit, minmax(360px, 420px)) !important;
+ grid-template-columns: repeat(auto-fit, minmax(${cardsScrollWidthPx}px, ${cardsScrollWidthPx}px)) !important;
  gap: var(--senda-cards-desktop-gap, ${safeDesktopGap}) !important;
  justify-content: center !important;
  width: 100% !important;
@@ -874,7 +883,7 @@ export const SendaCardsBlockComponent: React.FC<
  row-gap: var(--senda-cards-desktop-gap, ${safeDesktopGap}) !important;
  }
  .${gapId}.senda-cards-grid {
- grid-template-columns: repeat(auto-fit, minmax(360px, 420px)) !important;
+ grid-template-columns: repeat(auto-fit, minmax(${cardsScrollWidthPx}px, ${cardsScrollWidthPx}px)) !important;
  justify-content: center !important;
  }
  .senda-cards-text-inner {
@@ -932,14 +941,14 @@ export const SendaCardsBlockComponent: React.FC<
  padding-right: 1rem !important;
  }
  .senda-cards-card-cell {
- width: 355px !important;
- min-width: 355px !important;
- max-width: 355px !important;
+ width: ${selectedWidth} !important;
+ min-width: ${selectedWidth} !important;
+ max-width: ${selectedWidth} !important;
  }
  .senda-cards-card-cell > * {
- height: 516px !important;
- min-height: 516px !important;
- max-height: 516px !important;
+ height: ${selectedHeight} !important;
+ min-height: ${selectedHeight} !important;
+ max-height: ${selectedHeight} !important;
  }
  }
  @media (min-width: 1024px) and (max-width: 1219px) {
@@ -1072,9 +1081,7 @@ export const SendaCardsBlockComponent: React.FC<
               {cardData.map((card, index) => (
                 <div
                   key={card.cardKey}
-                  className={cn(
-                    'senda-cards-card-cell flex-shrink-0 w-[355px] min-w-[355px] max-w-[355px]',
-                  )}
+                  className="senda-cards-card-cell flex-shrink-0"
                 >
                   <SendaCard
                     card={card}

@@ -680,8 +680,11 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                     }}
                     disabled={!height || !weight}
                   >
-                    <span className="imc-senda-btn-label inline-flex items-center justify-center gap-2">
-                      <span>{calculateButtonText}</span>
+                    <span
+                      className="imc-senda-btn-label inline-flex flex-row items-center justify-center gap-2"
+                      dir="ltr"
+                    >
+                      <span className="min-w-0">{calculateButtonText}</span>
                       {calculateBtnIconSvg ? (
                         <span
                           data-bloque-imc-calc-btn-icon
@@ -778,7 +781,13 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                               ...fontStyle,
                             }}
                           >
-                            <span className="imc-senda-btn-label inline-flex items-center justify-center gap-2">
+                            <span
+                              className="imc-senda-btn-label inline-flex flex-row items-center justify-center gap-2"
+                              dir="ltr"
+                            >
+                              <span className="min-w-0">
+                                {linkProps.label?.trim() || 'Continuar'}
+                              </span>
                               {iconSvg ? (
                                 <span
                                   className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
@@ -786,7 +795,6 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                                   dangerouslySetInnerHTML={{ __html: iconSvg }}
                                 />
                               ) : null}
-                              {linkProps.label?.trim() || 'Continuar'}
                             </span>
                           </CMSLink>
                         )
@@ -942,7 +950,13 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                                 ...fontStyle,
                               }}
                             >
-                              <span className="imc-senda-btn-label inline-flex items-center justify-center gap-2">
+                              <span
+                                className="imc-senda-btn-label inline-flex flex-row items-center justify-center gap-2"
+                                dir="ltr"
+                              >
+                                <span className="min-w-0">
+                                  {linkProps.label?.trim() || 'Continuar'}
+                                </span>
                                 {iconSvg ? (
                                   <span
                                     className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
@@ -950,7 +964,6 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                                     dangerouslySetInnerHTML={{ __html: iconSvg }}
                                   />
                                 ) : null}
-                                {linkProps.label?.trim() || 'Continuar'}
                               </span>
                             </CMSLink>
                           )
