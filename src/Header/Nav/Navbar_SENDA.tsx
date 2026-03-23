@@ -312,7 +312,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
       styles.push(`[data-navbar-senda-font="${styleId}"] .font-bold, [data-navbar-senda-font="${styleId}"] strong, [data-navbar-senda-font="${styleId}"] b { color: ${boldTextColor} !important; }`);
     }
     if (buttonBackgroundColor || buttonTextColor) {
-      const btnBaseRules: string[] = ["border-radius: 0.75rem !important;"];
+      const btnBaseRules: string[] = ["border-radius: 1rem !important;"];
       if (buttonBackgroundColor) btnBaseRules.push(`background-color: ${buttonBackgroundColor} !important;`);
       if (buttonTextColor) {
         styles.push(
@@ -321,7 +321,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
       }
       styles.push(`[data-navbar-senda-font="${styleId}"] .navbar-senda-btn-default { ${btnBaseRules.join(" ")} }`);
     } else {
-      styles.push(`[data-navbar-senda-font="${styleId}"] .navbar-senda-btn-default { border-radius: 0.75rem !important; }`);
+      styles.push(`[data-navbar-senda-font="${styleId}"] .navbar-senda-btn-default { border-radius: 1rem !important; }`);
     }
     return styles.length > 0 ? styles.join("\n") : "";
   };

@@ -366,7 +366,7 @@ export const CTA2SendaBlock: React.FC<Props> = (props) => {
       styles.push(`${sel} strong, ${sel} b { color: ${boldTextColor} !important; }`)
     }
 
-    const btnBaseRules = ['border-radius: 0.75rem !important;']
+    const btnBaseRules = ['border-radius: 1rem !important;']
     if (buttonBackgroundColor) btnBaseRules.push(`background-color: ${buttonBackgroundColor} !important;`)
     const btnSelector = `${sel} .cta2-senda-btn-default, ${sel} .cta2-senda-btn-secondary`
     styles.push(`${btnSelector} { ${btnBaseRules.join(' ')} }`)
@@ -375,7 +375,7 @@ export const CTA2SendaBlock: React.FC<Props> = (props) => {
         `${sel} .cta2-senda-btn-default, ${sel} .cta2-senda-btn-default *, ${sel} .cta2-senda-btn-secondary, ${sel} .cta2-senda-btn-secondary * { color: ${buttonTextColor} !important; }`,
       )
     }
-    styles.push(`${sel} .cta2-senda-btn-outline { border-radius: 0.75rem !important; }`)
+    styles.push(`${sel} .cta2-senda-btn-outline { border-radius: 1rem !important; }`)
 
     if (!fontGroupTypographyActive) {
       styles.push(

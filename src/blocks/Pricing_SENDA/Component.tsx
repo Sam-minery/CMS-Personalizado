@@ -448,7 +448,7 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
           </div>
         )}
         <div
-          className="relative z-10 flex min-h-full flex-col gap-5 min-w-0 md:min-h-0 md:h-full md:justify-between md:border-l md:pl-6 lg:pl-10 md:border-current/30"
+          className="relative z-10 flex min-h-full flex-col gap-5 min-w-0 py-3 md:py-5 md:min-h-0 md:h-full md:justify-between md:border-l md:pl-6 lg:pl-10 md:border-current/30"
           style={dividerColor ? { borderLeftColor: dividerColor } : undefined}
         >
           {plan.richText && Array.isArray(plan.planElements) && plan.planElements.length > 0 ? (
@@ -481,7 +481,7 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
                     </span>
                   ) : null}
                   {el?.text != null && (
-                    <span className="pricing-senda-plan-element-text min-w-0">{el.text}</span>
+                    <span className="pricing-senda-plan-element-text min-w-0 pr-4 md:pr-6">{el.text}</span>
                   )}
                 </div>
               )

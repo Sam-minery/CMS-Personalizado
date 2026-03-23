@@ -447,7 +447,7 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
       )
     }
     const btnRules: string[] = [
-      'border-radius: 0.75rem !important;',
+      'border-radius: 1rem !important;',
       `background-color: ${buttonsBackgroundColor || '#007AFF'} !important;`,
     ]
     styles.push(`${sel} .app-senda-btn { ${btnRules.join(' ')} }`)

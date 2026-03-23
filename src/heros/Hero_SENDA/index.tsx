@@ -376,7 +376,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
       )
     }
     if (heroSendaButtonBackgroundColor || heroSendaButtonTextColor) {
-      const btnBaseRules: string[] = ['border-radius: 0.75rem !important;']
+      const btnBaseRules: string[] = ['border-radius: 1rem !important;']
       if (heroSendaButtonBackgroundColor) btnBaseRules.push(`background-color: ${heroSendaButtonBackgroundColor} !important;`)
       if (heroSendaButtonTextColor) {
         styles.push(
@@ -385,10 +385,10 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
       }
       styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-default { ${btnBaseRules.join(' ')} }`)
     } else {
-      styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-default { border-radius: 0.75rem !important; }`)
+      styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-default { border-radius: 1rem !important; }`)
     }
     if (heroSendaButton2BackgroundColor || heroSendaButton2TextColor) {
-      const btn2Rules: string[] = ['border-radius: 0.75rem !important;']
+      const btn2Rules: string[] = ['border-radius: 1rem !important;']
       if (heroSendaButton2BackgroundColor) btn2Rules.push(`background-color: ${heroSendaButton2BackgroundColor} !important;`)
       if (heroSendaButton2TextColor) {
         styles.push(
@@ -398,10 +398,10 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
       }
       styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-secondary { ${btn2Rules.join(' ')} }`)
     } else {
-      styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-secondary { border-radius: 0.75rem !important; }`)
+      styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-secondary { border-radius: 1rem !important; }`)
     }
     if (heroSendaButton3BackgroundColor || heroSendaButton3TextColor) {
-      const btn3Rules: string[] = ['border-radius: 1.25rem !important;', 'padding: 1.25rem 2rem !important;', 'min-height: 4rem !important;', 'display: inline-flex !important;', 'align-items: center !important;']
+      const btn3Rules: string[] = ['border-radius: 1rem !important;', 'padding: 1.25rem 2rem !important;', 'min-height: 4rem !important;', 'display: inline-flex !important;', 'align-items: center !important;']
       if (heroSendaButton3BackgroundColor) btn3Rules.push(`background-color: ${heroSendaButton3BackgroundColor} !important;`)
       if (heroSendaButton3TextColor) {
         styles.push(
@@ -410,7 +410,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
       }
       styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-image { ${btn3Rules.join(' ')} }`)
     } else {
-      styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-image { border-radius: 1.25rem !important; padding: 1.25rem 2rem !important; min-height: 4rem !important; display: inline-flex !important; align-items: center !important; }`)
+      styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-image { border-radius: 1rem !important; padding: 1.25rem 2rem !important; min-height: 4rem !important; display: inline-flex !important; align-items: center !important; }`)
     }
     styles.push(
       `${sel} sub, ${sel} sup { font-weight: 700 !important; vertical-align: baseline !important; font-size: 0.75em; line-height: 1.2; }`,

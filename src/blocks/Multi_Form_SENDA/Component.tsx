@@ -423,7 +423,7 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
       styles.push(`${sel} strong, ${sel} b { color: ${boldTextColor} !important; }`)
     }
 
-    const btnRules: string[] = ['border-radius: 0.75rem !important;']
+    const btnRules: string[] = ['border-radius: 1rem !important;']
     if (buttonBackgroundColor) btnRules.push(`background-color: ${buttonBackgroundColor} !important;`)
     styles.push(`${sel} .mf-senda-btn { ${btnRules.join(' ')} }`)
     if (buttonTextColor) {
@@ -431,7 +431,7 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
         `${sel} .mf-senda-btn, ${sel} .mf-senda-btn * { color: ${buttonTextColor} !important; }`,
       )
     }
-    styles.push(`${sel} .mf-senda-step-btn { border-radius: 0.75rem !important; }`)
+    styles.push(`${sel} .mf-senda-step-btn { border-radius: 1rem !important; }`)
     styles.push(
       `${sel} .mf-senda-step-btn, ${sel} .mf-senda-step-btn * { color: var(--mf-senda-step-btn-color, inherit) !important; }`,
     )

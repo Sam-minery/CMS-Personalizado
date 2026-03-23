@@ -389,7 +389,7 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
     }
 
     if (buttonBackgroundColor || buttonTextColor) {
-      const btnRules: string[] = ['border-radius: 0.75rem !important;']
+      const btnRules: string[] = ['border-radius: 1rem !important;']
       if (buttonBackgroundColor)
         btnRules.push(`background-color: ${buttonBackgroundColor} !important;`)
       styles.push(`${sel} .lss-btn-filled { ${btnRules.join(' ')} }`)
@@ -400,7 +400,7 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
         )
       }
     } else {
-      styles.push(`${sel} .lss-btn-filled { border-radius: 0.75rem !important; }`)
+      styles.push(`${sel} .lss-btn-filled { border-radius: 1rem !important; }`)
     }
 
     styles.push(
