@@ -524,7 +524,7 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
       >
         <div className="container mx-auto">
           <div
-            className="app-senda-card mx-auto flex w-full flex-col gap-6 rounded-2xl bg-white p-6 shadow-lg min-h-[1174px] max-w-[327px] md:min-h-[720px] md:max-w-[1100px] md:w-full md:gap-8 md:p-10"
+            className="app-senda-card mx-auto flex w-fit max-w-full min-w-0 flex-col gap-6 rounded-2xl bg-white p-6 shadow-lg min-h-[1174px] md:min-h-[720px] md:w-full md:max-w-[1100px] md:gap-8 md:p-10"
             style={cardBackgroundColor ? { backgroundColor: cardBackgroundColor } : undefined}
           >
             {/* Primer campo de texto: móvil 279×80, desktop 924×56. En móvil más separado del borde superior. */}
@@ -541,7 +541,12 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
             </div>
 
             {buttonList.length > 0 && (
-              <div className="app-senda-buttons order-3 mx-auto flex w-full max-w-[279px] flex-wrap items-center justify-center gap-3 md:order-4 md:mt-0 md:max-w-none md:gap-4">
+              <div
+                className={cn(
+                  'app-senda-buttons order-3 mx-auto flex w-max max-w-full shrink-0 flex-nowrap items-center justify-center gap-4',
+                  'md:order-4 md:mt-0',
+                )}
+              >
                 {buttonList.map((button, index) => {
                   const linkData = button?.link
                   if (!linkData) return null
@@ -607,7 +612,7 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
 
             {/* Imagen 2: solo móvil, última (order-4). Contenedor 327×334, imagen 279×334 */}
             {image2Url ? (
-              <div className="order-4 flex h-[334px] w-full max-w-[327px] shrink-0 items-center justify-center md:hidden">
+              <div className="order-4 flex h-[334px] w-full max-w-full shrink-0 items-center justify-center md:hidden">
                 <div className="relative h-[334px] w-full max-w-[279px]">
                   <Image
                     src={image2Url}

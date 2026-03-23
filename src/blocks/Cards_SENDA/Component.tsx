@@ -250,7 +250,7 @@ const SendaCard: React.FC<{
                     )}
                     {card.userName && (
                       <span
-                        className="text-sm md:text-base font-semibold text-neutral-800 dark:text-neutral-200"
+                        className="cards-senda-user-name text-sm md:text-base font-normal text-neutral-800 dark:text-neutral-200"
                         style={card.userNameColor ? { color: card.userNameColor } : undefined}
                       >
                         {card.userName}
@@ -561,6 +561,8 @@ export const SendaCardsBlockComponent: React.FC<
         `[data-cards-senda-font="${styleId}"] strong, [data-cards-senda-font="${styleId}"] b { color: ${boldTextColor} !important; }`,
       )
     }
+
+    styles.push(`${sel} .cards-senda-user-name { font-weight: 400 !important; }`)
 
     styles.push(
       `${sel} sub, ${sel} sup { font-weight: 700 !important; vertical-align: baseline !important; font-size: 0.75em; line-height: 1.2; }`,

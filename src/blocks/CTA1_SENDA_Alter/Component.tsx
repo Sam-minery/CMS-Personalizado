@@ -7,7 +7,10 @@ import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
-import { sendaBlockButtonNativeClassName } from '@/utilities/sendaBlockButtonClasses'
+import {
+  sendaBlockButtonNativeClassName,
+  sendaBlockButtonNativeSymmetricClassName,
+} from '@/utilities/sendaBlockButtonClasses'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import {
   appendFontGroupHeadingMarginRules,
@@ -1016,8 +1019,8 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                         {...linkProps}
                         appearance="inline"
                         className={cn(
-                          sendaBlockButtonNativeClassName,
-                          'cta1-popup-submit font-medium transition-colors border border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
+                          sendaBlockButtonNativeSymmetricClassName,
+                          'cta1-popup-submit font-medium transition-colors border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
                           !fontGroupTypographyActive && 'text-base',
                         )}
                         style={{
@@ -1035,8 +1038,8 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                 ) : (
                   <span
                     className={cn(
-                      sendaBlockButtonNativeClassName,
-                      'font-medium border border-white/40 cursor-not-allowed opacity-70',
+                      sendaBlockButtonNativeSymmetricClassName,
+                      'font-medium border-0 cursor-not-allowed opacity-70',
                       !fontGroupTypographyActive && 'text-base',
                     )}
                     style={{
