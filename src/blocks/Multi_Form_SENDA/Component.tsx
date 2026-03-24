@@ -452,6 +452,16 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
       )
       styles.push(`${sel} .mf-senda-richtext h4 { font-weight: 900 !important; }`)
     }
+
+    styles.push(
+      `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) {
+        ${sel} .mf-senda-intro-richtext,
+        ${sel} .mf-senda-intro-richtext * {
+          text-align: left !important;
+        }
+      }`,
+    )
+
     styles.push(
       `${sel} sub, ${sel} sup { font-weight: 700 !important; vertical-align: baseline !important; font-size: 0.75em; line-height: 1.2; }`,
     )
@@ -538,7 +548,7 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
             {!formStarted && (
               <div style={fontStyle} className="pt-6">
                 {introRichText && (
-                  <div className={richtextMainClass}>
+                  <div className={cn(richtextMainClass, 'mf-senda-intro-richtext')}>
                     <RichText data={introRichText} enableGutter={false} enableProse={false} />
                   </div>
                 )}

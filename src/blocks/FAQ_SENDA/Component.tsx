@@ -421,7 +421,7 @@ export const FAQSendaBlock: React.FC<FAQSendaProps> = (props) => {
                   >
                     <AccordionTrigger
                       icon={iconEl}
-                      className="faq-senda-accordion-trigger py-3 md:py-4 [&[data-state=open]>svg]:rotate-180"
+                      className="faq-senda-accordion-trigger py-2 md:py-3 data-[state=open]:py-3 data-[state=open]:md:py-4 [&[data-state=open]>svg]:rotate-180"
                     >
                       <span className="min-w-0 flex-1 text-left">
                         {q?.questionRichText && (

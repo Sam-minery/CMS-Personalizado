@@ -173,8 +173,10 @@ const TestimonialCard: React.FC<{
   index: number
   cardHeight: string
   isMobileView: boolean
+  /** Móvil o desktop con card custom: nombre abajo a la izquierda, cita flex-1 recortada. */
+  pinNameToBottom: boolean
   fontGroupTypographyActive: boolean
-}> = ({ testimonial, index, cardHeight, isMobileView, fontGroupTypographyActive }) => {
+}> = ({ testimonial, index, cardHeight, isMobileView, pinNameToBottom, fontGroupTypographyActive }) => {
   const cardRef = useRef<HTMLDivElement>(null)
   const titleDescStyle: React.CSSProperties = testimonial.titleAndDescriptionColor
     ? { color: testimonial.titleAndDescriptionColor }
@@ -182,6 +184,10 @@ const TestimonialCard: React.FC<{
   const nameStyle: React.CSSProperties = testimonial.nameAndProfessionColor
     ? { color: testimonial.nameAndProfessionColor }
     : { color: '#374151' }
+  /**
+   * Móvil: altura fija para anclar nombre/profesión abajo; la cita usa flex-1 + overflow hidden (sin scroll) si es larga.
+   * Desktop: altura según cardSize.
+   */
   const heightStyle = isMobileView ? MOBILE_CARD_HEIGHT : cardHeight
 
   return (
@@ -215,12 +221,18 @@ const TestimonialCard: React.FC<{
       </div>
 
       <div
-        className="flex-1 flex flex-col px-5 -mt-1 pb-5"
+        className={cn(
+          'flex flex-col px-5 -mt-1 pb-5',
+          pinNameToBottom ? 'min-h-0 flex-1' : 'flex-1',
+        )}
         style={titleDescStyle}
       >
         <div
           className={cn(
-            'w-full max-w-[356px] h-[260px] overflow-hidden mx-auto mt-6',
+            'w-full max-w-[356px] mt-6',
+            pinNameToBottom
+              ? 'mx-auto min-h-0 flex-1 overflow-hidden self-stretch'
+              : 'mx-auto h-[260px] overflow-hidden',
             fontGroupTypographyActive && TESTIMONIALS_FG_RICHTEXT,
           )}
         >
@@ -238,7 +250,10 @@ const TestimonialCard: React.FC<{
 
         <div
           className={cn(
-            'w-full max-w-[356px] mx-auto -mt-1',
+            'w-full max-w-[356px] flex-shrink-0',
+            pinNameToBottom
+              ? 'self-start mr-auto pt-6 text-left [&_*]:text-left'
+              : 'mx-auto -mt-1',
             fontGroupTypographyActive && TESTIMONIALS_FG_RICHTEXT,
           )}
           style={nameStyle}
@@ -249,8 +264,13 @@ const TestimonialCard: React.FC<{
             enableProse={false}
             className={
               fontGroupTypographyActive
-                ? ''
-                : 'text-sm [&_p]:font-bold [&_p]:mb-0.5 [&_p:last-child]:text-xs [&_p:last-child]:uppercase [&_p:last-child]:font-normal [&_p:last-child]:opacity-80'
+                ? pinNameToBottom
+                  ? '[&_*]:text-left'
+                  : ''
+                : cn(
+                    'text-sm [&_p]:font-bold [&_p]:mb-0.5 [&_p:last-child]:text-xs [&_p:last-child]:uppercase [&_p:last-child]:font-normal [&_p:last-child]:opacity-80',
+                    pinNameToBottom && '[&_*]:text-left',
+                  )
             }
           />
         </div>
@@ -933,6 +953,10 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
                   index={index}
                   cardHeight={selectedHeight}
                   isMobileView={isMobileView}
+                  pinNameToBottom={
+                    isMobileView ||
+                    (cardSize === 'custom' && Boolean(customCardWidth?.trim()))
+                  }
                   fontGroupTypographyActive={fontGroupTypographyActive}
                 />
               </div>
