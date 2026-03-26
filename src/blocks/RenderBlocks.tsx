@@ -9,6 +9,9 @@ import { enabledBlockSlugs } from '@/projectConfig'
 const allBlockComponents: Record<string, React.ComponentType<any>> = {
   animatedPin3D: dynamic(() => import('@/blocks/3D_Animated_Pin/Component').then((m) => m.AnimatedPin3DBlock)),
   appSenda: dynamic(() => import('@/blocks/APP_SENDA/Component').then((m) => m.AppSendaBlock)),
+  finalTestSenda: dynamic(() =>
+    import('@/blocks/Final_test_SENDA/Component').then((m) => m.FinalTestSendaBlock),
+  ),
   archive: dynamic(() => import('@/blocks/ArchiveBlock/Component').then((m) => m.ArchiveBlock)),
   backgroundRippleEffect: dynamic(() =>
     import('@/blocks/Background_Ripple_Effect/Component').then((m) => m.Background_Ripple_Effect),

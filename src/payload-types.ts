@@ -438,6 +438,7 @@ export interface Page {
     | TestimonialsSendaBlock
     | BloqueIMCSendaBlock
     | AppSendaBlock
+    | FinalTestSendaBlock
   )[];
   meta?: {
     title?: string | null;
@@ -3062,6 +3063,105 @@ export interface AppSendaBlock {
   blockType: 'appSenda';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FinalTestSendaBlock".
+ */
+export interface FinalTestSendaBlock {
+  /**
+   * ID para enlaces ancla (ej: final-test-senda). Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  /**
+   * Opcional. Si se define, se muestra como fondo de la sección.
+   */
+  backgroundImage?: {
+    useMedia?: boolean | null;
+    mediaImage?: (number | null) | Media;
+    src?: string | null;
+  };
+  /**
+   * Fondo de la sección si no hay imagen, o detrás del área del componente. Nombre CSS o #hex.
+   */
+  backgroundColor?: string | null;
+  /**
+   * Opcional. Si se rellena, el texto + imagen + botón van dentro de una caja redondeada con este color.
+   */
+  componentBackgroundColor?: string | null;
+  textColor?: string | null;
+  boldTextColor?: string | null;
+  buttonBackgroundColor?: string | null;
+  buttonTextColor?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  mainImage?: {
+    useMedia?: boolean | null;
+    mediaImage?: (number | null) | Media;
+    src?: string | null;
+    alt?: string | null;
+  };
+  button?: {
+    title?: string | null;
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      /**
+       * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+       */
+      url?: string | null;
+    };
+    iconSVG?: string | null;
+  };
+  useFontGroup?: boolean | null;
+  fontGroup?: (number | null) | FontGroup;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'finalTestSenda';
+}
+/**
  * Envíos del formulario de Contact Section 2
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3734,6 +3834,7 @@ export interface PagesSelect<T extends boolean = true> {
         testimonialsSenda?: T | TestimonialsSendaBlockSelect<T>;
         bloqueIMCSenda?: T | BloqueIMCSendaBlockSelect<T>;
         appSenda?: T | AppSendaBlockSelect<T>;
+        finalTestSenda?: T | FinalTestSendaBlockSelect<T>;
       };
   meta?:
     | T
@@ -4476,6 +4577,57 @@ export interface AppSendaBlockSelect<T extends boolean = true> {
             };
         iconSVG?: T;
         id?: T;
+      };
+  useFontGroup?: T;
+  fontGroup?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FinalTestSendaBlock_select".
+ */
+export interface FinalTestSendaBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  backgroundImage?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+      };
+  backgroundColor?: T;
+  componentBackgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  buttonBackgroundColor?: T;
+  buttonTextColor?: T;
+  content?: T;
+  mainImage?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  button?:
+    | T
+    | {
+        title?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        iconSVG?: T;
       };
   useFontGroup?: T;
   fontGroup?: T;

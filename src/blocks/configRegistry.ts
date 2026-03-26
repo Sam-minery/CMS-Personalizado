@@ -75,6 +75,7 @@ export const ALL_BLOCK_SLUGS_ORDERED: string[] = [
   'faq4',
   'faq5',
   'faqSenda',
+  'finalTestSenda',
   'testimonialsSenda',
   'focusCards',
   'footer1',

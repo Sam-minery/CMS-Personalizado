@@ -63,6 +63,7 @@ export const BLOCK_LOADER_MANIFEST: Record<
   faq4: { path: './FAQ_4/config', exportName: 'FAQ4' },
   faq5: { path: './FAQ5/config', exportName: 'FAQ5Block' },
   faqSenda: { path: './FAQ_SENDA/config', exportName: 'FAQSendaBlock' },
+  finalTestSenda: { path: './Final_test_SENDA/config', exportName: 'FinalTestSendaBlockConfig' },
   testimonialsSenda: { path: './Testimonials_SENDA/config', exportName: 'TestimonialsSendaBlockConfig' },
   focusCards: { path: './Focus_Cards/config', exportName: 'FocusCardsBlock' },
   footer1: { path: './Footer1/config', exportName: 'Footer1Block' },
