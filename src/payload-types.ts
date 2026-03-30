@@ -828,6 +828,112 @@ export interface FontGroup {
     lists?: string | null;
   };
   /**
+   * Opcional. Mismos campos que «Márgenes de texto» pero solo por debajo del breakpoint md (≤767px). Si un campo está vacío, se usa el valor de escritorio de ese mismo campo.
+   */
+  headingMarginsMobile?: {
+    /**
+     * margin-top del elemento (CSS).
+     */
+    h1MarginTop?: string | null;
+    /**
+     * margin-bottom del elemento (CSS).
+     */
+    h1MarginBottom?: string | null;
+    /**
+     * margin-top del elemento (CSS).
+     */
+    h2MarginTop?: string | null;
+    /**
+     * margin-bottom del elemento (CSS).
+     */
+    h2MarginBottom?: string | null;
+    /**
+     * margin-top del elemento (CSS).
+     */
+    h3MarginTop?: string | null;
+    /**
+     * margin-bottom del elemento (CSS).
+     */
+    h3MarginBottom?: string | null;
+    /**
+     * margin-top del elemento (CSS).
+     */
+    h4MarginTop?: string | null;
+    /**
+     * margin-bottom del elemento (CSS).
+     */
+    h4MarginBottom?: string | null;
+    /**
+     * margin-top del elemento (CSS).
+     */
+    h5MarginTop?: string | null;
+    /**
+     * margin-bottom del elemento (CSS).
+     */
+    h5MarginBottom?: string | null;
+    /**
+     * margin-top del elemento (CSS).
+     */
+    h6MarginTop?: string | null;
+    /**
+     * margin-bottom del elemento (CSS).
+     */
+    h6MarginBottom?: string | null;
+    /**
+     * margin-top para párrafos <p> (CSS).
+     */
+    bodyMarginTop?: string | null;
+    /**
+     * margin-bottom para párrafos <p> (CSS).
+     */
+    bodyMarginBottom?: string | null;
+    /**
+     * margin-top para listas <ul> y <ol> (CSS).
+     */
+    listsMarginTop?: string | null;
+    /**
+     * margin-bottom para listas <ul> y <ol> (CSS).
+     */
+    listsMarginBottom?: string | null;
+  };
+  /**
+   * Opcional. Mismos conceptos que «Interlineado (line-height)» para móvil. Si un campo está vacío, se usa el interlineado de escritorio correspondiente.
+   */
+  lineHeightsMobile?: {
+    /**
+     * line-height para H1 (entre líneas del mismo encabezado).
+     */
+    h1?: string | null;
+    /**
+     * line-height para H2.
+     */
+    h2?: string | null;
+    /**
+     * line-height para H3.
+     */
+    h3?: string | null;
+    /**
+     * line-height para H4.
+     */
+    h4?: string | null;
+    /**
+     * line-height para H5.
+     */
+    h5?: string | null;
+    /**
+     * line-height para H6.
+     */
+    h6?: string | null;
+    /**
+     * line-height para párrafos <p>.
+     */
+    body?: string | null;
+    /**
+     * line-height para listas (ul, ol, li).
+     */
+    lists?: string | null;
+  };
+  /**
    * Si está activado, todos los archivos de fuentes de este grupo se precargarán en el front (en cada página) para evitar que el texto se muestre con otra fuente al recargar.
    */
   preloadFonts?: boolean | null;
@@ -4841,6 +4947,38 @@ export interface FontGroupsSelect<T extends boolean = true> {
         listsMarginBottom?: T;
       };
   lineHeights?:
+    | T
+    | {
+        h1?: T;
+        h2?: T;
+        h3?: T;
+        h4?: T;
+        h5?: T;
+        h6?: T;
+        body?: T;
+        lists?: T;
+      };
+  headingMarginsMobile?:
+    | T
+    | {
+        h1MarginTop?: T;
+        h1MarginBottom?: T;
+        h2MarginTop?: T;
+        h2MarginBottom?: T;
+        h3MarginTop?: T;
+        h3MarginBottom?: T;
+        h4MarginTop?: T;
+        h4MarginBottom?: T;
+        h5MarginTop?: T;
+        h5MarginBottom?: T;
+        h6MarginTop?: T;
+        h6MarginBottom?: T;
+        bodyMarginTop?: T;
+        bodyMarginBottom?: T;
+        listsMarginTop?: T;
+        listsMarginBottom?: T;
+      };
+  lineHeightsMobile?:
     | T
     | {
         h1?: T;

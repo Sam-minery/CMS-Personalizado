@@ -11,11 +11,13 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import {
-  appendFontGroupHeadingMarginRules,
-  appendFontGroupLineHeightRules,
+  appendFontGroupHeadingMarginRulesResponsive,
+  appendFontGroupLineHeightRulesResponsive,
   appendTypographyBodyListSizeRules,
+  FONT_GROUP_RICHTEXT_DESKTOP_MIN,
   FONT_GROUP_RICHTEXT_MOBILE_MAX,
   FONT_GROUP_VARIANT_CSS,
+  mergeFontGroupLineHeightsWithFallback,
   trimFontGroupValue,
   type FontGroupHeadingMargins,
   type FontGroupLineHeights,
@@ -68,7 +70,9 @@ type FontGroupData = {
   typography?: FontGroupTypography | null
   typographyMobile?: FontGroupTypography | null
   headingMargins?: FontGroupHeadingMargins | null
+  headingMarginsMobile?: FontGroupHeadingMargins | null
   lineHeights?: FontGroupLineHeights | null
+  lineHeightsMobile?: FontGroupLineHeights | null
 }
 
 function normalizeImcFontGroup(raw: unknown): FontGroupData | null {
@@ -402,24 +406,38 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
         }
       }
 
-      appendFontGroupHeadingMarginRules(
+      appendFontGroupHeadingMarginRulesResponsive(
         fontGroupObj.headingMargins,
+        fontGroupObj.headingMarginsMobile,
         mainRichtext,
         planRichtext,
         payloadRichtext,
         (rule) => styles.push(rule),
       )
-      appendFontGroupLineHeightRules(
+      appendFontGroupLineHeightRulesResponsive(
         fontGroupObj.lineHeights,
+        fontGroupObj.lineHeightsMobile,
         mainRichtext,
         planRichtext,
         payloadRichtext,
         (rule) => styles.push(rule),
       )
 
-      const bodyLhBtn = trimFontGroupValue(fontGroupObj.lineHeights?.body)
-      if (bodyLhBtn) {
-        styles.push(`${imcBtnLabels} { line-height: ${bodyLhBtn} !important; }`)
+      const bodyLhDesk = trimFontGroupValue(fontGroupObj.lineHeights?.body)
+      const mergedLh = mergeFontGroupLineHeightsWithFallback(
+        fontGroupObj.lineHeights,
+        fontGroupObj.lineHeightsMobile,
+      )
+      const bodyLhMob = trimFontGroupValue(mergedLh?.body)
+      if (bodyLhDesk) {
+        styles.push(
+          `@media (min-width: ${FONT_GROUP_RICHTEXT_DESKTOP_MIN}) { ${imcBtnLabels} { line-height: ${bodyLhDesk} !important; } }`,
+        )
+      }
+      if (bodyLhMob) {
+        styles.push(
+          `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) { ${imcBtnLabels} { line-height: ${bodyLhMob} !important; } }`,
+        )
       }
 
       styles.push(

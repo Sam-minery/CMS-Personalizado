@@ -14,8 +14,10 @@ import { sanitizeSVG } from "@/utilities/sanitizeHTML";
 import { cn } from "@/utilities/ui";
 import { sendaBlockButtonPrimitiveClassName } from "@/utilities/sendaBlockButtonClasses";
 import {
+  FONT_GROUP_RICHTEXT_DESKTOP_MIN,
   FONT_GROUP_RICHTEXT_MOBILE_MAX,
   FONT_GROUP_VARIANT_CSS,
+  mergeFontGroupLineHeightsWithFallback,
   trimFontGroupValue,
 } from "@/utilities/fontGroupRichTextCss";
 import type { Font, FontGroup } from "@/payload-types";
@@ -264,9 +266,21 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
           `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) { ${fgBody} { font-size: ${mobBody} !important; } }`,
         );
       }
-      const bodyLh = trimFontGroupValue(fontGroupObj.lineHeights?.body);
-      if (bodyLh) {
-        styles.push(`${fgBody} { line-height: ${bodyLh} !important; }`);
+      const bodyLhDesk = trimFontGroupValue(fontGroupObj.lineHeights?.body);
+      const mergedLh = mergeFontGroupLineHeightsWithFallback(
+        fontGroupObj.lineHeights,
+        fontGroupObj.lineHeightsMobile,
+      );
+      const bodyLhMob = trimFontGroupValue(mergedLh?.body);
+      if (bodyLhDesk) {
+        styles.push(
+          `@media (min-width: ${FONT_GROUP_RICHTEXT_DESKTOP_MIN}) { ${fgBody} { line-height: ${bodyLhDesk} !important; } }`,
+        );
+      }
+      if (bodyLhMob) {
+        styles.push(
+          `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) { ${fgBody} { line-height: ${bodyLhMob} !important; } }`,
+        );
       }
       // Enlace activo (ancla): usar el glifo bold del grupo (p. ej. 700), no faux-bold de un solo archivo.
       styles.push(

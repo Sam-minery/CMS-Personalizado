@@ -317,6 +317,26 @@ export const FontGroups: CollectionConfig = {
       fields: lineHeightFields(),
     },
     {
+      name: 'headingMarginsMobile',
+      type: 'group',
+      label: 'Márgenes de texto (móvil)',
+      admin: {
+        description:
+          'Opcional. Mismos campos que «Márgenes de texto» pero solo por debajo del breakpoint md (≤767px). Si un campo está vacío, se usa el valor de escritorio de ese mismo campo.',
+      },
+      fields: contentMarginFields(),
+    },
+    {
+      name: 'lineHeightsMobile',
+      type: 'group',
+      label: 'Interlineado (móvil)',
+      admin: {
+        description:
+          'Opcional. Mismos conceptos que «Interlineado (line-height)» para móvil. Si un campo está vacío, se usa el interlineado de escritorio correspondiente.',
+      },
+      fields: lineHeightFields(),
+    },
+    {
       name: 'preloadFonts',
       type: 'checkbox',
       label: 'Precargar siempre',

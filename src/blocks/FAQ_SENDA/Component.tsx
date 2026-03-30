@@ -14,8 +14,8 @@ import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import {
-  appendFontGroupHeadingMarginRules,
-  appendFontGroupLineHeightRules,
+  appendFontGroupHeadingMarginRulesResponsive,
+  appendFontGroupLineHeightRulesResponsive,
   appendTypographyBodyListSizeRules,
   FONT_GROUP_RICHTEXT_MOBILE_MAX,
   FONT_GROUP_VARIANT_CSS,
@@ -40,7 +40,9 @@ type FontGroupData = {
   typography?: FontGroupTypography | null
   typographyMobile?: FontGroupTypography | null
   headingMargins?: FontGroupHeadingMargins | null
+  headingMarginsMobile?: FontGroupHeadingMargins | null
   lineHeights?: FontGroupLineHeights | null
+  lineHeightsMobile?: FontGroupLineHeights | null
 }
 
 function normalizeFaqFontGroup(raw: unknown): FontGroupData | null {
@@ -259,15 +261,17 @@ export const FAQSendaBlock: React.FC<FAQSendaProps> = (props) => {
         }
       }
 
-      appendFontGroupHeadingMarginRules(
+      appendFontGroupHeadingMarginRulesResponsive(
         fontGroupObj.headingMargins,
+        fontGroupObj.headingMarginsMobile,
         mainRichtext,
         planRichtext,
         payloadRichtext,
         (rule) => styles.push(rule),
       )
-      appendFontGroupLineHeightRules(
+      appendFontGroupLineHeightRulesResponsive(
         fontGroupObj.lineHeights,
+        fontGroupObj.lineHeightsMobile,
         mainRichtext,
         planRichtext,
         payloadRichtext,

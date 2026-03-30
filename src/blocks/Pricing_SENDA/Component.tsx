@@ -7,8 +7,8 @@ import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import {
-  appendFontGroupHeadingMarginRules,
-  appendFontGroupLineHeightRules,
+  appendFontGroupHeadingMarginRulesResponsive,
+  appendFontGroupLineHeightRulesResponsive,
   appendTypographyBodyListSizeRules,
   FONT_GROUP_RICHTEXT_MOBILE_MAX,
   type FontGroupHeadingMargins,
@@ -56,7 +56,9 @@ type FontGroupData = {
   /** Si hay valores aquí, en viewport estrecho sustituyen a `typography` solo donde estén rellenados. */
   typographyMobile?: FontGroupTypography | null
   headingMargins?: FontGroupHeadingMargins | null
+  headingMarginsMobile?: FontGroupHeadingMargins | null
   lineHeights?: FontGroupLineHeights | null
+  lineHeightsMobile?: FontGroupLineHeights | null
 }
 
 type PlanElement = {
@@ -297,15 +299,17 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
         }
       }
 
-      appendFontGroupHeadingMarginRules(
+      appendFontGroupHeadingMarginRulesResponsive(
         fontGroupObj.headingMargins,
+        fontGroupObj.headingMarginsMobile,
         mainRichtext,
         planRichtext,
         payloadRichtext,
         (rule) => styles.push(rule),
       )
-      appendFontGroupLineHeightRules(
+      appendFontGroupLineHeightRulesResponsive(
         fontGroupObj.lineHeights,
+        fontGroupObj.lineHeightsMobile,
         mainRichtext,
         planRichtext,
         payloadRichtext,

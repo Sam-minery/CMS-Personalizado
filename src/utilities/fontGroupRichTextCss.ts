@@ -48,6 +48,70 @@ export type FontGroupLineHeights = {
 /** Viewport “móvil” para @media (max-width): por debajo de `md` en Tailwind (768px − 1). */
 export const FONT_GROUP_RICHTEXT_MOBILE_MAX = '767px'
 
+/** Viewport “escritorio” para @media (min-width): a partir de `md` en Tailwind (768px). */
+export const FONT_GROUP_RICHTEXT_DESKTOP_MIN = '768px'
+
+const HEADING_MARGIN_KEYS: (keyof FontGroupHeadingMargins)[] = [
+  'h1MarginTop',
+  'h1MarginBottom',
+  'h2MarginTop',
+  'h2MarginBottom',
+  'h3MarginTop',
+  'h3MarginBottom',
+  'h4MarginTop',
+  'h4MarginBottom',
+  'h5MarginTop',
+  'h5MarginBottom',
+  'h6MarginTop',
+  'h6MarginBottom',
+  'bodyMarginTop',
+  'bodyMarginBottom',
+  'listsMarginTop',
+  'listsMarginBottom',
+]
+
+const LINE_HEIGHT_KEYS: (keyof FontGroupLineHeights)[] = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'body', 'lists']
+
+/** Por cada clave: valor móvil si está relleno; si no, valor escritorio. */
+export function mergeFontGroupHeadingMarginsWithFallback(
+  desktop: FontGroupHeadingMargins | null | undefined,
+  mobile: FontGroupHeadingMargins | null | undefined,
+): FontGroupHeadingMargins | null {
+  if (!desktop && !mobile) return null
+  const out: FontGroupHeadingMargins = {}
+  let any = false
+  for (const k of HEADING_MARGIN_KEYS) {
+    const mv = trimFontGroupValue(mobile?.[k] as string | null | undefined)
+    const dv = trimFontGroupValue(desktop?.[k] as string | null | undefined)
+    const v = mv || dv
+    if (v) {
+      ;(out as Record<string, string>)[k] = v
+      any = true
+    }
+  }
+  return any ? out : null
+}
+
+/** Por cada clave: valor móvil si está relleno; si no, valor escritorio. */
+export function mergeFontGroupLineHeightsWithFallback(
+  desktop: FontGroupLineHeights | null | undefined,
+  mobile: FontGroupLineHeights | null | undefined,
+): FontGroupLineHeights | null {
+  if (!desktop && !mobile) return null
+  const out: FontGroupLineHeights = {}
+  let any = false
+  for (const k of LINE_HEIGHT_KEYS) {
+    const mv = trimFontGroupValue(mobile?.[k] as string | null | undefined)
+    const dv = trimFontGroupValue(desktop?.[k] as string | null | undefined)
+    const v = mv || dv
+    if (v) {
+      ;(out as Record<string, string>)[k] = v
+      any = true
+    }
+  }
+  return any ? out : null
+}
+
 /** Textos de la columna derecha del plan Pricing (icono + texto). */
 export function planElementTextSelector(planRichtext: string): string {
   return `${planRichtext} .pricing-senda-plan-element-text`
@@ -91,7 +155,7 @@ export function appendTypographyBodyListSizeRules(
   }
 }
 
-export function appendFontGroupHeadingMarginRules(
+function emitFontGroupHeadingMarginRules(
   margins: FontGroupHeadingMargins | null | undefined,
   mainRichtext: string,
   planRichtext: string,
@@ -183,7 +247,53 @@ export function appendFontGroupHeadingMarginRules(
   }
 }
 
-export function appendFontGroupLineHeightRules(
+export function appendFontGroupHeadingMarginRules(
+  margins: FontGroupHeadingMargins | null | undefined,
+  mainRichtext: string,
+  planRichtext: string,
+  payloadRichtext: string,
+  emit: (css: string) => void,
+): void {
+  emitFontGroupHeadingMarginRules(margins, mainRichtext, planRichtext, payloadRichtext, emit)
+}
+
+/**
+ * Márgenes RichText: escritorio en min-width md; móvil en max-width con fallback campo a campo al grupo escritorio.
+ */
+export function appendFontGroupHeadingMarginRulesResponsive(
+  desktopMargins: FontGroupHeadingMargins | null | undefined,
+  mobileMargins: FontGroupHeadingMargins | null | undefined,
+  mainRichtext: string,
+  planRichtext: string,
+  payloadRichtext: string,
+  emit: (css: string) => void,
+): void {
+  const mergedMobile = mergeFontGroupHeadingMarginsWithFallback(desktopMargins, mobileMargins)
+  const deskRules: string[] = []
+  emitFontGroupHeadingMarginRules(
+    desktopMargins,
+    mainRichtext,
+    planRichtext,
+    payloadRichtext,
+    (r) => deskRules.push(r),
+  )
+  const mobRules: string[] = []
+  emitFontGroupHeadingMarginRules(
+    mergedMobile,
+    mainRichtext,
+    planRichtext,
+    payloadRichtext,
+    (r) => mobRules.push(r),
+  )
+  if (deskRules.length > 0) {
+    emit(`@media (min-width: ${FONT_GROUP_RICHTEXT_DESKTOP_MIN}) {\n${deskRules.join('\n')}\n}`)
+  }
+  if (mobRules.length > 0) {
+    emit(`@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) {\n${mobRules.join('\n')}\n}`)
+  }
+}
+
+function emitFontGroupLineHeightRules(
   lineHeights: FontGroupLineHeights | null | undefined,
   mainRichtext: string,
   planRichtext: string,
@@ -211,6 +321,52 @@ export function appendFontGroupLineHeightRules(
     emit(
       `${mainRichtext} ul, ${mainRichtext} ol, ${mainRichtext} li, ${planRichtext} ul, ${planRichtext} ol, ${planRichtext} li, ${payloadRichtext} ul, ${payloadRichtext} ol, ${payloadRichtext} li { line-height: ${listsLh} !important; }`,
     )
+  }
+}
+
+export function appendFontGroupLineHeightRules(
+  lineHeights: FontGroupLineHeights | null | undefined,
+  mainRichtext: string,
+  planRichtext: string,
+  payloadRichtext: string,
+  emit: (css: string) => void,
+): void {
+  emitFontGroupLineHeightRules(lineHeights, mainRichtext, planRichtext, payloadRichtext, emit)
+}
+
+/**
+ * Interlineado RichText: escritorio en min-width md; móvil en max-width con fallback campo a campo al grupo escritorio.
+ */
+export function appendFontGroupLineHeightRulesResponsive(
+  desktopLineHeights: FontGroupLineHeights | null | undefined,
+  mobileLineHeights: FontGroupLineHeights | null | undefined,
+  mainRichtext: string,
+  planRichtext: string,
+  payloadRichtext: string,
+  emit: (css: string) => void,
+): void {
+  const mergedMobile = mergeFontGroupLineHeightsWithFallback(desktopLineHeights, mobileLineHeights)
+  const deskRules: string[] = []
+  emitFontGroupLineHeightRules(
+    desktopLineHeights,
+    mainRichtext,
+    planRichtext,
+    payloadRichtext,
+    (r) => deskRules.push(r),
+  )
+  const mobRules: string[] = []
+  emitFontGroupLineHeightRules(
+    mergedMobile,
+    mainRichtext,
+    planRichtext,
+    payloadRichtext,
+    (r) => mobRules.push(r),
+  )
+  if (deskRules.length > 0) {
+    emit(`@media (min-width: ${FONT_GROUP_RICHTEXT_DESKTOP_MIN}) {\n${deskRules.join('\n')}\n}`)
+  }
+  if (mobRules.length > 0) {
+    emit(`@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) {\n${mobRules.join('\n')}\n}`)
   }
 }
 

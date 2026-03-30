@@ -11,10 +11,12 @@ import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { sendaBlockButtonPrimitiveClassName } from '@/utilities/sendaBlockButtonClasses'
 import { cn } from '@/utilities/ui'
 import {
-  appendFontGroupHeadingMarginRules,
-  appendFontGroupLineHeightRules,
+  appendFontGroupHeadingMarginRulesResponsive,
+  appendFontGroupLineHeightRulesResponsive,
   appendTypographyBodyListSizeRules,
+  FONT_GROUP_RICHTEXT_DESKTOP_MIN,
   FONT_GROUP_RICHTEXT_MOBILE_MAX,
+  mergeFontGroupLineHeightsWithFallback,
   trimFontGroupValue,
   type FontGroupHeadingMargins,
   type FontGroupLineHeights,
@@ -54,7 +56,9 @@ type FontGroupData = {
   typography?: FontGroupTypography | null
   typographyMobile?: FontGroupTypography | null
   headingMargins?: FontGroupHeadingMargins | null
+  headingMarginsMobile?: FontGroupHeadingMargins | null
   lineHeights?: FontGroupLineHeights | null
+  lineHeightsMobile?: FontGroupLineHeights | null
 }
 
 /** API / live preview: `{ relationTo, value }` o documento plano del font-group. */
@@ -309,24 +313,38 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
         }
       }
 
-      appendFontGroupHeadingMarginRules(
+      appendFontGroupHeadingMarginRulesResponsive(
         fontGroupObj.headingMargins,
+        fontGroupObj.headingMarginsMobile,
         mainRichtext,
         planRichtext,
         payloadRichtext,
         (rule) => styles.push(rule),
       )
-      appendFontGroupLineHeightRules(
+      appendFontGroupLineHeightRulesResponsive(
         fontGroupObj.lineHeights,
+        fontGroupObj.lineHeightsMobile,
         mainRichtext,
         planRichtext,
         payloadRichtext,
         (rule) => styles.push(rule),
       )
 
-      const bodyLhBtn = trimFontGroupValue(fontGroupObj.lineHeights?.body)
-      if (bodyLhBtn) {
-        styles.push(`${heroLeftBtnLabels} { line-height: ${bodyLhBtn} !important; }`)
+      const bodyLhDesk = trimFontGroupValue(fontGroupObj.lineHeights?.body)
+      const mergedLh = mergeFontGroupLineHeightsWithFallback(
+        fontGroupObj.lineHeights,
+        fontGroupObj.lineHeightsMobile,
+      )
+      const bodyLhMob = trimFontGroupValue(mergedLh?.body)
+      if (bodyLhDesk) {
+        styles.push(
+          `@media (min-width: ${FONT_GROUP_RICHTEXT_DESKTOP_MIN}) { ${heroLeftBtnLabels} { line-height: ${bodyLhDesk} !important; } }`,
+        )
+      }
+      if (bodyLhMob) {
+        styles.push(
+          `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) { ${heroLeftBtnLabels} { line-height: ${bodyLhMob} !important; } }`,
+        )
       }
 
       styles.push(
