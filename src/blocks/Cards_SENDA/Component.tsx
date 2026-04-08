@@ -170,7 +170,7 @@ const SendaCard: React.FC<{
         delay: 0.1 * index,
         ease: 'easeOut',
       }}
-      className="relative rounded-[32px] overflow-hidden bg-[#F5F5F7] dark:bg-neutral-900 w-full"
+      className="relative rounded-[24px] overflow-hidden border-0 bg-[#F5F5F7] dark:bg-background w-full"
       style={{
         height: cardHeight,
         perspective: '1000px',
@@ -193,16 +193,16 @@ const SendaCard: React.FC<{
             visibility: isFlipped ? 'hidden' : 'visible',
           }}
         >
-          <div className="absolute inset-0 rounded-[32px] overflow-hidden">
+          <div className="absolute inset-0 rounded-[24px] overflow-hidden bg-[#F5F5F7] dark:bg-background">
             {card.src ? (
               <Image
                 src={card.src}
                 alt="Card background"
                 fill
-                className="object-cover"
+                className="object-cover border-0"
               />
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-[#F5F5F7] to-[#E8E8EA] dark:from-neutral-800 dark:to-neutral-900" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#F5F5F7] to-[#E8E8EA] dark:from-background dark:to-card" />
             )}
           </div>
 
@@ -240,55 +240,64 @@ const SendaCard: React.FC<{
           <AnimatePresence>
             {isInView && !isFlipped && card.hasExpandedContent && (
               <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 40 }}
+                initial={{ y: 48 }}
+                animate={{ y: 0 }}
+                exit={{ y: 48 }}
                 transition={{
-                  duration: 1,
-                  ease: 'easeOut',
+                  duration: 2.1,
+                  ease: [0.16, 1, 0.3, 1],
                 }}
-                className="absolute bottom-20 left-4 right-4 md:bottom-24 md:left-6 md:right-6 z-30 bg-white/95 rounded-2xl p-4 md:p-5 shadow-xl max-h-[60%] overflow-y-auto"
+                className="absolute bottom-[4.75rem] left-4 right-4 md:bottom-20 md:left-6 md:right-6 isolate max-h-[60%] overflow-y-auto overflow-x-hidden rounded-[24px]"
               >
-                {(card.avatarSrc || card.userName) && (
-                  <div className="flex items-center gap-2 mb-3">
-                    {card.avatarSrc && (
-                      <div className="relative h-8 w-8 md:h-10 md:w-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-white shadow-sm">
-                        <Image
-                          src={card.avatarSrc}
-                          alt={card.userName || 'Avatar'}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    )}
-                    {card.userName && (
-                      <span
-                        className="cards-senda-user-name text-sm md:text-base font-normal text-neutral-800 dark:text-neutral-200"
-                        style={card.userNameColor ? { color: card.userNameColor } : undefined}
-                      >
-                        {card.userName}
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                <div
-                  className={cn(
-                    'leading-relaxed',
-                    fontGroupTypographyActive ? CARDS_FG_RICHTEXT : 'text-sm md:text-base',
-                  )}
-                  style={expandedContentStyle}
-                >
-                  <RichText
-                    data={card.expandedContent}
-                    enableGutter={false}
-                    enableProse={false}
-                    className={
-                      fontGroupTypographyActive
-                        ? ''
-                        : '[&_h1]:text-2xl [&_h1]:md:text-3xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-2 [&_h2]:text-xl [&_h2]:md:text-2xl [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:mt-2 [&_h3]:text-lg [&_h3]:md:text-xl [&_h3]:font-bold [&_h3]:mb-2 [&_h3]:mt-2 [&_h4]:text-base [&_h4]:md:text-lg [&_h4]:font-bold [&_h4]:mb-2 [&_h4]:mt-2 [&_p]:mb-2 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-4 [&_li]:mb-1 [&_li]:pl-1'
-                    }
+                <div className="relative min-w-0">
+                  {/* Capa de fondo semitransparente: blur muy ligero y leve desaturación; el texto va encima */}
+                  <div
+                    className="pointer-events-none absolute inset-0 z-0 rounded-[24px] border border-white/35 bg-white/[0.18] shadow-[0_8px_32px_rgba(15,23,42,0.08),inset_0_1px_0_0_rgba(255,255,255,0.45)] backdrop-blur-sm backdrop-saturate-[0.9]"
+                    aria-hidden
                   />
+                  <div className="relative z-10 min-w-0 p-4 md:p-5 text-neutral-800 dark:text-neutral-800 [color-scheme:light]">
+                  {(card.avatarSrc || card.userName) && (
+                    <div className="flex items-center gap-2 mb-3">
+                      {card.avatarSrc && (
+                        <div className="relative h-8 w-8 md:h-10 md:w-10 rounded-full overflow-hidden flex-shrink-0">
+                          <Image
+                            src={card.avatarSrc}
+                            alt={card.userName || 'Avatar'}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      {card.userName && (
+                        <span
+                          className="cards-senda-user-name text-sm md:text-base font-normal text-neutral-800"
+                          style={card.userNameColor ? { color: card.userNameColor } : undefined}
+                        >
+                          {card.userName}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <div
+                    className={cn(
+                      'leading-relaxed text-neutral-700 dark:text-neutral-700',
+                      fontGroupTypographyActive ? CARDS_FG_RICHTEXT : 'text-sm md:text-base',
+                    )}
+                    style={expandedContentStyle}
+                  >
+                    <RichText
+                      data={card.expandedContent}
+                      enableGutter={false}
+                      enableProse={false}
+                      className={
+                        fontGroupTypographyActive
+                          ? ''
+                          : '[&_h1]:text-2xl [&_h1]:md:text-3xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-2 [&_h2]:text-xl [&_h2]:md:text-2xl [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:mt-2 [&_h3]:text-lg [&_h3]:md:text-xl [&_h3]:font-bold [&_h3]:mb-2 [&_h3]:mt-2 [&_h4]:text-base [&_h4]:md:text-lg [&_h4]:font-bold [&_h4]:mb-2 [&_h4]:mt-2 [&_p]:mb-2 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-4 [&_li]:mb-1 [&_li]:pl-1'
+                      }
+                    />
+                  </div>
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -298,7 +307,7 @@ const SendaCard: React.FC<{
         {/* Cara trasera: rotateY(180deg) + translateZ(1px) para quedar por delante y verse siempre al voltear */}
         <div
           className={cn(
-            'absolute inset-0 rounded-[32px] p-6 flex flex-col justify-between gap-3 [backface-visibility:hidden]',
+            'absolute inset-0 rounded-[24px] p-6 flex flex-col justify-between gap-3 [backface-visibility:hidden]',
             !isFlipped && 'pointer-events-none',
           )}
           style={{
@@ -751,15 +760,30 @@ export const SendaCardsBlockComponent: React.FC<
       : []
 
   const checkScrollability = () => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft: scrollLeftVal, scrollWidth, clientWidth } = scrollContainerRef.current
-      setCanScrollLeft(scrollLeftVal > 0)
-      setCanScrollRight(scrollLeftVal < scrollWidth - clientWidth - 1)
-      const gap = getCurrentGap()
-      const step = cardsScrollWidthPx + gap
-      const calculatedIndex = step > 0 ? Math.round(scrollLeftVal / step) : 0
-      setCurrentCardIndex(Math.min(calculatedIndex, cardData.length - 1))
+    const el = scrollContainerRef.current
+    if (!el) return
+    const { scrollLeft: scrollLeftVal, scrollWidth, clientWidth } = el
+    setCanScrollLeft(scrollLeftVal > 0)
+    setCanScrollRight(scrollLeftVal < scrollWidth - clientWidth - 1)
+
+    const cells = el.querySelectorAll<HTMLElement>('.senda-cards-card-cell')
+    if (cells.length === 0) {
+      setCurrentCardIndex(0)
+      return
     }
+
+    const viewportCenter = scrollLeftVal + clientWidth / 2
+    let bestIdx = 0
+    let bestDist = Infinity
+    cells.forEach((cell, i) => {
+      const cellCenter = cell.offsetLeft + cell.offsetWidth / 2
+      const dist = Math.abs(viewportCenter - cellCenter)
+      if (dist < bestDist) {
+        bestDist = dist
+        bestIdx = i
+      }
+    })
+    setCurrentCardIndex(Math.min(bestIdx, cardData.length - 1))
   }
 
   useEffect(() => {
@@ -943,11 +967,15 @@ export const SendaCardsBlockComponent: React.FC<
  overflow-x: auto !important;
  padding-left: 1rem !important;
  padding-right: 1rem !important;
+ scroll-snap-type: x mandatory !important;
+ scroll-padding-inline: 1rem !important;
  }
  .senda-cards-card-cell {
  width: ${selectedWidth} !important;
  min-width: ${selectedWidth} !important;
  max-width: ${selectedWidth} !important;
+ scroll-snap-align: center !important;
+ scroll-snap-stop: always !important;
  }
  .senda-cards-card-cell > * {
  height: ${selectedHeight} !important;
@@ -964,6 +992,7 @@ export const SendaCardsBlockComponent: React.FC<
  .senda-cards-scroll-viewport {
  padding-left: 1.5rem !important;
  padding-right: 1.5rem !important;
+ scroll-padding-inline: 1.5rem !important;
  }
  }
  @media (min-width: 1220px) {
@@ -971,6 +1000,8 @@ export const SendaCardsBlockComponent: React.FC<
  overflow: visible !important;
  padding-left: 0 !important;
  padding-right: 0 !important;
+ scroll-snap-type: none !important;
+ scroll-padding-inline: 0 !important;
  }
  .senda-cards-carousel-wrapper {
  margin-left: 0 !important;
@@ -985,6 +1016,8 @@ export const SendaCardsBlockComponent: React.FC<
  min-width: 0 !important;
  max-width: none !important;
  flex-shrink: 0 !important;
+ scroll-snap-align: unset !important;
+ scroll-snap-stop: normal !important;
  }
  }
  `,
@@ -1073,7 +1106,7 @@ export const SendaCardsBlockComponent: React.FC<
               ref={scrollContainerRef}
               className={cn(
                 'senda-cards-scroll-viewport flex senda-cards-grid',
-                'overflow-x-auto scroll-smooth',
+                'overflow-x-auto',
                 'pl-4 pr-4',
                 '[scrollbar-width:none]',
                 '[-ms-overflow-style:none]',

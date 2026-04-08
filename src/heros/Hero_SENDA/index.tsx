@@ -104,6 +104,15 @@ type HeroSendaImage = {
   media?: Media | number | null
   url?: string | null
   alt?: string | null
+  useCuImgDims?: boolean | null
+  customUploadedImageWidth?: number | null
+  customUploadedImageWidthUnit?: 'px' | 'rem' | null
+  customUploadedImageHeight?: number | null
+  customUploadedImageHeightUnit?: 'px' | 'rem' | null
+  customUploadedImageMobW?: number | null
+  customUploadedImageMobWu?: 'px' | 'rem' | null
+  customUploadedImageMobH?: number | null
+  customUploadedImageMobHu?: 'px' | 'rem' | null
 }
 
 type Props = {
@@ -448,6 +457,68 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
       ? heroSendaImage.media.alt || heroSendaImage.alt || 'Hero image'
       : heroSendaImage?.alt || 'Hero image'
 
+  const mediaObj =
+    heroSendaImage?.useMedia && heroSendaImage?.media && typeof heroSendaImage.media === 'object'
+      ? heroSendaImage.media
+      : null
+  const useCustomUploadedDims =
+    heroSendaImage?.useMedia === true &&
+    heroSendaImage?.useCuImgDims === true &&
+    mediaObj != null
+  const wVal = heroSendaImage?.customUploadedImageWidth
+  const hVal = heroSendaImage?.customUploadedImageHeight
+  const wUnit = heroSendaImage?.customUploadedImageWidthUnit === 'rem' ? 'rem' : 'px'
+  const hUnit = heroSendaImage?.customUploadedImageHeightUnit === 'rem' ? 'rem' : 'px'
+  const customDimsValid =
+    useCustomUploadedDims &&
+    typeof wVal === 'number' &&
+    !Number.isNaN(wVal) &&
+    wVal > 0 &&
+    typeof hVal === 'number' &&
+    !Number.isNaN(hVal) &&
+    hVal > 0
+  const mobWVal = heroSendaImage?.customUploadedImageMobW
+  const mobHVal = heroSendaImage?.customUploadedImageMobH
+  const mobWUnit = heroSendaImage?.customUploadedImageMobWu === 'rem' ? 'rem' : 'px'
+  const mobHUnit = heroSendaImage?.customUploadedImageMobHu === 'rem' ? 'rem' : 'px'
+  const customMobDimsValid =
+    customDimsValid &&
+    typeof mobWVal === 'number' &&
+    !Number.isNaN(mobWVal) &&
+    mobWVal > 0 &&
+    typeof mobHVal === 'number' &&
+    !Number.isNaN(mobHVal) &&
+    mobHVal > 0
+  const deskW = `${wVal}${wUnit}`
+  const deskH = `${hVal}${hUnit}`
+  const smW = customMobDimsValid ? `${mobWVal}${mobWUnit}` : deskW
+  const smH = customMobDimsValid ? `${mobHVal}${mobHUnit}` : deskH
+  const customImgBoxCss =
+    customDimsValid &&
+    `
+#hero-senda.hero-senda--custom-img .hero-senda-custom-img-wrap {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  flex-shrink: 0;
+  width: min(100%, ${smW});
+  height: ${smH};
+  max-width: 100%;
+}
+@media (min-width: 1024px) {
+  #hero-senda.hero-senda--custom-img .hero-senda-custom-img-wrap {
+    margin-left: auto;
+    margin-right: 0;
+    width: min(100%, ${deskW});
+    height: ${deskH};
+  }
+}
+`.trim()
+  const intrinsicW = mediaObj?.width && mediaObj.width > 0 ? mediaObj.width : 800
+  const intrinsicH = mediaObj?.height && mediaObj.height > 0 ? mediaObj.height : 600
+
   const leftButtons = (Array.isArray(heroSendaLeftButtons) && heroSendaLeftButtons.length > 0)
     ? heroSendaLeftButtons.slice(0, 2)
     : (Array.isArray(links) ? links.slice(0, 2).map((item) => ({ link: item.link, appearance: 'default' as const, size: 'sm' as const, iconSVG: null })) : [])
@@ -478,20 +549,24 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
         />
       )}
       {combinedStyles && <style>{combinedStyles}</style>}
+      {customImgBoxCss ? <style>{customImgBoxCss}</style> : null}
       <section
         id="hero-senda"
         data-hero-senda-font={styleId}
-        className="relative overflow-visible px-[5%] py-16 md:py-24 lg:py-28"
+        className={cn(
+          'relative overflow-visible px-[5%] py-16 md:py-24 lg:py-28',
+          customDimsValid && 'hero-senda--custom-img min-h-[max-content]',
+        )}
         style={
           heroSendaBackgroundColor
             ? { backgroundColor: heroSendaBackgroundColor }
             : undefined
         }
       >
-        <div className="container relative">
+        <div className={cn('container relative', customDimsValid && 'overflow-visible')}>
           {/* Móvil: texto → botones (1 o 2 en fila) → imagen. Desktop lg+: 2 cols; 1 botón además centrado bajo el bloque. */}
-          <div className="grid grid-cols-1 gap-x-20 gap-y-12 md:gap-y-16 lg:grid-cols-2 lg:items-center [&>.hero-senda-col-left]:order-1 [&>.hero-senda-col-right]:order-2">
-            <div className="hero-senda-col-left" style={fontStyle}>
+          <div className="grid min-w-0 grid-cols-1 gap-x-20 gap-y-12 md:gap-y-16 lg:grid-cols-2 lg:items-center [&>.hero-senda-col-left]:order-1 [&>.hero-senda-col-right]:order-2">
+            <div className="hero-senda-col-left min-w-0" style={fontStyle}>
               {richText && (
                 <div
                   className={
@@ -576,17 +651,38 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                 </div>
               )}
             </div>
-            <div className="hero-senda-col-right flex flex-col">
-              {imageSrc && (
-                <Image
-                  src={imageSrc}
-                  alt={imageAlt}
-                  width={800}
-                  height={600}
-                  className="w-full object-cover"
-                  priority
-                />
+            <div
+              className={cn(
+                'hero-senda-col-right flex min-w-0 flex-col',
+                customDimsValid ? 'w-full items-center lg:items-end' : 'w-full',
               )}
+            >
+              {imageSrc &&
+                (customDimsValid ? (
+                  <div className="hero-senda-custom-img-wrap">
+                    <Image
+                      src={imageSrc}
+                      alt={imageAlt}
+                      fill
+                      className="object-fill"
+                      sizes={
+                        customMobDimsValid
+                          ? `(max-width: 1023px) min(100vw, ${mobWVal}px), min(50vw, ${wVal}px)`
+                          : `(max-width: 1023px) min(100vw, ${wVal}px), min(50vw, ${wVal}px)`
+                      }
+                      priority
+                    />
+                  </div>
+                ) : (
+                  <Image
+                    src={imageSrc}
+                    alt={imageAlt}
+                    width={intrinsicW}
+                    height={intrinsicH}
+                    className="w-full object-cover"
+                    priority
+                  />
+                ))}
             </div>
           </div>
           {/* Solo desktop (lg+): un botón centrado bajo el hero; en móvil ese botón va bajo el texto (columna izq). */}

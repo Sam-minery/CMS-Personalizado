@@ -77,8 +77,21 @@ type LinkType = {
 type ImageGroup = {
   useMedia?: boolean | null
   mediaImage?: number | Media | null
+  useViewportSize?: boolean | null
+  mediaWidthVw?: number | null
+  mediaHeightVh?: number | null
+  mediaWidthVwMobile?: number | null
+  mediaHeightVhMobile?: number | null
   src?: string | null
   alt?: string | null
+}
+
+/** Mismo corte que Tailwind `lg:` (1024px). */
+const LAYOUT_SENDA_VP_IMG_MAX_SM = 1023
+
+function clampViewportUnit(value: unknown): number | null {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return null
+  return Math.min(200, Math.max(1, value))
 }
 
 type SubHeading = {
@@ -437,15 +450,39 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
 
   const mainImageSrc = getImageSrc(image)
   const mainImageAlt = getImageAlt(image)
+  const mediaW = clampViewportUnit(image?.mediaWidthVw)
+  const mediaH = clampViewportUnit(image?.mediaHeightVh)
+  const mediaWMob = clampViewportUnit(image?.mediaWidthVwMobile)
+  const mediaHMob = clampViewportUnit(image?.mediaHeightVhMobile)
+  const useMediaViewportSize =
+    Boolean(image?.useMedia && image?.useViewportSize) && mediaW != null && mediaH != null
+  const hasMobileViewportSize = mediaWMob != null && mediaHMob != null
+  const vpImgDataAttr = `${styleId}-vpimg`
+  const viewportImageCss = useMediaViewportSize
+    ? `
+[data-layout-senda-vp-img="${vpImgDataAttr}"] {
+  width: var(--ls-vpw);
+  height: var(--ls-vph);
+}
+@media (max-width: ${LAYOUT_SENDA_VP_IMG_MAX_SM}px) {
+  [data-layout-senda-vp-img="${vpImgDataAttr}"] {
+    width: var(--ls-vpw-sm, var(--ls-vpw));
+    height: var(--ls-vph-sm, var(--ls-vph));
+  }
+}
+`.trim()
+    : ''
   const buttonItems = Array.isArray(buttons) ? buttons.slice(0, 2) : []
 
   /** Sin invertir: móvil imagen arriba; desktop texto izq / imagen dcha. Invertido: móvil imagen arriba; desktop imagen izq / texto dcha. */
   const textContainerClass = invertLayout ? 'order-2 lg:order-2' : 'order-2 lg:order-1'
   const imageContainerClass = invertLayout ? 'order-1 lg:order-1' : 'order-1 lg:order-2'
 
+  const allBlockStyles = [combinedStyles, viewportImageCss].filter(Boolean).join('\n')
+
   return (
     <>
-      {combinedStyles && <style>{combinedStyles}</style>}
+      {allBlockStyles ? <style>{allBlockStyles}</style> : null}
       <section
         id={sanitizeAnchorId(anchorId)}
         data-layout-senda-font={styleId}
@@ -568,15 +605,41 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
             </div>
 
             <div className={imageContainerClass}>
-              {mainImageSrc && (
-                <Image
-                  src={mainImageSrc}
-                  alt={mainImageAlt}
-                  width={800}
-                  height={600}
-                  className="w-full rounded-3xl object-cover"
-                />
-              )}
+              {mainImageSrc &&
+                (useMediaViewportSize ? (
+                  <div
+                    data-layout-senda-vp-img={vpImgDataAttr}
+                    className="relative overflow-hidden rounded-3xl"
+                    style={
+                      {
+                        '--ls-vpw': `${mediaW}vw`,
+                        '--ls-vph': `${mediaH}vh`,
+                        ...(hasMobileViewportSize
+                          ? {
+                              '--ls-vpw-sm': `${mediaWMob}vw`,
+                              '--ls-vph-sm': `${mediaHMob}vh`,
+                            }
+                          : {}),
+                      } as React.CSSProperties
+                    }
+                  >
+                    <Image
+                      src={mainImageSrc}
+                      alt={mainImageAlt}
+                      fill
+                      className="object-cover"
+                      sizes="100vw"
+                    />
+                  </div>
+                ) : (
+                  <Image
+                    src={mainImageSrc}
+                    alt={mainImageAlt}
+                    width={800}
+                    height={600}
+                    className="w-full rounded-3xl object-cover"
+                  />
+                ))}
             </div>
           </div>
         </div>

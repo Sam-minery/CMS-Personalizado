@@ -202,23 +202,23 @@ const TestimonialCard: React.FC<{
         delay: 0.08 * index,
         ease: 'easeOut',
       }}
-      className="relative flex flex-col rounded-3xl overflow-hidden bg-white shadow-sm w-full flex-shrink-0"
+      className="relative flex flex-col rounded-3xl overflow-hidden border-0 bg-white shadow-sm outline-none ring-0 w-full flex-shrink-0"
       style={{
         height: heightStyle,
         minHeight: isMobileView ? MOBILE_CARD_HEIGHT : undefined,
       }}
     >
-      <div className="relative w-full aspect-[355/240] flex-shrink-0 overflow-hidden bg-[#2563eb]">
+      <div className="relative w-full aspect-[355/240] flex-shrink-0 overflow-hidden border-0 bg-white outline-none ring-0">
         {testimonial.imageSrc ? (
           <Image
             src={testimonial.imageSrc}
             alt={testimonial.imageAlt}
             fill
-            className="object-cover object-top"
+            className="object-cover object-top border-0 outline-none ring-0"
             sizes="(max-width: 1023px) 355px, 400px"
           />
         ) : (
-          <div className="absolute inset-0 bg-[#2563eb]" />
+          <div className="absolute inset-0 bg-[#2563eb]" aria-hidden />
         )}
       </div>
 
@@ -307,7 +307,6 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
   const [isMobileView, setIsMobileView] = useState(true)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const snapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const uniqueId = React.useId().replace(/:/g, '-')
   const styleId = `testimonials-senda-${uniqueId}`
@@ -560,14 +559,6 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
 
   const testimonialGridWidthPx = parseWidthToPx(selectedWidth)
 
-  const getCurrentGap = () => {
-    if (typeof window === 'undefined' || !scrollContainerRef.current) return 0
-    const style = window.getComputedStyle(scrollContainerRef.current)
-    const gapValue = style.columnGap || style.gap || '0px'
-    const parsed = parseFloat(gapValue)
-    return Number.isNaN(parsed) ? 0 : parsed
-  }
-
   const testimonialData: TestimonialData[] =
     testimonials && testimonials.length > 0
       ? testimonials.map((t) => ({
@@ -580,68 +571,62 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
         }))
       : []
 
-  const getCardWidthPx = () => parseWidthToPx(selectedWidth)
-
-  /** Paso de scroll = una card + gap. Solo en modo scroll. */
-  const getScrollStep = () => {
-    const gap = getCurrentGap()
-    return getCardWidthPx() + gap
-  }
-
-  /** Fija el scroll a una posición que muestre una card completa (índice 0, 1, 2, ...). Así no se corta ninguna.
-   * En la última card usamos maxScroll para evitar un retroceso que cortaría la card por la derecha. */
-  const snapToNearestCard = () => {
+  const scrollToTestimonialIndex = (index: number, smooth: boolean) => {
     const container = scrollContainerRef.current
     if (!container || testimonialData.length === 0) return
-    const step = getScrollStep()
-    if (step <= 0) return
-    const { scrollLeft: sl, scrollWidth, clientWidth } = container
-    const maxScroll = Math.max(0, scrollWidth - clientWidth)
-    const index = Math.round(sl / step)
-    const clampedIndex = Math.min(Math.max(0, index), testimonialData.length - 1)
-    const isLastCard = clampedIndex === testimonialData.length - 1
-    const targetScroll = isLastCard ? maxScroll : clampedIndex * step
-    const clampedScroll = Math.min(Math.max(0, targetScroll), maxScroll)
-    if (Math.abs(container.scrollLeft - clampedScroll) > 1) {
-      container.scrollLeft = clampedScroll
-    }
+    const cells = container.querySelectorAll<HTMLElement>('.senda-testimonials-card-cell')
+    const cell = cells[Math.min(Math.max(0, index), cells.length - 1)]
+    if (!cell) return
+    const desktopWideMany =
+      typeof window !== 'undefined' &&
+      window.innerWidth >= 1280 &&
+      testimonialData.length > 3
+    cell.scrollIntoView({
+      behavior: smooth ? 'smooth' : 'auto',
+      inline: desktopWideMany ? 'start' : 'center',
+      block: 'nearest',
+    })
   }
 
   const scrollLeft = () => {
-    const container = scrollContainerRef.current
-    if (!container || testimonialData.length === 0) return
-    const step = getScrollStep()
-    if (step <= 0) return
+    if (testimonialData.length === 0) return
     const nextIndex = Math.max(0, currentIndex - 1)
     if (nextIndex === currentIndex) return
-    const targetScroll = nextIndex * step
-    container.scrollTo({ left: targetScroll, behavior: 'smooth' })
+    scrollToTestimonialIndex(nextIndex, true)
   }
 
   const scrollRight = () => {
-    const container = scrollContainerRef.current
-    if (!container || testimonialData.length === 0) return
-    const step = getScrollStep()
-    if (step <= 0) return
+    if (testimonialData.length === 0) return
     const nextIndex = Math.min(testimonialData.length - 1, currentIndex + 1)
     if (nextIndex === currentIndex) return
-    const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth)
-    const isLastCard = nextIndex === testimonialData.length - 1
-    const targetScroll = isLastCard ? maxScroll : nextIndex * step
-    container.scrollTo({ left: targetScroll, behavior: 'smooth' })
+    scrollToTestimonialIndex(nextIndex, true)
   }
 
   const checkScrollability = () => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft: sl, scrollWidth, clientWidth } = scrollContainerRef.current
-      setCanScrollLeft(sl > 0)
-      setCanScrollRight(sl < scrollWidth - clientWidth - 1)
-      const step = getScrollStep()
-      const calculatedIndex = step > 0 ? Math.round(sl / step) : 0
-      setCurrentIndex(
-        Math.min(Math.max(0, calculatedIndex), testimonialData.length - 1),
-      )
+    const el = scrollContainerRef.current
+    if (!el) return
+    const { scrollLeft: sl, scrollWidth, clientWidth } = el
+    setCanScrollLeft(sl > 0)
+    setCanScrollRight(sl < scrollWidth - clientWidth - 1)
+
+    const cells = el.querySelectorAll<HTMLElement>('.senda-testimonials-card-cell')
+    if (cells.length === 0) {
+      setCurrentIndex(0)
+      return
     }
+
+    const viewportCenter = sl + clientWidth / 2
+    let bestIdx = 0
+    let bestDist = Infinity
+    cells.forEach((cell, i) => {
+      const cellCenter = cell.offsetLeft + cell.offsetWidth / 2
+      const dist = Math.abs(viewportCenter - cellCenter)
+      if (dist < bestDist) {
+        bestDist = dist
+        bestIdx = i
+      }
+    })
+    setCurrentIndex(Math.min(bestIdx, testimonialData.length - 1))
   }
 
   /** Scroll/carrusel cuando viewport < 1280px o cuando hay más de 3 testimonios.
@@ -666,22 +651,13 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
 
     checkScrollability()
 
-    const onScroll = () => {
-      checkScrollability()
-      if (snapTimeoutRef.current) clearTimeout(snapTimeoutRef.current)
-      snapTimeoutRef.current = setTimeout(() => {
-        snapToNearestCard()
-        checkScrollability()
-        snapTimeoutRef.current = null
-      }, 150)
-    }
+    const onScroll = () => checkScrollability()
 
     container.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', checkScrollability)
     return () => {
       container.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', checkScrollability)
-      if (snapTimeoutRef.current) clearTimeout(snapTimeoutRef.current)
     }
   }, [testimonialData.length])
 
@@ -763,6 +739,16 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
  .${gapId} {
    gap: 1.5rem !important;
  }
+ /* Sin borde en foto (globals * { border-color } + subpixel en móvil) */
+ .senda-testimonials-card-cell {
+   border: 0 !important;
+   outline: none !important;
+ }
+ .senda-testimonials-card-cell img {
+   border: 0 !important;
+   outline: none !important;
+   box-shadow: none !important;
+ }
  @media (max-width: 1279px) {
    .${gapId} {
      gap: 1.5rem !important;
@@ -818,25 +804,6 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
    min-width: var(--senda-testimonial-card-width, ${MOBILE_CARD_WIDTH_PX}px) !important;
    max-width: var(--senda-testimonial-card-width, ${MOBILE_CARD_WIDTH_PX}px) !important;
  }
- /* 4+ testimonios: padding simétrico para que el primer y último card tengan el mismo espacio a izquierda y derecha.
-  * scroll-padding evita que la primera/última card se peguen al borde al hacer snap. */
- .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel.senda-testimonials-carousel-visible-3 .senda-testimonials-scroll-viewport {
-   margin-left: auto !important;
-   margin-right: auto !important;
-   padding-left: 1rem !important;
-   padding-right: 1rem !important;
-   scroll-padding-left: 1rem !important;
-   scroll-padding-right: 1rem !important;
-   scroll-snap-type: x mandatory !important;
-   scroll-snap-stop: always !important;
- }
- .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel.senda-testimonials-carousel-visible-3 .senda-testimonials-card-cell {
-   scroll-snap-align: start !important;
-   scroll-snap-stop: always !important;
- }
- .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel.senda-testimonials-carousel-visible-3 .senda-testimonials-card-cell.senda-testimonials-card-cell-last {
-   scroll-snap-align: end !important;
- }
  @media (max-width: 1279px) {
    .senda-testimonials-carousel-wrapper {
      margin-left: -1rem !important;
@@ -848,6 +815,15 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
      padding-left: 1rem !important;
      padding-right: 1rem !important;
    }
+   /* Mismo comportamiento que Cards_SENDA: al soltar el dedo, snap y card centrada */
+   .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel .senda-testimonials-scroll-viewport {
+     scroll-snap-type: x mandatory !important;
+     scroll-padding-inline: 1rem !important;
+   }
+   .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel .senda-testimonials-card-cell {
+     scroll-snap-align: center !important;
+     scroll-snap-stop: always !important;
+   }
  }
  @media (min-width: 1024px) and (max-width: 1279px) {
    .senda-testimonials-carousel-wrapper {
@@ -858,6 +834,9 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
    .senda-testimonials-scroll-viewport {
      padding-left: 1.5rem !important;
      padding-right: 1.5rem !important;
+   }
+   .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel .senda-testimonials-scroll-viewport {
+     scroll-padding-inline: 1.5rem !important;
    }
  }
  @media (min-width: 1280px) {
@@ -876,7 +855,7 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
      padding-left: 1.5rem !important;
      padding-right: 1.5rem !important;
    }
-   /* 4+ testimonios desktop: padding derecho para que la última card se vea completa */
+   /* 4+ testimonios desktop: padding + snap al inicio (última al end); scroll-padding alinea primera/última */
    .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel.senda-testimonials-carousel-visible-3 .senda-testimonials-scroll-viewport {
      max-width: calc(var(--senda-testimonial-card-width, 18rem) * 3 + var(--senda-testimonial-scroll-gap, 1.5rem) * 2 + 1.5rem + 2rem) !important;
      margin-left: auto !important;
@@ -884,6 +863,15 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
      padding-right: 2rem !important;
      scroll-padding-left: 1.5rem !important;
      scroll-padding-right: 2rem !important;
+     scroll-snap-type: x mandatory !important;
+     scroll-snap-stop: always !important;
+   }
+   .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel.senda-testimonials-carousel-visible-3 .senda-testimonials-card-cell {
+     scroll-snap-align: start !important;
+     scroll-snap-stop: always !important;
+   }
+   .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel.senda-testimonials-carousel-visible-3 .senda-testimonials-card-cell.senda-testimonials-card-cell-last {
+     scroll-snap-align: end !important;
    }
  }
  `,
@@ -933,7 +921,7 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
             ref={scrollContainerRef}
             className={cn(
               'senda-testimonials-scroll-viewport flex senda-testimonials-grid',
-              'overflow-x-auto scroll-smooth pl-4 pr-4',
+              'overflow-x-auto pl-4 pr-4',
               '[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden',
               gapId,
             )}

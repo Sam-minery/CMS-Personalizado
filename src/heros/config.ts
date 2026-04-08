@@ -164,6 +164,122 @@ export const hero: Field = {
           type: 'text',
           label: 'Texto alternativo',
         },
+        {
+          name: 'useCuImgDims',
+          type: 'checkbox',
+          label: 'Dimensiones personalizadas (imagen subida)',
+          defaultValue: false,
+          admin: {
+            condition: (_, siblingData) => siblingData?.useMedia === true,
+            description:
+              'Ancho y alto exactos (px o rem). La imagen rellena ese recuadro; si la proporción no coincide con la foto, se estira o comprime.',
+          },
+        },
+        {
+          name: 'customUploadedImageWidth',
+          type: 'number',
+          label: 'Ancho',
+          min: 0,
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useMedia === true && siblingData?.useCuImgDims === true,
+            description: 'Valor numérico (ej. 400 o 25). La unidad se elige al lado.',
+          },
+        },
+        {
+          name: 'customUploadedImageWidthUnit',
+          type: 'select',
+          dbName: 'hs_cu_wu',
+          label: 'Unidad del ancho',
+          defaultValue: 'px',
+          options: [
+            { label: 'px', value: 'px' },
+            { label: 'rem', value: 'rem' },
+          ],
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useMedia === true && siblingData?.useCuImgDims === true,
+          },
+        },
+        {
+          name: 'customUploadedImageHeight',
+          type: 'number',
+          label: 'Alto',
+          min: 0,
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useMedia === true && siblingData?.useCuImgDims === true,
+            description: 'Valor numérico (ej. 300 o 18.75).',
+          },
+        },
+        {
+          name: 'customUploadedImageHeightUnit',
+          type: 'select',
+          dbName: 'hs_cu_hu',
+          label: 'Unidad del alto',
+          defaultValue: 'px',
+          options: [
+            { label: 'px', value: 'px' },
+            { label: 'rem', value: 'rem' },
+          ],
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useMedia === true && siblingData?.useCuImgDims === true,
+          },
+        },
+        {
+          name: 'customUploadedImageMobW',
+          type: 'number',
+          label: 'Ancho (móvil)',
+          min: 0,
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useMedia === true && siblingData?.useCuImgDims === true,
+            description:
+              'Opcional. Por debajo de 1024px de ancho (breakpoint lg). Si lo dejas vacío, se usan ancho y alto de escritorio.',
+          },
+        },
+        {
+          name: 'customUploadedImageMobWu',
+          type: 'select',
+          dbName: 'hs_cu_mwu',
+          label: 'Unidad ancho (móvil)',
+          defaultValue: 'px',
+          options: [
+            { label: 'px', value: 'px' },
+            { label: 'rem', value: 'rem' },
+          ],
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useMedia === true && siblingData?.useCuImgDims === true,
+          },
+        },
+        {
+          name: 'customUploadedImageMobH',
+          type: 'number',
+          label: 'Alto (móvil)',
+          min: 0,
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useMedia === true && siblingData?.useCuImgDims === true,
+            description: 'Opcional. Si falta, se usa el alto de escritorio.',
+          },
+        },
+        {
+          name: 'customUploadedImageMobHu',
+          type: 'select',
+          dbName: 'hs_cu_mhu',
+          label: 'Unidad alto (móvil)',
+          defaultValue: 'px',
+          options: [
+            { label: 'px', value: 'px' },
+            { label: 'rem', value: 'rem' },
+          ],
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useMedia === true && siblingData?.useCuImgDims === true,
+          },
+        },
       ],
     },
     {
