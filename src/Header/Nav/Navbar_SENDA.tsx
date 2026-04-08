@@ -14,6 +14,10 @@ import { sanitizeSVG } from "@/utilities/sanitizeHTML";
 import { cn } from "@/utilities/ui";
 import { sendaBlockButtonPrimitiveClassName } from "@/utilities/sendaBlockButtonClasses";
 import {
+  expandFontGroupRichTextFields,
+  type FontGroupWithExpandedRichText,
+} from "@/utilities/expandFontGroupRichTextFields";
+import {
   FONT_GROUP_RICHTEXT_DESKTOP_MIN,
   FONT_GROUP_RICHTEXT_MOBILE_MAX,
   FONT_GROUP_VARIANT_CSS,
@@ -21,6 +25,9 @@ import {
   trimFontGroupValue,
 } from "@/utilities/fontGroupRichTextCss";
 import type { Font, FontGroup } from "@/payload-types";
+
+/** Fondo del menú hamburguesa desplegado en móvil (barra + panel + submenús inline). */
+const MOBILE_MENU_EXPANDED_BG = "#F5F3EF";
 
 type ImageProps = {
   useMedia?: boolean;
@@ -70,7 +77,10 @@ type FontFile = {
   name?: string;
 };
 
-function normalizeNavbarFontGroup(raw: unknown): FontGroup | null {
+/** Grupo de fuente tras `expandFontGroupRichTextFields` (tipografía / interlineado enriquecido). */
+type NavbarFontGroup = FontGroup & FontGroupWithExpandedRichText;
+
+function normalizeNavbarFontGroup(raw: unknown): NavbarFontGroup | null {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
   let o = raw as Record<string, unknown>;
   const rel = o.relationTo;
@@ -83,19 +93,53 @@ function normalizeNavbarFontGroup(raw: unknown): FontGroup | null {
   ) {
     o = inner as Record<string, unknown>;
   }
-  return o as unknown as FontGroup;
+  return expandFontGroupRichTextFields(o as Record<string, unknown>) as NavbarFontGroup;
 }
 
-/** Texto de enlaces/botones: clase body del font group + fontFamily inline si aplica. */
+/**
+ * Texto de enlaces/botones: clase body del font group + fontFamily inline si aplica.
+ * `layoutStableBold`: reserva el ancho del glifo en bold (capa invisible) para que al activar el ancla
+ * el navbar no crezca unos píxeles al pasar de normal → bold.
+ */
 function NavbarTextLabel({
   text,
   fontStyle,
   fg,
+  layoutStableBold,
+  anchorActive,
 }: {
   text: string;
   fontStyle?: React.CSSProperties;
   fg: boolean;
+  layoutStableBold?: boolean;
+  anchorActive?: boolean;
 }) {
+  if (layoutStableBold) {
+    return (
+      <span
+        className={cn(
+          "relative inline-grid justify-items-center [align-items:center]",
+          fg && "navbar-senda-fg-body-text",
+        )}
+        style={fontStyle}
+      >
+        <span
+          aria-hidden
+          className="pointer-events-none invisible col-start-1 row-start-1 font-bold whitespace-nowrap select-none"
+        >
+          {text}
+        </span>
+        <span
+          className={cn(
+            "col-start-1 row-start-1 whitespace-nowrap",
+            anchorActive ? "font-bold" : "font-normal",
+          )}
+        >
+          {text}
+        </span>
+      </span>
+    );
+  }
   if (!fg && !fontStyle) return <>{text}</>;
   return (
     <span className={cn(fg && "navbar-senda-fg-body-text")} style={fontStyle}>
@@ -422,6 +466,31 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
 
   const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined;
 
+  const renderMobileHamburger = () => (
+    <button
+      type="button"
+      className="-mr-2 flex size-12 shrink-0 flex-col items-center justify-center"
+      onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+      aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+    >
+      <motion.span
+        className="my-[3px] h-0.5 w-6 origin-center bg-black"
+        animate={isMobileMenuOpen ? ["open", "rotatePhase"] : "closed"}
+        variants={topLineVariants}
+      />
+      <motion.span
+        className="my-[3px] h-0.5 w-6 origin-center bg-black"
+        animate={isMobileMenuOpen ? "open" : "closed"}
+        variants={middleLineVariants}
+      />
+      <motion.span
+        className="my-[3px] h-0.5 w-6 origin-center bg-black"
+        animate={isMobileMenuOpen ? ["open", "rotatePhase"] : "closed"}
+        variants={bottomLineVariants}
+      />
+    </button>
+  );
+
   // Sin spacer. Móvil: navbar top-0. Desktop: margen superior (lg:top-8).
   return (
     <>
@@ -430,30 +499,44 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
         id="navbar-senda"
         ref={containerRef}
         data-navbar-senda-font={styleId}
-        className="navbar-senda-font-root z-[999] flex justify-center fixed left-0 right-0 min-h-0 w-full min-w-0 max-w-[100vw] box-border"
+        className="navbar-senda-font-root z-[999] flex min-h-0 w-full min-w-0 max-w-[100vw] justify-center box-border fixed left-0 right-0"
         style={{
           ...fontStyle,
           top: isMobile ? 0 : 32,
-          width: '100%',
-          maxWidth: '100vw',
+          width: "100%",
+          maxWidth: "100vw",
         }}
       >
         <nav
           id={styleId}
-          className={`
-            relative flex items-center ${navBorder} min-w-0 box-border
-            ${isMenuExpanded ? "bg-white border-b-0 rounded-b-none" : backgroundColor ? "" : "bg-white"}
-            ${isMobile ? `w-full max-w-[100vw] px-3 py-3 lg:px-4 lg:py-4 rounded-t-none ${isMenuExpanded ? "rounded-b-none" : "rounded-b-xl"}` : "w-max max-w-full px-4 py-2 lg:px-5 lg:py-2.5 rounded-3xl"}
-          `}
+          className={cn(
+            "relative min-w-0 box-border",
+            navBorder,
+            isMenuExpanded ? "border-b-0 rounded-b-none" : backgroundColor ? "" : "bg-white",
+            isMobile
+              ? cn(
+                  "w-full max-w-[100vw] px-3 py-3 lg:px-4 lg:py-4 rounded-t-none",
+                  isMenuExpanded
+                    ? "flex flex-col min-h-[100dvh] max-h-[100dvh] items-stretch rounded-b-none"
+                    : "flex items-center rounded-b-xl",
+                )
+              : cn("w-max max-w-full px-4 py-2 lg:px-5 lg:py-2.5 rounded-3xl", "flex items-center"),
+          )}
           style={
             isMenuExpanded
-              ? { backgroundColor: "white" }
+              ? { backgroundColor: MOBILE_MENU_EXPANDED_BG }
               : backgroundColor
                 ? { backgroundColor, ["--navbar-senda-bg" as string]: backgroundColor }
                 : undefined
           }
         >
-        <div className="navbar-senda-font-inherit size-full flex items-center justify-between gap-4 lg:gap-6 min-w-0 overflow-x-hidden" style={fontStyle}>
+        <div
+          className={cn(
+            "navbar-senda-font-inherit flex min-w-0 items-center justify-between gap-4 overflow-x-hidden lg:gap-6",
+            isMenuExpanded && isMobile ? "w-full shrink-0" : "size-full",
+          )}
+          style={fontStyle}
+        >
           {/* Logo: al pulsar refresca la página actual */}
           <div className="flex-shrink-0 min-w-0">
             <a
@@ -491,12 +574,17 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                     className={cn(
                       "block py-3 px-4 py-2 cursor-pointer bg-transparent border-0 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
                       !fontGroupTypographyActive && "text-base",
-                      activeAnchorId === navLink.link!.anchorId!.trim() ? "font-bold" : "",
                     )}
                     style={fontStyle}
                     onClick={() => scrollToAnchor(navLink.link!.anchorId!)}
                   >
-                    <NavbarTextLabel text={navLink.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
+                    <NavbarTextLabel
+                      text={navLink.title}
+                      fontStyle={fontStyle}
+                      fg={fontGroupTypographyActive}
+                      layoutStableBold
+                      anchorActive={activeAnchorId === navLink.link!.anchorId!.trim()}
+                    />
                   </button>
                 ) : (
                   <CMSLink
@@ -568,8 +656,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
 
           {/* Mobile: solo primer botón cuando menú cerrado; hamburger siempre */}
           {isMobile && (
-            <>
-              <div className="flex items-center gap-3 flex-1 justify-end min-w-0 shrink">
+              <div className="flex min-w-0 shrink flex-1 items-center justify-end gap-3">
                 {showMobileTopBarItems && firstButton &&
                   (firstButton.link?.type === "anchor" && firstButton.link?.anchorId ? (
                     <Button
@@ -617,196 +704,189 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                     </CMSLink>
                   )
                 )}
-                <button
-                  className="-mr-2 flex size-12 flex-col items-center justify-center"
-                  onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-                  aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
-                >
-                  <motion.span
-                    className="my-[3px] h-0.5 w-6 bg-black"
-                    animate={isMobileMenuOpen ? ["open", "rotatePhase"] : "closed"}
-                    variants={topLineVariants}
-                  />
-                  <motion.span
-                    className="my-[3px] h-0.5 w-6 bg-black"
-                    animate={isMobileMenuOpen ? "open" : "closed"}
-                    variants={middleLineVariants}
-                  />
-                  <motion.span
-                    className="my-[3px] h-0.5 w-6 bg-black"
-                    animate={isMobileMenuOpen ? ["open", "rotatePhase"] : "closed"}
-                    variants={bottomLineVariants}
-                  />
-                </button>
+                {renderMobileHamburger()}
               </div>
+          )}
+        </div>
 
+          {isMobile && isMobileMenuOpen && (
               <div
-                className="absolute left-0 right-0 top-full z-50 lg:hidden w-full max-w-[100vw] box-border rounded-b-xl border-x border-b border-[1px] border-white border-t-0 transition-[max-height] duration-300 ease-in-out overflow-y-auto overflow-x-hidden min-w-0"
-                style={{
-                  backgroundColor: "white",
-                  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-                  maxHeight: isMobileMenuOpen ? "80vh" : "0",
-                }}
+                className="navbar-senda-font-inherit flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden lg:hidden"
+                style={{ backgroundColor: MOBILE_MENU_EXPANDED_BG }}
               >
-                <div className="navbar-senda-font-inherit px-3 py-4 lg:px-4 lg:py-4 min-w-0" style={fontStyle}>
-                  {navLinks.map((navLink, index) => (
-                    <div key={index} className="border-b border-gray-200 py-3">
-                      {navLink.subMenuLinks && navLink.subMenuLinks.length > 0 ? (
-                            <SubMenu navLink={navLink} isMobile={true} dropdownBgColor={isMobileMenuOpen ? undefined : backgroundColor} linkFontStyle={fontStyle} fontGroupTypographyActive={fontGroupTypographyActive} onCloseMenu={() => setIsMobileMenuOpen(false)} activeAnchorId={activeAnchorId} />
-                          ) : navLink.link?.type === "anchor" && navLink.link?.anchorId ? (
-                            <div>
-                              <button
-                                type="button"
-                                className={cn(
-                                  "block w-full py-2 text-left cursor-pointer bg-transparent border-0 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
-                                  !fontGroupTypographyActive && "text-base",
-                                  activeAnchorId === navLink.link!.anchorId!.trim() ? "font-bold" : "",
-                                )}
-                                style={fontStyle}
-                                onClick={() => {
-                                  scrollToAnchor(navLink.link!.anchorId!);
-                                  setIsMobileMenuOpen(false);
-                                }}
-                              >
-                                <NavbarTextLabel text={navLink.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
-                              </button>
-                            </div>
-                          ) : (
-                            <div onClick={() => setIsMobileMenuOpen(false)}>
-                              <CMSLink
-                                {...(navLink.link as React.ComponentProps<typeof CMSLink>)}
-                                className={cn(
-                                  "block py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
-                                  !fontGroupTypographyActive && "text-base",
-                                )}
-                                style={fontStyle}
-                              >
-                                <NavbarTextLabel text={navLink.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
-                              </CMSLink>
-                            </div>
-                          )}
-                    </div>
-                  ))}
-                      {firstButton && (
-                        <div className="mt-12 pt-16 flex justify-center">
-                          {firstButton.link?.type === "anchor" && firstButton.link?.anchorId ? (
-                            <Button
-                              size={firstButton.variant === "link" ? firstButton.size : "clear"}
-                              variant={firstButton.variant}
+                <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
+                  <div className="min-w-0 px-0 py-4" style={fontStyle}>
+                    {navLinks.map((navLink, index) => (
+                      <div key={index} className="border-b border-gray-200 py-3">
+                        {navLink.subMenuLinks && navLink.subMenuLinks.length > 0 ? (
+                          <SubMenu
+                            navLink={navLink}
+                            isMobile={true}
+                            dropdownBgColor={isMobileMenuOpen ? MOBILE_MENU_EXPANDED_BG : backgroundColor}
+                            linkFontStyle={fontStyle}
+                            fontGroupTypographyActive={fontGroupTypographyActive}
+                            onCloseMenu={() => setIsMobileMenuOpen(false)}
+                            activeAnchorId={activeAnchorId}
+                          />
+                        ) : navLink.link?.type === "anchor" && navLink.link?.anchorId ? (
+                          <div>
+                            <button
+                              type="button"
                               className={cn(
-                                firstButton.variant !== "link" && sendaBlockButtonPrimitiveClassName,
-                                !fontGroupTypographyActive && firstButton.variant === "link" && "text-xs",
-                                firstButton.variant === "default" && "navbar-senda-btn-default",
+                                "block w-full cursor-pointer border-0 bg-transparent py-2 text-left transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+                                !fontGroupTypographyActive && "text-base",
                               )}
                               style={fontStyle}
                               onClick={() => {
-                                scrollToAnchor(firstButton!.link!.anchorId!);
+                                scrollToAnchor(navLink.link!.anchorId!);
                                 setIsMobileMenuOpen(false);
                               }}
                             >
+                              <NavbarTextLabel
+                                text={navLink.title}
+                                fontStyle={fontStyle}
+                                fg={fontGroupTypographyActive}
+                                layoutStableBold
+                                anchorActive={activeAnchorId === navLink.link!.anchorId!.trim()}
+                              />
+                            </button>
+                          </div>
+                        ) : (
+                          <div onClick={() => setIsMobileMenuOpen(false)}>
+                            <CMSLink
+                              {...(navLink.link as React.ComponentProps<typeof CMSLink>)}
+                              className={cn(
+                                "block py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+                                !fontGroupTypographyActive && "text-base",
+                              )}
+                              style={fontStyle}
+                            >
+                              <NavbarTextLabel text={navLink.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
+                            </CMSLink>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {buttons.length > 0 && (
+                  <div
+                    className="flex w-full shrink-0 flex-col items-center gap-3 border-t border-gray-200/80 px-3 pt-6 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+                    style={{ ...fontStyle, backgroundColor: MOBILE_MENU_EXPANDED_BG }}
+                  >
+                    {firstButton &&
+                      (firstButton.link?.type === "anchor" && firstButton.link?.anchorId ? (
+                        <Button
+                          size={firstButton.variant === "link" ? firstButton.size : "clear"}
+                          variant={firstButton.variant}
+                          className={cn(
+                            firstButton.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                            !fontGroupTypographyActive && firstButton.variant === "link" && "text-xs",
+                            firstButton.variant === "default" && "navbar-senda-btn-default",
+                          )}
+                          style={fontStyle}
+                          onClick={() => {
+                            scrollToAnchor(firstButton!.link!.anchorId!);
+                            setIsMobileMenuOpen(false);
+                          }}
+                        >
+                          <span className="inline-flex items-center gap-2">
+                            <NavbarTextLabel text={firstButton.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
+                            {firstButton.iconSVG ? (
+                              <span
+                                className="inline-flex h-5 w-5 shrink-0 [&_svg]:h-full [&_svg]:w-full"
+                                dangerouslySetInnerHTML={{ __html: sanitizeSVG(firstButton.iconSVG) }}
+                                aria-hidden
+                              />
+                            ) : null}
+                          </span>
+                        </Button>
+                      ) : (
+                        <div onClick={() => setIsMobileMenuOpen(false)}>
+                          <CMSLink
+                            {...(firstButton.link as React.ComponentProps<typeof CMSLink>)}
+                            size={firstButton.variant === "link" ? firstButton.size : "clear"}
+                            appearance={firstButton.variant}
+                            className={cn(
+                              firstButton.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                              !fontGroupTypographyActive && firstButton.variant === "link" && "text-xs",
+                              firstButton.variant === "default" && "navbar-senda-btn-default",
+                            )}
+                            style={fontStyle}
+                          >
+                            <span className="inline-flex items-center gap-2">
+                              <NavbarTextLabel text={firstButton.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
+                              {firstButton.iconSVG ? (
+                                <span
+                                  className="inline-flex h-5 w-5 shrink-0 [&_svg]:h-full [&_svg]:w-full"
+                                  dangerouslySetInnerHTML={{ __html: sanitizeSVG(firstButton.iconSVG) }}
+                                  aria-hidden
+                                />
+                              ) : null}
+                            </span>
+                          </CMSLink>
+                        </div>
+                      ))}
+                    {buttons.length > 1 &&
+                      buttons.slice(1).map((button, index) =>
+                        button.link?.type === "anchor" && button.link?.anchorId ? (
+                          <Button
+                            key={index}
+                            size={button.variant === "link" ? button.size : "clear"}
+                            variant={button.variant}
+                            className={cn(
+                              button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                              !fontGroupTypographyActive && button.variant === "link" && "text-xs",
+                              button.variant === "default" && "navbar-senda-btn-default",
+                            )}
+                            style={fontStyle}
+                            onClick={() => {
+                              scrollToAnchor(button.link!.anchorId!);
+                              setIsMobileMenuOpen(false);
+                            }}
+                          >
+                            <span className="inline-flex items-center gap-2">
+                              <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
+                              {button.iconSVG ? (
+                                <span
+                                  className="inline-flex h-5 w-5 shrink-0 [&_svg]:h-full [&_svg]:w-full"
+                                  dangerouslySetInnerHTML={{ __html: sanitizeSVG(button.iconSVG) }}
+                                  aria-hidden
+                                />
+                              ) : null}
+                            </span>
+                          </Button>
+                        ) : (
+                          <div key={index} onClick={() => setIsMobileMenuOpen(false)}>
+                            <CMSLink
+                              {...(button.link as React.ComponentProps<typeof CMSLink>)}
+                              size={button.variant === "link" ? button.size : "clear"}
+                              appearance={button.variant}
+                              className={cn(
+                                button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                                !fontGroupTypographyActive && button.variant === "link" && "text-xs",
+                                button.variant === "default" && "navbar-senda-btn-default",
+                              )}
+                              style={fontStyle}
+                            >
                               <span className="inline-flex items-center gap-2">
-                                <NavbarTextLabel text={firstButton.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
-                                {firstButton.iconSVG ? (
+                                <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
+                                {button.iconSVG ? (
                                   <span
-                                    className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                                    dangerouslySetInnerHTML={{ __html: sanitizeSVG(firstButton.iconSVG) }}
+                                    className="inline-flex h-5 w-5 shrink-0 [&_svg]:h-full [&_svg]:w-full"
+                                    dangerouslySetInnerHTML={{ __html: sanitizeSVG(button.iconSVG) }}
                                     aria-hidden
                                   />
                                 ) : null}
                               </span>
-                            </Button>
-                          ) : (
-                            <div onClick={() => setIsMobileMenuOpen(false)}>
-                              <CMSLink
-                                {...(firstButton.link as React.ComponentProps<typeof CMSLink>)}
-                                size={firstButton.variant === "link" ? firstButton.size : "clear"}
-                                appearance={firstButton.variant}
-                                className={cn(
-                                  firstButton.variant !== "link" && sendaBlockButtonPrimitiveClassName,
-                                  !fontGroupTypographyActive && firstButton.variant === "link" && "text-xs",
-                                  firstButton.variant === "default" && "navbar-senda-btn-default",
-                                )}
-                                style={fontStyle}
-                              >
-                                <span className="inline-flex items-center gap-2">
-                                  <NavbarTextLabel text={firstButton.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
-                                  {firstButton.iconSVG ? (
-                                    <span
-                                      className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                                      dangerouslySetInnerHTML={{ __html: sanitizeSVG(firstButton.iconSVG) }}
-                                      aria-hidden
-                                    />
-                                  ) : null}
-                                </span>
-                              </CMSLink>
-                            </div>
-                          )}
-                        </div>
+                            </CMSLink>
+                          </div>
+                        )
                       )}
-                      {buttons.length > 1 && (
-                        <div className="mt-4 flex flex-col gap-2 items-center">
-                          {buttons.slice(1).map((button, index) =>
-                            button.link?.type === "anchor" && button.link?.anchorId ? (
-                              <Button
-                                key={index}
-                                size={button.variant === "link" ? button.size : "clear"}
-                                variant={button.variant}
-                                className={cn(
-                                  button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
-                                  !fontGroupTypographyActive && button.variant === "link" && "text-xs",
-                                  button.variant === "default" && "navbar-senda-btn-default",
-                                )}
-                                style={fontStyle}
-                                onClick={() => {
-                                  scrollToAnchor(button.link!.anchorId!);
-                                  setIsMobileMenuOpen(false);
-                                }}
-                              >
-                                <span className="inline-flex items-center gap-2">
-                                  <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
-                                  {button.iconSVG ? (
-                                    <span
-                                      className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                                      dangerouslySetInnerHTML={{ __html: sanitizeSVG(button.iconSVG) }}
-                                      aria-hidden
-                                    />
-                                  ) : null}
-                                </span>
-                              </Button>
-                            ) : (
-                              <div key={index} onClick={() => setIsMobileMenuOpen(false)}>
-                                <CMSLink
-                                  {...(button.link as React.ComponentProps<typeof CMSLink>)}
-                                  size={button.variant === "link" ? button.size : "clear"}
-                                  appearance={button.variant}
-                                  className={cn(
-                                    button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
-                                    !fontGroupTypographyActive && button.variant === "link" && "text-xs",
-                                    button.variant === "default" && "navbar-senda-btn-default",
-                                  )}
-                                  style={fontStyle}
-                                >
-                                  <span className="inline-flex items-center gap-2">
-                                    <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
-                                    {button.iconSVG ? (
-                                      <span
-                                        className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                                        dangerouslySetInnerHTML={{ __html: sanitizeSVG(button.iconSVG) }}
-                                        aria-hidden
-                                      />
-                                    ) : null}
-                                  </span>
-                                </CMSLink>
-                              </div>
-                            )
-                          )}
-                        </div>
-                      )}
-                </div>
+                  </div>
+                )}
               </div>
-            </>
           )}
-        </div>
       </nav>
     </section>
     </>
@@ -885,12 +965,17 @@ const SubMenu = ({
                   className={cn(
                     "block w-full py-3 pl-[5%] text-left cursor-pointer bg-transparent border-0 lg:px-4 lg:py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
                     !fontGroupTypographyActive && "text-md lg:text-base",
-                    activeAnchorId === subLink.link.anchorId.trim() ? "font-bold" : "",
                   )}
                   style={linkFontStyle}
                   onClick={() => handleSubLinkClick(subLink)}
                 >
-                  <NavbarTextLabel text={subLink.title} fontStyle={linkFontStyle} fg={fontGroupTypographyActive} />
+                  <NavbarTextLabel
+                    text={subLink.title}
+                    fontStyle={linkFontStyle}
+                    fg={fontGroupTypographyActive}
+                    layoutStableBold
+                    anchorActive={activeAnchorId === subLink.link.anchorId.trim()}
+                  />
                 </button>
               ) : (
                 <div key={index} onClick={() => isMobile && onCloseMenu?.()}>
@@ -914,9 +999,10 @@ const SubMenu = ({
   );
 };
 
+/** La variante final debe repetir el translateY; si no, Motion lo resetea al rotar y la X queda torcida. */
 const topLineVariants = {
-  open: { translateY: 8, transition: { delay: 0.1 } },
-  rotatePhase: { rotate: -45, transition: { delay: 0.2 } },
+  open: { translateY: 8, rotate: 0, transition: { delay: 0.1 } },
+  rotatePhase: { translateY: 8, rotate: -45, transition: { delay: 0.2 } },
   closed: { translateY: 0, rotate: 0, transition: { duration: 0.2 } },
 };
 
@@ -926,8 +1012,8 @@ const middleLineVariants = {
 };
 
 const bottomLineVariants = {
-  open: { translateY: -8, transition: { delay: 0.1 } },
-  rotatePhase: { rotate: 45, transition: { delay: 0.2 } },
+  open: { translateY: -8, rotate: 0, transition: { delay: 0.1 } },
+  rotatePhase: { translateY: -8, rotate: 45, transition: { delay: 0.2 } },
   closed: { translateY: 0, rotate: 0, transition: { duration: 0.2 } },
 };
 

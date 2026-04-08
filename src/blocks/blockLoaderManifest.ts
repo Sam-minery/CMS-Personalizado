@@ -84,6 +84,7 @@ export const BLOCK_LOADER_MANIFEST: Record<
   layoutSendaSections: { path: './Layout_SENDA_Sections/config', exportName: 'LayoutSendaSectionsBlock' },
   navbarSimpleSenda: { path: './Navbar_Simple_SENDA/config', exportName: 'NavbarSimpleSendaBlock' },
   pricingSenda: { path: './Pricing_SENDA/config', exportName: 'PricingSendaBlock' },
+  pricingSendaAlter: { path: './Pricing_SENDA_Alter/config', exportName: 'PricingSendaAlterBlock' },
   layout42: { path: './Layout42/config', exportName: 'Layout42Block' },
   layout90: { path: './Layout90/config', exportName: 'Layout90Block' },
   layout132: { path: './Layout132/config', exportName: 'Layout132Block' },

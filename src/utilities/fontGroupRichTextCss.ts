@@ -12,6 +12,8 @@ export type FontGroupTypography = {
   h6?: string | null
   body?: string | null
   lists?: string | null
+  /** Tamaño de <blockquote> en rich text */
+  quote?: string | null
   caption?: string | null
 }
 
@@ -32,6 +34,8 @@ export type FontGroupHeadingMargins = {
   bodyMarginBottom?: string | null
   listsMarginTop?: string | null
   listsMarginBottom?: string | null
+  quoteMarginTop?: string | null
+  quoteMarginBottom?: string | null
 }
 
 export type FontGroupLineHeights = {
@@ -43,6 +47,7 @@ export type FontGroupLineHeights = {
   h6?: string | null
   body?: string | null
   lists?: string | null
+  quote?: string | null
 }
 
 /** Viewport “móvil” para @media (max-width): por debajo de `md` en Tailwind (768px − 1). */
@@ -68,9 +73,21 @@ const HEADING_MARGIN_KEYS: (keyof FontGroupHeadingMargins)[] = [
   'bodyMarginBottom',
   'listsMarginTop',
   'listsMarginBottom',
+  'quoteMarginTop',
+  'quoteMarginBottom',
 ]
 
-const LINE_HEIGHT_KEYS: (keyof FontGroupLineHeights)[] = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'body', 'lists']
+const LINE_HEIGHT_KEYS: (keyof FontGroupLineHeights)[] = [
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'body',
+  'lists',
+  'quote',
+]
 
 /** Por cada clave: valor móvil si está relleno; si no, valor escritorio. */
 export function mergeFontGroupHeadingMarginsWithFallback(
@@ -121,7 +138,7 @@ export function trimFontGroupValue(v: string | null | undefined): string {
   return (typeof v === 'string' ? v.trim() : '') || ''
 }
 
-/** Tamaños de párrafo vs ítems de lista (body / lists). */
+/** Tamaños de párrafo, listas y blockquotes (body / lists / quote). */
 export function appendTypographyBodyListSizeRules(
   typo: FontGroupTypography | null | undefined,
   mainRichtext: string,
@@ -140,17 +157,20 @@ export function appendTypographyBodyListSizeRules(
     emit(
       `${mainRichtext} li, ${planRichtext} li, ${payloadRichtext} li { font-size: ${listsV} !important; }`,
     )
-    return
-  }
-  if (bodyV) {
+  } else if (bodyV) {
     emit(
       `${mainRichtext} p, ${mainRichtext} li, ${planRichtext} p, ${planRichtext} li, ${payloadRichtext} p, ${payloadRichtext} li, ${planText} { font-size: ${bodyV} !important; }`,
     )
-    return
-  }
-  if (listsV) {
+  } else if (listsV) {
     emit(
       `${mainRichtext} li, ${planRichtext} li, ${payloadRichtext} li { font-size: ${listsV} !important; }`,
+    )
+  }
+
+  const quoteV = t(typo?.quote)
+  if (quoteV) {
+    emit(
+      `${mainRichtext} blockquote, ${planRichtext} blockquote, ${payloadRichtext} blockquote { font-size: ${quoteV} !important; }`,
     )
   }
 }
@@ -245,6 +265,19 @@ function emitFontGroupHeadingMarginRules(
     ].join(', ')
     emit(`${listHasNext} { margin-bottom: 0 !important; }`)
   }
+  const qmt = trimFontGroupValue(m.quoteMarginTop)
+  const qmb = trimFontGroupValue(m.quoteMarginBottom)
+  if (qmt || qmb) {
+    const parts: string[] = []
+    if (qmt) parts.push(`margin-top: ${qmt} !important;`)
+    if (qmb) parts.push(`margin-bottom: ${qmb} !important;`)
+    const quoteSel = `${mainRichtext} blockquote, ${planRichtext} blockquote, ${payloadRichtext} blockquote`
+    emit(`${quoteSel} { ${parts.join(' ')} }`)
+    for (const root of [mainRichtext, planRichtext, payloadRichtext]) {
+      emit(`${root} blockquote + blockquote { margin-top: 0 !important; }`)
+      emit(`${root} blockquote:has(+ blockquote) { margin-bottom: 0 !important; }`)
+    }
+  }
 }
 
 export function appendFontGroupHeadingMarginRules(
@@ -320,6 +353,12 @@ function emitFontGroupLineHeightRules(
   if (listsLh) {
     emit(
       `${mainRichtext} ul, ${mainRichtext} ol, ${mainRichtext} li, ${planRichtext} ul, ${planRichtext} ol, ${planRichtext} li, ${payloadRichtext} ul, ${payloadRichtext} ol, ${payloadRichtext} li { line-height: ${listsLh} !important; }`,
+    )
+  }
+  const quoteLh = trimFontGroupValue(lh.quote)
+  if (quoteLh) {
+    emit(
+      `${mainRichtext} blockquote, ${planRichtext} blockquote, ${payloadRichtext} blockquote { line-height: ${quoteLh} !important; }`,
     )
   }
 }

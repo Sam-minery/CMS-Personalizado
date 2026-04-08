@@ -10,6 +10,7 @@ import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import type { Media, Page, Post } from '@/payload-types'
+import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
   appendFontGroupHeadingMarginRulesResponsive,
   appendFontGroupLineHeightRulesResponsive,
@@ -57,7 +58,7 @@ function normalizeLayoutFontGroup(raw: unknown): FontGroupData | null {
   ) {
     o = inner as Record<string, unknown>
   }
-  return o as FontGroupData
+  return expandFontGroupRichTextFields(o as Record<string, unknown>) as FontGroupData
 }
 
 const LAYOUT_FG_RICHTEXT =

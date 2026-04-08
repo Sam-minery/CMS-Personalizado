@@ -10,6 +10,7 @@ import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
 import { RxChevronRight } from 'react-icons/rx'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
+import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
   appendFontGroupHeadingMarginRulesResponsive,
   appendFontGroupLineHeightRulesResponsive,
@@ -58,7 +59,7 @@ function normalizeLssFontGroup(raw: unknown): FontGroupData | null {
   ) {
     o = inner as Record<string, unknown>
   }
-  return o as FontGroupData
+  return expandFontGroupRichTextFields(o as Record<string, unknown>) as FontGroupData
 }
 
 const LSS_FG_RICHTEXT =

@@ -16,6 +16,7 @@ export const enabledBlockSlugs: string[] | null = [
   'layoutSendaSections',
   'navbarSimpleSenda',
   'pricingSenda',
+  'pricingSendaAlter',
   'faqSenda',
   'testimonialsSenda',
   'bloqueIMCSenda',

@@ -14,6 +14,7 @@ import { LayoutSendaBlock } from './Layout_SENDA/config'
 import { LayoutSendaSectionsBlock } from './Layout_SENDA_Sections/config'
 import { NavbarSimpleSendaBlock } from './Navbar_Simple_SENDA/config'
 import { PricingSendaBlock } from './Pricing_SENDA/config'
+import { PricingSendaAlterBlock } from './Pricing_SENDA_Alter/config'
 import { FAQSendaBlock } from './FAQ_SENDA/config'
 import { TestimonialsSendaBlockConfig } from './Testimonials_SENDA/config'
 import { BloqueIMCSendaBlockConfig } from './BloqueIMC_SENDA/config'
@@ -30,6 +31,7 @@ export const ENABLED_BLOCKS_BY_SLUG: Record<string, Block> = {
   "layoutSendaSections": LayoutSendaSectionsBlock,
   "navbarSimpleSenda": NavbarSimpleSendaBlock,
   "pricingSenda": PricingSendaBlock,
+  "pricingSendaAlter": PricingSendaAlterBlock,
   "faqSenda": FAQSendaBlock,
   "testimonialsSenda": TestimonialsSendaBlockConfig,
   "bloqueIMCSenda": BloqueIMCSendaBlockConfig,

@@ -12,6 +12,7 @@ import {
   sendaBlockButtonNativeSymmetricClassName,
 } from '@/utilities/sendaBlockButtonClasses'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
+import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
   appendFontGroupHeadingMarginRulesResponsive,
   appendFontGroupLineHeightRulesResponsive,
@@ -119,7 +120,7 @@ function normalizeCta1FontGroup(raw: unknown): FontGroupData | null {
   ) {
     o = inner as Record<string, unknown>
   }
-  return o as FontGroupData
+  return expandFontGroupRichTextFields(o as Record<string, unknown>) as FontGroupData
 }
 
 /** Contenedor RichText / payload para reglas `.cta1-senda-richtext` del font group. */

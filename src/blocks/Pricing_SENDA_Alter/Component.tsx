@@ -12,6 +12,7 @@ import {
   appendFontGroupLineHeightRulesResponsive,
   appendTypographyBodyListSizeRules,
   FONT_GROUP_RICHTEXT_MOBILE_MAX,
+  trimFontGroupValue,
   type FontGroupHeadingMargins,
   type FontGroupLineHeights,
   type FontGroupTypography,
@@ -64,7 +65,7 @@ type FontGroupData = {
 
 type PlanElement = {
   iconSVG?: string | null
-  text?: string | null
+  richText?: DefaultTypedEditorState | null
 }
 
 type Plan = {
@@ -93,10 +94,22 @@ function sanitizeAnchorId(value: string | null | undefined, fallback: string): s
   return s || fallback
 }
 
-/** Convierte un color hex o rgb a rgba con la opacidad indicada (0–1). */
+/** Añade # si el usuario pegó hex de 3 o 6 cifras sin almohadilla. */
+function normalizeHexInput(color: string): string {
+  const c = color.trim()
+  if (!c) return c
+  if (c.startsWith('#')) return c
+  if (/^[0-9a-fA-F]{6}$/.test(c) || /^[0-9a-fA-F]{3}$/.test(c)) return `#${c}`
+  return c
+}
+
+/**
+ * Convierte hex o rgb/rgba a rgba con opacidad. Acepta RGB en mayúsculas y hex sin #.
+ * Para otros valores CSS válidos (nombre, hsl, etc.) devuelve undefined y se usa color-mix abajo.
+ */
 function colorWithAlpha(color: string | null | undefined, alpha: number): string | undefined {
   if (!color || typeof color !== 'string') return undefined
-  const c = color.trim()
+  const c = normalizeHexInput(color)
   const hex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.exec(c)
   if (hex) {
     const h = hex[1]
@@ -105,12 +118,58 @@ function colorWithAlpha(color: string | null | undefined, alpha: number): string
     const b = h.length === 3 ? parseInt(h[2] + h[2], 16) : parseInt(h.slice(4, 6), 16)
     return `rgba(${r},${g},${b},${alpha})`
   }
-  const rgb = /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(c)
+  const rgb = /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i.exec(c)
   if (rgb) return `rgba(${rgb[1]},${rgb[2]},${rgb[3]},${alpha})`
   return undefined
 }
 
-type PricingSendaProps = {
+/** Primer color no vacío entre camelCase y snake_case (por si el JSON trae nombres de columna SQL). */
+function pickBlockColor(
+  ...candidates: Array<string | null | undefined | unknown>
+): string | undefined {
+  for (const v of candidates) {
+    if (v == null || typeof v !== 'string') continue
+    const t = v.trim()
+    if (t) return t
+  }
+  return undefined
+}
+
+/**
+ * Velo 3D: tres intensidades + zona amplia (el tinte empieza ~22% y cubre más altura que antes).
+ */
+const GRADIENT_3D_SOFT_ALPHA = 0.16
+const GRADIENT_3D_MID_ALPHA = 0.42
+const GRADIENT_3D_END_ALPHA = 0.78
+
+/** Degradado 3D: color configurable; si el parseo falla, color-mix acepta casi cualquier color CSS. */
+function build3DGradientOverlay(baseColor: string | null | undefined): string {
+  const t = trimFontGroupValue(baseColor)
+  if (!t) {
+    return `linear-gradient(to bottom, transparent 0%, transparent 18%, rgba(0,0,0,${GRADIENT_3D_SOFT_ALPHA}) 36%, rgba(0,0,0,${GRADIENT_3D_MID_ALPHA}) 55%, rgba(0,0,0,${GRADIENT_3D_END_ALPHA}) 100%)`
+  }
+  const soft = colorWithAlpha(t, GRADIENT_3D_SOFT_ALPHA)
+  const mid = colorWithAlpha(t, GRADIENT_3D_MID_ALPHA)
+  const end = colorWithAlpha(t, GRADIENT_3D_END_ALPHA)
+  if (soft && mid && end) {
+    return `linear-gradient(to bottom, transparent 0%, transparent 18%, ${soft} 36%, ${mid} 55%, ${end} 100%)`
+  }
+  const raw = t.includes(')') || t.includes(' ') ? t : normalizeHexInput(t)
+  return `linear-gradient(to bottom, transparent 0%, transparent 18%, color-mix(in srgb, ${raw} 16%, transparent) 36%, color-mix(in srgb, ${raw} 42%, transparent) 55%, color-mix(in srgb, ${raw} 72%, transparent) 100%)`
+}
+
+/** Sombra tipo glow para la tarjeta. */
+function buildCustomCardShadow(color: string): string | undefined {
+  const t = trimFontGroupValue(color)
+  if (!t) return undefined
+  const outer = colorWithAlpha(t, 0.55)
+  const inner = colorWithAlpha(t, 0.25)
+  if (outer && inner) return `0 0 24px ${outer}, 0 0 48px ${inner}`
+  const raw = t.includes(')') || t.includes(' ') ? t : normalizeHexInput(t)
+  return `0 0 24px color-mix(in srgb, ${raw} 55%, transparent), 0 0 48px color-mix(in srgb, ${raw} 25%, transparent)`
+}
+
+type PricingSendaAlterProps = {
   anchorId?: string | null
   /** Índice del bloque en el layout (pasado por RenderBlocks); se usa para un styleId estable cuando no hay anchorId */
   blockIndex?: number
@@ -119,6 +178,10 @@ type PricingSendaProps = {
   backgroundColor?: string | null
   textColor?: string | null
   boldTextColor?: string | null
+  /** Color base del degradado 3D en tarjetas (sustituye negro fijo). */
+  planGradientColor?: string | null
+  /** Color del halo/sombra de las tarjetas (sustituye blanco fijo). */
+  planDropShadowColor?: string | null
   useFontGroup?: boolean | null
   fontGroup?: FontGroupData | number | null
   fontFamily?: string | null
@@ -134,7 +197,8 @@ const hasLink = (plan: Plan): boolean => {
   return false
 }
 
-export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
+export const PricingSendaAlterBlock: React.FC<PricingSendaAlterProps> = (props) => {
+  const p = props as Record<string, unknown>
   const {
     anchorId,
     blockIndex = 0,
@@ -151,10 +215,23 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
     customFontName,
   } = props
 
+  const planGradientColor = pickBlockColor(
+    props.planGradientColor,
+    p.plan_gradient_color,
+  )
+  const planDropShadowColor = pickBlockColor(
+    props.planDropShadowColor,
+    p.plan_drop_shadow_color,
+  )
+
   // ID estable (mismo en servidor y cliente) para que [data-ps-font] aplique los estilos del font group.
   // Con anchorId usamos ese valor; si no hay o queda vacío, usamos el índice del bloque en el layout.
   const anchorSlug = sanitizeAnchorId(anchorId, '')
-  const styleId = anchorSlug ? `pricing-senda-${anchorSlug}` : `pricing-senda-block-${blockIndex}`
+  const styleId = anchorSlug ? `pricing-senda-alt-${anchorSlug}` : `pricing-senda-alt-block-${blockIndex}`
+
+  const customCardShadow = planDropShadowColor
+    ? buildCustomCardShadow(planDropShadowColor)
+    : undefined
 
   const fontGroupObj =
     useFontGroup && fontGroup && typeof fontGroup === 'object'
@@ -436,26 +513,28 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
 
     const planContent = (
       <div
-        className={`pricing-senda-plan pricing-senda-plan-${index} relative grid grid-cols-1 gap-5 rounded-3xl p-5 md:grid-cols-2 md:grid-rows-1 md:gap-6 md:p-6 lg:gap-6 lg:p-7 shadow-[0_0_24px_rgba(255,255,255,0.55),0_0_48px_rgba(255,255,255,0.25)]`}
-        style={planStyle}
+        className={`pricing-senda-plan pricing-senda-plan-${index} relative isolate z-0 grid grid-cols-1 gap-6 overflow-visible rounded-3xl p-6 md:grid-cols-2 md:grid-rows-1 md:gap-8 md:p-8 lg:gap-8 lg:p-9 ${customCardShadow ? '' : 'shadow-[0_0_24px_rgba(255,255,255,0.55),0_0_48px_rgba(255,255,255,0.25)]'}`}
+        style={{
+          ...planStyle,
+          ...(customCardShadow ? { boxShadow: customCardShadow } : {}),
+        }}
       >
         {gradientActive && (
           <div
-            className="absolute inset-0 rounded-3xl pointer-events-none"
+            className="pointer-events-none absolute inset-0 z-[1] rounded-3xl"
             style={{
-              background:
-                'linear-gradient(to bottom, transparent 0%, transparent 50%, rgba(0,0,0,0.03) 65%, rgba(0,0,0,0.22) 100%)',
+              background: build3DGradientOverlay(planGradientColor),
             }}
             aria-hidden
           />
         )}
         {plan.richText && (
-          <div className="relative z-10 min-w-0 md:pr-6 lg:pr-10 [&_h1]:m-0 [&_h1]:text-xl [&_h1]:font-bold [&_h2]:m-0 [&_h2]:text-lg [&_h2]:font-bold [&_h3]:m-0 [&_h4]:font-bold [&_p]:m-0 [&_ul]:mt-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:mt-1 [&_ol]:list-decimal [&_ol]:pl-5">
+          <div className="relative z-10 min-w-0 md:pr-8 lg:pr-14 [&_h1]:m-0 [&_h1]:text-xl [&_h1]:font-bold [&_h2]:m-0 [&_h2]:text-lg [&_h2]:font-bold [&_h3]:m-0 [&_h4]:font-bold [&_p]:m-0 [&_ul]:mt-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:mt-1 [&_ol]:list-decimal [&_ol]:pl-5">
             <RichText data={plan.richText} enableGutter={false} enableProse={false} />
           </div>
         )}
         <div
-          className="relative z-10 flex min-h-full flex-col gap-5 min-w-0 py-3 md:py-5 md:min-h-0 md:h-full md:justify-between md:border-l md:pl-6 lg:pl-10 md:border-current/30"
+          className="relative z-10 flex min-h-full flex-col gap-6 min-w-0 py-5 md:py-7 md:min-h-0 md:h-full md:justify-between md:border-l md:pl-8 lg:pl-14 md:border-current/30"
           style={dividerColor ? { borderLeftColor: dividerColor } : undefined}
         >
           {plan.richText && Array.isArray(plan.planElements) && plan.planElements.length > 0 ? (
@@ -467,19 +546,19 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
           ) : null}
           {Array.isArray(plan.planElements) &&
             plan.planElements.map((el, elIndex) => {
-              if (!el?.iconSVG && el?.text == null) return null
               const iconSvg = el?.iconSVG
               const normalizedSvg = iconSvg
                 ? sanitizeSVG(iconSvg).replace(/\sheight=["'][^"']*["']/gi, '')
                 : ''
+              if (!normalizedSvg && !el?.richText) return null
               return (
                 <div
                   key={elIndex}
-                  className="flex items-center gap-3"
+                  className="flex items-start gap-4 md:gap-5"
                   style={plan.textColor ? { color: plan.textColor } : undefined}
                 >
                   {normalizedSvg ? (
-                    <span className="pricing-senda-plan-icon" aria-hidden>
+                    <span className="pricing-senda-plan-icon mt-0.5" aria-hidden>
                       <span
                         className="block h-full w-full [&_svg]:block"
                         style={{ width: 48, height: 48 }}
@@ -487,9 +566,11 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
                       />
                     </span>
                   ) : null}
-                  {el?.text != null && (
-                    <span className="pricing-senda-plan-element-text min-w-0 pr-4 md:pr-6">{el.text}</span>
-                  )}
+                  {el?.richText ? (
+                    <div className="pricing-senda-plan-element-richtext min-w-0 flex-1 pr-5 md:pr-8 [&_p]:m-0 [&_ul]:my-1 [&_ol]:my-1">
+                      <RichText data={el.richText} enableGutter={false} enableProse={false} />
+                    </div>
+                  ) : null}
                 </div>
               )
             })}
@@ -503,14 +584,18 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
           key={index}
           {...(plan.link as React.ComponentProps<typeof CMSLink>)}
           appearance="inline"
-          className="block transition-all duration-200 hover:opacity-90"
+          className="block overflow-visible transition-all duration-200 hover:opacity-90"
         >
           {planContent}
         </CMSLink>
       )
     }
 
-    return <div key={index}>{planContent}</div>
+    return (
+      <div key={index} className="overflow-visible">
+        {planContent}
+      </div>
+    )
   }
 
   return (
@@ -519,13 +604,16 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
       {planBoldStyles && <style>{planBoldStyles}</style>}
       {planDividerStyles && <style>{planDividerStyles}</style>}
       <section
-        id={sanitizeAnchorId(anchorId, 'pricing-senda')}
+        id={sanitizeAnchorId(anchorId, 'pricing-senda-alt')}
         data-ps-font={styleId}
         className="px-[5%] py-16 md:py-24 lg:py-28"
         style={backgroundColor ? { backgroundColor } : undefined}
       >
         <div className="pricing-senda-container container">
-          <div className="mb-12 md:mb-16 lg:mb-20 w-full pricing-senda-main-richtext" style={fontStyle}>
+          <div
+            className="mb-16 md:mb-20 lg:mb-28 w-full pricing-senda-main-richtext md:px-2 lg:px-4"
+            style={fontStyle}
+          >
             {richText && (
               <div className="w-full [&_h1]:text-5xl [&_h1]:font-bold [&_h1]:md:text-7xl [&_h1]:lg:text-8xl [&_h2]:text-4xl [&_h2]:font-bold [&_h2]:md:text-6xl [&_h2]:lg:text-7xl [&_h3]:text-3xl [&_h3]:font-bold [&_h3]:md:text-5xl [&_h3]:lg:text-6xl [&_h4]:font-bold [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6">
                 <RichText data={richText} enableGutter={false} enableProse={false} />
@@ -534,7 +622,7 @@ export const PricingSendaBlock: React.FC<PricingSendaProps> = (props) => {
           </div>
 
           {Array.isArray(plans) && plans.length > 0 && (
-            <div className="pricing-senda-plans-grid mx-auto grid w-full max-w-xl grid-cols-1 gap-8 md:gap-10 lg:gap-12">
+            <div className="pricing-senda-plans-grid mx-auto grid w-full max-w-xl grid-cols-1 gap-10 overflow-visible md:gap-12 lg:gap-14">
               {plans.map((plan, index) => renderPlan(plan, index))}
             </div>
           )}

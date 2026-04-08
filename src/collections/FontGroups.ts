@@ -3,201 +3,68 @@ import type { CollectionConfig, Field } from 'payload'
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 
-/** Campos de tamaño (escritorio o móvil) para el grupo de tipografía del font group. */
-const typographySizeFields = (mobile: boolean): Field[] => {
-  const suffix = mobile ? ' — móvil' : ''
+/** Tamaño, interlineado y márgenes verticales (escritorio o móvil por grupo). */
+const richTextStyleFields = (): Field[] => [
+  {
+    name: 'fontSize',
+    type: 'text',
+    label: 'Tamaño (font-size)',
+    admin: { placeholder: 'ej: 1.5rem, 16px' },
+  },
+  {
+    name: 'lineHeight',
+    type: 'text',
+    label: 'Interlineado (line-height)',
+    admin: { placeholder: 'ej: 1.2, 1.5rem, 140%' },
+  },
+  {
+    name: 'marginTop',
+    type: 'text',
+    label: 'Margen superior (margin-top)',
+    admin: { placeholder: 'ej: 1rem, 0' },
+  },
+  {
+    name: 'marginBottom',
+    type: 'text',
+    label: 'Margen inferior (margin-bottom)',
+    admin: { placeholder: 'ej: 0.75rem, 0' },
+  },
+]
+
+const captionSizeFields = (): Field[] => [
+  {
+    name: 'fontSize',
+    type: 'text',
+    label: 'Tamaño (font-size)',
+    admin: {
+      placeholder: 'ej: 0.875rem',
+      description: 'El caption hereda interlineado y márgenes del bloque contenedor salvo que el front lo amplíe.',
+    },
+  },
+]
+
+function headingPair(n: number): Field[] {
   return [
     {
-      name: 'h1',
-      type: 'text',
-      label: `Tamaño H1${suffix}`,
-      admin: { placeholder: 'ej: 2.5rem' },
-    },
-    {
-      name: 'h2',
-      type: 'text',
-      label: `Tamaño H2${suffix}`,
-      admin: { placeholder: 'ej: 2rem' },
-    },
-    {
-      name: 'h3',
-      type: 'text',
-      label: `Tamaño H3${suffix}`,
-      admin: { placeholder: 'ej: 1.75rem' },
-    },
-    {
-      name: 'h4',
-      type: 'text',
-      label: `Tamaño H4${suffix}`,
-      admin: { placeholder: 'ej: 1.5rem' },
-    },
-    {
-      name: 'h5',
-      type: 'text',
-      label: `Tamaño H5${suffix}`,
-      admin: { placeholder: 'ej: 1.25rem' },
-    },
-    {
-      name: 'h6',
-      type: 'text',
-      label: `Tamaño H6${suffix}`,
-      admin: { placeholder: 'ej: 1.125rem' },
-    },
-    {
-      name: 'body',
-      type: 'text',
-      label: `Texto normal (párrafos)${suffix}`,
+      name: `heading${n}Desktop`,
+      type: 'group',
+      label: `Encabezado H${n} · escritorio`,
       admin: {
-        placeholder: 'ej: 1rem',
-        description: 'Solo párrafos. Las listas tienen su propio campo.',
+        description: `Tipografía y ritmo vertical de H${n} desde el breakpoint md (≥768px).`,
       },
+      fields: richTextStyleFields(),
     },
     {
-      name: 'lists',
-      type: 'text',
-      label: `Listas (ordenadas y desordenadas)${suffix}`,
+      name: `heading${n}Mobile`,
+      type: 'group',
+      label: `Encabezado H${n} · móvil`,
       admin: {
-        placeholder: 'ej: 0.9375rem',
-        description: 'Tamaño para contenido en listas (ul, ol, li).',
+        description: `Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H${n}.`,
       },
-    },
-    {
-      name: 'caption',
-      type: 'text',
-      label: `Texto pequeño / caption${suffix}`,
-      admin: { placeholder: 'ej: 0.875rem' },
+      fields: richTextStyleFields(),
     },
   ]
 }
-
-/** Márgenes superior e inferior: encabezados, párrafos y listas (mismos valores en escritorio y móvil). */
-const contentMarginFields = (): Field[] => {
-  const levels = [1, 2, 3, 4, 5, 6] as const
-  const headingFields = levels.flatMap((n) => [
-    {
-      name: `h${n}MarginTop`,
-      type: 'text' as const,
-      label: `Margen superior H${n}`,
-      admin: {
-        placeholder: 'ej: 1.5rem, 24px, 0',
-        description: 'margin-top del elemento (CSS).',
-      },
-    },
-    {
-      name: `h${n}MarginBottom`,
-      type: 'text' as const,
-      label: `Margen inferior H${n}`,
-      admin: {
-        placeholder: 'ej: 0.75rem, 12px, 0',
-        description: 'margin-bottom del elemento (CSS).',
-      },
-    },
-  ]) satisfies Field[]
-  const bodyAndListFields = [
-    {
-      name: 'bodyMarginTop',
-      type: 'text' as const,
-      label: 'Margen superior (párrafos)',
-      admin: {
-        placeholder: 'ej: 1rem, 0',
-        description: 'margin-top para párrafos <p> (CSS).',
-      },
-    },
-    {
-      name: 'bodyMarginBottom',
-      type: 'text' as const,
-      label: 'Margen inferior (párrafos)',
-      admin: {
-        placeholder: 'ej: 1rem, 0',
-        description: 'margin-bottom para párrafos <p> (CSS).',
-      },
-    },
-    {
-      name: 'listsMarginTop',
-      type: 'text' as const,
-      label: 'Margen superior (listas)',
-      admin: {
-        placeholder: 'ej: 1rem, 0',
-        description: 'margin-top para listas <ul> y <ol> (CSS).',
-      },
-    },
-    {
-      name: 'listsMarginBottom',
-      type: 'text' as const,
-      label: 'Margen inferior (listas)',
-      admin: {
-        placeholder: 'ej: 1rem, 0',
-        description: 'margin-bottom para listas <ul> y <ol> (CSS).',
-      },
-    },
-  ] satisfies Field[]
-  return [...headingFields, ...bodyAndListFields]
-}
-
-/** Un campo line-height por tipo de texto (H1–H6, párrafos, listas). Caption / texto pequeño no: hereda el interlineado del bloque donde va (p, h1, etc.). */
-const lineHeightFields = (): Field[] =>
-  [
-    {
-      name: 'h1',
-      type: 'text' as const,
-      label: 'Interlineado H1 (line-height)',
-      admin: {
-        placeholder: 'ej: 1.2, 1.25rem, 140%',
-        description: 'line-height para H1 (entre líneas del mismo encabezado).',
-      },
-    },
-    {
-      name: 'h2',
-      type: 'text' as const,
-      label: 'Interlineado H2 (line-height)',
-      admin: {
-        placeholder: 'ej: 1.2, 1.25rem',
-        description: 'line-height para H2.',
-      },
-    },
-    {
-      name: 'h3',
-      type: 'text' as const,
-      label: 'Interlineado H3 (line-height)',
-      admin: { placeholder: 'ej: 1.2', description: 'line-height para H3.' },
-    },
-    {
-      name: 'h4',
-      type: 'text' as const,
-      label: 'Interlineado H4 (line-height)',
-      admin: { placeholder: 'ej: 1.2', description: 'line-height para H4.' },
-    },
-    {
-      name: 'h5',
-      type: 'text' as const,
-      label: 'Interlineado H5 (line-height)',
-      admin: { placeholder: 'ej: 1.2', description: 'line-height para H5.' },
-    },
-    {
-      name: 'h6',
-      type: 'text' as const,
-      label: 'Interlineado H6 (line-height)',
-      admin: { placeholder: 'ej: 1.2', description: 'line-height para H6.' },
-    },
-    {
-      name: 'body',
-      type: 'text' as const,
-      label: 'Interlineado párrafos (line-height)',
-      admin: {
-        placeholder: 'ej: 1.5, 1.6rem',
-        description: 'line-height para párrafos <p>.',
-      },
-    },
-    {
-      name: 'lists',
-      type: 'text' as const,
-      label: 'Interlineado listas (line-height)',
-      admin: {
-        placeholder: 'ej: 1.5',
-        description: 'line-height para listas (ul, ol, li).',
-      },
-    },
-  ] satisfies Field[]
 
 const fontVariantOptions = [
   { label: 'Regular (400)', value: 'regular' },
@@ -226,7 +93,7 @@ export const FontGroups: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'fontFamilyName', 'preloadFonts', 'updatedAt'],
     description:
-      'Crea grupos de tipografías: añade fuentes de la colección Fonts, asígnales variante (regular, bold, semibold, etc.) y define tamaños para títulos y texto. Si activas "Precargar siempre", las fuentes del grupo se cargarán al inicio de cada página.',
+      'Crea grupos de tipografías: fuentes, y por cada nivel (H1–H6, párrafos, listas, citas/blockquote, caption) el tamaño, interlineado y márgenes en escritorio y móvil. Si activas "Precargar siempre", las fuentes se cargarán al inicio de cada página.',
   },
   fields: [
     {
@@ -276,65 +143,75 @@ export const FontGroups: CollectionConfig = {
         },
       ],
     },
+    ...([1, 2, 3, 4, 5, 6] as const).flatMap((n) => headingPair(n)),
     {
-      name: 'typography',
+      name: 'bodyTextDesktop',
       type: 'group',
-      label: 'Tamaños de tipografía (escritorio)',
+      label: 'Párrafos (body) · escritorio',
       admin: {
-        description:
-          'Tamaños por defecto / escritorio. Usa unidades como rem, px (ej: 2rem, 1.5rem, 16px). Los bloques que consuman este grupo aplicarán estos valores según su implementación.',
+        description: 'Texto en <p>. Las listas tienen grupo aparte.',
       },
-      fields: typographySizeFields(false),
+      fields: richTextStyleFields(),
     },
     {
-      name: 'typographyMobile',
+      name: 'bodyTextMobile',
       type: 'group',
-      label: 'Tamaños de tipografía (móvil)',
+      label: 'Párrafos (body) · móvil',
       admin: {
-        description:
-          'Opcional. Mismos conceptos que en escritorio, para pantallas pequeñas.',
+        description: 'Opcional. Si un campo está vacío, se usa el valor de escritorio de párrafos.',
       },
-      fields: typographySizeFields(true),
+      fields: richTextStyleFields(),
     },
     {
-      name: 'headingMargins',
+      name: 'listsTextDesktop',
       type: 'group',
-      label: 'Márgenes de texto',
+      label: 'Listas (ul / ol) · escritorio',
       admin: {
-        description:
-          'Margen superior e inferior (margin-top / margin-bottom) para H1–H6, párrafos y listas (ul/ol). Mismos valores en escritorio y móvil. Unidades como rem, px o 0.',
+        description: 'Tamaño, interlineado y márgenes de bloques de lista.',
       },
-      fields: contentMarginFields(),
+      fields: richTextStyleFields(),
     },
     {
-      name: 'lineHeights',
+      name: 'listsTextMobile',
       type: 'group',
-      label: 'Interlineado (line-height)',
+      label: 'Listas (ul / ol) · móvil',
       admin: {
-        description:
-          'Un valor por tipo de texto (H1–H6, párrafos, listas): line-height en CSS (número, rem, px o %). El texto pequeño / caption no tiene campo aquí: solo cambia tamaño y hereda interlineado y márgenes del elemento contenedor (p, h1, lista, etc.). Mismo juego escritorio/móvil salvo que el bloque decida otro comportamiento.',
+        description: 'Opcional. Si un campo está vacío, se usa el valor de escritorio de listas.',
       },
-      fields: lineHeightFields(),
+      fields: richTextStyleFields(),
     },
     {
-      name: 'headingMarginsMobile',
+      name: 'quoteTextDesktop',
       type: 'group',
-      label: 'Márgenes de texto (móvil)',
+      label: 'Citas (blockquote) · escritorio',
       admin: {
-        description:
-          'Opcional. Mismos campos que «Márgenes de texto» pero solo por debajo del breakpoint md (≤767px). Si un campo está vacío, se usa el valor de escritorio de ese mismo campo.',
+        description: 'Bloques de cita del rich text (<blockquote>).',
       },
-      fields: contentMarginFields(),
+      fields: richTextStyleFields(),
     },
     {
-      name: 'lineHeightsMobile',
+      name: 'quoteTextMobile',
       type: 'group',
-      label: 'Interlineado (móvil)',
+      label: 'Citas (blockquote) · móvil',
       admin: {
-        description:
-          'Opcional. Mismos conceptos que «Interlineado (line-height)» para móvil. Si un campo está vacío, se usa el interlineado de escritorio correspondiente.',
+        description: 'Opcional. Si un campo está vacío, se usa el valor de escritorio de citas.',
       },
-      fields: lineHeightFields(),
+      fields: richTextStyleFields(),
+    },
+    {
+      name: 'captionTextDesktop',
+      type: 'group',
+      label: 'Texto pequeño / caption · escritorio',
+      fields: captionSizeFields(),
+    },
+    {
+      name: 'captionTextMobile',
+      type: 'group',
+      label: 'Texto pequeño / caption · móvil',
+      admin: {
+        description: 'Opcional. Si está vacío, se usa el tamaño de escritorio.',
+      },
+      fields: captionSizeFields(),
     },
     {
       name: 'preloadFonts',

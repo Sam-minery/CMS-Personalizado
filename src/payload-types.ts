@@ -434,6 +434,7 @@ export interface Page {
     | LayoutSendaSectionsBlock
     | NavbarSimpleSendaBlock
     | PricingSendaBlock
+    | PricingSendaAlterBlock
     | FAQSendaBlock
     | TestimonialsSendaBlock
     | BloqueIMCSendaBlock
@@ -641,7 +642,7 @@ export interface User {
   password?: string | null;
 }
 /**
- * Crea grupos de tipografías: añade fuentes de la colección Fonts, asígnales variante (regular, bold, semibold, etc.) y define tamaños para títulos y texto. Si activas "Precargar siempre", las fuentes del grupo se cargarán al inicio de cada página.
+ * Crea grupos de tipografías: fuentes, y por cada nivel (H1–H6, párrafos, listas, citas/blockquote, caption) el tamaño, interlineado y márgenes en escritorio y móvil. Si activas "Precargar siempre", las fuentes se cargarán al inicio de cada página.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "font-groups".
@@ -682,256 +683,181 @@ export interface FontGroup {
       }[]
     | null;
   /**
-   * Tamaños por defecto / escritorio. Usa unidades como rem, px (ej: 2rem, 1.5rem, 16px). Los bloques que consuman este grupo aplicarán estos valores según su implementación.
+   * Tipografía y ritmo vertical de H1 desde el breakpoint md (≥768px).
    */
-  typography?: {
-    h1?: string | null;
-    h2?: string | null;
-    h3?: string | null;
-    h4?: string | null;
-    h5?: string | null;
-    h6?: string | null;
-    /**
-     * Solo párrafos. Las listas tienen su propio campo.
-     */
-    body?: string | null;
-    /**
-     * Tamaño para contenido en listas (ul, ol, li).
-     */
-    lists?: string | null;
-    caption?: string | null;
+  heading1Desktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
   };
   /**
-   * Opcional. Mismos conceptos que en escritorio, para pantallas pequeñas.
+   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H1.
    */
-  typographyMobile?: {
-    h1?: string | null;
-    h2?: string | null;
-    h3?: string | null;
-    h4?: string | null;
-    h5?: string | null;
-    h6?: string | null;
-    /**
-     * Solo párrafos. Las listas tienen su propio campo.
-     */
-    body?: string | null;
-    /**
-     * Tamaño para contenido en listas (ul, ol, li).
-     */
-    lists?: string | null;
-    caption?: string | null;
+  heading1Mobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
   };
   /**
-   * Margen superior e inferior (margin-top / margin-bottom) para H1–H6, párrafos y listas (ul/ol). Mismos valores en escritorio y móvil. Unidades como rem, px o 0.
+   * Tipografía y ritmo vertical de H2 desde el breakpoint md (≥768px).
    */
-  headingMargins?: {
-    /**
-     * margin-top del elemento (CSS).
-     */
-    h1MarginTop?: string | null;
-    /**
-     * margin-bottom del elemento (CSS).
-     */
-    h1MarginBottom?: string | null;
-    /**
-     * margin-top del elemento (CSS).
-     */
-    h2MarginTop?: string | null;
-    /**
-     * margin-bottom del elemento (CSS).
-     */
-    h2MarginBottom?: string | null;
-    /**
-     * margin-top del elemento (CSS).
-     */
-    h3MarginTop?: string | null;
-    /**
-     * margin-bottom del elemento (CSS).
-     */
-    h3MarginBottom?: string | null;
-    /**
-     * margin-top del elemento (CSS).
-     */
-    h4MarginTop?: string | null;
-    /**
-     * margin-bottom del elemento (CSS).
-     */
-    h4MarginBottom?: string | null;
-    /**
-     * margin-top del elemento (CSS).
-     */
-    h5MarginTop?: string | null;
-    /**
-     * margin-bottom del elemento (CSS).
-     */
-    h5MarginBottom?: string | null;
-    /**
-     * margin-top del elemento (CSS).
-     */
-    h6MarginTop?: string | null;
-    /**
-     * margin-bottom del elemento (CSS).
-     */
-    h6MarginBottom?: string | null;
-    /**
-     * margin-top para párrafos <p> (CSS).
-     */
-    bodyMarginTop?: string | null;
-    /**
-     * margin-bottom para párrafos <p> (CSS).
-     */
-    bodyMarginBottom?: string | null;
-    /**
-     * margin-top para listas <ul> y <ol> (CSS).
-     */
-    listsMarginTop?: string | null;
-    /**
-     * margin-bottom para listas <ul> y <ol> (CSS).
-     */
-    listsMarginBottom?: string | null;
+  heading2Desktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
   };
   /**
-   * Un valor por tipo de texto (H1–H6, párrafos, listas): line-height en CSS (número, rem, px o %). El texto pequeño / caption no tiene campo aquí: solo cambia tamaño y hereda interlineado y márgenes del elemento contenedor (p, h1, lista, etc.). Mismo juego escritorio/móvil salvo que el bloque decida otro comportamiento.
+   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H2.
    */
-  lineHeights?: {
-    /**
-     * line-height para H1 (entre líneas del mismo encabezado).
-     */
-    h1?: string | null;
-    /**
-     * line-height para H2.
-     */
-    h2?: string | null;
-    /**
-     * line-height para H3.
-     */
-    h3?: string | null;
-    /**
-     * line-height para H4.
-     */
-    h4?: string | null;
-    /**
-     * line-height para H5.
-     */
-    h5?: string | null;
-    /**
-     * line-height para H6.
-     */
-    h6?: string | null;
-    /**
-     * line-height para párrafos <p>.
-     */
-    body?: string | null;
-    /**
-     * line-height para listas (ul, ol, li).
-     */
-    lists?: string | null;
+  heading2Mobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
   };
   /**
-   * Opcional. Mismos campos que «Márgenes de texto» pero solo por debajo del breakpoint md (≤767px). Si un campo está vacío, se usa el valor de escritorio de ese mismo campo.
+   * Tipografía y ritmo vertical de H3 desde el breakpoint md (≥768px).
    */
-  headingMarginsMobile?: {
-    /**
-     * margin-top del elemento (CSS).
-     */
-    h1MarginTop?: string | null;
-    /**
-     * margin-bottom del elemento (CSS).
-     */
-    h1MarginBottom?: string | null;
-    /**
-     * margin-top del elemento (CSS).
-     */
-    h2MarginTop?: string | null;
-    /**
-     * margin-bottom del elemento (CSS).
-     */
-    h2MarginBottom?: string | null;
-    /**
-     * margin-top del elemento (CSS).
-     */
-    h3MarginTop?: string | null;
-    /**
-     * margin-bottom del elemento (CSS).
-     */
-    h3MarginBottom?: string | null;
-    /**
-     * margin-top del elemento (CSS).
-     */
-    h4MarginTop?: string | null;
-    /**
-     * margin-bottom del elemento (CSS).
-     */
-    h4MarginBottom?: string | null;
-    /**
-     * margin-top del elemento (CSS).
-     */
-    h5MarginTop?: string | null;
-    /**
-     * margin-bottom del elemento (CSS).
-     */
-    h5MarginBottom?: string | null;
-    /**
-     * margin-top del elemento (CSS).
-     */
-    h6MarginTop?: string | null;
-    /**
-     * margin-bottom del elemento (CSS).
-     */
-    h6MarginBottom?: string | null;
-    /**
-     * margin-top para párrafos <p> (CSS).
-     */
-    bodyMarginTop?: string | null;
-    /**
-     * margin-bottom para párrafos <p> (CSS).
-     */
-    bodyMarginBottom?: string | null;
-    /**
-     * margin-top para listas <ul> y <ol> (CSS).
-     */
-    listsMarginTop?: string | null;
-    /**
-     * margin-bottom para listas <ul> y <ol> (CSS).
-     */
-    listsMarginBottom?: string | null;
+  heading3Desktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
   };
   /**
-   * Opcional. Mismos conceptos que «Interlineado (line-height)» para móvil. Si un campo está vacío, se usa el interlineado de escritorio correspondiente.
+   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H3.
    */
-  lineHeightsMobile?: {
+  heading3Mobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Tipografía y ritmo vertical de H4 desde el breakpoint md (≥768px).
+   */
+  heading4Desktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H4.
+   */
+  heading4Mobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Tipografía y ritmo vertical de H5 desde el breakpoint md (≥768px).
+   */
+  heading5Desktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H5.
+   */
+  heading5Mobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Tipografía y ritmo vertical de H6 desde el breakpoint md (≥768px).
+   */
+  heading6Desktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H6.
+   */
+  heading6Mobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Texto en <p>. Las listas tienen grupo aparte.
+   */
+  bodyTextDesktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Si un campo está vacío, se usa el valor de escritorio de párrafos.
+   */
+  bodyTextMobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Tamaño, interlineado y márgenes de bloques de lista.
+   */
+  listsTextDesktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Si un campo está vacío, se usa el valor de escritorio de listas.
+   */
+  listsTextMobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Bloques de cita del rich text (<blockquote>).
+   */
+  quoteTextDesktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Si un campo está vacío, se usa el valor de escritorio de citas.
+   */
+  quoteTextMobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  captionTextDesktop?: {
     /**
-     * line-height para H1 (entre líneas del mismo encabezado).
+     * El caption hereda interlineado y márgenes del bloque contenedor salvo que el front lo amplíe.
      */
-    h1?: string | null;
+    fontSize?: string | null;
+  };
+  /**
+   * Opcional. Si está vacío, se usa el tamaño de escritorio.
+   */
+  captionTextMobile?: {
     /**
-     * line-height para H2.
+     * El caption hereda interlineado y márgenes del bloque contenedor salvo que el front lo amplíe.
      */
-    h2?: string | null;
-    /**
-     * line-height para H3.
-     */
-    h3?: string | null;
-    /**
-     * line-height para H4.
-     */
-    h4?: string | null;
-    /**
-     * line-height para H5.
-     */
-    h5?: string | null;
-    /**
-     * line-height para H6.
-     */
-    h6?: string | null;
-    /**
-     * line-height para párrafos <p>.
-     */
-    body?: string | null;
-    /**
-     * line-height para listas (ul, ol, li).
-     */
-    lists?: string | null;
+    fontSize?: string | null;
   };
   /**
    * Si está activado, todos los archivos de fuentes de este grupo se precargarán en el front (en cada página) para evitar que el texto se muestre con otra fuente al recargar.
@@ -2422,6 +2348,152 @@ export interface PricingSendaBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'pricingSenda';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PricingSendaAlterBlock".
+ */
+export interface PricingSendaAlterBlock {
+  /**
+   * ID para enlaces ancla. Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  richText: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  plans?:
+    | {
+        richText?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        planElements?:
+          | {
+              /**
+               * Código SVG del icono
+               */
+              iconSVG?: string | null;
+              richText?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
+              id?: string | null;
+            }[]
+          | null;
+        backgroundColor?: string | null;
+        textColor?: string | null;
+        boldTextColor?: string | null;
+        /**
+         * Capa con gradiente sobre el fondo. El color base lo defines abajo en “Color del gradiente 3D (bloque)”.
+         */
+        enable3DGradient?: boolean | null;
+        /**
+         * Active para hacer este plan clickeable (enlace interno o externo)
+         */
+        enableLink?: boolean | null;
+        /**
+         * Configure el enlace para este plan
+         */
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label?: string | null;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  backgroundColor?: string | null;
+  textColor?: string | null;
+  boldTextColor?: string | null;
+  /**
+   * Usado cuando un plan tiene “Efecto 3D” activo. Sustituye el degradado oscuro fijo del bloque clásico (ej. #1a1a1a o rgb). Si está vacío, se usa negro como en Pricing SENDA.
+   */
+  planGradientColor?: string | null;
+  /**
+   * Halo alrededor de cada tarjeta de plan. Si está vacío, se usa blanco como en Pricing SENDA (rgba 255,255,255).
+   */
+  planDropShadowColor?: string | null;
+  /**
+   * Activa para elegir un grupo de fuentes (font-groups) en lugar de una sola fuente.
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Selecciona un grupo creado en Font Groups. Se aplicarán sus fuentes y tamaños de tipografía.
+   */
+  fontGroup?: (number | null) | FontGroup;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'pricingSendaAlter';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3936,6 +4008,7 @@ export interface PagesSelect<T extends boolean = true> {
         layoutSendaSections?: T | LayoutSendaSectionsBlockSelect<T>;
         navbarSimpleSenda?: T | NavbarSimpleSendaBlockSelect<T>;
         pricingSenda?: T | PricingSendaBlockSelect<T>;
+        pricingSendaAlter?: T | PricingSendaAlterBlockSelect<T>;
         faqSenda?: T | FAQSendaBlockSelect<T>;
         testimonialsSenda?: T | TestimonialsSendaBlockSelect<T>;
         bloqueIMCSenda?: T | BloqueIMCSendaBlockSelect<T>;
@@ -4481,6 +4554,55 @@ export interface PricingSendaBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PricingSendaAlterBlock_select".
+ */
+export interface PricingSendaAlterBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  richText?: T;
+  plans?:
+    | T
+    | {
+        richText?: T;
+        planElements?:
+          | T
+          | {
+              iconSVG?: T;
+              richText?: T;
+              id?: T;
+            };
+        backgroundColor?: T;
+        textColor?: T;
+        boldTextColor?: T;
+        enable3DGradient?: T;
+        enableLink?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  planGradientColor?: T;
+  planDropShadowColor?: T;
+  useFontGroup?: T;
+  fontGroup?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "FAQSendaBlock_select".
  */
 export interface FAQSendaBlockSelect<T extends boolean = true> {
@@ -4900,95 +5022,159 @@ export interface FontGroupsSelect<T extends boolean = true> {
         variant?: T;
         id?: T;
       };
-  typography?:
+  heading1Desktop?:
     | T
     | {
-        h1?: T;
-        h2?: T;
-        h3?: T;
-        h4?: T;
-        h5?: T;
-        h6?: T;
-        body?: T;
-        lists?: T;
-        caption?: T;
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
       };
-  typographyMobile?:
+  heading1Mobile?:
     | T
     | {
-        h1?: T;
-        h2?: T;
-        h3?: T;
-        h4?: T;
-        h5?: T;
-        h6?: T;
-        body?: T;
-        lists?: T;
-        caption?: T;
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
       };
-  headingMargins?:
+  heading2Desktop?:
     | T
     | {
-        h1MarginTop?: T;
-        h1MarginBottom?: T;
-        h2MarginTop?: T;
-        h2MarginBottom?: T;
-        h3MarginTop?: T;
-        h3MarginBottom?: T;
-        h4MarginTop?: T;
-        h4MarginBottom?: T;
-        h5MarginTop?: T;
-        h5MarginBottom?: T;
-        h6MarginTop?: T;
-        h6MarginBottom?: T;
-        bodyMarginTop?: T;
-        bodyMarginBottom?: T;
-        listsMarginTop?: T;
-        listsMarginBottom?: T;
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
       };
-  lineHeights?:
+  heading2Mobile?:
     | T
     | {
-        h1?: T;
-        h2?: T;
-        h3?: T;
-        h4?: T;
-        h5?: T;
-        h6?: T;
-        body?: T;
-        lists?: T;
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
       };
-  headingMarginsMobile?:
+  heading3Desktop?:
     | T
     | {
-        h1MarginTop?: T;
-        h1MarginBottom?: T;
-        h2MarginTop?: T;
-        h2MarginBottom?: T;
-        h3MarginTop?: T;
-        h3MarginBottom?: T;
-        h4MarginTop?: T;
-        h4MarginBottom?: T;
-        h5MarginTop?: T;
-        h5MarginBottom?: T;
-        h6MarginTop?: T;
-        h6MarginBottom?: T;
-        bodyMarginTop?: T;
-        bodyMarginBottom?: T;
-        listsMarginTop?: T;
-        listsMarginBottom?: T;
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
       };
-  lineHeightsMobile?:
+  heading3Mobile?:
     | T
     | {
-        h1?: T;
-        h2?: T;
-        h3?: T;
-        h4?: T;
-        h5?: T;
-        h6?: T;
-        body?: T;
-        lists?: T;
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  heading4Desktop?:
+    | T
+    | {
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  heading4Mobile?:
+    | T
+    | {
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  heading5Desktop?:
+    | T
+    | {
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  heading5Mobile?:
+    | T
+    | {
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  heading6Desktop?:
+    | T
+    | {
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  heading6Mobile?:
+    | T
+    | {
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  bodyTextDesktop?:
+    | T
+    | {
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  bodyTextMobile?:
+    | T
+    | {
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  listsTextDesktop?:
+    | T
+    | {
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  listsTextMobile?:
+    | T
+    | {
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  quoteTextDesktop?:
+    | T
+    | {
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  quoteTextMobile?:
+    | T
+    | {
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  captionTextDesktop?:
+    | T
+    | {
+        fontSize?: T;
+      };
+  captionTextMobile?:
+    | T
+    | {
+        fontSize?: T;
       };
   preloadFonts?: T;
   updatedAt?: T;

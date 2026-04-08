@@ -13,6 +13,7 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
+import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
   appendFontGroupHeadingMarginRulesResponsive,
   appendFontGroupLineHeightRulesResponsive,
@@ -58,7 +59,7 @@ function normalizeFaqFontGroup(raw: unknown): FontGroupData | null {
   ) {
     o = inner as Record<string, unknown>
   }
-  return o as FontGroupData
+  return expandFontGroupRichTextFields(o as Record<string, unknown>) as FontGroupData
 }
 
 const FAQ_FG_RICHTEXT =

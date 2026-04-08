@@ -11,6 +11,7 @@ import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { cn } from '@/utilities/ui'
 import { sendaBlockButtonNativeClassName } from '@/utilities/sendaBlockButtonClasses'
+import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
   appendFontGroupHeadingMarginRulesResponsive,
   appendFontGroupLineHeightRulesResponsive,
@@ -58,7 +59,7 @@ function normalizeFontGroup(raw: unknown): FontGroupData | null {
   ) {
     o = inner as Record<string, unknown>
   }
-  return o as FontGroupData
+  return expandFontGroupRichTextFields(o as Record<string, unknown>) as FontGroupData
 }
 
 const FTS_FG_RICHTEXT =

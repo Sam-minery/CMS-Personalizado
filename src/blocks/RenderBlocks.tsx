@@ -132,6 +132,9 @@ const allBlockComponents: Record<string, React.ComponentType<any>> = {
   pricingSenda: dynamic(() =>
     import('@/blocks/Pricing_SENDA/Component').then((m) => m.PricingSendaBlock),
   ),
+  pricingSendaAlter: dynamic(() =>
+    import('@/blocks/Pricing_SENDA_Alter/Component').then((m) => m.PricingSendaAlterBlock),
+  ),
   layout42: dynamic(() => import('@/blocks/Layout42/Component').then((m) => m.Layout42Block)),
   layout90: dynamic(() => import('@/blocks/Layout90/Component').then((m) => m.Layout90Block)),
   layout132: dynamic(() => import('@/blocks/Layout132/Component').then((m) => m.Layout132Block)),

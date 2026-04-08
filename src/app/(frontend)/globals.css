@@ -107,3 +107,14 @@ html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
 }
+
+/**
+ * Lexical + font groups: “Texto pequeño” en un H1–H6 es un <span data-text-size="caption"> dentro del heading.
+ * Los bloques aplican letter-spacing: 0.02em al h* según el font-size del título; ese valor hereda en el span
+ * y queda desproporcionado (más píxeles entre letras de los que corresponden al cuerpo pequeño).
+ */
+@layer components {
+  .payload-richtext :is(h1, h2, h3, h4, h5, h6) [data-text-size='caption'] {
+    letter-spacing: normal !important;
+  }
+}

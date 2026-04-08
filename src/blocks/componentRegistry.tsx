@@ -116,6 +116,7 @@ import { LayoutSendaBlock } from '@/blocks/Layout_SENDA/Component'
 import { LayoutSendaSectionsBlock } from '@/blocks/Layout_SENDA_Sections/Component'
 import { NavbarSimpleSendaBlock } from '@/blocks/Navbar_Simple_SENDA/Component'
 import { PricingSendaBlock } from '@/blocks/Pricing_SENDA/Component'
+import { PricingSendaAlterBlock } from '@/blocks/Pricing_SENDA_Alter/Component'
 import { Layout42Block } from '@/blocks/Layout42/Component'
 import { Layout90Block } from '@/blocks/Layout90/Component'
 import { Layout132Block } from '@/blocks/Layout132/Component'
@@ -250,6 +251,7 @@ const BLOCK_COMPONENTS: BlockComponentMap = {
   layoutSendaSections: LayoutSendaSectionsBlock,
   navbarSimpleSenda: NavbarSimpleSendaBlock,
   pricingSenda: PricingSendaBlock,
+  pricingSendaAlter: PricingSendaAlterBlock,
   layout42: Layout42Block,
   layout90: Layout90Block,
   layout132: Layout132Block,
