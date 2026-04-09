@@ -467,6 +467,10 @@ export const PricingSendaAlterBlock: React.FC<PricingSendaAlterProps> = (props) 
     styles.push(
       `[data-ps-font="${styleId}"] .pricing-senda-plan-icon svg { max-width: 100% !important; max-height: 100% !important; width: auto !important; height: auto !important; object-fit: contain !important; display: block !important; margin: auto; }`,
     )
+    /* Primer bloque del ítem (h/p/ul): sin margin-top para alinear fila icono + texto con items-center / items-start. */
+    styles.push(
+      `[data-ps-font="${styleId}"] .pricing-senda-plan-element-richtext .payload-richtext > *:first-child { margin-top: 0 !important; }`,
+    )
     /* Desktop: contenedor y grid más anchos (solo a partir de 1024px). El .container limita el ancho; lo ampliamos solo aquí. */
     styles.push(
       `@media (min-width: 1024px) { [data-ps-font="${styleId}"] .pricing-senda-container { max-width: 86rem !important; } [data-ps-font="${styleId}"] .pricing-senda-plans-grid { max-width: none !important; width: 100% !important; } }`,
@@ -554,20 +558,20 @@ export const PricingSendaAlterBlock: React.FC<PricingSendaAlterProps> = (props) 
               return (
                 <div
                   key={elIndex}
-                  className="flex items-start gap-4 md:gap-5"
+                  className="flex items-center gap-4 md:gap-5"
                   style={plan.textColor ? { color: plan.textColor } : undefined}
                 >
                   {normalizedSvg ? (
-                    <span className="pricing-senda-plan-icon mt-0.5" aria-hidden>
-                      <span
-                        className="block h-full w-full [&_svg]:block"
-                        style={{ width: 48, height: 48 }}
-                        dangerouslySetInnerHTML={{ __html: normalizedSvg }}
-                      />
-                    </span>
+                    <span
+                      className="pricing-senda-plan-icon shrink-0"
+                      aria-hidden
+                      dangerouslySetInnerHTML={{ __html: normalizedSvg }}
+                    />
                   ) : null}
                   {el?.richText ? (
-                    <div className="pricing-senda-plan-element-richtext min-w-0 flex-1 pr-5 md:pr-8 [&_p]:m-0 [&_ul]:my-1 [&_ol]:my-1">
+                    <div
+                      className="pricing-senda-plan-element-richtext min-w-0 flex-1 pr-5 md:pr-8 [&_.payload-richtext>:first-child]:mt-0 [&_p]:m-0 [&_ul]:my-1 [&_ol]:my-1"
+                    >
                       <RichText data={el.richText} enableGutter={false} enableProse={false} />
                     </div>
                   ) : null}
