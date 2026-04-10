@@ -8,6 +8,7 @@ import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
+import { appendSendaInjectedButtonBorderRadius } from '@/utilities/sendaInjectedButtonRadius'
 import { RxChevronRight } from 'react-icons/rx'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
@@ -64,6 +65,17 @@ function normalizeLssFontGroup(raw: unknown): FontGroupData | null {
 
 const LSS_FG_RICHTEXT =
   'lss-richtext [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-bold [&_h4]:font-bold [&_h5]:font-bold [&_h6]:font-bold [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6'
+
+/** Tamaño fijo del icono cuando viene de subida (media / archivo .svg u otro raster). */
+const LSS_UPLOADED_ICON_PX = 65
+
+/** `width`/`height` del SVG → valor CSS (número sin unidad → `px`). */
+function svgAttrToCssSize(raw: string | undefined, fallback: string): string {
+  if (raw == null || raw === '') return fallback
+  const t = raw.trim()
+  if (/^\d+(\.\d+)?$/.test(t)) return `${t}px`
+  return t
+}
 
 type LinkType = {
   type?: 'reference' | 'custom' | null
@@ -407,19 +419,22 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
       )
     }
 
+    const lssFilledBtn = `${sel} .lss-btn-filled`
+    appendSendaInjectedButtonBorderRadius(styles, lssFilledBtn)
+
     if (buttonBackgroundColor || buttonTextColor) {
-      const btnRules: string[] = ['border-radius: 1rem !important;']
+      const btnRules: string[] = []
       if (buttonBackgroundColor)
         btnRules.push(`background-color: ${buttonBackgroundColor} !important;`)
-      styles.push(`${sel} .lss-btn-filled { ${btnRules.join(' ')} }`)
+      if (btnRules.length > 0) {
+        styles.push(`${lssFilledBtn} { ${btnRules.join(' ')} }`)
+      }
 
       if (buttonTextColor) {
         styles.push(
-          `${sel} .lss-btn-filled, ${sel} .lss-btn-filled * { color: ${buttonTextColor} !important; }`,
+          `${lssFilledBtn}, ${lssFilledBtn} * { color: ${buttonTextColor} !important; }`,
         )
       }
-    } else {
-      styles.push(`${sel} .lss-btn-filled { border-radius: 1rem !important; }`)
     }
 
     styles.push(
@@ -436,35 +451,46 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
     const icon = section.icon
     const iconImageSrc = icon ? getIconImageSrc(icon) : ''
     const iconSvg = icon?.useMedia ? null : icon?.iconSVG
-    const normalizedIconSvg = iconSvg
-      ? sanitizeSVG(iconSvg).replace(/\sheight=["'][^"']*["']/gi, '')
-      : ''
-    const svgWidthMatch = normalizedIconSvg.match(/\swidth=["']([^"']+)["']/i)
+    const sanitizedIconSvg = iconSvg ? sanitizeSVG(iconSvg) : ''
+    const svgWidthMatch = sanitizedIconSvg.match(/\swidth=["']([^"']+)["']/i)
+    const svgHeightMatch = sanitizedIconSvg.match(/\sheight=["']([^"']+)["']/i)
     const rawSvgWidth = svgWidthMatch?.[1]?.trim()
-    const svgWidthCss = rawSvgWidth
-      ? /^\d+(\.\d+)?$/.test(rawSvgWidth)
-        ? `${rawSvgWidth}px`
-        : rawSvgWidth
-      : '48px'
+    const rawSvgHeight = svgHeightMatch?.[1]?.trim()
+    const normalizedIconSvg = sanitizedIconSvg.replace(/\sheight=["'][^"']*["']/gi, '')
+
+    const svgWidthCss = svgAttrToCssSize(rawSvgWidth, '48px')
+    const svgHeightCss = svgAttrToCssSize(
+      rawSvgHeight,
+      rawSvgWidth != null && rawSvgWidth !== ''
+        ? svgAttrToCssSize(rawSvgWidth, '48px')
+        : '48px',
+    )
 
     const sectionContent = (
       <div className="flex flex-col gap-4 transition-all duration-200 hover:opacity-90">
         {(iconImageSrc || normalizedIconSvg) && (
-          <div className="flex min-h-12 min-w-12 flex-shrink-0 justify-start">
+          <div className="flex shrink-0 justify-start">
             {iconImageSrc ? (
-              <span className="inline-flex size-12 overflow-hidden rounded-lg">
+              <span
+                className="inline-flex shrink-0 overflow-hidden rounded-lg"
+                style={{
+                  width: LSS_UPLOADED_ICON_PX,
+                  height: LSS_UPLOADED_ICON_PX,
+                }}
+              >
                 <Image
                   src={iconImageSrc}
                   alt={getIconAlt(icon)}
-                  width={48}
-                  height={48}
-                  className="size-full object-cover"
+                  width={LSS_UPLOADED_ICON_PX}
+                  height={LSS_UPLOADED_ICON_PX}
+                  className="size-full object-contain"
+                  unoptimized={/\.svg/i.test(iconImageSrc)}
                 />
               </span>
             ) : (
               <span
                 className="relative inline-flex shrink-0 overflow-hidden"
-                style={{ width: svgWidthCss, height: '48px' }}
+                style={{ width: svgWidthCss, height: svgHeightCss }}
                 aria-hidden
               >
                 <span

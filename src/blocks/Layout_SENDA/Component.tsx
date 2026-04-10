@@ -8,6 +8,7 @@ import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
+import { appendSendaInjectedButtonBorderRadius } from '@/utilities/sendaInjectedButtonRadius'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import type { Media, Page, Post } from '@/payload-types'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
@@ -425,18 +426,21 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
       )
     }
 
+    const layoutFilledBtn = `${sel} .layout-senda-btn-filled`
+    appendSendaInjectedButtonBorderRadius(styles, layoutFilledBtn)
+
     if (buttonBackgroundColor || buttonTextColor) {
-      const btnRules: string[] = ['border-radius: 1rem !important;']
+      const btnRules: string[] = []
       if (buttonBackgroundColor) btnRules.push(`background-color: ${buttonBackgroundColor} !important;`)
-      styles.push(`${sel} .layout-senda-btn-filled { ${btnRules.join(' ')} }`)
+      if (btnRules.length > 0) {
+        styles.push(`${layoutFilledBtn} { ${btnRules.join(' ')} }`)
+      }
 
       if (buttonTextColor) {
         styles.push(
-          `${sel} .layout-senda-btn-filled, ${sel} .layout-senda-btn-filled * { color: ${buttonTextColor} !important; }`,
+          `${layoutFilledBtn}, ${layoutFilledBtn} * { color: ${buttonTextColor} !important; }`,
         )
       }
-    } else {
-      styles.push(`${sel} .layout-senda-btn-filled { border-radius: 1rem !important; }`)
     }
 
     styles.push(

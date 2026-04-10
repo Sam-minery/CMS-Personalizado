@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { usePathname } from "next/navigation";
 import { useMediaQuery } from "@relume_io/relume-ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { RxChevronDown } from "react-icons/rx";
@@ -13,6 +12,7 @@ import { getMediaUrl } from "@/utilities/getMediaUrl";
 import { sanitizeSVG } from "@/utilities/sanitizeHTML";
 import { cn } from "@/utilities/ui";
 import { sendaBlockButtonPrimitiveClassName } from "@/utilities/sendaBlockButtonClasses";
+import { appendSendaInjectedButtonBorderRadius } from "@/utilities/sendaInjectedButtonRadius";
 import {
   expandFontGroupRichTextFields,
   type FontGroupWithExpandedRichText,
@@ -98,8 +98,9 @@ function normalizeNavbarFontGroup(raw: unknown): NavbarFontGroup | null {
 
 /**
  * Texto de enlaces/botones: clase body del font group + fontFamily inline si aplica.
- * `layoutStableBold`: reserva el ancho del glifo en bold (capa invisible) para que al activar el ancla
- * el navbar no crezca unos píxeles al pasar de normal → bold.
+ * `layoutStableBold`: reserva el ancho del glifo en semibold (capa invisible) para que al activar/hover
+ * el navbar no crezca unos píxeles al pasar de normal → semibold.
+ * `navLinkSemiboldHover`: el padre debe llevar `group`; en hover el texto pasa a semibold.
  */
 function NavbarTextLabel({
   text,
@@ -107,12 +108,14 @@ function NavbarTextLabel({
   fg,
   layoutStableBold,
   anchorActive,
+  navLinkSemiboldHover,
 }: {
   text: string;
   fontStyle?: React.CSSProperties;
   fg: boolean;
   layoutStableBold?: boolean;
   anchorActive?: boolean;
+  navLinkSemiboldHover?: boolean;
 }) {
   if (layoutStableBold) {
     return (
@@ -125,18 +128,32 @@ function NavbarTextLabel({
       >
         <span
           aria-hidden
-          className="pointer-events-none invisible col-start-1 row-start-1 font-bold whitespace-nowrap select-none"
+          className="pointer-events-none invisible col-start-1 row-start-1 font-semibold whitespace-nowrap select-none"
         >
           {text}
         </span>
         <span
           className={cn(
-            "col-start-1 row-start-1 whitespace-nowrap",
-            anchorActive ? "font-bold" : "font-normal",
+            "col-start-1 row-start-1 whitespace-nowrap transition-[font-weight] duration-150",
+            anchorActive ? "font-semibold" : "font-normal",
+            navLinkSemiboldHover && "group-hover:font-semibold",
           )}
         >
           {text}
         </span>
+      </span>
+    );
+  }
+  if (navLinkSemiboldHover) {
+    return (
+      <span
+        className={cn(
+          fg && "navbar-senda-fg-body-text",
+          "font-normal transition-[font-weight] duration-150 group-hover:font-semibold",
+        )}
+        style={fontStyle}
+      >
+        {text}
       </span>
     );
   }
@@ -173,8 +190,13 @@ function scrollToAnchor(id: string) {
   if (!id || typeof document === "undefined") return;
   const el = document.getElementById(id.trim());
   if (el) {
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+}
+
+function scrollToTop() {
+  if (typeof window === "undefined") return;
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 /** Recoge todos los anchorIds de navLinks (y subMenuLinks) para observar visibilidad */
@@ -326,9 +348,9 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
           `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) { ${fgBody} { line-height: ${bodyLhMob} !important; } }`,
         );
       }
-      // Enlace activo (ancla): usar el glifo bold del grupo (p. ej. 700), no faux-bold de un solo archivo.
+      // Enlace activo / hover (ancla): glifo semibold del grupo (p. ej. 600), no faux-bold de un solo archivo.
       styles.push(
-        `${scope} .font-bold, ${scope} .font-bold.navbar-senda-fg-body-text { font-weight: 700 !important; }`,
+        `${scope} .font-semibold, ${scope} .font-semibold.navbar-senda-fg-body-text { font-weight: 600 !important; }`,
       );
     } else if (useCustomFont && customFontFamilyName) {
       const familyCss = customFontFamilyName.replace(/"/g, '\\"');
@@ -367,26 +389,29 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
       );
     }
     if (boldTextColor) {
-      styles.push(`[data-navbar-senda-font="${styleId}"] .font-bold, [data-navbar-senda-font="${styleId}"] strong, [data-navbar-senda-font="${styleId}"] b { color: ${boldTextColor} !important; }`);
+      styles.push(
+        `[data-navbar-senda-font="${styleId}"] .font-semibold, [data-navbar-senda-font="${styleId}"] .font-bold, [data-navbar-senda-font="${styleId}"] strong, [data-navbar-senda-font="${styleId}"] b { color: ${boldTextColor} !important; }`,
+      );
     }
+    const navDefaultBtn = `[data-navbar-senda-font="${styleId}"] .navbar-senda-btn-default`;
+    appendSendaInjectedButtonBorderRadius(styles, navDefaultBtn);
     if (buttonBackgroundColor || buttonTextColor) {
-      const btnBaseRules: string[] = ["border-radius: 1rem !important;"];
+      const btnBaseRules: string[] = [];
       if (buttonBackgroundColor) btnBaseRules.push(`background-color: ${buttonBackgroundColor} !important;`);
       if (buttonTextColor) {
         styles.push(
-          `[data-navbar-senda-font="${styleId}"] .navbar-senda-btn-default, [data-navbar-senda-font="${styleId}"] .navbar-senda-btn-default * { color: ${buttonTextColor} !important; }`
+          `${navDefaultBtn}, ${navDefaultBtn} * { color: ${buttonTextColor} !important; }`,
         );
       }
-      styles.push(`[data-navbar-senda-font="${styleId}"] .navbar-senda-btn-default { ${btnBaseRules.join(" ")} }`);
-    } else {
-      styles.push(`[data-navbar-senda-font="${styleId}"] .navbar-senda-btn-default { border-radius: 1rem !important; }`);
+      if (btnBaseRules.length > 0) {
+        styles.push(`${navDefaultBtn} { ${btnBaseRules.join(" ")} }`);
+      }
     }
     return styles.length > 0 ? styles.join("\n") : "";
   };
 
   const combinedStyles = buildStyles();
 
-  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const [navbarHeight, setNavbarHeight] = useState(0);
@@ -420,7 +445,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
     };
   }, [isMobile, isMobileMenuOpen]);
 
-  // Resaltar nav link en bold cuando su sección (anchor) está visible en pantalla
+  // Resaltar nav link en semibold cuando su sección (anchor) está visible en pantalla
   useEffect(() => {
     const anchorIds = getAnchorIdsFromNavLinks(navLinks);
     if (anchorIds.length === 0) return;
@@ -474,17 +499,17 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
       aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
     >
       <motion.span
-        className="my-[3px] h-0.5 w-6 origin-center bg-black"
+        className="my-px h-0.5 w-6 origin-center bg-black"
         animate={isMobileMenuOpen ? ["open", "rotatePhase"] : "closed"}
         variants={topLineVariants}
       />
       <motion.span
-        className="my-[3px] h-0.5 w-6 origin-center bg-black"
+        className="my-px h-0.5 w-6 origin-center bg-black"
         animate={isMobileMenuOpen ? "open" : "closed"}
         variants={middleLineVariants}
       />
       <motion.span
-        className="my-[3px] h-0.5 w-6 origin-center bg-black"
+        className="my-px h-0.5 w-6 origin-center bg-black"
         animate={isMobileMenuOpen ? ["open", "rotatePhase"] : "closed"}
         variants={bottomLineVariants}
       />
@@ -511,6 +536,8 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
           id={styleId}
           className={cn(
             "relative min-w-0 box-border",
+            // Cristal: difumina el contenido detrás cuando el fondo es semitransparente (barra; no menú móvil expandido).
+            !isMenuExpanded && "backdrop-blur-sm",
             navBorder,
             isMenuExpanded ? "border-b-0 rounded-b-none" : backgroundColor ? "" : "bg-white",
             isMobile
@@ -537,15 +564,16 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
           )}
           style={fontStyle}
         >
-          {/* Logo: al pulsar refresca la página actual */}
+          {/* Logo: al pulsar sube al inicio de la página */}
           <div className="flex-shrink-0 min-w-0">
             <a
-              href={pathname || "#"}
+              href="#"
               onClick={(e) => {
                 e.preventDefault();
-                if (typeof window !== "undefined") window.location.reload();
+                scrollToTop();
+                if (isMobileMenuOpen) setIsMobileMenuOpen(false);
               }}
-              aria-label="Recargar página"
+              aria-label="Ir al inicio de la página"
             >
               {logo.useMedia && logo.media && typeof logo.media === "object" && logo.media !== null ? (
                 <Image
@@ -572,7 +600,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                     key={index}
                     type="button"
                     className={cn(
-                      "block py-3 px-4 py-2 cursor-pointer bg-transparent border-0 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+                      "group block py-3 px-4 py-2 cursor-pointer bg-transparent border-0 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
                       !fontGroupTypographyActive && "text-base",
                     )}
                     style={fontStyle}
@@ -583,6 +611,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                       fontStyle={fontStyle}
                       fg={fontGroupTypographyActive}
                       layoutStableBold
+                      navLinkSemiboldHover
                       anchorActive={activeAnchorId === navLink.link!.anchorId!.trim()}
                     />
                   </button>
@@ -591,12 +620,17 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                     key={index}
                     {...(navLink.link as React.ComponentProps<typeof CMSLink>)}
                     className={cn(
-                      "block py-3 px-4 py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+                      "group block py-3 px-4 py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
                       !fontGroupTypographyActive && "text-base",
                     )}
                     style={fontStyle}
                   >
-                    <NavbarTextLabel text={navLink.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
+                    <NavbarTextLabel
+                      text={navLink.title}
+                      fontStyle={fontStyle}
+                      fg={fontGroupTypographyActive}
+                      navLinkSemiboldHover
+                    />
                   </CMSLink>
                 )
               )}
@@ -733,7 +767,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                             <button
                               type="button"
                               className={cn(
-                                "block w-full cursor-pointer border-0 bg-transparent py-2 text-left transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+                                "group block w-full cursor-pointer border-0 bg-transparent py-2 text-left transition-transform duration-150 active:scale-[0.98] active:opacity-90",
                                 !fontGroupTypographyActive && "text-base",
                               )}
                               style={fontStyle}
@@ -747,6 +781,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                                 fontStyle={fontStyle}
                                 fg={fontGroupTypographyActive}
                                 layoutStableBold
+                                navLinkSemiboldHover
                                 anchorActive={activeAnchorId === navLink.link!.anchorId!.trim()}
                               />
                             </button>
@@ -756,12 +791,17 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                             <CMSLink
                               {...(navLink.link as React.ComponentProps<typeof CMSLink>)}
                               className={cn(
-                                "block py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+                                "group block py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
                                 !fontGroupTypographyActive && "text-base",
                               )}
                               style={fontStyle}
                             >
-                              <NavbarTextLabel text={navLink.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
+                              <NavbarTextLabel
+                                text={navLink.title}
+                                fontStyle={fontStyle}
+                                fg={fontGroupTypographyActive}
+                                navLinkSemiboldHover
+                              />
                             </CMSLink>
                           </div>
                         )}
@@ -928,13 +968,18 @@ const SubMenu = ({
     >
       <button
         className={cn(
-          "flex w-full items-center justify-between gap-2 py-3 text-left lg:flex-none lg:justify-start lg:px-4 lg:py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+          "group flex w-full items-center justify-between gap-2 py-3 text-left lg:flex-none lg:justify-start lg:px-4 lg:py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
           !fontGroupTypographyActive && "text-md lg:text-base",
         )}
         onClick={() => setIsDropdownOpen((prev) => !prev)}
         style={linkFontStyle}
       >
-        <NavbarTextLabel text={navLink.title} fontStyle={linkFontStyle} fg={fontGroupTypographyActive} />
+        <NavbarTextLabel
+          text={navLink.title}
+          fontStyle={linkFontStyle}
+          fg={fontGroupTypographyActive}
+          navLinkSemiboldHover
+        />
         <motion.span
           variants={{ rotated: { rotate: 180 }, initial: { rotate: 0 } }}
           animate={isDropdownOpen ? "rotated" : "initial"}
@@ -963,7 +1008,7 @@ const SubMenu = ({
                   key={index}
                   type="button"
                   className={cn(
-                    "block w-full py-3 pl-[5%] text-left cursor-pointer bg-transparent border-0 lg:px-4 lg:py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+                    "group block w-full py-3 pl-[5%] text-left cursor-pointer bg-transparent border-0 lg:px-4 lg:py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
                     !fontGroupTypographyActive && "text-md lg:text-base",
                   )}
                   style={linkFontStyle}
@@ -974,6 +1019,7 @@ const SubMenu = ({
                     fontStyle={linkFontStyle}
                     fg={fontGroupTypographyActive}
                     layoutStableBold
+                    navLinkSemiboldHover
                     anchorActive={activeAnchorId === subLink.link.anchorId.trim()}
                   />
                 </button>
@@ -982,12 +1028,17 @@ const SubMenu = ({
                   <CMSLink
                     {...(subLink.link as React.ComponentProps<typeof CMSLink>)}
                     className={cn(
-                      "block py-3 pl-[5%] lg:px-4 lg:py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
+                      "group block py-3 pl-[5%] lg:px-4 lg:py-2 transition-transform duration-150 active:scale-[0.98] active:opacity-90",
                       !fontGroupTypographyActive && "text-md lg:text-base",
                     )}
                     style={linkFontStyle}
                   >
-                    <NavbarTextLabel text={subLink.title} fontStyle={linkFontStyle} fg={fontGroupTypographyActive} />
+                    <NavbarTextLabel
+                      text={subLink.title}
+                      fontStyle={linkFontStyle}
+                      fg={fontGroupTypographyActive}
+                      navLinkSemiboldHover
+                    />
                   </CMSLink>
                 </div>
               )
@@ -999,10 +1050,10 @@ const SubMenu = ({
   );
 };
 
-/** La variante final debe repetir el translateY; si no, Motion lo resetea al rotar y la X queda torcida. */
+/** Separación entre barras = `my-px` (1px) + `h-0.5` (2px): centros a 4px → translateY ±4 para la X. */
 const topLineVariants = {
-  open: { translateY: 8, rotate: 0, transition: { delay: 0.1 } },
-  rotatePhase: { translateY: 8, rotate: -45, transition: { delay: 0.2 } },
+  open: { translateY: 4, rotate: 0, transition: { delay: 0.1 } },
+  rotatePhase: { translateY: 4, rotate: -45, transition: { delay: 0.2 } },
   closed: { translateY: 0, rotate: 0, transition: { duration: 0.2 } },
 };
 
@@ -1012,8 +1063,8 @@ const middleLineVariants = {
 };
 
 const bottomLineVariants = {
-  open: { translateY: -8, rotate: 0, transition: { delay: 0.1 } },
-  rotatePhase: { translateY: -8, rotate: 45, transition: { delay: 0.2 } },
+  open: { translateY: -4, rotate: 0, transition: { delay: 0.1 } },
+  rotatePhase: { translateY: -4, rotate: 45, transition: { delay: 0.2 } },
   closed: { translateY: 0, rotate: 0, transition: { duration: 0.2 } },
 };
 

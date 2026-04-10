@@ -9,6 +9,7 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
 import { sendaBlockButtonPrimitiveClassName } from '@/utilities/sendaBlockButtonClasses'
+import { appendSendaInjectedButtonBorderRadius } from '@/utilities/sendaInjectedButtonRadius'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
@@ -385,16 +386,20 @@ export const CTA2SendaBlock: React.FC<Props> = (props) => {
       styles.push(`${sel} strong, ${sel} b { color: ${boldTextColor} !important; }`)
     }
 
-    const btnBaseRules = ['border-radius: 1rem !important;']
-    if (buttonBackgroundColor) btnBaseRules.push(`background-color: ${buttonBackgroundColor} !important;`)
     const btnSelector = `${sel} .cta2-senda-btn-default, ${sel} .cta2-senda-btn-secondary`
-    styles.push(`${btnSelector} { ${btnBaseRules.join(' ')} }`)
+    appendSendaInjectedButtonBorderRadius(styles, btnSelector)
+    appendSendaInjectedButtonBorderRadius(styles, `${sel} .cta2-senda-btn-outline`)
+
+    const btnBaseRules: string[] = []
+    if (buttonBackgroundColor) btnBaseRules.push(`background-color: ${buttonBackgroundColor} !important;`)
+    if (btnBaseRules.length > 0) {
+      styles.push(`${btnSelector} { ${btnBaseRules.join(' ')} }`)
+    }
     if (buttonTextColor) {
       styles.push(
         `${sel} .cta2-senda-btn-default, ${sel} .cta2-senda-btn-default *, ${sel} .cta2-senda-btn-secondary, ${sel} .cta2-senda-btn-secondary * { color: ${buttonTextColor} !important; }`,
       )
     }
-    styles.push(`${sel} .cta2-senda-btn-outline { border-radius: 1rem !important; }`)
 
     if (!fontGroupTypographyActive) {
       styles.push(

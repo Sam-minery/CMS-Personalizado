@@ -11,6 +11,7 @@ import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { cn } from '@/utilities/ui'
 import { sendaBlockButtonNativeClassName } from '@/utilities/sendaBlockButtonClasses'
+import { appendSendaInjectedButtonBorderRadius } from '@/utilities/sendaInjectedButtonRadius'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
   appendFontGroupHeadingMarginRulesResponsive,
@@ -427,13 +428,12 @@ export const FinalTestSendaBlock: React.FC<FinalTestSendaBlockProps> = (props) =
       )
     }
 
-    const btnRules: string[] = [
-      'border-radius: 1rem !important;',
-      `background-color: ${buttonBackgroundColor || '#007AFF'} !important;`,
-    ]
-    styles.push(`${sel} .final-test-senda-btn { ${btnRules.join(' ')} }`)
+    const ftBtn = `${sel} .final-test-senda-btn`
+    appendSendaInjectedButtonBorderRadius(styles, ftBtn)
+    const btnRules: string[] = [`background-color: ${buttonBackgroundColor || '#007AFF'} !important;`]
+    styles.push(`${ftBtn} { ${btnRules.join(' ')} }`)
     styles.push(
-      `${sel} .final-test-senda-btn, ${sel} .final-test-senda-btn * { color: ${buttonTextColor || '#ffffff'} !important; }`,
+      `${ftBtn}, ${ftBtn} * { color: ${buttonTextColor || '#ffffff'} !important; }`,
     )
 
     if (!fontGroupTypographyActive) {

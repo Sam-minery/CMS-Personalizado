@@ -11,6 +11,7 @@ import {
   sendaBlockButtonNativeClassName,
   sendaBlockButtonPrimitiveClassName,
 } from '@/utilities/sendaBlockButtonClasses'
+import { appendSendaInjectedButtonBorderRadius } from '@/utilities/sendaInjectedButtonRadius'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
@@ -442,15 +443,21 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
       styles.push(`${sel} strong, ${sel} b { color: ${boldTextColor} !important; }`)
     }
 
-    const btnRules: string[] = ['border-radius: 1rem !important;']
+    const mfBtn = `${sel} .mf-senda-btn`
+    const mfStepBtn = `${sel} .mf-senda-step-btn`
+    appendSendaInjectedButtonBorderRadius(styles, mfBtn)
+    appendSendaInjectedButtonBorderRadius(styles, mfStepBtn)
+
+    const btnRules: string[] = []
     if (buttonBackgroundColor) btnRules.push(`background-color: ${buttonBackgroundColor} !important;`)
-    styles.push(`${sel} .mf-senda-btn { ${btnRules.join(' ')} }`)
+    if (btnRules.length > 0) {
+      styles.push(`${mfBtn} { ${btnRules.join(' ')} }`)
+    }
     if (buttonTextColor) {
       styles.push(
-        `${sel} .mf-senda-btn, ${sel} .mf-senda-btn * { color: ${buttonTextColor} !important; }`,
+        `${mfBtn}, ${mfBtn} * { color: ${buttonTextColor} !important; }`,
       )
     }
-    styles.push(`${sel} .mf-senda-step-btn { border-radius: 1rem !important; }`)
     styles.push(
       `${sel} .mf-senda-step-btn, ${sel} .mf-senda-step-btn * { color: var(--mf-senda-step-btn-color, inherit) !important; }`,
     )

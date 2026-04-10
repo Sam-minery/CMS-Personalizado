@@ -11,6 +11,7 @@ import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { cn } from '@/utilities/ui'
 import { sendaBlockButtonNativeClassName } from '@/utilities/sendaBlockButtonClasses'
+import { appendSendaInjectedButtonBorderRadius } from '@/utilities/sendaInjectedButtonRadius'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
   appendFontGroupHeadingMarginRulesResponsive,
@@ -465,13 +466,12 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
         `${sel} .app-senda-below-richtext, ${sel} .app-senda-below-richtext p, ${sel} .app-senda-below-richtext h1, ${sel} .app-senda-below-richtext h2, ${sel} .app-senda-below-richtext h3, ${sel} .app-senda-below-richtext h4, ${sel} .app-senda-below-richtext h5, ${sel} .app-senda-below-richtext h6, ${sel} .app-senda-below-richtext li, ${sel} .app-senda-below-richtext span:not(strong):not(b), ${sel} .app-senda-below-richtext a { color: ${contentBelowImagesColor} !important; }`,
       )
     }
-    const btnRules: string[] = [
-      'border-radius: 1rem !important;',
-      `background-color: ${buttonsBackgroundColor || '#007AFF'} !important;`,
-    ]
-    styles.push(`${sel} .app-senda-btn { ${btnRules.join(' ')} }`)
+    const appBtn = `${sel} .app-senda-btn`
+    appendSendaInjectedButtonBorderRadius(styles, appBtn)
+    const btnRules: string[] = [`background-color: ${buttonsBackgroundColor || '#007AFF'} !important;`]
+    styles.push(`${appBtn} { ${btnRules.join(' ')} }`)
     styles.push(
-      `${sel} .app-senda-btn, ${sel} .app-senda-btn * { color: ${buttonsTextColor || '#ffffff'} !important; }`,
+      `${appBtn}, ${appBtn} * { color: ${buttonsTextColor || '#ffffff'} !important; }`,
     )
 
     styles.push(`

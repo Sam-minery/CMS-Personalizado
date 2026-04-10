@@ -9,6 +9,7 @@ import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { sendaBlockButtonPrimitiveClassName } from '@/utilities/sendaBlockButtonClasses'
+import { appendSendaInjectedButtonBorderRadius } from '@/utilities/sendaInjectedButtonRadius'
 import { cn } from '@/utilities/ui'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
@@ -403,42 +404,52 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
         `[data-hero-senda-font="${styleId}"] strong, [data-hero-senda-font="${styleId}"] b { color: ${heroSendaBoldTextColor} !important; }`,
       )
     }
+    const heroBtnDefault = `${sel} .hero-senda-btn-default`
+    const heroBtnSecondary = `${sel} .hero-senda-btn-secondary`
+    const heroBtnImage = `${sel} .hero-senda-btn-image`
+    appendSendaInjectedButtonBorderRadius(styles, heroBtnDefault)
+    appendSendaInjectedButtonBorderRadius(styles, heroBtnSecondary)
+    appendSendaInjectedButtonBorderRadius(styles, heroBtnImage)
+
     if (heroSendaButtonBackgroundColor || heroSendaButtonTextColor) {
-      const btnBaseRules: string[] = ['border-radius: 1rem !important;']
+      const btnBaseRules: string[] = []
       if (heroSendaButtonBackgroundColor) btnBaseRules.push(`background-color: ${heroSendaButtonBackgroundColor} !important;`)
       if (heroSendaButtonTextColor) {
-        styles.push(
-          `[data-hero-senda-font="${styleId}"] .hero-senda-btn-default, [data-hero-senda-font="${styleId}"] .hero-senda-btn-default * { color: ${heroSendaButtonTextColor} !important; }`,
-        )
+        styles.push(`${heroBtnDefault}, ${heroBtnDefault} * { color: ${heroSendaButtonTextColor} !important; }`)
       }
-      styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-default { ${btnBaseRules.join(' ')} }`)
-    } else {
-      styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-default { border-radius: 1rem !important; }`)
+      if (btnBaseRules.length > 0) {
+        styles.push(`${heroBtnDefault} { ${btnBaseRules.join(' ')} }`)
+      }
     }
+
     if (heroSendaButton2BackgroundColor || heroSendaButton2TextColor) {
-      const btn2Rules: string[] = ['border-radius: 1rem !important;']
+      const btn2Rules: string[] = []
       if (heroSendaButton2BackgroundColor) btn2Rules.push(`background-color: ${heroSendaButton2BackgroundColor} !important;`)
       if (heroSendaButton2TextColor) {
-        styles.push(
-          `[data-hero-senda-font="${styleId}"] .hero-senda-btn-secondary, [data-hero-senda-font="${styleId}"] .hero-senda-btn-secondary * { color: ${heroSendaButton2TextColor} !important; }`,
-        )
+        styles.push(`${heroBtnSecondary}, ${heroBtnSecondary} * { color: ${heroSendaButton2TextColor} !important; }`)
         btn2Rules.push(`border: 1px solid color-mix(in srgb, ${heroSendaButton2TextColor} 60%, transparent) !important;`)
       }
-      styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-secondary { ${btn2Rules.join(' ')} }`)
-    } else {
-      styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-secondary { border-radius: 1rem !important; }`)
+      if (btn2Rules.length > 0) {
+        styles.push(`${heroBtnSecondary} { ${btn2Rules.join(' ')} }`)
+      }
     }
+
     if (heroSendaButton3BackgroundColor || heroSendaButton3TextColor) {
-      const btn3Rules: string[] = ['border-radius: 1rem !important;', 'padding: 1.25rem 2rem !important;', 'min-height: 4rem !important;', 'display: inline-flex !important;', 'align-items: center !important;']
+      const btn3Rules: string[] = [
+        'padding: 1.25rem 2rem !important;',
+        'min-height: 4rem !important;',
+        'display: inline-flex !important;',
+        'align-items: center !important;',
+      ]
       if (heroSendaButton3BackgroundColor) btn3Rules.push(`background-color: ${heroSendaButton3BackgroundColor} !important;`)
       if (heroSendaButton3TextColor) {
-        styles.push(
-          `[data-hero-senda-font="${styleId}"] .hero-senda-btn-image, [data-hero-senda-font="${styleId}"] .hero-senda-btn-image * { color: ${heroSendaButton3TextColor} !important; }`,
-        )
+        styles.push(`${heroBtnImage}, ${heroBtnImage} * { color: ${heroSendaButton3TextColor} !important; }`)
       }
-      styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-image { ${btn3Rules.join(' ')} }`)
+      styles.push(`${heroBtnImage} { ${btn3Rules.join(' ')} }`)
     } else {
-      styles.push(`[data-hero-senda-font="${styleId}"] .hero-senda-btn-image { border-radius: 1rem !important; padding: 1.25rem 2rem !important; min-height: 4rem !important; display: inline-flex !important; align-items: center !important; }`)
+      styles.push(
+        `${heroBtnImage} { padding: 1.25rem 2rem !important; min-height: 4rem !important; display: inline-flex !important; align-items: center !important; }`,
+      )
     }
     styles.push(
       `${sel} sub, ${sel} sup { font-weight: 700 !important; vertical-align: baseline !important; font-size: 0.75em; line-height: 1.2; }`,
