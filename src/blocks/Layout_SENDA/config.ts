@@ -96,6 +96,71 @@ export const LayoutSendaBlock: Block = {
           },
         },
         {
+          name: 'useViewportSize',
+          type: 'checkbox',
+          label: 'Tamaño personalizado (viewport)',
+          defaultValue: false,
+          admin: {
+            condition: (_, siblingData) => siblingData?.useMedia === true,
+            description:
+              'Fija ancho y alto en vw/vh. En escritorio (pantallas lg o más) use los valores de “escritorio”; en móvil puede usar valores distintos abajo o dejarlos vacíos para reutilizar los de escritorio.',
+          },
+        },
+        {
+          name: 'mediaWidthVw',
+          type: 'number',
+          label: 'Ancho escritorio (% → vw)',
+          min: 1,
+          max: 200,
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useMedia === true && siblingData?.useViewportSize === true,
+            description: 'Pantallas ≥1024px (lg). Ej.: 80 → 80vw.',
+            step: 1,
+          },
+        },
+        {
+          name: 'mediaHeightVh',
+          type: 'number',
+          label: 'Alto escritorio (% → vh)',
+          min: 1,
+          max: 200,
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useMedia === true && siblingData?.useViewportSize === true,
+            description: 'Pantallas ≥1024px (lg). Ej.: 50 → 50vh.',
+            step: 1,
+          },
+        },
+        {
+          name: 'mediaWidthVwMobile',
+          type: 'number',
+          label: 'Ancho móvil (% → vw)',
+          min: 1,
+          max: 200,
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useMedia === true && siblingData?.useViewportSize === true,
+            description:
+              'Pantallas menores a 1024px (móvil/tablet). Opcional: si rellena ancho y alto móvil, sustituyen a escritorio en pantallas pequeñas. Si vacío, se usan los de escritorio.',
+            step: 1,
+          },
+        },
+        {
+          name: 'mediaHeightVhMobile',
+          type: 'number',
+          label: 'Alto móvil (% → vh)',
+          min: 1,
+          max: 200,
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useMedia === true && siblingData?.useViewportSize === true,
+            description:
+              'Pantallas menores a 1024px. Debe ir junto a “Ancho móvil” para aplicarse.',
+            step: 1,
+          },
+        },
+        {
           name: 'src',
           type: 'text',
           admin: {

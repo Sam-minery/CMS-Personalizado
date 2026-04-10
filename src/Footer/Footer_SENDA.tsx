@@ -448,7 +448,7 @@ export const Footer_SENDA: React.FC<Props> = (props) => {
                     column.links.map((item, linkIndex) => (
                       <li
                         key={linkIndex}
-                        className="block w-full border-b border-current pb-1 font-semibold md:pb-1.5 [&_a]:font-semibold [&_button]:font-semibold"
+                        className="block w-full border-b border-[#B8B5AE] pb-1 font-semibold md:pb-1.5 [&_a]:font-semibold [&_button]:font-semibold"
                       >
                         {renderLink(
                           item.link,
@@ -500,7 +500,7 @@ export const Footer_SENDA: React.FC<Props> = (props) => {
                       </>
                     )
                     return (
-                      <li key={idx} className="block w-full border-b border-current pb-1 md:pb-1.5">
+                      <li key={idx} className="block w-full border-b border-[#B8B5AE] pb-1 md:pb-1.5">
                         {isAnchor ? (
                           <button
                             type="button"
@@ -562,8 +562,6 @@ export const Footer_SENDA: React.FC<Props> = (props) => {
               )}
             </div>
           </div>
-
-          <div className="h-px w-full bg-current opacity-20" aria-hidden />
 
           <div className="flex flex-col gap-8 pb-4 pt-6 text-sm md:flex-row md:items-center md:justify-between md:gap-4 md:gap-x-6 md:pb-0 md:pt-8">
             <ul className="flex flex-col gap-3 md:flex-row md:flex-wrap md:gap-x-6 md:gap-y-0">

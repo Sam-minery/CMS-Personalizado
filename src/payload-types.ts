@@ -225,6 +225,30 @@ export interface Page {
        */
       url?: string | null;
       alt?: string | null;
+      /**
+       * Ancho y alto exactos (px o rem). La imagen rellena ese recuadro; si la proporción no coincide con la foto, se estira o comprime.
+       */
+      useCuImgDims?: boolean | null;
+      /**
+       * Valor numérico (ej. 400 o 25). La unidad se elige al lado.
+       */
+      customUploadedImageWidth?: number | null;
+      customUploadedImageWidthUnit?: ('px' | 'rem') | null;
+      /**
+       * Valor numérico (ej. 300 o 18.75).
+       */
+      customUploadedImageHeight?: number | null;
+      customUploadedImageHeightUnit?: ('px' | 'rem') | null;
+      /**
+       * Opcional. Por debajo de 1024px de ancho (breakpoint lg). Si lo dejas vacío, se usan ancho y alto de escritorio.
+       */
+      customUploadedImageMobW?: number | null;
+      customUploadedImageMobWu?: ('px' | 'rem') | null;
+      /**
+       * Opcional. Si falta, se usa el alto de escritorio.
+       */
+      customUploadedImageMobH?: number | null;
+      customUploadedImageMobHu?: ('px' | 'rem') | null;
     };
     /**
      * Dos botones debajo del texto (izquierda). Permite título, enlace, variante, tamaño e icono SVG.
@@ -1917,6 +1941,26 @@ export interface LayoutSendaBlock {
      */
     mediaImage?: (number | null) | Media;
     /**
+     * Fija ancho y alto en vw/vh. En escritorio (pantallas lg o más) use los valores de “escritorio”; en móvil puede usar valores distintos abajo o dejarlos vacíos para reutilizar los de escritorio.
+     */
+    useViewportSize?: boolean | null;
+    /**
+     * Pantallas ≥1024px (lg). Ej.: 80 → 80vw.
+     */
+    mediaWidthVw?: number | null;
+    /**
+     * Pantallas ≥1024px (lg). Ej.: 50 → 50vh.
+     */
+    mediaHeightVh?: number | null;
+    /**
+     * Pantallas menores a 1024px (móvil/tablet). Opcional: si rellena ancho y alto móvil, sustituyen a escritorio en pantallas pequeñas. Si vacío, se usan los de escritorio.
+     */
+    mediaWidthVwMobile?: number | null;
+    /**
+     * Pantallas menores a 1024px. Debe ir junto a “Ancho móvil” para aplicarse.
+     */
+    mediaHeightVhMobile?: number | null;
+    /**
      * URL de la imagen cuando no se usa media subida
      */
     src?: string | null;
@@ -2832,7 +2876,7 @@ export interface BloqueIMCSendaBlock {
    */
   calculateButtonIconSVG?: string | null;
   /**
-   * Contenido que se mostrará cuando el IMC sea inferior a 25. Puedes usar {bmi} como placeholder para mostrar el valor del IMC.
+   * Contenido que se mostrará cuando el IMC sea inferior a 26. Puedes usar {bmi} como placeholder para mostrar el valor del IMC.
    */
   resultContent?: {
     root: {
@@ -2877,7 +2921,7 @@ export interface BloqueIMCSendaBlock {
       }[]
     | null;
   /**
-   * Contenido que se mostrará cuando el IMC sea superior o igual a 25 (ej: "Un IMC superior a 25 se considera sobrepeso...")
+   * Contenido que se mostrará cuando el IMC sea superior o igual a 26 (ej: "Un IMC superior o igual a 26...")
    */
   highBMIContent?: {
     root: {
@@ -2895,7 +2939,7 @@ export interface BloqueIMCSendaBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Imagen que se mostrará cuando el IMC sea >= 25 (ej: foto del profesional)
+   * Imagen que se mostrará cuando el IMC sea >= 26 (ej: foto del profesional)
    */
   highBMIImage?: {
     useMedia?: boolean | null;
@@ -3000,7 +3044,7 @@ export interface BloqueIMCSendaBlock {
    */
   resultCardBackgroundColor?: string | null;
   /**
-   * Color del texto del resultado cuando el IMC es inferior a 25. Hex, rgb, rgba o nombre.
+   * Color del texto del resultado cuando el IMC es inferior a 26. Hex, rgb, rgba o nombre.
    */
   resultTextColor?: string | null;
   /**
@@ -3890,6 +3934,15 @@ export interface PagesSelect<T extends boolean = true> {
               media?: T;
               url?: T;
               alt?: T;
+              useCuImgDims?: T;
+              customUploadedImageWidth?: T;
+              customUploadedImageWidthUnit?: T;
+              customUploadedImageHeight?: T;
+              customUploadedImageHeightUnit?: T;
+              customUploadedImageMobW?: T;
+              customUploadedImageMobWu?: T;
+              customUploadedImageMobH?: T;
+              customUploadedImageMobHu?: T;
             };
         heroSendaLeftButtons?:
           | T
@@ -4365,6 +4418,11 @@ export interface LayoutSendaBlockSelect<T extends boolean = true> {
     | {
         useMedia?: T;
         mediaImage?: T;
+        useViewportSize?: T;
+        mediaWidthVw?: T;
+        mediaHeightVh?: T;
+        mediaWidthVwMobile?: T;
+        mediaHeightVhMobile?: T;
         src?: T;
         alt?: T;
       };
