@@ -91,6 +91,9 @@ type SendaCardsBlock = {
     backContentColor?: string | null
   }> | null
   backgroundColor?: string | null
+  /** Si es true, el contenido interior usa `customWidthPercent` como ancho en vw (fondo del bloque a ancho completo). */
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
   boldTextColor?: string | null
   useFontGroup?: boolean | null
   fontGroup?: FontGroupData | number | null
@@ -367,6 +370,8 @@ export const SendaCardsBlockComponent: React.FC<
   customCardWidth,
   customCardHeight,
   backgroundColor,
+  applyCustomWidth,
+  customWidthPercent,
   boldTextColor,
   useFontGroup,
   fontGroup,
@@ -855,6 +860,56 @@ export const SendaCardsBlockComponent: React.FC<
     headerTextContainerStyle.maxWidth = hasUnits ? raw : `${raw}px`
   }
 
+  /** Ancho del contenido en % del viewport (solo si el checkbox está activo). */
+  const cardsCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
+  /** Reglas extra: el ancho en vw manda sobre paddings/márgenes laterales del layout interno. */
+  const cardsCustomVwCss =
+    cardsCustomWidthVw != null
+      ? `
+[data-senda-cards-custom-vw] .senda-cards-desktop-content .senda-cards-text-container {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+[data-senda-cards-custom-vw] .senda-cards-carousel-wrapper {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  width: 100% !important;
+}
+[data-senda-cards-custom-vw] .senda-cards-scroll-viewport {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  scroll-padding-inline: 0 !important;
+}
+@media (min-width: 1024px) and (max-width: 1219px) {
+  [data-senda-cards-custom-vw] .senda-cards-carousel-wrapper {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+  [data-senda-cards-custom-vw] .senda-cards-scroll-viewport {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    scroll-padding-inline: 0 !important;
+  }
+}
+[data-senda-cards-custom-vw-full] .senda-cards-desktop-content {
+  max-width: none !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+`
+      : ''
+
   return (
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
@@ -863,15 +918,59 @@ export const SendaCardsBlockComponent: React.FC<
         data-cards-senda-font={styleId}
         data-desktop-gap={cardsGap === 'custom' ? safeDesktopGap : undefined}
         className={cn(
-          'relative w-full py-12 md:py-16 lg:py-20 px-0 overflow-x-hidden',
+          'relative w-full px-0',
+          cardsCustomWidthVw == null && 'overflow-x-hidden',
+          cardsCustomWidthVw != null && 'overflow-x-visible',
           !selectedFontFamily && 'font-sans',
         )}
+        {...(cardsCustomWidthVw != null ? { 'data-senda-cards-custom-vw': true } : {})}
+        {...(cardsCustomWidthVw === 100 ? { 'data-senda-cards-custom-vw-full': true } : {})}
         style={{
-          ...backgroundStyle,
+          ...(cardsCustomWidthVw == null ? backgroundStyle : {}),
           ...(cardsGap === 'custom' && safeDesktopGap ? { ['--senda-cards-desktop-gap' as string]: safeDesktopGap } : {}),
         }}
       >
-        <div className={cn('mx-auto w-full min-w-0 px-4 lg:px-6 overflow-x-hidden', !disableInnerContainer && 'max-w-7xl')}>
+        {cardsCustomWidthVw != null ? (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 left-1/2 -z-0 w-screen -translate-x-1/2 max-w-none"
+            style={backgroundStyle}
+          />
+        ) : null}
+        <div
+          className={cn(
+            'relative z-[1] min-w-0 py-12 md:py-16 lg:py-20',
+            cardsCustomWidthVw == null ? 'overflow-x-hidden' : 'overflow-x-visible',
+          )}
+        >
+        <div
+          className={cn(
+            'relative min-w-0',
+            cardsCustomWidthVw == null ? 'overflow-x-hidden' : 'overflow-x-visible',
+            cardsCustomWidthVw == null
+              ? cn('mx-auto w-full px-4 lg:px-6', !disableInnerContainer && 'max-w-7xl')
+              : 'box-border w-full max-w-none min-w-0 px-0',
+          )}
+          style={
+            cardsCustomWidthVw != null
+              ? cardsCustomWidthVw >= 100
+                ? {
+                    width: '100vw',
+                    maxWidth: 'none',
+                    marginLeft: 'calc(50% - 50vw)',
+                    marginRight: 'calc(50% - 50vw)',
+                    boxSizing: 'border-box' as const,
+                  }
+                : {
+                    width: `${cardsCustomWidthVw}vw`,
+                    maxWidth: '100vw',
+                    marginLeft: `calc(50% - ${cardsCustomWidthVw}vw / 2)`,
+                    marginRight: `calc(50% - ${cardsCustomWidthVw}vw / 2)`,
+                    boxSizing: 'border-box' as const,
+                  }
+              : undefined
+          }
+        >
           <style
             dangerouslySetInnerHTML={{
               __html: `
@@ -1021,6 +1120,7 @@ export const SendaCardsBlockComponent: React.FC<
  scroll-snap-stop: normal !important;
  }
  }
+ ${cardsCustomVwCss}
  `,
             }}
           />
@@ -1181,6 +1281,7 @@ export const SendaCardsBlockComponent: React.FC<
             </div>
           </div>
           </div>
+        </div>
         </div>
       </div>
     </>

@@ -165,6 +165,8 @@ export type FinalTestSendaBlockProps = {
   useCustomFont?: boolean | null
   customFontFile?: FontFile | number | null
   customFontName?: string | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
 }
 
 export const FinalTestSendaBlock: React.FC<FinalTestSendaBlockProps> = (props) => {
@@ -186,6 +188,8 @@ export const FinalTestSendaBlock: React.FC<FinalTestSendaBlockProps> = (props) =
     useCustomFont,
     customFontFile,
     customFontName,
+    applyCustomWidth,
+    customWidthPercent,
   } = props
 
   const uniqueId = React.useId().replace(/:/g, '-')
@@ -454,6 +458,29 @@ export const FinalTestSendaBlock: React.FC<FinalTestSendaBlockProps> = (props) =
   const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined
 
   const backgroundImageUrl = getBackgroundImageUrl(backgroundImage)
+
+  const ftsSectionBgStyle: React.CSSProperties = {
+    ...(backgroundColor ? { backgroundColor } : {}),
+    ...(backgroundImageUrl
+      ? {
+          backgroundImage: `url(${backgroundImageUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }
+      : {}),
+  }
+
+  const ftsCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
   const mainImageUrl = getMainImageUrl(mainImage)
   const mainImageAlt = getMainImageAlt(mainImage)
   const linkData = button?.link
@@ -502,7 +529,12 @@ export const FinalTestSendaBlock: React.FC<FinalTestSendaBlockProps> = (props) =
     <>
       <div className="grid grid-cols-1 gap-x-20 gap-y-10 md:gap-y-16 lg:grid-cols-2 lg:items-center">
         <div
-          className="final-test-senda-col-left order-1 lg:pl-6 xl:pl-10"
+          className={cn(
+            'final-test-senda-col-left order-1',
+            ftsCustomWidthVw != null && ftsCustomWidthVw >= 100
+              ? 'lg:pl-0 xl:pl-0'
+              : 'lg:pl-6 xl:pl-10',
+          )}
           style={fontStyle}
         >
           {content && (
@@ -533,37 +565,85 @@ export const FinalTestSendaBlock: React.FC<FinalTestSendaBlockProps> = (props) =
     </>
   )
 
+  const ftsInnerBlock = (
+    <div
+      className={cn(
+        ftsCustomWidthVw != null
+          ? 'mx-auto w-full max-w-none px-0'
+          : 'container relative max-lg:!px-2',
+      )}
+    >
+      {componentBackgroundColor?.trim() ? (
+        <div
+          className={cn(
+            'rounded-2xl py-10 sm:py-10 md:py-12 lg:py-14',
+            ftsCustomWidthVw != null && ftsCustomWidthVw >= 100
+              ? 'px-4 sm:px-5 md:px-6 lg:px-8'
+              : 'px-4 sm:px-6 md:px-10 lg:px-12',
+          )}
+          style={{ backgroundColor: componentBackgroundColor }}
+        >
+          {inner}
+        </div>
+      ) : (
+        inner
+      )}
+    </div>
+  )
+
   return (
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
       <section
         id={sanitizeAnchorId(anchorId, 'final-test-senda')}
         data-final-test-senda={styleId}
-        className="final-test-senda-section relative overflow-visible max-lg:px-3 lg:px-[5%] pb-16 pt-20 md:pb-24 md:pt-28 lg:pb-28 lg:pt-32"
-        style={{
-          ...(backgroundColor ? { backgroundColor } : {}),
-          ...(backgroundImageUrl
-            ? {
-                backgroundImage: `url(${backgroundImageUrl})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }
-            : {}),
-        }}
+        className={cn(
+          'final-test-senda-section relative overflow-visible',
+          ftsCustomWidthVw != null && 'w-full min-w-0 max-w-none',
+          ftsCustomWidthVw == null &&
+            'max-lg:px-3 lg:px-[5%] pb-16 pt-20 md:pb-24 md:pt-28 lg:pb-28 lg:pt-32',
+          ftsCustomWidthVw != null && 'overflow-x-visible px-0 py-0',
+        )}
+        style={ftsCustomWidthVw == null ? ftsSectionBgStyle : undefined}
       >
-        <div className="container relative max-lg:!px-2">
-          {componentBackgroundColor?.trim() ? (
+        {ftsCustomWidthVw != null && (backgroundColor || backgroundImageUrl) ? (
+          <div
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute inset-0 left-1/2 -z-0 max-w-none min-h-full -translate-x-1/2',
+              ftsCustomWidthVw >= 100 ? 'w-[100dvw] min-w-[100dvw]' : 'w-screen',
+            )}
+            style={ftsSectionBgStyle}
+          />
+        ) : null}
+        {ftsCustomWidthVw != null ? (
+          <div className="relative z-[1] w-full min-w-0 overflow-x-visible pb-16 pt-20 md:pb-24 md:pt-28 lg:pb-28 lg:pt-32">
             <div
-              className="rounded-2xl px-4 py-10 sm:px-6 md:px-10 md:py-12 lg:px-12 lg:py-14"
-              style={{ backgroundColor: componentBackgroundColor }}
+              className="relative box-border min-w-0 w-full max-w-none overflow-x-visible px-0"
+              style={
+                ftsCustomWidthVw >= 100
+                  ? {
+                      width: '100dvw',
+                      maxWidth: 'none',
+                      marginLeft: 'calc(50% - 50dvw)',
+                      marginRight: 'calc(50% - 50dvw)',
+                      boxSizing: 'border-box' as const,
+                    }
+                  : {
+                      width: `${ftsCustomWidthVw}vw`,
+                      maxWidth: '100vw',
+                      marginLeft: `calc(50% - ${ftsCustomWidthVw}vw / 2)`,
+                      marginRight: `calc(50% - ${ftsCustomWidthVw}vw / 2)`,
+                      boxSizing: 'border-box' as const,
+                    }
+              }
             >
-              {inner}
+              {ftsInnerBlock}
             </div>
-          ) : (
-            inner
-          )}
-        </div>
+          </div>
+        ) : (
+          ftsInnerBlock
+        )}
       </section>
     </>
   )

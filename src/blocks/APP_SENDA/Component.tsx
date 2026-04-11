@@ -172,6 +172,8 @@ export type AppSendaBlockProps = {
   contentBelowImages?: DefaultTypedEditorState | null
   backgroundImage?: BackgroundImageGroup | null
   backgroundColor?: string | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
   cardBackgroundColor?: string | null
   contentColor?: string | null
   boldTextColor?: string | null
@@ -197,6 +199,8 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
     contentBelowImages,
     backgroundImage,
     backgroundColor,
+    applyCustomWidth,
+    customWidthPercent,
     cardBackgroundColor,
     contentColor,
     boldTextColor,
@@ -522,30 +526,45 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
 
   const buttonList = Array.isArray(buttons) ? buttons.slice(0, 2) : []
 
-  return (
-    <>
-      {combinedStyles && <style>{combinedStyles}</style>}
-      <section
-        id={sanitizeAnchorId(anchorId, 'app-senda')}
-        data-app-senda-block={styleId}
-        className="app-senda-section min-h-[840px] px-[5%] pt-20 pb-10 md:pt-24 md:pb-14 flex items-center"
-        style={{
-          ...(backgroundColor ? { backgroundColor } : {}),
-          ...(backgroundImageUrl
-            ? {
-                backgroundImage: `url(${backgroundImageUrl})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }
-            : {}),
-        }}
+  const appCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
+  const appSectionBgStyle: React.CSSProperties = {
+    ...(backgroundColor ? { backgroundColor } : {}),
+    ...(backgroundImageUrl
+      ? {
+          backgroundImage: `url(${backgroundImageUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }
+      : {}),
+  }
+
+  const appInnerBlock = (
+    <div
+      className={cn(
+        appCustomWidthVw != null
+          ? 'mx-auto w-full max-w-none px-0'
+          : 'container mx-auto',
+      )}
+    >
+      <div
+        className={cn(
+          'app-senda-card mx-auto flex max-w-full min-w-0 flex-col gap-6 rounded-2xl bg-white p-6 shadow-lg min-h-[1174px] md:min-h-[720px] md:w-full md:gap-8 md:p-10',
+          appCustomWidthVw != null && appCustomWidthVw >= 100
+            ? 'w-full md:max-w-none'
+            : 'w-fit md:max-w-[1100px]',
+        )}
+        style={cardBackgroundColor ? { backgroundColor: cardBackgroundColor } : undefined}
       >
-        <div className="container mx-auto">
-          <div
-            className="app-senda-card mx-auto flex w-fit max-w-full min-w-0 flex-col gap-6 rounded-2xl bg-white p-6 shadow-lg min-h-[1174px] md:min-h-[720px] md:w-full md:max-w-[1100px] md:gap-8 md:p-10"
-            style={cardBackgroundColor ? { backgroundColor: cardBackgroundColor } : undefined}
-          >
             {/* Primer campo de texto: móvil 279×80, desktop 924×56. En móvil más separado del borde superior. */}
             <div className="order-1 mx-auto mb-3 mt-6 w-full max-w-[279px] min-h-[80px] text-left md:mt-0 md:w-full md:max-w-[924px] md:min-h-[56px]">
               {content && (
@@ -644,7 +663,61 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
               </div>
             ) : null}
           </div>
-        </div>
+    </div>
+  )
+
+  return (
+    <>
+      {combinedStyles && <style>{combinedStyles}</style>}
+      <section
+        id={sanitizeAnchorId(anchorId, 'app-senda')}
+        data-app-senda-block={styleId}
+        className={cn(
+          'app-senda-section relative flex min-h-[840px] items-center',
+          appCustomWidthVw != null && 'w-full min-w-0 max-w-none',
+          appCustomWidthVw == null && 'overflow-x-hidden px-[5%] pt-20 pb-10 md:pt-24 md:pb-14',
+          appCustomWidthVw != null && 'overflow-x-visible px-0 py-0',
+        )}
+        style={appCustomWidthVw == null ? appSectionBgStyle : undefined}
+      >
+        {appCustomWidthVw != null && (backgroundColor || backgroundImageUrl) ? (
+          <div
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute inset-0 left-1/2 -z-0 max-w-none min-h-full -translate-x-1/2',
+              appCustomWidthVw >= 100 ? 'w-[100dvw] min-w-[100dvw]' : 'w-screen',
+            )}
+            style={appSectionBgStyle}
+          />
+        ) : null}
+        {appCustomWidthVw != null ? (
+          <div className="relative z-[1] flex min-h-[840px] w-full min-w-0 flex-1 items-center overflow-x-visible pt-20 pb-10 md:pt-24 md:pb-14">
+            <div
+              className="relative box-border min-w-0 w-full max-w-none overflow-x-visible px-0"
+              style={
+                appCustomWidthVw >= 100
+                  ? {
+                      width: '100dvw',
+                      maxWidth: 'none',
+                      marginLeft: 'calc(50% - 50dvw)',
+                      marginRight: 'calc(50% - 50dvw)',
+                      boxSizing: 'border-box' as const,
+                    }
+                  : {
+                      width: `${appCustomWidthVw}vw`,
+                      maxWidth: '100vw',
+                      marginLeft: `calc(50% - ${appCustomWidthVw}vw / 2)`,
+                      marginRight: `calc(50% - ${appCustomWidthVw}vw / 2)`,
+                      boxSizing: 'border-box' as const,
+                    }
+              }
+            >
+              {appInnerBlock}
+            </div>
+          </div>
+        ) : (
+          appInnerBlock
+        )}
       </section>
     </>
   )

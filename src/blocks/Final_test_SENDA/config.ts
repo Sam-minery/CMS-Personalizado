@@ -70,6 +70,29 @@ export const FinalTestSendaBlockConfig: Block = {
       },
     },
     {
+      name: 'applyCustomWidth',
+      type: 'checkbox',
+      label: 'Aplicar ancho personalizado',
+      defaultValue: false,
+      admin: {
+        description:
+          'Si está activo, el contenido usa el ancho en % del viewport (centrado); el fondo de la sección sigue a ancho completo. Sin marcarlo, el diseño no cambia.',
+      },
+    },
+    {
+      name: 'customWidthPercent',
+      type: 'number',
+      label: 'Ancho respecto a la pantalla (%)',
+      min: 0,
+      max: 100,
+      defaultValue: 100,
+      admin: {
+        condition: (_, siblingData) => siblingData?.applyCustomWidth === true,
+        description:
+          '0–100. Ej.: 100 = borde a borde sin márgenes laterales extra del contenedor; valores menores centran el bloque en ese ancho.',
+      },
+    },
+    {
       name: 'backgroundImage',
       type: 'group',
       label: 'Imagen de fondo del bloque',

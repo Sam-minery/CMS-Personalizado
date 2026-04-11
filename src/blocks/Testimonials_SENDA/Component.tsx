@@ -89,6 +89,8 @@ type TestimonialsSendaBlockProps = {
   title?: DefaultTypedEditorState | null
   titleColor?: string | null
   backgroundColor?: string | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
   anchorId?: string | null
   useFontGroup?: boolean | null
   fontGroup?: FontGroupData | number | null
@@ -286,6 +288,8 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
   title,
   titleColor,
   backgroundColor,
+  applyCustomWidth,
+  customWidthPercent,
   anchorId,
   useFontGroup,
   fontGroup,
@@ -705,32 +709,124 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
   const isDesktopCarouselMany =
     useScrollMode && testimonialData.length > 3 && !isMobileView
 
-  return (
-    <div
-      id={sectionId}
-      data-testimonials-senda-font={styleId}
-      data-desktop-gap={cardsGap === 'custom' ? safeDesktopGap : undefined}
-      className={cn(
-        'relative w-full py-12 md:py-16 lg:py-20 px-0',
-        !isDesktopCarouselMany && 'overflow-x-hidden',
-        isDesktopCarouselMany && 'senda-testimonials-desktop-carousel-many',
-      )}
-      style={{
-        ...backgroundStyle,
-        ...fontStyle,
-        ...(cardsGap === 'custom' && safeDesktopGap
-          ? { ['--senda-testimonials-desktop-gap' as string]: safeDesktopGap }
-          : {}),
-      }}
-    >
+  /** Ancho del contenido en % del viewport (solo si el checkbox está activo). */
+  const tsCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
+  const gapCssVarStyle =
+    cardsGap === 'custom' && safeDesktopGap
+      ? { ['--senda-testimonials-desktop-gap' as string]: safeDesktopGap }
+      : {}
+
+  const tsCustomVwCarouselResetCss =
+    tsCustomWidthVw != null
+      ? `
+[data-testimonials-senda-custom-vw] .senda-testimonials-carousel-wrapper {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+/* El bloque inyectado más abajo fuerza padding en .senda-testimonials-scroll-viewport con !important: hay que anularlo para ancho personalizado (especialmente 100%). */
+[data-testimonials-senda-custom-vw] .senda-testimonials-scroll-viewport {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  scroll-padding-inline: 0 !important;
+  scroll-padding-left: 0 !important;
+  scroll-padding-right: 0 !important;
+}
+@media (max-width: 1279px) {
+  [data-testimonials-senda-custom-vw] .senda-testimonials-carousel-wrapper {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+  [data-testimonials-senda-custom-vw] .senda-testimonials-scroll-viewport {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    scroll-padding-inline: 0 !important;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  [data-testimonials-senda-custom-vw] .senda-testimonials-carousel-wrapper {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+  [data-testimonials-senda-custom-vw] .senda-testimonials-scroll-viewport {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    scroll-padding-inline: 0 !important;
+  }
+}
+@media (min-width: 1280px) {
+  [data-testimonials-senda-custom-vw] .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+  [data-testimonials-senda-custom-vw] .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel.senda-testimonials-carousel-visible-3 {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+  [data-testimonials-senda-custom-vw] .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel .senda-testimonials-scroll-viewport {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    scroll-padding-inline: 0 !important;
+    scroll-padding-left: 0 !important;
+    scroll-padding-right: 0 !important;
+  }
+  [data-testimonials-senda-custom-vw] .senda-testimonials-carousel-wrapper.senda-testimonials-is-carousel.senda-testimonials-carousel-visible-3 .senda-testimonials-scroll-viewport {
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    scroll-padding-left: 0 !important;
+    scroll-padding-right: 0 !important;
+  }
+}
+`.trim()
+      : ''
+
+  const outerClassName = cn(
+    'relative w-full px-0',
+    tsCustomWidthVw == null ? 'py-12 md:py-16 lg:py-20' : 'py-0',
+    tsCustomWidthVw == null
+      ? !isDesktopCarouselMany && 'overflow-x-hidden'
+      : 'overflow-x-visible',
+    isDesktopCarouselMany && 'senda-testimonials-desktop-carousel-many',
+  )
+
+  const outerStyle: React.CSSProperties = {
+    ...(tsCustomWidthVw == null ? backgroundStyle : {}),
+    ...(tsCustomWidthVw == null && fontStyle ? fontStyle : {}),
+    ...(tsCustomWidthVw == null ? gapCssVarStyle : {}),
+  }
+
+  const innerBlock = (
+    <>
       {combinedStyles ? <style>{combinedStyles}</style> : null}
+      {tsCustomVwCarouselResetCss ? <style>{tsCustomVwCarouselResetCss}</style> : null}
       <div
         className={cn(
-          'mx-auto w-full min-w-0 px-4 lg:px-6 senda-testimonials-inner',
-          !disableInnerContainer && 'max-w-7xl',
-          !isDesktopCarouselMany && 'overflow-x-hidden',
-          isDesktopCarouselMany && 'senda-testimonials-inner-desktop-carousel-many',
+          'w-full min-w-0 senda-testimonials-inner',
+          tsCustomWidthVw == null ? 'mx-auto px-4 lg:px-6' : 'mx-0 px-0',
+          !disableInnerContainer && tsCustomWidthVw == null && 'max-w-7xl',
+          !disableInnerContainer && tsCustomWidthVw != null && 'max-w-none',
+          tsCustomWidthVw == null && !isDesktopCarouselMany && 'overflow-x-hidden',
+          tsCustomWidthVw == null && isDesktopCarouselMany && 'senda-testimonials-inner-desktop-carousel-many',
+          tsCustomWidthVw != null && 'overflow-x-visible',
         )}
+        {...(tsCustomWidthVw != null ? { 'data-testimonials-senda-custom-vw': true } : {})}
       >
         <style
           dangerouslySetInnerHTML={{
@@ -880,7 +976,14 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
         />
 
         {hasTitle && (
-          <div className="mb-10 md:mb-12 w-full max-w-4xl mx-auto text-left md:text-center">
+          <div
+            className={cn(
+              'mb-10 md:mb-12 w-full text-left md:text-center',
+              tsCustomWidthVw != null && tsCustomWidthVw >= 100
+                ? 'max-w-none'
+                : 'max-w-4xl mx-auto',
+            )}
+          >
             <div
               className={cn(
                 'testimonials-senda-title',
@@ -901,7 +1004,9 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
 
         <div
           className={cn(
-            'senda-testimonials-carousel-wrapper relative -ml-4 -mr-4 w-[calc(100%+2rem)]',
+            'senda-testimonials-carousel-wrapper relative',
+            tsCustomWidthVw == null && '-ml-4 -mr-4 w-[calc(100%+2rem)]',
+            tsCustomWidthVw != null && 'mx-0 w-full max-w-full',
             useScrollMode && 'senda-testimonials-is-carousel',
             useScrollMode && testimonialData.length > 3 && 'senda-testimonials-carousel-visible-3',
             useScrollMode && isMobileView && 'senda-testimonials-mobile',
@@ -922,7 +1027,8 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
             ref={scrollContainerRef}
             className={cn(
               'senda-testimonials-scroll-viewport flex senda-testimonials-grid',
-              'overflow-x-auto pl-4 pr-4',
+              'overflow-x-auto',
+              tsCustomWidthVw == null ? 'pl-4 pr-4' : 'pl-0 pr-0',
               '[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden',
               gapId,
             )}
@@ -1002,6 +1108,58 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
           </div>
         </div>
       </div>
+    </>
+  )
+
+  return (
+    <div
+      id={sectionId}
+      data-testimonials-senda-font={styleId}
+      data-desktop-gap={cardsGap === 'custom' ? safeDesktopGap : undefined}
+      className={outerClassName}
+      style={outerStyle}
+    >
+      {tsCustomWidthVw != null && backgroundColor ? (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 left-1/2 -z-0 w-screen -translate-x-1/2 max-w-none"
+          style={{ backgroundColor: backgroundColor || 'transparent' }}
+        />
+      ) : null}
+      {tsCustomWidthVw != null ? (
+        <div
+          className={cn(
+            'relative z-[1] min-w-0 py-12 md:py-16 lg:py-20',
+            'overflow-x-visible',
+          )}
+          style={{ ...fontStyle, ...gapCssVarStyle }}
+        >
+          <div
+            className="relative box-border min-w-0 w-full max-w-none overflow-x-visible px-0"
+            style={
+              tsCustomWidthVw >= 100
+                ? {
+                    width: '100vw',
+                    maxWidth: 'none',
+                    marginLeft: 'calc(50% - 50vw)',
+                    marginRight: 'calc(50% - 50vw)',
+                    boxSizing: 'border-box' as const,
+                  }
+                : {
+                    width: `${tsCustomWidthVw}vw`,
+                    maxWidth: '100vw',
+                    marginLeft: `calc(50% - ${tsCustomWidthVw}vw / 2)`,
+                    marginRight: `calc(50% - ${tsCustomWidthVw}vw / 2)`,
+                    boxSizing: 'border-box' as const,
+                  }
+            }
+          >
+            {innerBlock}
+          </div>
+        </div>
+      ) : (
+        innerBlock
+      )}
     </div>
   )
 }

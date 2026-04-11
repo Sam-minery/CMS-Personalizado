@@ -139,6 +139,8 @@ type Props = {
   heroSendaUseCustomFont?: boolean
   heroSendaCustomFontFile?: FontFile | number | null
   heroSendaCustomFontName?: string | null
+  heroSendaApplyCustomWidth?: boolean | null
+  heroSendaCustomWidthPercent?: number | null
 }
 
 export const Hero_SENDA: React.FC<Props> = (props) => {
@@ -163,6 +165,8 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
     heroSendaUseCustomFont,
     heroSendaCustomFontFile,
     heroSendaCustomFontName,
+    heroSendaApplyCustomWidth,
+    heroSendaCustomWidthPercent,
   } = props
 
   const styleId = 'hero-senda'
@@ -460,6 +464,17 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
   const combinedStyles = buildStyles()
   const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined
 
+  /** Ancho del hero en % del viewport (solo si el checkbox está activo). 0 o inválido → 100. */
+  const heroSendaCustomWidthVw =
+    heroSendaApplyCustomWidth === true
+      ? (() => {
+          const p = heroSendaCustomWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
   const imageSrc =
     heroSendaImage?.useMedia && heroSendaImage?.media && typeof heroSendaImage.media === 'object'
       ? heroSendaImage.media.url || ''
@@ -566,16 +581,32 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
         id="hero-senda"
         data-hero-senda-font={styleId}
         className={cn(
-          'relative overflow-visible px-[5%] py-16 md:py-24 lg:py-28',
+          'relative w-full overflow-visible py-16 md:py-24 lg:py-28',
+          heroSendaCustomWidthVw == null && 'px-[5%]',
+          heroSendaCustomWidthVw != null && 'px-0',
           customDimsValid && 'hero-senda--custom-img min-h-[max-content]',
         )}
-        style={
-          heroSendaBackgroundColor
-            ? { backgroundColor: heroSendaBackgroundColor }
-            : undefined
-        }
+        style={heroSendaBackgroundColor ? { backgroundColor: heroSendaBackgroundColor } : undefined}
       >
-        <div className={cn('container relative', customDimsValid && 'overflow-visible')}>
+        <div
+          className={cn(
+            'relative min-w-0',
+            heroSendaCustomWidthVw == null && 'container',
+            heroSendaCustomWidthVw != null && 'mx-auto box-border max-w-none',
+            customDimsValid && 'overflow-visible',
+          )}
+          style={
+            heroSendaCustomWidthVw != null
+              ? {
+                  width: `${heroSendaCustomWidthVw}vw`,
+                  maxWidth: '100%',
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
+                  boxSizing: 'border-box',
+                }
+              : undefined
+          }
+        >
           {/* Móvil: texto → botones (1 o 2 en fila) → imagen. Desktop lg+: 2 cols; 1 botón además centrado bajo el bloque. */}
           <div className="grid min-w-0 grid-cols-1 gap-x-20 gap-y-12 md:gap-y-16 lg:grid-cols-2 lg:items-center [&>.hero-senda-col-left]:order-1 [&>.hero-senda-col-right]:order-2">
             <div className="hero-senda-col-left min-w-0" style={fontStyle}>

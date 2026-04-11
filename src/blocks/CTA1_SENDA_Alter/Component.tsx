@@ -162,6 +162,9 @@ export type CTA1SendaAlterBlockProps = {
   useCustomFont?: boolean | null
   customFontFile?: FontFile | number | null
   customFontName?: string | null
+  /** Si es true, el contenido interior usa `customWidthPercent` como ancho en vw (fondo del bloque a ancho completo). */
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
 }
 
 function sanitizeAnchorId(value: string | null | undefined): string {
@@ -247,6 +250,8 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
   useCustomFont,
   customFontFile,
   customFontName,
+  applyCustomWidth,
+  customWidthPercent,
 }) => {
   const getYouTubeVideoId = (url: string): string => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
@@ -575,6 +580,17 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
 
   const sectionId = sanitizeAnchorId(anchorId) || undefined
 
+  /** Ancho del contenido en % del viewport (solo si el checkbox está activo). */
+  const cta1CustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
   const cta1SectionBtnClass = cn(
     sendaBlockButtonNativeClassName,
     'font-medium border border-white/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
@@ -588,12 +604,33 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
       <section
         id={sectionId}
         className={cn(
-          'relative px-[5%] overflow-hidden flex items-center justify-center py-10 md:py-0',
+          'relative w-full flex items-center justify-center py-10 md:py-0',
+          cta1CustomWidthVw == null && 'overflow-hidden',
+          cta1CustomWidthVw != null && 'overflow-x-visible overflow-y-hidden',
           heightClasses,
+          cta1CustomWidthVw == null && 'px-[5%]',
+          cta1CustomWidthVw != null && 'px-0',
         )}
         style={customHeightStyle}
       >
-        <div className="relative z-10 flex flex-col items-center w-full max-w-[929px] mx-auto">
+        <div
+          className={cn(
+            'relative z-10 flex flex-col items-center min-w-0',
+            cta1CustomWidthVw == null && 'w-full max-w-[929px] mx-auto',
+            cta1CustomWidthVw != null && 'box-border w-full max-w-none min-w-0',
+          )}
+          style={
+            cta1CustomWidthVw != null
+              ? {
+                  width: `${cta1CustomWidthVw}vw`,
+                  maxWidth: '100vw',
+                  marginLeft: `calc(50% - ${cta1CustomWidthVw}vw / 2)`,
+                  marginRight: `calc(50% - ${cta1CustomWidthVw}vw / 2)`,
+                  boxSizing: 'border-box' as const,
+                }
+              : undefined
+          }
+        >
           {/* Cabecera: título y descripción en un único richText — 929×120 */}
           <div
             className={cn(
@@ -611,8 +648,9 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
               ],
             )}
             style={{
-              maxWidth: 929,
-              width: '100%',
+              ...(cta1CustomWidthVw != null && cta1CustomWidthVw >= 100
+                ? { width: '100%', maxWidth: '100%' }
+                : { maxWidth: 929, width: '100%' }),
               ...(textColor ? { color: textColor } : {}),
             }}
           >
@@ -630,14 +668,30 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
             ) : null}
           </div>
 
-          {/* Contenedor secciones: 920×318 — centrado en todos los breakpoints */}
+          {/* Contenedor secciones: 920×318; con ancho personalizado, flex 50/50 + barra vertical en el centro real */}
           <div
-            className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch justify-items-center w-full mx-auto min-h-[318px]"
-            style={{ maxWidth: 920 }}
+            className={cn(
+              'w-full mx-auto min-h-[318px]',
+              cta1CustomWidthVw == null &&
+                'grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch justify-items-center',
+              cta1CustomWidthVw != null &&
+                'relative flex flex-col md:flex-row md:items-stretch md:gap-0',
+            )}
+            style={
+              cta1CustomWidthVw == null
+                ? { maxWidth: 920 }
+                : cta1CustomWidthVw >= 100
+                  ? { maxWidth: '100%', width: '100%' }
+                  : { maxWidth: 920 }
+            }
           >
             {/* Sección Videollamada — 436×318 */}
             <div
-              className="flex flex-col items-center justify-center py-6 px-6 pb-10 md:pb-6 border-b-[3px] md:border-b-0 md:border-r-[3px] border-white/30 min-h-[318px] w-full max-w-[436px] mx-auto"
+              className={cn(
+                'flex flex-col items-center justify-center py-6 px-6 pb-10 md:pb-6 border-b-[3px] border-white/30 min-h-[318px] w-full max-w-[436px] mx-auto',
+                cta1CustomWidthVw == null && 'md:border-b-0 md:border-r-[3px]',
+                cta1CustomWidthVw != null && 'relative z-[1] md:flex-1 md:min-w-0 md:border-b-0 md:border-r-0',
+              )}
             >
               <SectionIcon iconGroup={videocallSection?.icon} />
               {(videocallSection?.labelRichText || videocallSection?.label) ? (
@@ -702,7 +756,10 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
 
             {/* Sección Teléfono — 436×318 */}
             <div
-              className="flex flex-col items-center justify-center py-6 px-6 min-h-[318px] w-full max-w-[436px] mx-auto"
+              className={cn(
+                'flex flex-col items-center justify-center py-6 px-6 min-h-[318px] w-full max-w-[436px] mx-auto',
+                cta1CustomWidthVw != null && 'relative z-[1] md:flex-1 md:min-w-0',
+              )}
             >
               <SectionIcon iconGroup={phoneSection?.icon} />
               {(phoneSection?.labelRichText || phoneSection?.label) ? (
@@ -803,6 +860,12 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                 })()
               )}
             </div>
+            {cta1CustomWidthVw != null ? (
+              <div
+                aria-hidden
+                className="pointer-events-none absolute left-1/2 top-0 z-10 hidden h-full w-[3px] -translate-x-1/2 bg-white/30 md:block"
+              />
+            ) : null}
           </div>
         </div>
         <div className="absolute inset-0 z-0">

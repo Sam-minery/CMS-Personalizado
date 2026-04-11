@@ -251,6 +251,14 @@ export interface Page {
       customUploadedImageMobHu?: ('px' | 'rem') | null;
     };
     /**
+     * Si está activo, en el front el hero usa el ancho indicado (porcentaje del ancho de la ventana), centrado.
+     */
+    heroSendaApplyCustomWidth?: boolean | null;
+    /**
+     * Valor de 0 a 100. Ej.: 50 = el bloque ocupa el 50% del ancho de la ventana (viewport), centrado.
+     */
+    heroSendaCustomWidthPercent?: number | null;
+    /**
      * Dos botones debajo del texto (izquierda). Permite título, enlace, variante, tamaño e icono SVG.
      */
     heroSendaLeftButtons?:
@@ -1377,6 +1385,14 @@ export interface CTA1SendaAlterBlock {
   gradientEndColor?: string | null;
   gradientDirection?: ('to-right' | 'to-left' | 'to-bottom' | 'to-top' | 'diagonal-down' | 'diagonal-up') | null;
   /**
+   * Si está activo, el contenido del bloque (cabecera y secciones) usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
+  /**
    * Tipografía, tamaños e interlineados del Font Group se aplican a todos los RichText del bloque. Los textos de los botones de sección y del botón del popup usan el tamaño de “texto normal” (body) del grupo.
    */
   useFontGroup?: boolean | null;
@@ -1466,6 +1482,14 @@ export interface CTA2SendaBlock {
    */
   invertLayout?: boolean | null;
   backgroundColor?: string | null;
+  /**
+   * Si está activo, el contenido (texto, botones e imagen) usa el ancho en % del viewport; el color de fondo del bloque sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
   textColor?: string | null;
   boldTextColor?: string | null;
   /**
@@ -1543,6 +1567,14 @@ export interface CardsSendaBlock {
    * Color de fondo del bloque. Acepta cualquier formato CSS válido: hexadecimal (#ffffff), RGB (rgb(0, 0, 0)), RGBA (rgba(0, 0, 0, 0.5)), HSL (hsl(0, 0%, 0%)), o nombres de color (black, white, etc.)
    */
   backgroundColor?: string | null;
+  /**
+   * Si está activo, el contenido del bloque (encabezado y cards) usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
   boldTextColor?: string | null;
   /**
    * Activa para elegir un grupo (Font Groups) en lugar de una sola fuente. Los tamaños e interlineados del grupo se aplican a todos los RichText del bloque.
@@ -1861,6 +1893,14 @@ export interface MultiFormSendaBlock {
    */
   backgroundColor?: string | null;
   /**
+   * Si está activo, el contenido (tarjeta del formulario) usa el ancho en % del viewport; el fondo del bloque sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
+  /**
    * Opcional. Si se define, puede usarse en lugar del color de fondo. Media subida o URL externa.
    */
   backgroundImage?: {
@@ -2026,6 +2066,14 @@ export interface LayoutSendaBlock {
     | null;
   invertLayout?: boolean | null;
   backgroundColor?: string | null;
+  /**
+   * Si está activo, el contenido (texto, subheadings, imagen y botones) usa el ancho en % del viewport; el color de fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
   textColor?: string | null;
   boldTextColor?: string | null;
   /**
@@ -2177,6 +2225,14 @@ export interface LayoutSendaSectionsBlock {
       }[]
     | null;
   backgroundColor?: string | null;
+  /**
+   * Si está activo, el contenido (cabecera, secciones y botones) usa el ancho en % del viewport; el color de fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
   textColor?: string | null;
   boldTextColor?: string | null;
   /**
@@ -2495,6 +2551,14 @@ export interface PricingSendaAlterBlock {
       }[]
     | null;
   backgroundColor?: string | null;
+  /**
+   * Si está activo, el contenido (cabecera y rejilla de planes) usa el ancho en % del viewport; el color de fondo del bloque sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
   textColor?: string | null;
   boldTextColor?: string | null;
   /**
@@ -2603,6 +2667,14 @@ export interface FAQSendaBlock {
       }[]
     | null;
   backgroundColor?: string | null;
+  /**
+   * Si está activo, el contenido (texto principal y acordeón) usa el ancho en % del viewport; el color de fondo del bloque sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
   questionsSectionBackgroundColor?: string | null;
   questionsSectionBorderColor?: string | null;
   textColor?: string | null;
@@ -2676,6 +2748,14 @@ export interface TestimonialsSendaBlock {
    * Color de fondo del bloque. Hex, rgb, rgba, hsl o nombre (ej: white, transparent).
    */
   backgroundColor?: string | null;
+  /**
+   * Si está activo, el contenido (título y carrusel) usa el ancho en % del viewport; el color de fondo del bloque sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
   /**
    * Tipografía y tamaños del Font Group se aplican al título del bloque y al contenido de cada tarjeta (cita y nombre/profesión).
    */
@@ -3036,6 +3116,14 @@ export interface BloqueIMCSendaBlock {
    */
   backgroundColor?: string | null;
   /**
+   * Si está activo, el contenido (calculadora y resultados) usa el ancho en % del viewport; el fondo (color, degradado o imagen) sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
+  /**
    * Hex, rgb, rgba o nombre.
    */
   cardBackgroundColor?: string | null;
@@ -3118,6 +3206,14 @@ export interface AppSendaBlock {
    * Color de fondo: nombre CSS (white, black, transparent) o valor (#f5f5f5, rgb(245,245,245)). Se aplica siempre aunque el navegador esté en modo oscuro.
    */
   backgroundColor?: string | null;
+  /**
+   * Si está activo, el contenido (tarjeta con textos, imágenes y botones) usa el ancho en % del viewport; el fondo del bloque sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
   /**
    * Color de la tarjeta interior. Nombre CSS (white, gray) o valor (#ffffff, rgb(255,255,255)).
    */
@@ -3293,6 +3389,14 @@ export interface FinalTestSendaBlock {
    * ID para enlaces ancla (ej: final-test-senda). Usar el mismo valor en el navbar en "Id ancla (misma página)".
    */
   anchorId?: string | null;
+  /**
+   * Si está activo, el contenido usa el ancho en % del viewport (centrado); el fondo de la sección sigue a ancho completo. Sin marcarlo, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 100 = borde a borde sin márgenes laterales extra del contenedor; valores menores centran el bloque en ese ancho.
+   */
+  customWidthPercent?: number | null;
   /**
    * Opcional. Si se define, se muestra como fondo de la sección.
    */
@@ -3944,6 +4048,8 @@ export interface PagesSelect<T extends boolean = true> {
               customUploadedImageMobH?: T;
               customUploadedImageMobHu?: T;
             };
+        heroSendaApplyCustomWidth?: T;
+        heroSendaCustomWidthPercent?: T;
         heroSendaLeftButtons?:
           | T
           | {
@@ -4246,6 +4352,8 @@ export interface CTA1SendaAlterBlockSelect<T extends boolean = true> {
   gradientStartColor?: T;
   gradientEndColor?: T;
   gradientDirection?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
   useFontGroup?: T;
   fontGroup?: T;
   fontFamily?: T;
@@ -4282,6 +4390,8 @@ export interface CTA2SendaBlockSelect<T extends boolean = true> {
   image?: T;
   invertLayout?: T;
   backgroundColor?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
   textColor?: T;
   boldTextColor?: T;
   useFontGroup?: T;
@@ -4305,6 +4415,8 @@ export interface CardsSendaBlockSelect<T extends boolean = true> {
   headerContentColor?: T;
   headerContentMaxWidth?: T;
   backgroundColor?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
   boldTextColor?: T;
   useFontGroup?: T;
   fontGroup?: T;
@@ -4385,6 +4497,8 @@ export interface MultiFormSendaBlockSelect<T extends boolean = true> {
   endButtonIconSVG?: T;
   optionsBackgroundColor?: T;
   backgroundColor?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
   backgroundImage?:
     | T
     | {
@@ -4459,6 +4573,8 @@ export interface LayoutSendaBlockSelect<T extends boolean = true> {
       };
   invertLayout?: T;
   backgroundColor?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
   textColor?: T;
   boldTextColor?: T;
   useFontGroup?: T;
@@ -4520,6 +4636,8 @@ export interface LayoutSendaSectionsBlockSelect<T extends boolean = true> {
         id?: T;
       };
   backgroundColor?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
   textColor?: T;
   boldTextColor?: T;
   useFontGroup?: T;
@@ -4646,6 +4764,8 @@ export interface PricingSendaAlterBlockSelect<T extends boolean = true> {
         id?: T;
       };
   backgroundColor?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
   textColor?: T;
   boldTextColor?: T;
   planGradientColor?: T;
@@ -4675,6 +4795,8 @@ export interface FAQSendaBlockSelect<T extends boolean = true> {
         id?: T;
       };
   backgroundColor?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
   questionsSectionBackgroundColor?: T;
   questionsSectionBorderColor?: T;
   textColor?: T;
@@ -4697,6 +4819,8 @@ export interface TestimonialsSendaBlockSelect<T extends boolean = true> {
   title?: T;
   titleColor?: T;
   backgroundColor?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
   useFontGroup?: T;
   fontGroup?: T;
   fontFamily?: T;
@@ -4795,6 +4919,8 @@ export interface BloqueIMCSendaBlockSelect<T extends boolean = true> {
   customFontFile?: T;
   customFontName?: T;
   backgroundColor?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
   cardBackgroundColor?: T;
   resultCardBackgroundColor?: T;
   resultTextColor?: T;
@@ -4825,6 +4951,8 @@ export interface AppSendaBlockSelect<T extends boolean = true> {
         src?: T;
       };
   backgroundColor?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
   cardBackgroundColor?: T;
   contentColor?: T;
   boldTextColor?: T;
@@ -4879,6 +5007,8 @@ export interface AppSendaBlockSelect<T extends boolean = true> {
  */
 export interface FinalTestSendaBlockSelect<T extends boolean = true> {
   anchorId?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
   backgroundImage?:
     | T
     | {

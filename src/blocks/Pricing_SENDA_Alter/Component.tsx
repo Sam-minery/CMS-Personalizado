@@ -6,6 +6,7 @@ import { CMSLink } from '@/components/Link'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
+import { cn } from '@/utilities/ui'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
   appendFontGroupHeadingMarginRulesResponsive,
@@ -176,6 +177,8 @@ type PricingSendaAlterProps = {
   richText?: DefaultTypedEditorState | null
   plans?: Plan[] | null
   backgroundColor?: string | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
   textColor?: string | null
   boldTextColor?: string | null
   /** Color base del degradado 3D en tarjetas (sustituye negro fijo). */
@@ -205,6 +208,8 @@ export const PricingSendaAlterBlock: React.FC<PricingSendaAlterProps> = (props) 
     richText,
     plans,
     backgroundColor,
+    applyCustomWidth,
+    customWidthPercent,
     textColor,
     boldTextColor,
     useFontGroup,
@@ -507,6 +512,36 @@ export const PricingSendaAlterBlock: React.FC<PricingSendaAlterProps> = (props) 
   const combinedStyles = buildStyles()
   const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined
 
+  /** Ancho del contenido en % del viewport (solo si el checkbox está activo). */
+  const psaCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const pct = customWidthPercent
+          if (typeof pct !== 'number' || Number.isNaN(pct)) return 100
+          const clamped = Math.min(100, Math.max(0, pct))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
+  const psaCustomVwCss =
+    psaCustomWidthVw != null
+      ? `
+[data-psa-custom-vw] .pricing-senda-container {
+  max-width: none !important;
+  width: 100% !important;
+}
+@media (min-width: 1024px) {
+  [data-psa-custom-vw] .pricing-senda-container {
+    max-width: none !important;
+  }
+  [data-psa-custom-vw] .pricing-senda-plans-grid {
+    max-width: none !important;
+    width: 100% !important;
+  }
+}
+`.trim()
+      : ''
+
   const renderPlan = (plan: Plan, index: number) => {
     const planStyle: React.CSSProperties = {
       ...(plan.backgroundColor ? { backgroundColor: plan.backgroundColor } : undefined),
@@ -607,13 +642,63 @@ export const PricingSendaAlterBlock: React.FC<PricingSendaAlterProps> = (props) 
       {combinedStyles && <style>{combinedStyles}</style>}
       {planBoldStyles && <style>{planBoldStyles}</style>}
       {planDividerStyles && <style>{planDividerStyles}</style>}
+      {psaCustomVwCss ? <style>{psaCustomVwCss}</style> : null}
       <section
         id={sanitizeAnchorId(anchorId, 'pricing-senda-alt')}
         data-ps-font={styleId}
-        className="px-[5%] py-16 md:py-24 lg:py-28"
-        style={backgroundColor ? { backgroundColor } : undefined}
+        className={cn(
+          'relative w-full',
+          psaCustomWidthVw == null && 'overflow-x-hidden px-[5%] py-0',
+          psaCustomWidthVw != null && 'overflow-x-visible px-0',
+        )}
+        style={psaCustomWidthVw == null && backgroundColor ? { backgroundColor } : undefined}
+        {...(psaCustomWidthVw != null ? { 'data-psa-custom-vw': true } : {})}
       >
-        <div className="pricing-senda-container container">
+        {psaCustomWidthVw != null && backgroundColor ? (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 left-1/2 -z-0 w-screen -translate-x-1/2 max-w-none"
+            style={{ backgroundColor }}
+          />
+        ) : null}
+        <div
+          className={cn(
+            'relative z-[1] min-w-0 py-16 md:py-24 lg:py-28',
+            psaCustomWidthVw != null && 'overflow-x-visible',
+          )}
+        >
+          <div
+            className={cn(
+              'relative min-w-0',
+              psaCustomWidthVw == null ? 'mx-auto w-full' : 'box-border w-full max-w-none px-0 overflow-x-visible',
+            )}
+            style={
+              psaCustomWidthVw != null
+                ? psaCustomWidthVw >= 100
+                  ? {
+                      width: '100vw',
+                      maxWidth: 'none',
+                      marginLeft: 'calc(50% - 50vw)',
+                      marginRight: 'calc(50% - 50vw)',
+                      boxSizing: 'border-box' as const,
+                    }
+                  : {
+                      width: `${psaCustomWidthVw}vw`,
+                      maxWidth: '100vw',
+                      marginLeft: `calc(50% - ${psaCustomWidthVw}vw / 2)`,
+                      marginRight: `calc(50% - ${psaCustomWidthVw}vw / 2)`,
+                      boxSizing: 'border-box' as const,
+                    }
+                : undefined
+            }
+          >
+            <div
+              className={
+                psaCustomWidthVw == null
+                  ? 'pricing-senda-container container'
+                  : 'pricing-senda-container mx-auto w-full max-w-none'
+              }
+            >
           <div
             className="mb-16 md:mb-20 lg:mb-28 w-full pricing-senda-main-richtext md:px-2 lg:px-4"
             style={fontStyle}
@@ -630,6 +715,8 @@ export const PricingSendaAlterBlock: React.FC<PricingSendaAlterProps> = (props) 
               {plans.map((plan, index) => renderPlan(plan, index))}
             </div>
           )}
+            </div>
+          </div>
         </div>
       </section>
     </>

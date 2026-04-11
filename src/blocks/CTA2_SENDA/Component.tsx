@@ -114,6 +114,8 @@ type Props = {
   image?: ImageMedia | null
   invertLayout?: boolean | null
   backgroundColor?: string | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
   textColor?: string | null
   boldTextColor?: string | null
   buttonBackgroundColor?: string | null
@@ -134,6 +136,8 @@ export const CTA2SendaBlock: React.FC<Props> = (props) => {
     image,
     invertLayout,
     backgroundColor,
+    applyCustomWidth,
+    customWidthPercent,
     textColor,
     boldTextColor,
     buttonBackgroundColor,
@@ -425,95 +429,155 @@ export const CTA2SendaBlock: React.FC<Props> = (props) => {
 
   const buttonItems = Array.isArray(buttons) ? buttons.slice(0, 4) : []
 
+  /** Ancho del contenido en % del viewport (solo si el checkbox está activo). */
+  const cta2CustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
+  const innerContent = (
+    <div
+      className={cn(
+        'w-full',
+        cta2CustomWidthVw == null && 'container',
+        cta2CustomWidthVw != null && 'mx-auto max-w-none',
+      )}
+    >
+      <div className="grid grid-cols-1 gap-x-20 gap-y-12 md:gap-y-16 lg:grid-cols-2 lg:items-stretch">
+        <div className={`${textContainerClass} flex flex-col lg:justify-center`} style={fontStyle}>
+          {richText && (
+            <div
+              className={cn(
+                'cta2-senda-richtext mb-5 md:mb-6 text-lg md:text-xl',
+                fontGroupTypographyActive && CTA2_FG_RICHTEXT,
+                !fontGroupTypographyActive &&
+                  '[&_h1]:text-5xl [&_h1]:font-bold [&_h1]:md:text-7xl [&_h1]:lg:text-8xl [&_h2]:text-4xl [&_h2]:font-bold [&_h2]:md:text-6xl [&_h2]:lg:text-7xl [&_h3]:text-3xl [&_h3]:font-bold [&_h3]:md:text-5xl [&_h3]:lg:text-6xl [&_h4]:text-2xl [&_h4]:font-bold [&_h4]:md:text-4xl [&_h4]:lg:text-5xl [&_p]:text-lg [&_p]:md:text-xl [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:text-lg [&_li]:md:text-xl',
+              )}
+            >
+              <RichText data={richText} enableGutter={false} enableProse={false} />
+            </div>
+          )}
+
+          {buttonItems.length > 0 && (
+            <div
+              className={cn(
+                'cta2-senda-buttons mt-6 flex flex-wrap items-center gap-4 md:mt-8',
+                invertLayout && 'justify-end',
+              )}
+              style={fontStyle}
+            >
+              {buttonItems.map((button, index) => {
+                const appearance = button?.appearance ?? (index === 0 ? 'default' : 'secondary')
+                const size = appearance === 'link' ? (button?.size ?? 'clear') : 'clear'
+                const iconSVG = button?.iconSVG ?? null
+                const btnClassName =
+                  appearance === 'default'
+                    ? 'cta2-senda-btn-default'
+                    : appearance === 'secondary'
+                      ? 'cta2-senda-btn-secondary'
+                      : appearance === 'outline'
+                        ? 'cta2-senda-btn-outline'
+                        : undefined
+
+                return (
+                  <CMSLink
+                    key={index}
+                    {...(button?.link as React.ComponentProps<typeof CMSLink>)}
+                    label={undefined}
+                    appearance={appearance}
+                    size={size}
+                    className={cn(
+                      appearance !== 'link' && sendaBlockButtonPrimitiveClassName,
+                      btnClassName,
+                    )}
+                    style={fontStyle}
+                  >
+                    <span className="cta2-senda-btn-label inline-flex items-center gap-2">
+                      {button?.link?.label ?? 'Button'}
+                      {iconSVG ? (
+                        <span
+                          className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                          dangerouslySetInnerHTML={{ __html: sanitizeSVG(iconSVG) }}
+                          aria-hidden
+                        />
+                      ) : null}
+                    </span>
+                  </CMSLink>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className={`${imageContainerClass} flex min-h-[280px] lg:min-h-[400px] overflow-hidden`}>
+          {imageUrlResolved && (
+            <Image
+              src={imageUrlResolved}
+              alt={imageAlt}
+              width={800}
+              height={600}
+              className="h-full w-full object-cover object-bottom"
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  )
+
   return (
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
       <section
         id={anchorId?.trim() || undefined}
         data-cta2-senda-font={styleId}
-        className="px-[5%] pt-8 pb-0 md:pt-14 lg:pt-16 md:pb-0"
-        style={backgroundColor ? { backgroundColor } : undefined}
+        className={cn(
+          'relative w-full',
+          cta2CustomWidthVw == null &&
+            'overflow-x-hidden px-[5%] pt-8 pb-0 md:pt-14 lg:pt-16 md:pb-0',
+          cta2CustomWidthVw != null && 'overflow-x-visible px-0 py-0',
+        )}
+        style={cta2CustomWidthVw == null && backgroundColor ? { backgroundColor } : undefined}
       >
-        <div className="container">
-          <div className="grid grid-cols-1 gap-x-20 gap-y-12 md:gap-y-16 lg:grid-cols-2 lg:items-stretch">
-            <div className={`${textContainerClass} flex flex-col lg:justify-center`} style={fontStyle}>
-              {richText && (
-                <div
-                  className={cn(
-                    'cta2-senda-richtext mb-5 md:mb-6 text-lg md:text-xl',
-                    fontGroupTypographyActive && CTA2_FG_RICHTEXT,
-                    !fontGroupTypographyActive &&
-                      '[&_h1]:text-5xl [&_h1]:font-bold [&_h1]:md:text-7xl [&_h1]:lg:text-8xl [&_h2]:text-4xl [&_h2]:font-bold [&_h2]:md:text-6xl [&_h2]:lg:text-7xl [&_h3]:text-3xl [&_h3]:font-bold [&_h3]:md:text-5xl [&_h3]:lg:text-6xl [&_h4]:text-2xl [&_h4]:font-bold [&_h4]:md:text-4xl [&_h4]:lg:text-5xl [&_p]:text-lg [&_p]:md:text-xl [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:text-lg [&_li]:md:text-xl',
-                  )}
-                >
-                  <RichText data={richText} enableGutter={false} enableProse={false} />
-                </div>
-              )}
-
-              {buttonItems.length > 0 && (
-                <div
-                  className={cn(
-                    'cta2-senda-buttons mt-6 flex flex-wrap items-center gap-4 md:mt-8',
-                    invertLayout && 'justify-end',
-                  )}
-                  style={fontStyle}
-                >
-                  {buttonItems.map((button, index) => {
-                    const appearance = button?.appearance ?? (index === 0 ? 'default' : 'secondary')
-                    const size = appearance === 'link' ? (button?.size ?? 'clear') : 'clear'
-                    const iconSVG = button?.iconSVG ?? null
-                    const btnClassName =
-                      appearance === 'default'
-                        ? 'cta2-senda-btn-default'
-                        : appearance === 'secondary'
-                          ? 'cta2-senda-btn-secondary'
-                          : appearance === 'outline'
-                            ? 'cta2-senda-btn-outline'
-                            : undefined
-
-                    return (
-                      <CMSLink
-                        key={index}
-                        {...(button?.link as React.ComponentProps<typeof CMSLink>)}
-                        label={undefined}
-                        appearance={appearance}
-                        size={size}
-                        className={cn(
-                          appearance !== 'link' && sendaBlockButtonPrimitiveClassName,
-                          btnClassName,
-                        )}
-                        style={fontStyle}
-                      >
-                        <span className="cta2-senda-btn-label inline-flex items-center gap-2">
-                          {button?.link?.label ?? 'Button'}
-                          {iconSVG ? (
-                            <span
-                              className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                              dangerouslySetInnerHTML={{ __html: sanitizeSVG(iconSVG) }}
-                              aria-hidden
-                            />
-                          ) : null}
-                        </span>
-                      </CMSLink>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-
-            <div className={`${imageContainerClass} flex min-h-[280px] lg:min-h-[400px] overflow-hidden`}>
-              {imageUrlResolved && (
-                <Image
-                  src={imageUrlResolved}
-                  alt={imageAlt}
-                  width={800}
-                  height={600}
-                  className="h-full w-full object-cover object-bottom"
-                />
-              )}
+        {cta2CustomWidthVw != null && backgroundColor ? (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 left-1/2 -z-0 w-screen -translate-x-1/2 max-w-none"
+            style={{ backgroundColor }}
+          />
+        ) : null}
+        {cta2CustomWidthVw != null ? (
+          <div className="relative z-[1] min-w-0 overflow-x-visible pt-8 pb-0 md:pt-14 lg:pt-16 md:pb-0">
+            <div
+              className="relative box-border min-w-0 w-full max-w-none overflow-x-visible px-0"
+              style={
+                cta2CustomWidthVw >= 100
+                  ? {
+                      width: '100vw',
+                      maxWidth: 'none',
+                      marginLeft: 'calc(50% - 50vw)',
+                      marginRight: 'calc(50% - 50vw)',
+                      boxSizing: 'border-box' as const,
+                    }
+                  : {
+                      width: `${cta2CustomWidthVw}vw`,
+                      maxWidth: '100vw',
+                      marginLeft: `calc(50% - ${cta2CustomWidthVw}vw / 2)`,
+                      marginRight: `calc(50% - ${cta2CustomWidthVw}vw / 2)`,
+                      boxSizing: 'border-box' as const,
+                    }
+              }
+            >
+              {innerContent}
             </div>
           </div>
-        </div>
+        ) : (
+          innerContent
+        )}
       </section>
     </>
   )

@@ -84,6 +84,8 @@ type FAQSendaProps = {
   richText?: DefaultTypedEditorState | null
   questions?: FAQQuestion[] | null
   backgroundColor?: string | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
   questionsSectionBackgroundColor?: string | null
   questionsSectionBorderColor?: string | null
   textColor?: string | null
@@ -102,6 +104,8 @@ export const FAQSendaBlock: React.FC<FAQSendaProps> = (props) => {
     richText,
     questions,
     backgroundColor,
+    applyCustomWidth,
+    customWidthPercent,
     questionsSectionBackgroundColor,
     questionsSectionBorderColor,
     textColor,
@@ -375,88 +379,153 @@ export const FAQSendaBlock: React.FC<FAQSendaProps> = (props) => {
 
   const questionsList = Array.isArray(questions) && questions.length > 0 ? questions : []
 
+  /** Ancho del contenido en % del viewport (solo si el checkbox está activo). */
+  const fsCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
+  const innerContent = (
+    <div
+      className={cn(
+        'faq-senda-inner w-full',
+        fsCustomWidthVw == null && 'container max-w-xl md:max-w-2xl lg:max-w-4xl',
+        fsCustomWidthVw != null && 'mx-auto max-w-none',
+      )}
+    >
+      <div
+        className="faq-senda-main-richtext mb-12 text-center md:mb-16 lg:mb-20"
+        style={fontStyle}
+      >
+        {richText && (
+          <div
+            className={cn(
+              'faq-senda-richtext',
+              fontGroupTypographyActive && FAQ_FG_RICHTEXT,
+              !fontGroupTypographyActive &&
+                '[&_h1]:m-0 [&_h1]:text-5xl [&_h1]:font-bold [&_h1]:md:text-7xl [&_h1]:lg:text-8xl [&_h2]:m-0 [&_h2]:text-4xl [&_h2]:font-bold [&_h2]:md:text-6xl [&_h2]:lg:text-7xl [&_h3]:m-0 [&_h3]:text-3xl [&_h3]:font-bold [&_h3]:md:text-5xl [&_h3]:lg:text-6xl [&_h4]:font-bold [&_p]:m-0 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6',
+            )}
+          >
+            <RichText data={richText} enableGutter={false} enableProse={false} />
+          </div>
+        )}
+      </div>
+
+      <div
+        className={cn(
+          'faq-senda-accordion-wrapper py-4 md:py-5',
+          fsCustomWidthVw == null ? 'px-1 sm:px-2 md:p-5' : 'px-0',
+        )}
+      >
+        <Accordion type="multiple" className="grid items-start justify-stretch gap-2">
+          {questionsList.map((q, index) => {
+            const iconSvg = q?.iconSVG?.trim()
+            const normalizedSvg = iconSvg
+              ? sanitizeSVG(iconSvg).replace(/\sheight=["'][^"']*["']/gi, '')
+              : ''
+            const iconHtml = normalizedSvg || DEFAULT_CHEVRON_SVG
+            const iconEl = (
+              <span
+                className="faq-senda-accordion-icon"
+                aria-hidden
+                dangerouslySetInnerHTML={{ __html: iconHtml }}
+              />
+            )
+            return (
+              <AccordionItem
+                key={index}
+                value={`faq-senda-item-${index}`}
+                className="faq-senda-accordion-item rounded-2xl px-5 py-0 md:px-6"
+              >
+                <AccordionTrigger
+                  icon={iconEl}
+                  className="faq-senda-accordion-trigger py-2 md:py-3 data-[state=open]:py-3 data-[state=open]:md:py-4 [&[data-state=open]>svg]:rotate-180"
+                >
+                  <span className="min-w-0 flex-1 text-left">
+                    {q?.questionRichText && (
+                      <div className={cn('faq-senda-richtext', fontGroupTypographyActive && FAQ_FG_RICHTEXT)}>
+                        <RichText
+                          data={q.questionRichText}
+                          enableGutter={false}
+                          enableProse={false}
+                        />
+                      </div>
+                    )}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="faq-senda-accordion-content px-6 pb-5 pt-0 md:px-8 md:pb-6">
+                  {q?.answerRichText && (
+                    <div className={cn('faq-senda-richtext', fontGroupTypographyActive && FAQ_FG_RICHTEXT)}>
+                      <RichText
+                        data={q.answerRichText}
+                        enableGutter={false}
+                        enableProse={false}
+                      />
+                    </div>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+            )
+          })}
+        </Accordion>
+      </div>
+    </div>
+  )
+
   return (
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
       <section
         id={sanitizeAnchorId(anchorId, 'faq-senda')}
         data-fs-font={styleId}
-        className="px-2 py-16 sm:px-3 md:px-[5%] md:py-24 lg:py-28"
-        style={backgroundColor ? { backgroundColor } : undefined}
+        className={cn(
+          'relative w-full',
+          fsCustomWidthVw == null &&
+            'overflow-x-hidden px-2 py-16 sm:px-3 md:px-[5%] md:py-24 lg:py-28',
+          fsCustomWidthVw != null && 'overflow-x-visible px-0 py-0',
+        )}
+        style={fsCustomWidthVw == null && backgroundColor ? { backgroundColor } : undefined}
       >
-        <div className="faq-senda-inner container w-full max-w-xl md:max-w-2xl lg:max-w-4xl">
+        {fsCustomWidthVw != null && backgroundColor ? (
           <div
-            className="faq-senda-main-richtext mb-12 text-center md:mb-16 lg:mb-20"
-            style={fontStyle}
-          >
-            {richText && (
-              <div
-                className={cn(
-                  'faq-senda-richtext',
-                  fontGroupTypographyActive && FAQ_FG_RICHTEXT,
-                  !fontGroupTypographyActive &&
-                    '[&_h1]:m-0 [&_h1]:text-5xl [&_h1]:font-bold [&_h1]:md:text-7xl [&_h1]:lg:text-8xl [&_h2]:m-0 [&_h2]:text-4xl [&_h2]:font-bold [&_h2]:md:text-6xl [&_h2]:lg:text-7xl [&_h3]:m-0 [&_h3]:text-3xl [&_h3]:font-bold [&_h3]:md:text-5xl [&_h3]:lg:text-6xl [&_h4]:font-bold [&_p]:m-0 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6',
-                )}
-              >
-                <RichText data={richText} enableGutter={false} enableProse={false} />
-              </div>
-            )}
+            aria-hidden
+            className="pointer-events-none absolute inset-0 left-1/2 -z-0 w-screen -translate-x-1/2 max-w-none"
+            style={{ backgroundColor }}
+          />
+        ) : null}
+        {fsCustomWidthVw != null ? (
+          <div className={cn('relative z-[1] min-w-0 overflow-x-visible py-16 md:py-24 lg:py-28')}>
+            <div
+              className="relative box-border min-w-0 w-full max-w-none overflow-x-visible px-0"
+              style={
+                fsCustomWidthVw >= 100
+                  ? {
+                      width: '100vw',
+                      maxWidth: 'none',
+                      marginLeft: 'calc(50% - 50vw)',
+                      marginRight: 'calc(50% - 50vw)',
+                      boxSizing: 'border-box' as const,
+                    }
+                  : {
+                      width: `${fsCustomWidthVw}vw`,
+                      maxWidth: '100vw',
+                      marginLeft: `calc(50% - ${fsCustomWidthVw}vw / 2)`,
+                      marginRight: `calc(50% - ${fsCustomWidthVw}vw / 2)`,
+                      boxSizing: 'border-box' as const,
+                    }
+              }
+            >
+              {innerContent}
+            </div>
           </div>
-
-          <div className="faq-senda-accordion-wrapper px-1 py-4 sm:px-2 md:p-5">
-            <Accordion type="multiple" className="grid items-start justify-stretch gap-2">
-              {questionsList.map((q, index) => {
-                const iconSvg = q?.iconSVG?.trim()
-                const normalizedSvg = iconSvg
-                  ? sanitizeSVG(iconSvg).replace(/\sheight=["'][^"']*["']/gi, '')
-                  : ''
-                const iconHtml = normalizedSvg || DEFAULT_CHEVRON_SVG
-                const iconEl = (
-                  <span
-                    className="faq-senda-accordion-icon"
-                    aria-hidden
-                    dangerouslySetInnerHTML={{ __html: iconHtml }}
-                  />
-                )
-                return (
-                  <AccordionItem
-                    key={index}
-                    value={`faq-senda-item-${index}`}
-                    className="faq-senda-accordion-item rounded-2xl px-5 py-0 md:px-6"
-                  >
-                    <AccordionTrigger
-                      icon={iconEl}
-                      className="faq-senda-accordion-trigger py-2 md:py-3 data-[state=open]:py-3 data-[state=open]:md:py-4 [&[data-state=open]>svg]:rotate-180"
-                    >
-                      <span className="min-w-0 flex-1 text-left">
-                        {q?.questionRichText && (
-                          <div className={cn('faq-senda-richtext', fontGroupTypographyActive && FAQ_FG_RICHTEXT)}>
-                            <RichText
-                              data={q.questionRichText}
-                              enableGutter={false}
-                              enableProse={false}
-                            />
-                          </div>
-                        )}
-                      </span>
-                    </AccordionTrigger>
-                    <AccordionContent className="faq-senda-accordion-content px-6 pb-5 pt-0 md:px-8 md:pb-6">
-                      {q?.answerRichText && (
-                        <div className={cn('faq-senda-richtext', fontGroupTypographyActive && FAQ_FG_RICHTEXT)}>
-                          <RichText
-                            data={q.answerRichText}
-                            enableGutter={false}
-                            enableProse={false}
-                          />
-                        </div>
-                      )}
-                    </AccordionContent>
-                  </AccordionItem>
-                )
-              })}
-            </Accordion>
-          </div>
-        </div>
+        ) : (
+          innerContent
+        )}
       </section>
     </>
   )

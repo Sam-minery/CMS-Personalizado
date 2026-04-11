@@ -540,6 +540,29 @@ export const CTA1SendaAlterBlock: Block = {
       },
     },
     {
+      name: 'applyCustomWidth',
+      type: 'checkbox',
+      label: 'Aplicar ancho personalizado',
+      defaultValue: false,
+      admin: {
+        description:
+          'Si está activo, el contenido del bloque (cabecera y secciones) usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.',
+      },
+    },
+    {
+      name: 'customWidthPercent',
+      type: 'number',
+      label: 'Ancho respecto a la pantalla (%)',
+      min: 0,
+      max: 100,
+      defaultValue: 100,
+      admin: {
+        condition: (_, siblingData) => siblingData?.applyCustomWidth === true,
+        description:
+          '0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.',
+      },
+    },
+    {
       name: 'useFontGroup',
       type: 'checkbox',
       label: 'Usar grupo de fuentes',

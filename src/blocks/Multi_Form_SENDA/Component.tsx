@@ -107,6 +107,8 @@ type Props = {
   endButtonIconSVG?: string | null
   optionsBackgroundColor?: string | null
   backgroundColor?: string | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
   backgroundImage?: BackgroundImageGroup | null
   formBackgroundColor?: string | null
   textColor?: string | null
@@ -163,9 +165,8 @@ function getBackgroundImageUrl(bg: BackgroundImageGroup | null | undefined): str
   return bg.src || ''
 }
 
-const richtextIntroStepEnd = cn(
-  'pt-2 mb-8 lg:px-28 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6',
-)
+const richtextIntroStepEndBase =
+  'pt-2 mb-8 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6'
 
 const richtextIntroStepEndTailwind =
   '[&_h1]:text-2xl [&_h1]:md:text-3xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:md:text-2xl [&_h2]:font-bold'
@@ -185,6 +186,8 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
     endButtonIconSVG,
     optionsBackgroundColor,
     backgroundColor,
+    applyCustomWidth,
+    customWidthPercent,
     backgroundImage,
     formBackgroundColor = '#ffffff',
     textColor,
@@ -507,9 +510,34 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
   const options = currentStep?.options ?? []
   const backgroundImageUrl = getBackgroundImageUrl(backgroundImage)
 
+  const mfCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
+  const mfSectionBgStyle: React.CSSProperties = {
+    ...(backgroundColor != null && backgroundColor !== ''
+      ? { backgroundColor: backgroundColor as React.CSSProperties['backgroundColor'] }
+      : {}),
+    ...(backgroundImageUrl
+      ? {
+          backgroundImage: `url(${backgroundImageUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center bottom',
+          backgroundRepeat: 'no-repeat',
+        }
+      : {}),
+  }
+
   const richtextMainClass = cn(
     'mf-senda-richtext',
-    richtextIntroStepEnd,
+    richtextIntroStepEndBase,
+    mfCustomWidthVw != null && mfCustomWidthVw >= 100 ? 'lg:px-0' : 'lg:px-28',
     fontGroupTypographyActive && MF_FG_RICHTEXT,
     !fontGroupTypographyActive && richtextIntroStepEndTailwind,
   )
@@ -520,34 +548,23 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
     !fontGroupTypographyActive && richtextOptionTailwind,
   )
 
-  return (
-    <>
-      {combinedStyles && <style>{combinedStyles}</style>}
-      <section
-        id={sanitizeAnchorId(anchorId, 'multi-form-senda')}
-        data-mf-senda-font={styleId}
-        className="relative w-full pt-24 pb-16 md:pt-28 md:pb-20 lg:pt-32 lg:pb-24 px-6 md:px-8 lg:px-10 bg-cover bg-center bg-no-repeat"
+  const mfInnerBlock = (
+    <div
+      className={cn(
+        mfCustomWidthVw != null ? 'mx-auto w-full max-w-none px-0' : 'container',
+      )}
+    >
+      <div
+        className={cn(
+          'mx-auto rounded-2xl pt-10 pb-6 shadow-lg md:pt-12 md:pb-8 lg:pt-14 lg:pb-10',
+          mfCustomWidthVw != null && mfCustomWidthVw >= 100
+            ? 'w-full max-w-none px-4 sm:px-6 md:px-8 lg:px-10'
+            : 'max-w-2xl px-6 md:px-8 lg:px-10',
+        )}
         style={{
-          ...(backgroundColor != null && backgroundColor !== ''
-            ? { backgroundColor: backgroundColor as React.CSSProperties['backgroundColor'] }
-            : {}),
-          ...(backgroundImageUrl
-            ? {
-                backgroundImage: `url(${backgroundImageUrl})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center bottom',
-                backgroundRepeat: 'no-repeat',
-              }
-            : {}),
+          backgroundColor: (formBackgroundColor ?? '#ffffff') as React.CSSProperties['backgroundColor'],
         }}
       >
-        <div className="container">
-          <div
-            className="mx-auto max-w-2xl rounded-2xl pt-10 px-6 pb-6 md:pt-12 md:px-8 md:pb-8 lg:pt-14 lg:px-10 lg:pb-10 shadow-lg"
-            style={{
-              backgroundColor: (formBackgroundColor ?? '#ffffff') as React.CSSProperties['backgroundColor'],
-            }}
-          >
             {formStarted && stepCount > 0 && (
               <div className="w-full lg:w-1/3 lg:mx-auto pt-6 mb-8">
                 <div className="flex items-center gap-1 lg:gap-2">
@@ -796,7 +813,63 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
               </div>
             )}
           </div>
-        </div>
+    </div>
+  )
+
+  return (
+    <>
+      {combinedStyles && <style>{combinedStyles}</style>}
+      <section
+        id={sanitizeAnchorId(anchorId, 'multi-form-senda')}
+        data-mf-senda-font={styleId}
+        className={cn(
+          'relative bg-cover bg-center bg-no-repeat',
+          mfCustomWidthVw == null ? 'w-full' : 'w-full min-w-0 max-w-none',
+          mfCustomWidthVw == null &&
+            'overflow-x-hidden px-6 pt-24 pb-16 md:px-8 md:pt-28 md:pb-20 lg:px-10 lg:pt-32 lg:pb-24',
+          mfCustomWidthVw != null && 'overflow-x-visible px-0 py-0',
+        )}
+        style={mfCustomWidthVw == null ? mfSectionBgStyle : undefined}
+      >
+        {mfCustomWidthVw != null &&
+        (Boolean(backgroundImageUrl) || (backgroundColor != null && backgroundColor !== '')) ? (
+          <div
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute inset-0 left-1/2 -z-0 max-w-none min-h-full -translate-x-1/2',
+              mfCustomWidthVw >= 100 ? 'w-[100dvw] min-w-[100dvw]' : 'w-screen',
+            )}
+            style={mfSectionBgStyle}
+          />
+        ) : null}
+        {mfCustomWidthVw != null ? (
+          <div className="relative z-[1] w-full overflow-x-visible pt-24 pb-16 md:pt-28 md:pb-20 lg:pt-32 lg:pb-24">
+            <div
+              className="relative box-border min-w-0 w-full max-w-none overflow-x-visible px-0"
+              style={
+                mfCustomWidthVw >= 100
+                  ? {
+                      width: '100dvw',
+                      maxWidth: 'none',
+                      marginLeft: 'calc(50% - 50dvw)',
+                      marginRight: 'calc(50% - 50dvw)',
+                      boxSizing: 'border-box' as const,
+                    }
+                  : {
+                      width: `${mfCustomWidthVw}vw`,
+                      maxWidth: '100vw',
+                      marginLeft: `calc(50% - ${mfCustomWidthVw}vw / 2)`,
+                      marginRight: `calc(50% - ${mfCustomWidthVw}vw / 2)`,
+                      boxSizing: 'border-box' as const,
+                    }
+              }
+            >
+              {mfInnerBlock}
+            </div>
+          </div>
+        ) : (
+          mfInnerBlock
+        )}
       </section>
     </>
   )

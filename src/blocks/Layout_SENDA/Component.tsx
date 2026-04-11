@@ -124,6 +124,9 @@ type LayoutSendaProps = {
   }> | null
   invertLayout?: boolean | null
   backgroundColor?: string | null
+  /** Si es true, el contenido interior usa `customWidthPercent` como ancho en vw; el fondo a ancho completo. */
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
   textColor?: string | null
   boldTextColor?: string | null
   buttonBackgroundColor?: string | null
@@ -171,6 +174,8 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
     buttons,
     invertLayout,
     backgroundColor,
+    applyCustomWidth,
+    customWidthPercent,
     textColor,
     boldTextColor,
     buttonBackgroundColor,
@@ -479,6 +484,17 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
     : ''
   const buttonItems = Array.isArray(buttons) ? buttons.slice(0, 2) : []
 
+  /** Ancho del contenido en % del viewport (solo si el checkbox está activo). */
+  const layoutCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
   /** Sin invertir: móvil imagen arriba; desktop texto izq / imagen dcha. Invertido: móvil imagen arriba; desktop imagen izq / texto dcha. */
   const textContainerClass = invertLayout ? 'order-2 lg:order-2' : 'order-2 lg:order-1'
   const imageContainerClass = invertLayout ? 'order-1 lg:order-1' : 'order-1 lg:order-2'
@@ -491,10 +507,52 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
       <section
         id={sanitizeAnchorId(anchorId)}
         data-layout-senda-font={styleId}
-        className="px-[5%] py-16 md:py-24 lg:py-28"
-        style={backgroundColor ? { backgroundColor } : undefined}
+        className={cn(
+          'relative w-full',
+          layoutCustomWidthVw == null && 'overflow-x-hidden px-[5%]',
+          layoutCustomWidthVw != null && 'overflow-x-visible px-0',
+        )}
+        style={layoutCustomWidthVw == null && backgroundColor ? { backgroundColor } : undefined}
       >
-        <div className="container">
+        {layoutCustomWidthVw != null && backgroundColor ? (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 left-1/2 -z-0 w-screen -translate-x-1/2 max-w-none"
+            style={{ backgroundColor }}
+          />
+        ) : null}
+        <div
+          className={cn(
+            'relative z-[1] min-w-0 py-16 md:py-24 lg:py-28',
+            layoutCustomWidthVw != null && 'overflow-x-visible',
+          )}
+        >
+          <div
+            className={cn(
+              'relative min-w-0',
+              layoutCustomWidthVw == null ? 'mx-auto w-full' : 'box-border w-full max-w-none px-0 overflow-x-visible',
+            )}
+            style={
+              layoutCustomWidthVw != null
+                ? layoutCustomWidthVw >= 100
+                  ? {
+                      width: '100vw',
+                      maxWidth: 'none',
+                      marginLeft: 'calc(50% - 50vw)',
+                      marginRight: 'calc(50% - 50vw)',
+                      boxSizing: 'border-box' as const,
+                    }
+                  : {
+                      width: `${layoutCustomWidthVw}vw`,
+                      maxWidth: '100vw',
+                      marginLeft: `calc(50% - ${layoutCustomWidthVw}vw / 2)`,
+                      marginRight: `calc(50% - ${layoutCustomWidthVw}vw / 2)`,
+                      boxSizing: 'border-box' as const,
+                    }
+                : undefined
+            }
+          >
+            <div className={layoutCustomWidthVw == null ? 'container' : 'mx-auto w-full max-w-none'}>
           <div className="grid grid-cols-1 gap-y-12 md:gap-y-16 lg:grid-cols-2 lg:items-center lg:gap-x-20">
             <div className={textContainerClass} style={fontStyle}>
               {richText && (
@@ -645,6 +703,8 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
                     className="w-full rounded-3xl object-cover"
                   />
                 ))}
+            </div>
+          </div>
             </div>
           </div>
         </div>

@@ -122,6 +122,8 @@ export type BloqueIMCSendaBlockProps = {
   /** Clave antigua por si hay datos guardados con el nombre anterior */
   resultButton?: ButtonItem[] | null
   backgroundColor?: string | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
   cardBackgroundColor?: string | null
   resultCardBackgroundColor?: string | null
   resultTextColor?: string | null
@@ -193,6 +195,8 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
   'resultButton (IMC < 25)': resultButtonNewKey,
   resultButton: resultButtonLegacy,
   backgroundColor,
+  applyCustomWidth,
+  customWidthPercent,
   cardBackgroundColor,
   resultCardBackgroundColor,
   resultTextColor,
@@ -572,38 +576,44 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
       'text-sm md:text-base leading-relaxed [&_h1]:text-lg [&_h1]:md:text-xl [&_h2]:text-base [&_h2]:md:text-lg [&_h3]:text-sm [&_h3]:md:text-base',
   )
 
-  return (
-    <>
-      {combinedStyles ? <style>{combinedStyles}</style> : null}
-      <div
-        id={sectionId}
-        data-bloque-imc-senda-font={styleId}
-        className={cn(
-          'relative w-full min-w-0 min-h-screen flex items-start justify-center px-4 md:px-6 pt-24 pb-12 overflow-x-clip overflow-y-visible md:pt-28 md:pb-12 md:min-h-[690px]',
-          showHighBMI ? 'md:h-auto' : 'md:h-[690px]',
-        )}
-        style={{
-          background: showResult || showHighBMI ? backgroundColor || '#f5f5f5' : defaultBackground,
-          ...(backgroundImageUrl
-            ? {
-                backgroundImage: `url(${backgroundImageUrl})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }
-            : {}),
-          ...fontStyle,
-        }}
-      >
-        <div
-          className={cn(
-            'w-full mx-auto flex justify-center',
-            !disableInnerContainer && 'max-w-7xl',
-          )}
-        >
-          {!showResult && !showHighBMI ? (
+  const imcCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
+  const imcBlockBackgroundStyle: React.CSSProperties = {
+    background: showResult || showHighBMI ? backgroundColor || '#f5f5f5' : defaultBackground,
+    ...(backgroundImageUrl
+      ? {
+          backgroundImage: `url(${backgroundImageUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }
+      : {}),
+  }
+
+  const imcInnerClass = cn(
+    'w-full flex justify-center',
+    imcCustomWidthVw == null ? 'mx-auto' : 'mx-0 max-w-none',
+    !disableInnerContainer && imcCustomWidthVw == null && 'max-w-7xl',
+    !disableInnerContainer && imcCustomWidthVw != null && 'max-w-none',
+  )
+
+  const imcChildren =
+    !showResult && !showHighBMI ? (
             <div
-              className="rounded-3xl flex flex-col items-start justify-center w-full max-w-[327px] min-h-[602px] p-6 box-border md:w-full md:max-w-[1100px] md:min-h-[350px] md:h-[430px] md:py-12 md:px-0 md:gap-8 md:items-center"
+              className={cn(
+                'rounded-3xl flex flex-col items-start justify-center w-full min-h-[602px] p-6 box-border md:w-full md:min-h-[350px] md:h-[430px] md:py-12 md:px-0 md:gap-8 md:items-center',
+                imcCustomWidthVw != null && imcCustomWidthVw >= 100
+                  ? 'max-w-none md:max-w-none'
+                  : 'max-w-[327px] md:max-w-[1100px]',
+              )}
               style={{
                 backgroundColor: defaultCardBackground,
               }}
@@ -719,9 +729,19 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
               </div>
             </div>
           ) : showResult ? (
-            <div className="w-full max-w-[1100px] mx-auto px-4 md:px-0 flex justify-center min-w-0">
+            <div
+              className={cn(
+                'w-full mx-auto flex justify-center min-w-0',
+                imcCustomWidthVw != null && imcCustomWidthVw >= 100 ? 'max-w-none px-0' : 'max-w-[1100px] px-4 md:px-0',
+              )}
+            >
               <div
-                className="rounded-3xl flex items-center justify-center w-full max-w-[327px] min-h-[570px] p-6 box-border md:w-full md:max-w-[1100px] md:h-[472px] md:min-h-[472px] md:p-10"
+                className={cn(
+                  'rounded-3xl flex items-center justify-center w-full min-h-[570px] p-6 box-border md:w-full md:h-[472px] md:min-h-[472px] md:p-10',
+                  imcCustomWidthVw != null && imcCustomWidthVw >= 100
+                    ? 'max-w-none md:max-w-none'
+                    : 'max-w-[327px] md:max-w-[1100px]',
+                )}
                 style={{ backgroundColor: defaultResultCardBackground, ...fontStyle }}
               >
                 <div className="flex flex-col items-start justify-start w-full h-full md:items-center overflow-visible">
@@ -826,9 +846,19 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
           ) : (
             <HighBMIResultErrorBoundary
               fallback={
-                <div className="w-full max-w-[1100px] mx-auto px-4 md:px-0 flex justify-center min-w-0">
+                <div
+                  className={cn(
+                    'w-full mx-auto flex justify-center min-w-0',
+                    imcCustomWidthVw != null && imcCustomWidthVw >= 100 ? 'max-w-none px-0' : 'max-w-[1100px] px-4 md:px-0',
+                  )}
+                >
                   <div
-                    className="rounded-3xl flex items-center justify-center w-full max-w-[327px] min-h-[200px] p-6 box-border md:w-full md:max-w-[1100px] md:min-h-[200px] md:p-10"
+                    className={cn(
+                      'rounded-3xl flex items-center justify-center w-full min-h-[200px] p-6 box-border md:w-full md:min-h-[200px] md:p-10',
+                      imcCustomWidthVw != null && imcCustomWidthVw >= 100
+                        ? 'max-w-none md:max-w-none'
+                        : 'max-w-[327px] md:max-w-[1100px]',
+                    )}
                     style={{
                       backgroundColor: defaultHighBMICardBackground || '#f8f8f8',
                       color: defaultHighBMITextColor || '#000000',
@@ -867,9 +897,19 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                 </div>
               }
             >
-              <div className="w-full max-w-[1100px] mx-auto px-4 md:px-0 flex justify-center min-w-0">
+              <div
+                className={cn(
+                  'w-full mx-auto flex justify-center min-w-0',
+                  imcCustomWidthVw != null && imcCustomWidthVw >= 100 ? 'max-w-none px-0' : 'max-w-[1100px] px-4 md:px-0',
+                )}
+              >
                 <div
-                  className="rounded-3xl flex items-center justify-center w-full max-w-[327px] min-h-0 p-6 pb-12 box-border md:w-full md:max-w-[1100px] md:min-h-[472px] md:h-auto md:p-10"
+                  className={cn(
+                    'rounded-3xl flex items-center justify-center w-full min-h-0 p-6 pb-12 box-border md:w-full md:min-h-[472px] md:h-auto md:p-10',
+                    imcCustomWidthVw != null && imcCustomWidthVw >= 100
+                      ? 'max-w-none md:max-w-none'
+                      : 'max-w-[327px] md:max-w-[1100px]',
+                  )}
                   style={{
                     backgroundColor: defaultHighBMICardBackground,
                     ...fontStyle,
@@ -993,8 +1033,65 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                 </div>
               </div>
             </HighBMIResultErrorBoundary>
-          )}
-        </div>
+          )
+
+  return (
+    <>
+      {combinedStyles ? <style>{combinedStyles}</style> : null}
+      <div
+        id={sectionId}
+        data-bloque-imc-senda-font={styleId}
+        className={cn(
+          'relative min-w-0 min-h-screen overflow-y-visible md:min-h-[690px]',
+          imcCustomWidthVw == null ? 'w-full' : 'w-full max-w-none',
+          showHighBMI ? 'md:h-auto' : 'md:h-[690px]',
+          imcCustomWidthVw == null &&
+            'flex items-start justify-center overflow-x-clip px-4 md:px-6 pt-24 pb-12 md:pt-28 md:pb-12',
+          imcCustomWidthVw != null && 'flex flex-col overflow-x-visible px-0 py-0',
+        )}
+        style={imcCustomWidthVw == null ? { ...imcBlockBackgroundStyle, ...fontStyle } : undefined}
+      >
+        {imcCustomWidthVw != null ? (
+          <div
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute inset-0 left-1/2 -z-0 max-w-none min-h-full -translate-x-1/2',
+              imcCustomWidthVw >= 100 ? 'w-[100dvw] min-w-[100dvw]' : 'w-screen',
+            )}
+            style={imcBlockBackgroundStyle}
+          />
+        ) : null}
+        {imcCustomWidthVw != null ? (
+          <div
+            className="relative z-[1] flex w-full min-h-0 flex-1 flex-col items-start justify-center overflow-x-visible pt-24 pb-12 md:pt-28 md:pb-12"
+            style={fontStyle}
+          >
+            <div
+              className={imcInnerClass}
+              style={
+                imcCustomWidthVw >= 100
+                  ? {
+                      width: '100dvw',
+                      maxWidth: 'none',
+                      marginLeft: 'calc(50% - 50dvw)',
+                      marginRight: 'calc(50% - 50dvw)',
+                      boxSizing: 'border-box' as const,
+                    }
+                  : {
+                      width: `${imcCustomWidthVw}vw`,
+                      maxWidth: '100vw',
+                      marginLeft: `calc(50% - ${imcCustomWidthVw}vw / 2)`,
+                      marginRight: `calc(50% - ${imcCustomWidthVw}vw / 2)`,
+                      boxSizing: 'border-box' as const,
+                    }
+              }
+            >
+              {imcChildren}
+            </div>
+          </div>
+        ) : (
+          <div className={imcInnerClass}>{imcChildren}</div>
+        )}
       </div>
     </>
   )

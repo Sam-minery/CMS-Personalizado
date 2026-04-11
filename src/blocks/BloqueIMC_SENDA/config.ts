@@ -372,6 +372,29 @@ export const BloqueIMCSendaBlockConfig: Block = {
           },
         },
         {
+          name: 'applyCustomWidth',
+          type: 'checkbox',
+          label: 'Aplicar ancho personalizado',
+          defaultValue: false,
+          admin: {
+            description:
+              'Si está activo, el contenido (calculadora y resultados) usa el ancho en % del viewport; el fondo (color, degradado o imagen) sigue a ancho completo. Si no lo marcas, el diseño no cambia.',
+          },
+        },
+        {
+          name: 'customWidthPercent',
+          type: 'number',
+          label: 'Ancho respecto a la pantalla (%)',
+          min: 0,
+          max: 100,
+          defaultValue: 100,
+          admin: {
+            condition: (_, siblingData) => siblingData?.applyCustomWidth === true,
+            description:
+              '0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.',
+          },
+        },
+        {
           name: 'cardBackgroundColor',
           type: 'text',
           label: 'Color de fondo de la caja de la Calculadora/formulario',

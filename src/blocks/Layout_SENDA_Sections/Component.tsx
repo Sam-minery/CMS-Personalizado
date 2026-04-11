@@ -126,6 +126,9 @@ type LayoutSendaSectionsProps = {
   sections?: Section[] | null
   buttons?: Array<{ link?: LinkType | null }> | null
   backgroundColor?: string | null
+  /** Si es true, el contenido interior usa `customWidthPercent` como ancho en vw; el fondo a ancho completo. */
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
   textColor?: string | null
   boldTextColor?: string | null
   buttonBackgroundColor?: string | null
@@ -161,6 +164,8 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
     sections,
     buttons,
     backgroundColor,
+    applyCustomWidth,
+    customWidthPercent,
     textColor,
     boldTextColor,
     buttonBackgroundColor,
@@ -447,6 +452,17 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
   const combinedStyles = buildStyles()
   const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined
 
+  /** Ancho del contenido en % del viewport (solo si el checkbox está activo). */
+  const lssCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
   const renderSection = (section: Section, index: number) => {
     const icon = section.icon
     const iconImageSrc = icon ? getIconImageSrc(icon) : ''
@@ -542,10 +558,53 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
       <section
         id={sanitizeAnchorId(anchorId, 'layout-senda-sections')}
         data-lss-font={styleId}
-        className="pl-2 pr-[5%] py-16 sm:pl-3 md:px-[5%] md:py-24 lg:py-20"
-        style={backgroundColor ? { backgroundColor } : undefined}
+        className={cn(
+          'relative w-full',
+          lssCustomWidthVw == null &&
+            'overflow-x-hidden py-0 pl-2 pr-[5%] sm:pl-3 md:px-[5%]',
+          lssCustomWidthVw != null && 'overflow-x-visible px-0',
+        )}
+        style={lssCustomWidthVw == null && backgroundColor ? { backgroundColor } : undefined}
       >
-        <div className="container">
+        {lssCustomWidthVw != null && backgroundColor ? (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 left-1/2 -z-0 w-screen -translate-x-1/2 max-w-none"
+            style={{ backgroundColor }}
+          />
+        ) : null}
+        <div
+          className={cn(
+            'relative z-[1] min-w-0 py-16 md:py-24 lg:py-20',
+            lssCustomWidthVw != null && 'overflow-x-visible',
+          )}
+        >
+          <div
+            className={cn(
+              'relative min-w-0',
+              lssCustomWidthVw == null ? 'mx-auto w-full' : 'box-border w-full max-w-none px-0 overflow-x-visible',
+            )}
+            style={
+              lssCustomWidthVw != null
+                ? lssCustomWidthVw >= 100
+                  ? {
+                      width: '100vw',
+                      maxWidth: 'none',
+                      marginLeft: 'calc(50% - 50vw)',
+                      marginRight: 'calc(50% - 50vw)',
+                      boxSizing: 'border-box' as const,
+                    }
+                  : {
+                      width: `${lssCustomWidthVw}vw`,
+                      maxWidth: '100vw',
+                      marginLeft: `calc(50% - ${lssCustomWidthVw}vw / 2)`,
+                      marginRight: `calc(50% - ${lssCustomWidthVw}vw / 2)`,
+                      boxSizing: 'border-box' as const,
+                    }
+                : undefined
+            }
+          >
+            <div className={lssCustomWidthVw == null ? 'container' : 'mx-auto w-full max-w-none'}>
           <div className="mb-12 md:mb-18 lg:mb-14 w-full" style={fontStyle}>
             {richText && (
               <div
@@ -607,6 +666,8 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
               })}
             </div>
           )}
+            </div>
+          </div>
         </div>
       </section>
     </>

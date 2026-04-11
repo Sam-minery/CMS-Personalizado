@@ -283,6 +283,30 @@ export const hero: Field = {
       ],
     },
     {
+      name: 'heroSendaApplyCustomWidth',
+      type: 'checkbox',
+      label: 'Aplicar ancho personalizado',
+      defaultValue: false,
+      admin: {
+        condition: (_, { type } = {}) => type === 'heroSenda',
+        description:
+          'Si está activo, en el front el hero usa el ancho indicado (porcentaje del ancho de la ventana), centrado.',
+      },
+    },
+    {
+      name: 'heroSendaCustomWidthPercent',
+      type: 'number',
+      label: 'Ancho respecto a la pantalla (%)',
+      min: 0,
+      max: 100,
+      defaultValue: 100,
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData?.type === 'heroSenda' && siblingData?.heroSendaApplyCustomWidth === true,
+        description: 'Valor de 0 a 100. Ej.: 50 = el bloque ocupa el 50% del ancho de la ventana (viewport), centrado.',
+      },
+    },
+    {
       name: 'heroSendaLeftButtons',
       type: 'array',
       dbName: 'hs_left_btns',
