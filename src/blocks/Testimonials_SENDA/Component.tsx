@@ -10,6 +10,13 @@ import RichText from '@/components/RichText'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
   appendFontGroupHeadingMarginRulesResponsive,
@@ -91,6 +98,7 @@ type TestimonialsSendaBlockProps = {
   backgroundColor?: string | null
   applyCustomWidth?: boolean | null
   customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
   anchorId?: string | null
   useFontGroup?: boolean | null
   fontGroup?: FontGroupData | number | null
@@ -290,6 +298,7 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
   backgroundColor,
   applyCustomWidth,
   customWidthPercent,
+  customWidthPercentMobile,
   anchorId,
   useFontGroup,
   fontGroup,
@@ -720,6 +729,12 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
         })()
       : null
 
+  const tsCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(applyCustomWidth, customWidthPercentMobile)
+  const tsBreakoutCss =
+    tsCustomWidthVw != null && tsCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, tsCustomWidthVw, tsCustomWidthMobileVw)
+      : ''
+
   const gapCssVarStyle =
     cardsGap === 'custom' && safeDesktopGap
       ? { ['--senda-testimonials-desktop-gap' as string]: safeDesktopGap }
@@ -816,6 +831,7 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
     <>
       {combinedStyles ? <style>{combinedStyles}</style> : null}
       {tsCustomVwCarouselResetCss ? <style>{tsCustomVwCarouselResetCss}</style> : null}
+      {tsBreakoutCss ? <style>{tsBreakoutCss}</style> : null}
       <div
         className={cn(
           'w-full min-w-0 senda-testimonials-inner',
@@ -1136,22 +1152,13 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
         >
           <div
             className="relative box-border min-w-0 w-full max-w-none overflow-x-visible px-0"
+            {...(tsCustomWidthVw != null && tsCustomWidthMobileVw != null
+              ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+              : {})}
             style={
-              tsCustomWidthVw >= 100
-                ? {
-                    width: '100vw',
-                    maxWidth: 'none',
-                    marginLeft: 'calc(50% - 50vw)',
-                    marginRight: 'calc(50% - 50vw)',
-                    boxSizing: 'border-box' as const,
-                  }
-                : {
-                    width: `${tsCustomWidthVw}vw`,
-                    maxWidth: '100vw',
-                    marginLeft: `calc(50% - ${tsCustomWidthVw}vw / 2)`,
-                    marginRight: `calc(50% - ${tsCustomWidthVw}vw / 2)`,
-                    boxSizing: 'border-box' as const,
-                  }
+              tsCustomWidthMobileVw != null
+                ? sendaBreakoutOnlyBoxSizing()
+                : sendaCalcBreakoutInlineStyle(tsCustomWidthVw)
             }
           >
             {innerBlock}

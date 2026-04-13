@@ -10,6 +10,13 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { cn } from '@/utilities/ui'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { sendaBlockButtonNativeClassName } from '@/utilities/sendaBlockButtonClasses'
 import { appendSendaInjectedButtonBorderRadius } from '@/utilities/sendaInjectedButtonRadius'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
@@ -174,6 +181,7 @@ export type AppSendaBlockProps = {
   backgroundColor?: string | null
   applyCustomWidth?: boolean | null
   customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
   cardBackgroundColor?: string | null
   contentColor?: string | null
   boldTextColor?: string | null
@@ -201,6 +209,7 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
     backgroundColor,
     applyCustomWidth,
     customWidthPercent,
+    customWidthPercentMobile,
     cardBackgroundColor,
     contentColor,
     boldTextColor,
@@ -536,6 +545,24 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
         })()
       : null
 
+  const appCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(applyCustomWidth, customWidthPercentMobile)
+  const appBreakoutCss =
+    appCustomWidthVw != null && appCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, appCustomWidthVw, appCustomWidthMobileVw)
+      : ''
+
+  /** Fondo a ancho viewport: si en móvil el % es 100 aunque desktop sea menor. */
+  const appBgUsesFullViewportWidth =
+    appCustomWidthVw != null &&
+    (appCustomWidthVw >= 100 ||
+      (appCustomWidthMobileVw != null && appCustomWidthMobileVw >= 100))
+
+  /**
+   * Con ancho personalizado (cualquier %), la tarjeta debe llenar el contenedor breakout (Xvw);
+   * `w-fit` / `max-w-[1100px]` ignoraban el % y solo encajaban bien al 100 %.
+   */
+  const appCardWidthClass = appCustomWidthVw != null ? 'w-full max-w-none' : ''
+
   const appSectionBgStyle: React.CSSProperties = {
     ...(backgroundColor ? { backgroundColor } : {}),
     ...(backgroundImageUrl
@@ -559,9 +586,7 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
       <div
         className={cn(
           'app-senda-card mx-auto flex max-w-full min-w-0 flex-col gap-6 rounded-2xl bg-white p-6 shadow-lg min-h-[1174px] md:min-h-[720px] md:w-full md:gap-8 md:p-10',
-          appCustomWidthVw != null && appCustomWidthVw >= 100
-            ? 'w-full md:max-w-none'
-            : 'w-fit md:max-w-[1100px]',
+          appCustomWidthVw != null && appCardWidthClass,
         )}
         style={cardBackgroundColor ? { backgroundColor: cardBackgroundColor } : undefined}
       >
@@ -669,6 +694,7 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
   return (
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
+      {appBreakoutCss ? <style>{appBreakoutCss}</style> : null}
       <section
         id={sanitizeAnchorId(anchorId, 'app-senda')}
         data-app-senda-block={styleId}
@@ -685,7 +711,7 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
             aria-hidden
             className={cn(
               'pointer-events-none absolute inset-0 left-1/2 -z-0 max-w-none min-h-full -translate-x-1/2',
-              appCustomWidthVw >= 100 ? 'w-[100dvw] min-w-[100dvw]' : 'w-screen',
+              appBgUsesFullViewportWidth ? 'w-[100dvw] min-w-[100dvw]' : 'w-screen',
             )}
             style={appSectionBgStyle}
           />
@@ -694,22 +720,13 @@ export const AppSendaBlock: React.FC<AppSendaBlockProps> = (props) => {
           <div className="relative z-[1] flex min-h-[840px] w-full min-w-0 flex-1 items-center overflow-x-visible pt-20 pb-10 md:pt-24 md:pb-14">
             <div
               className="relative box-border min-w-0 w-full max-w-none overflow-x-visible px-0"
+              {...(appCustomWidthVw != null && appCustomWidthMobileVw != null
+                ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+                : {})}
               style={
-                appCustomWidthVw >= 100
-                  ? {
-                      width: '100dvw',
-                      maxWidth: 'none',
-                      marginLeft: 'calc(50% - 50dvw)',
-                      marginRight: 'calc(50% - 50dvw)',
-                      boxSizing: 'border-box' as const,
-                    }
-                  : {
-                      width: `${appCustomWidthVw}vw`,
-                      maxWidth: '100vw',
-                      marginLeft: `calc(50% - ${appCustomWidthVw}vw / 2)`,
-                      marginRight: `calc(50% - ${appCustomWidthVw}vw / 2)`,
-                      boxSizing: 'border-box' as const,
-                    }
+                appCustomWidthMobileVw != null
+                  ? sendaBreakoutOnlyBoxSizing()
+                  : sendaCalcBreakoutInlineStyle(appCustomWidthVw)
               }
             >
               {appInnerBlock}

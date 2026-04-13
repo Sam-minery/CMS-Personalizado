@@ -8,6 +8,13 @@ import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { appendSendaInjectedButtonBorderRadius } from '@/utilities/sendaInjectedButtonRadius'
 import { RxChevronRight } from 'react-icons/rx'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
@@ -129,6 +136,7 @@ type LayoutSendaSectionsProps = {
   /** Si es true, el contenido interior usa `customWidthPercent` como ancho en vw; el fondo a ancho completo. */
   applyCustomWidth?: boolean | null
   customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
   textColor?: string | null
   boldTextColor?: string | null
   buttonBackgroundColor?: string | null
@@ -166,6 +174,7 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
     backgroundColor,
     applyCustomWidth,
     customWidthPercent,
+    customWidthPercentMobile,
     textColor,
     boldTextColor,
     buttonBackgroundColor,
@@ -463,6 +472,15 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
         })()
       : null
 
+  const lssCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(
+    applyCustomWidth,
+    customWidthPercentMobile,
+  )
+  const lssBreakoutCss =
+    lssCustomWidthVw != null && lssCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, lssCustomWidthVw, lssCustomWidthMobileVw)
+      : ''
+
   const renderSection = (section: Section, index: number) => {
     const icon = section.icon
     const iconImageSrc = icon ? getIconImageSrc(icon) : ''
@@ -555,6 +573,7 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
   return (
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
+      {lssBreakoutCss ? <style>{lssBreakoutCss}</style> : null}
       <section
         id={sanitizeAnchorId(anchorId, 'layout-senda-sections')}
         data-lss-font={styleId}
@@ -584,24 +603,15 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
               'relative min-w-0',
               lssCustomWidthVw == null ? 'mx-auto w-full' : 'box-border w-full max-w-none px-0 overflow-x-visible',
             )}
+            {...(lssCustomWidthVw != null && lssCustomWidthMobileVw != null
+              ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+              : {})}
             style={
-              lssCustomWidthVw != null
-                ? lssCustomWidthVw >= 100
-                  ? {
-                      width: '100vw',
-                      maxWidth: 'none',
-                      marginLeft: 'calc(50% - 50vw)',
-                      marginRight: 'calc(50% - 50vw)',
-                      boxSizing: 'border-box' as const,
-                    }
-                  : {
-                      width: `${lssCustomWidthVw}vw`,
-                      maxWidth: '100vw',
-                      marginLeft: `calc(50% - ${lssCustomWidthVw}vw / 2)`,
-                      marginRight: `calc(50% - ${lssCustomWidthVw}vw / 2)`,
-                      boxSizing: 'border-box' as const,
-                    }
-                : undefined
+              lssCustomWidthVw == null
+                ? undefined
+                : lssCustomWidthMobileVw != null
+                  ? sendaBreakoutOnlyBoxSizing()
+                  : sendaCalcBreakoutInlineStyle(lssCustomWidthVw)
             }
           >
             <div className={lssCustomWidthVw == null ? 'container' : 'mx-auto w-full max-w-none'}>

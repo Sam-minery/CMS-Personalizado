@@ -11,6 +11,13 @@ import RichText from '@/components/RichText'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
   appendFontGroupHeadingMarginRulesResponsive,
@@ -94,6 +101,7 @@ type SendaCardsBlock = {
   /** Si es true, el contenido interior usa `customWidthPercent` como ancho en vw (fondo del bloque a ancho completo). */
   applyCustomWidth?: boolean | null
   customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
   boldTextColor?: string | null
   useFontGroup?: boolean | null
   fontGroup?: FontGroupData | number | null
@@ -372,6 +380,7 @@ export const SendaCardsBlockComponent: React.FC<
   backgroundColor,
   applyCustomWidth,
   customWidthPercent,
+  customWidthPercentMobile,
   boldTextColor,
   useFontGroup,
   fontGroup,
@@ -871,6 +880,15 @@ export const SendaCardsBlockComponent: React.FC<
         })()
       : null
 
+  const cardsCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(
+    applyCustomWidth,
+    customWidthPercentMobile,
+  )
+  const cardsBreakoutCss =
+    cardsCustomWidthVw != null && cardsCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, cardsCustomWidthVw, cardsCustomWidthMobileVw)
+      : ''
+
   /** Reglas extra: el ancho en vw manda sobre paddings/márgenes laterales del layout interno. */
   const cardsCustomVwCss =
     cardsCustomWidthVw != null
@@ -913,6 +931,7 @@ export const SendaCardsBlockComponent: React.FC<
   return (
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
+      {cardsBreakoutCss ? <style>{cardsBreakoutCss}</style> : null}
       <div
         id={sanitizeAnchorId(anchorId, 'cards-senda')}
         data-cards-senda-font={styleId}
@@ -951,24 +970,15 @@ export const SendaCardsBlockComponent: React.FC<
               ? cn('mx-auto w-full px-4 lg:px-6', !disableInnerContainer && 'max-w-7xl')
               : 'box-border w-full max-w-none min-w-0 px-0',
           )}
+          {...(cardsCustomWidthVw != null && cardsCustomWidthMobileVw != null
+            ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+            : {})}
           style={
-            cardsCustomWidthVw != null
-              ? cardsCustomWidthVw >= 100
-                ? {
-                    width: '100vw',
-                    maxWidth: 'none',
-                    marginLeft: 'calc(50% - 50vw)',
-                    marginRight: 'calc(50% - 50vw)',
-                    boxSizing: 'border-box' as const,
-                  }
-                : {
-                    width: `${cardsCustomWidthVw}vw`,
-                    maxWidth: '100vw',
-                    marginLeft: `calc(50% - ${cardsCustomWidthVw}vw / 2)`,
-                    marginRight: `calc(50% - ${cardsCustomWidthVw}vw / 2)`,
-                    boxSizing: 'border-box' as const,
-                  }
-              : undefined
+            cardsCustomWidthVw == null
+              ? undefined
+              : cardsCustomWidthMobileVw != null
+                ? sendaBreakoutOnlyBoxSizing()
+                : sendaCalcBreakoutInlineStyle(cardsCustomWidthVw)
           }
         >
           <style

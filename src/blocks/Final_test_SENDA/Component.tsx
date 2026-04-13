@@ -10,6 +10,13 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { cn } from '@/utilities/ui'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { sendaBlockButtonNativeClassName } from '@/utilities/sendaBlockButtonClasses'
 import { appendSendaInjectedButtonBorderRadius } from '@/utilities/sendaInjectedButtonRadius'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
@@ -167,6 +174,7 @@ export type FinalTestSendaBlockProps = {
   customFontName?: string | null
   applyCustomWidth?: boolean | null
   customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
 }
 
 export const FinalTestSendaBlock: React.FC<FinalTestSendaBlockProps> = (props) => {
@@ -190,6 +198,7 @@ export const FinalTestSendaBlock: React.FC<FinalTestSendaBlockProps> = (props) =
     customFontName,
     applyCustomWidth,
     customWidthPercent,
+    customWidthPercentMobile,
   } = props
 
   const uniqueId = React.useId().replace(/:/g, '-')
@@ -481,6 +490,12 @@ export const FinalTestSendaBlock: React.FC<FinalTestSendaBlockProps> = (props) =
         })()
       : null
 
+  const ftsCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(applyCustomWidth, customWidthPercentMobile)
+  const ftsBreakoutCss =
+    ftsCustomWidthVw != null && ftsCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, ftsCustomWidthVw, ftsCustomWidthMobileVw)
+      : ''
+
   const mainImageUrl = getMainImageUrl(mainImage)
   const mainImageAlt = getMainImageAlt(mainImage)
   const linkData = button?.link
@@ -594,6 +609,7 @@ export const FinalTestSendaBlock: React.FC<FinalTestSendaBlockProps> = (props) =
   return (
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
+      {ftsBreakoutCss ? <style>{ftsBreakoutCss}</style> : null}
       <section
         id={sanitizeAnchorId(anchorId, 'final-test-senda')}
         data-final-test-senda={styleId}
@@ -620,22 +636,13 @@ export const FinalTestSendaBlock: React.FC<FinalTestSendaBlockProps> = (props) =
           <div className="relative z-[1] w-full min-w-0 overflow-x-visible pb-16 pt-20 md:pb-24 md:pt-28 lg:pb-28 lg:pt-32">
             <div
               className="relative box-border min-w-0 w-full max-w-none overflow-x-visible px-0"
+              {...(ftsCustomWidthVw != null && ftsCustomWidthMobileVw != null
+                ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+                : {})}
               style={
-                ftsCustomWidthVw >= 100
-                  ? {
-                      width: '100dvw',
-                      maxWidth: 'none',
-                      marginLeft: 'calc(50% - 50dvw)',
-                      marginRight: 'calc(50% - 50dvw)',
-                      boxSizing: 'border-box' as const,
-                    }
-                  : {
-                      width: `${ftsCustomWidthVw}vw`,
-                      maxWidth: '100vw',
-                      marginLeft: `calc(50% - ${ftsCustomWidthVw}vw / 2)`,
-                      marginRight: `calc(50% - ${ftsCustomWidthVw}vw / 2)`,
-                      boxSizing: 'border-box' as const,
-                    }
+                ftsCustomWidthMobileVw != null
+                  ? sendaBreakoutOnlyBoxSizing()
+                  : sendaCalcBreakoutInlineStyle(ftsCustomWidthVw)
               }
             >
               {ftsInnerBlock}

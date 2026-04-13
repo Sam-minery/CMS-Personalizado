@@ -12,6 +12,13 @@ import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
@@ -86,6 +93,7 @@ type FAQSendaProps = {
   backgroundColor?: string | null
   applyCustomWidth?: boolean | null
   customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
   questionsSectionBackgroundColor?: string | null
   questionsSectionBorderColor?: string | null
   textColor?: string | null
@@ -106,6 +114,7 @@ export const FAQSendaBlock: React.FC<FAQSendaProps> = (props) => {
     backgroundColor,
     applyCustomWidth,
     customWidthPercent,
+    customWidthPercentMobile,
     questionsSectionBackgroundColor,
     questionsSectionBorderColor,
     textColor,
@@ -390,6 +399,12 @@ export const FAQSendaBlock: React.FC<FAQSendaProps> = (props) => {
         })()
       : null
 
+  const fsCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(applyCustomWidth, customWidthPercentMobile)
+  const fsBreakoutCss =
+    fsCustomWidthVw != null && fsCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, fsCustomWidthVw, fsCustomWidthMobileVw)
+      : ''
+
   const innerContent = (
     <div
       className={cn(
@@ -480,6 +495,7 @@ export const FAQSendaBlock: React.FC<FAQSendaProps> = (props) => {
   return (
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
+      {fsBreakoutCss ? <style>{fsBreakoutCss}</style> : null}
       <section
         id={sanitizeAnchorId(anchorId, 'faq-senda')}
         data-fs-font={styleId}
@@ -502,22 +518,13 @@ export const FAQSendaBlock: React.FC<FAQSendaProps> = (props) => {
           <div className={cn('relative z-[1] min-w-0 overflow-x-visible py-16 md:py-24 lg:py-28')}>
             <div
               className="relative box-border min-w-0 w-full max-w-none overflow-x-visible px-0"
+              {...(fsCustomWidthVw != null && fsCustomWidthMobileVw != null
+                ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+                : {})}
               style={
-                fsCustomWidthVw >= 100
-                  ? {
-                      width: '100vw',
-                      maxWidth: 'none',
-                      marginLeft: 'calc(50% - 50vw)',
-                      marginRight: 'calc(50% - 50vw)',
-                      boxSizing: 'border-box' as const,
-                    }
-                  : {
-                      width: `${fsCustomWidthVw}vw`,
-                      maxWidth: '100vw',
-                      marginLeft: `calc(50% - ${fsCustomWidthVw}vw / 2)`,
-                      marginRight: `calc(50% - ${fsCustomWidthVw}vw / 2)`,
-                      boxSizing: 'border-box' as const,
-                    }
+                fsCustomWidthMobileVw != null
+                  ? sendaBreakoutOnlyBoxSizing()
+                  : sendaCalcBreakoutInlineStyle(fsCustomWidthVw)
               }
             >
               {innerContent}

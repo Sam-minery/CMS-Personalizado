@@ -132,6 +132,18 @@ export const FAQSendaBlock: Block = {
       },
     },
     {
+      name: 'customWidthPercentMobile',
+      type: 'number',
+      label: 'Ancho personalizado (dispositivos móvil)',
+      min: 0,
+      max: 100,
+      admin: {
+        condition: (_, siblingData) => siblingData?.applyCustomWidth === true,
+        description:
+          'Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.',
+      },
+    },
+    {
       name: 'questionsSectionBackgroundColor',
       type: 'text',
       label: 'Color de fondo de la sección de preguntas y respuestas',

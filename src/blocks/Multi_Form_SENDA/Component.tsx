@@ -8,6 +8,13 @@ import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { cn } from '@/utilities/ui'
 import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
+import {
   sendaBlockButtonNativeClassName,
   sendaBlockButtonPrimitiveClassName,
 } from '@/utilities/sendaBlockButtonClasses'
@@ -109,6 +116,7 @@ type Props = {
   backgroundColor?: string | null
   applyCustomWidth?: boolean | null
   customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
   backgroundImage?: BackgroundImageGroup | null
   formBackgroundColor?: string | null
   textColor?: string | null
@@ -188,6 +196,7 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
     backgroundColor,
     applyCustomWidth,
     customWidthPercent,
+    customWidthPercentMobile,
     backgroundImage,
     formBackgroundColor = '#ffffff',
     textColor,
@@ -520,6 +529,12 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
         })()
       : null
 
+  const mfCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(applyCustomWidth, customWidthPercentMobile)
+  const mfBreakoutCss =
+    mfCustomWidthVw != null && mfCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, mfCustomWidthVw, mfCustomWidthMobileVw)
+      : ''
+
   const mfSectionBgStyle: React.CSSProperties = {
     ...(backgroundColor != null && backgroundColor !== ''
       ? { backgroundColor: backgroundColor as React.CSSProperties['backgroundColor'] }
@@ -819,6 +834,7 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
   return (
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
+      {mfBreakoutCss ? <style>{mfBreakoutCss}</style> : null}
       <section
         id={sanitizeAnchorId(anchorId, 'multi-form-senda')}
         data-mf-senda-font={styleId}
@@ -846,22 +862,13 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
           <div className="relative z-[1] w-full overflow-x-visible pt-24 pb-16 md:pt-28 md:pb-20 lg:pt-32 lg:pb-24">
             <div
               className="relative box-border min-w-0 w-full max-w-none overflow-x-visible px-0"
+              {...(mfCustomWidthVw != null && mfCustomWidthMobileVw != null
+                ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+                : {})}
               style={
-                mfCustomWidthVw >= 100
-                  ? {
-                      width: '100dvw',
-                      maxWidth: 'none',
-                      marginLeft: 'calc(50% - 50dvw)',
-                      marginRight: 'calc(50% - 50dvw)',
-                      boxSizing: 'border-box' as const,
-                    }
-                  : {
-                      width: `${mfCustomWidthVw}vw`,
-                      maxWidth: '100vw',
-                      marginLeft: `calc(50% - ${mfCustomWidthVw}vw / 2)`,
-                      marginRight: `calc(50% - ${mfCustomWidthVw}vw / 2)`,
-                      boxSizing: 'border-box' as const,
-                    }
+                mfCustomWidthMobileVw != null
+                  ? sendaBreakoutOnlyBoxSizing()
+                  : sendaCalcBreakoutInlineStyle(mfCustomWidthVw)
               }
             >
               {mfInnerBlock}

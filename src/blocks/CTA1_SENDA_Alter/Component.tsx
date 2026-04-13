@@ -8,6 +8,13 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
 import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
+import {
   sendaBlockButtonNativeClassName,
   sendaBlockButtonNativeSymmetricClassName,
 } from '@/utilities/sendaBlockButtonClasses'
@@ -165,6 +172,7 @@ export type CTA1SendaAlterBlockProps = {
   /** Si es true, el contenido interior usa `customWidthPercent` como ancho en vw (fondo del bloque a ancho completo). */
   applyCustomWidth?: boolean | null
   customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
 }
 
 function sanitizeAnchorId(value: string | null | undefined): string {
@@ -252,6 +260,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
   customFontName,
   applyCustomWidth,
   customWidthPercent,
+  customWidthPercentMobile,
 }) => {
   const getYouTubeVideoId = (url: string): string => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
@@ -591,6 +600,15 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
         })()
       : null
 
+  const cta1CustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(
+    applyCustomWidth,
+    customWidthPercentMobile,
+  )
+  const cta1BreakoutCss =
+    cta1CustomWidthVw != null && cta1CustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, cta1CustomWidthVw, cta1CustomWidthMobileVw)
+      : ''
+
   const cta1SectionBtnClass = cn(
     sendaBlockButtonNativeClassName,
     'font-medium border border-white/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
@@ -600,6 +618,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
   return (
     <>
       {combinedStyles ? <style>{combinedStyles}</style> : null}
+      {cta1BreakoutCss ? <style>{cta1BreakoutCss}</style> : null}
       <div data-cta1-senda-font={styleId}>
       <section
         id={sectionId}
@@ -619,16 +638,15 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
             cta1CustomWidthVw == null && 'w-full max-w-[929px] mx-auto',
             cta1CustomWidthVw != null && 'box-border w-full max-w-none min-w-0',
           )}
+          {...(cta1CustomWidthVw != null && cta1CustomWidthMobileVw != null
+            ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+            : {})}
           style={
-            cta1CustomWidthVw != null
-              ? {
-                  width: `${cta1CustomWidthVw}vw`,
-                  maxWidth: '100vw',
-                  marginLeft: `calc(50% - ${cta1CustomWidthVw}vw / 2)`,
-                  marginRight: `calc(50% - ${cta1CustomWidthVw}vw / 2)`,
-                  boxSizing: 'border-box' as const,
-                }
-              : undefined
+            cta1CustomWidthVw == null
+              ? undefined
+              : cta1CustomWidthMobileVw != null
+                ? sendaBreakoutOnlyBoxSizing()
+                : sendaCalcBreakoutInlineStyle(cta1CustomWidthVw)
           }
         >
           {/* Cabecera: título y descripción en un único richText — 929×120 */}
@@ -648,7 +666,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
               ],
             )}
             style={{
-              ...(cta1CustomWidthVw != null && cta1CustomWidthVw >= 100
+              ...(cta1CustomWidthVw != null
                 ? { width: '100%', maxWidth: '100%' }
                 : { maxWidth: 929, width: '100%' }),
               ...(textColor ? { color: textColor } : {}),
@@ -680,9 +698,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
             style={
               cta1CustomWidthVw == null
                 ? { maxWidth: 920 }
-                : cta1CustomWidthVw >= 100
-                  ? { maxWidth: '100%', width: '100%' }
-                  : { maxWidth: 920 }
+                : { maxWidth: '100%', width: '100%' }
             }
           >
             {/* Sección Videollamada — 436×318 */}
@@ -690,7 +706,8 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
               className={cn(
                 'flex flex-col items-center justify-center py-6 px-6 pb-10 md:pb-6 border-b-[3px] border-white/30 min-h-[318px] w-full max-w-[436px] mx-auto',
                 cta1CustomWidthVw == null && 'md:border-b-0 md:border-r-[3px]',
-                cta1CustomWidthVw != null && 'relative z-[1] md:flex-1 md:min-w-0 md:border-b-0 md:border-r-0',
+                cta1CustomWidthVw != null &&
+                  'relative z-[1] max-w-none min-w-0 md:flex-1 md:border-b-0 md:border-r-0',
               )}
             >
               <SectionIcon iconGroup={videocallSection?.icon} />
@@ -758,7 +775,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
             <div
               className={cn(
                 'flex flex-col items-center justify-center py-6 px-6 min-h-[318px] w-full max-w-[436px] mx-auto',
-                cta1CustomWidthVw != null && 'relative z-[1] md:flex-1 md:min-w-0',
+                cta1CustomWidthVw != null && 'relative z-[1] max-w-none min-w-0 md:flex-1',
               )}
             >
               <SectionIcon iconGroup={phoneSection?.icon} />

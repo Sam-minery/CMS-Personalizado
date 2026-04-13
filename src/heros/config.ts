@@ -307,6 +307,19 @@ export const hero: Field = {
       },
     },
     {
+      name: 'heroSendaCustomWidthPercentMobile',
+      type: 'number',
+      label: 'Ancho personalizado (dispositivos móvil)',
+      min: 0,
+      max: 100,
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData?.type === 'heroSenda' && siblingData?.heroSendaApplyCustomWidth === true,
+        description:
+          'Opcional. Si lo dejas vacío, en móvil se usa el mismo ancho que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px el hero usará ese ancho; desde tablet y desktop sigue el campo principal.',
+      },
+    },
+    {
       name: 'heroSendaLeftButtons',
       type: 'array',
       dbName: 'hs_left_btns',

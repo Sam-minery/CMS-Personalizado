@@ -7,6 +7,13 @@ import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
   appendFontGroupHeadingMarginRulesResponsive,
@@ -179,6 +186,8 @@ type PricingSendaAlterProps = {
   backgroundColor?: string | null
   applyCustomWidth?: boolean | null
   customWidthPercent?: number | null
+  /** Opcional. Si no se define, en móvil se usa customWidthPercent. */
+  customWidthPercentMobile?: number | null
   textColor?: string | null
   boldTextColor?: string | null
   /** Color base del degradado 3D en tarjetas (sustituye negro fijo). */
@@ -210,6 +219,7 @@ export const PricingSendaAlterBlock: React.FC<PricingSendaAlterProps> = (props) 
     backgroundColor,
     applyCustomWidth,
     customWidthPercent,
+    customWidthPercentMobile,
     textColor,
     boldTextColor,
     useFontGroup,
@@ -512,7 +522,7 @@ export const PricingSendaAlterBlock: React.FC<PricingSendaAlterProps> = (props) 
   const combinedStyles = buildStyles()
   const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined
 
-  /** Ancho del contenido en % del viewport (solo si el checkbox está activo). */
+  /** Ancho del contenido en % del viewport (solo si el checkbox está activo). Tablet/desktop (≥768px). */
   const psaCustomWidthVw =
     applyCustomWidth === true
       ? (() => {
@@ -522,6 +532,13 @@ export const PricingSendaAlterBlock: React.FC<PricingSendaAlterProps> = (props) 
           return clamped <= 0 ? 100 : clamped
         })()
       : null
+
+  const psaCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(applyCustomWidth, customWidthPercentMobile)
+
+  const psaBreakoutResponsiveCss =
+    psaCustomWidthVw != null && psaCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, psaCustomWidthVw, psaCustomWidthMobileVw)
+      : ''
 
   const psaCustomVwCss =
     psaCustomWidthVw != null
@@ -643,6 +660,7 @@ export const PricingSendaAlterBlock: React.FC<PricingSendaAlterProps> = (props) 
       {planBoldStyles && <style>{planBoldStyles}</style>}
       {planDividerStyles && <style>{planDividerStyles}</style>}
       {psaCustomVwCss ? <style>{psaCustomVwCss}</style> : null}
+      {psaBreakoutResponsiveCss ? <style>{psaBreakoutResponsiveCss}</style> : null}
       <section
         id={sanitizeAnchorId(anchorId, 'pricing-senda-alt')}
         data-ps-font={styleId}
@@ -657,7 +675,7 @@ export const PricingSendaAlterBlock: React.FC<PricingSendaAlterProps> = (props) 
         {psaCustomWidthVw != null && backgroundColor ? (
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 left-1/2 -z-0 w-screen -translate-x-1/2 max-w-none"
+            className="pointer-events-none absolute inset-0 left-1/2 -z-0 w-screen max-w-none -translate-x-1/2"
             style={{ backgroundColor }}
           />
         ) : null}
@@ -672,23 +690,14 @@ export const PricingSendaAlterBlock: React.FC<PricingSendaAlterProps> = (props) 
               'relative min-w-0',
               psaCustomWidthVw == null ? 'mx-auto w-full' : 'box-border w-full max-w-none px-0 overflow-x-visible',
             )}
+            {...(psaCustomWidthVw != null && psaCustomWidthMobileVw != null
+              ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+              : {})}
             style={
               psaCustomWidthVw != null
-                ? psaCustomWidthVw >= 100
-                  ? {
-                      width: '100vw',
-                      maxWidth: 'none',
-                      marginLeft: 'calc(50% - 50vw)',
-                      marginRight: 'calc(50% - 50vw)',
-                      boxSizing: 'border-box' as const,
-                    }
-                  : {
-                      width: `${psaCustomWidthVw}vw`,
-                      maxWidth: '100vw',
-                      marginLeft: `calc(50% - ${psaCustomWidthVw}vw / 2)`,
-                      marginRight: `calc(50% - ${psaCustomWidthVw}vw / 2)`,
-                      boxSizing: 'border-box' as const,
-                    }
+                ? psaCustomWidthMobileVw != null
+                  ? sendaBreakoutOnlyBoxSizing()
+                  : sendaCalcBreakoutInlineStyle(psaCustomWidthVw)
                 : undefined
             }
           >

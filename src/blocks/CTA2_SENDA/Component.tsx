@@ -8,6 +8,13 @@ import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { sendaBlockButtonPrimitiveClassName } from '@/utilities/sendaBlockButtonClasses'
 import { appendSendaInjectedButtonBorderRadius } from '@/utilities/sendaInjectedButtonRadius'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
@@ -116,6 +123,7 @@ type Props = {
   backgroundColor?: string | null
   applyCustomWidth?: boolean | null
   customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
   textColor?: string | null
   boldTextColor?: string | null
   buttonBackgroundColor?: string | null
@@ -138,6 +146,7 @@ export const CTA2SendaBlock: React.FC<Props> = (props) => {
     backgroundColor,
     applyCustomWidth,
     customWidthPercent,
+    customWidthPercentMobile,
     textColor,
     boldTextColor,
     buttonBackgroundColor,
@@ -440,6 +449,12 @@ export const CTA2SendaBlock: React.FC<Props> = (props) => {
         })()
       : null
 
+  const cta2CustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(applyCustomWidth, customWidthPercentMobile)
+  const cta2BreakoutCss =
+    cta2CustomWidthVw != null && cta2CustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, cta2CustomWidthVw, cta2CustomWidthMobileVw)
+      : ''
+
   const innerContent = (
     <div
       className={cn(
@@ -532,6 +547,7 @@ export const CTA2SendaBlock: React.FC<Props> = (props) => {
   return (
     <>
       {combinedStyles && <style>{combinedStyles}</style>}
+      {cta2BreakoutCss ? <style>{cta2BreakoutCss}</style> : null}
       <section
         id={anchorId?.trim() || undefined}
         data-cta2-senda-font={styleId}
@@ -554,22 +570,13 @@ export const CTA2SendaBlock: React.FC<Props> = (props) => {
           <div className="relative z-[1] min-w-0 overflow-x-visible pt-8 pb-0 md:pt-14 lg:pt-16 md:pb-0">
             <div
               className="relative box-border min-w-0 w-full max-w-none overflow-x-visible px-0"
+              {...(cta2CustomWidthVw != null && cta2CustomWidthMobileVw != null
+                ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+                : {})}
               style={
-                cta2CustomWidthVw >= 100
-                  ? {
-                      width: '100vw',
-                      maxWidth: 'none',
-                      marginLeft: 'calc(50% - 50vw)',
-                      marginRight: 'calc(50% - 50vw)',
-                      boxSizing: 'border-box' as const,
-                    }
-                  : {
-                      width: `${cta2CustomWidthVw}vw`,
-                      maxWidth: '100vw',
-                      marginLeft: `calc(50% - ${cta2CustomWidthVw}vw / 2)`,
-                      marginRight: `calc(50% - ${cta2CustomWidthVw}vw / 2)`,
-                      boxSizing: 'border-box' as const,
-                    }
+                cta2CustomWidthMobileVw != null
+                  ? sendaBreakoutOnlyBoxSizing()
+                  : sendaCalcBreakoutInlineStyle(cta2CustomWidthVw)
               }
             >
               {innerContent}

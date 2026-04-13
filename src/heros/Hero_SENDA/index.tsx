@@ -11,6 +11,13 @@ import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { sendaBlockButtonPrimitiveClassName } from '@/utilities/sendaBlockButtonClasses'
 import { appendSendaInjectedButtonBorderRadius } from '@/utilities/sendaInjectedButtonRadius'
 import { cn } from '@/utilities/ui'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCenteredVwBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCenteredVwBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
   appendFontGroupHeadingMarginRulesResponsive,
@@ -141,6 +148,7 @@ type Props = {
   heroSendaCustomFontName?: string | null
   heroSendaApplyCustomWidth?: boolean | null
   heroSendaCustomWidthPercent?: number | null
+  heroSendaCustomWidthPercentMobile?: number | null
 }
 
 export const Hero_SENDA: React.FC<Props> = (props) => {
@@ -167,6 +175,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
     heroSendaCustomFontName,
     heroSendaApplyCustomWidth,
     heroSendaCustomWidthPercent,
+    heroSendaCustomWidthPercentMobile,
   } = props
 
   const styleId = 'hero-senda'
@@ -475,6 +484,20 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
         })()
       : null
 
+  const heroSendaCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(
+    heroSendaApplyCustomWidth,
+    heroSendaCustomWidthPercentMobile,
+  )
+  const heroBreakoutId = `${styleId}-breakout`
+  const heroBreakoutCss =
+    heroSendaCustomWidthVw != null && heroSendaCustomWidthMobileVw != null
+      ? buildSendaCenteredVwBreakoutResponsiveCss(
+          heroBreakoutId,
+          heroSendaCustomWidthVw,
+          heroSendaCustomWidthMobileVw,
+        )
+      : ''
+
   const imageSrc =
     heroSendaImage?.useMedia && heroSendaImage?.media && typeof heroSendaImage.media === 'object'
       ? heroSendaImage.media.url || ''
@@ -577,6 +600,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
       )}
       {combinedStyles && <style>{combinedStyles}</style>}
       {customImgBoxCss ? <style>{customImgBoxCss}</style> : null}
+      {heroBreakoutCss ? <style>{heroBreakoutCss}</style> : null}
       <section
         id="hero-senda"
         data-hero-senda-font={styleId}
@@ -595,15 +619,14 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
             heroSendaCustomWidthVw != null && 'mx-auto box-border max-w-none',
             customDimsValid && 'overflow-visible',
           )}
+          {...(heroSendaCustomWidthVw != null && heroSendaCustomWidthMobileVw != null
+            ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: heroBreakoutId }
+            : {})}
           style={
             heroSendaCustomWidthVw != null
-              ? {
-                  width: `${heroSendaCustomWidthVw}vw`,
-                  maxWidth: '100%',
-                  marginLeft: 'auto',
-                  marginRight: 'auto',
-                  boxSizing: 'border-box',
-                }
+              ? heroSendaCustomWidthMobileVw != null
+                ? sendaBreakoutOnlyBoxSizing()
+                : sendaCenteredVwBreakoutInlineStyle(heroSendaCustomWidthVw)
               : undefined
           }
         >

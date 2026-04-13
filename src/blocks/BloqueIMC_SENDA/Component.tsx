@@ -6,6 +6,13 @@ import Image from 'next/image'
 import RichText from '@/components/RichText'
 import { CMSLink } from '@/components/Link'
 import { cn } from '@/utilities/ui'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { sendaBlockButtonNativeClassName } from '@/utilities/sendaBlockButtonClasses'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
@@ -124,6 +131,7 @@ export type BloqueIMCSendaBlockProps = {
   backgroundColor?: string | null
   applyCustomWidth?: boolean | null
   customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
   cardBackgroundColor?: string | null
   resultCardBackgroundColor?: string | null
   resultTextColor?: string | null
@@ -197,6 +205,7 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
   backgroundColor,
   applyCustomWidth,
   customWidthPercent,
+  customWidthPercentMobile,
   cardBackgroundColor,
   resultCardBackgroundColor,
   resultTextColor,
@@ -586,6 +595,24 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
         })()
       : null
 
+  const imcCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(
+    applyCustomWidth,
+    customWidthPercentMobile,
+  )
+  const imcBreakoutCss =
+    imcCustomWidthVw != null && imcCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, imcCustomWidthVw, imcCustomWidthMobileVw)
+      : ''
+
+  /** Capa de fondo a 100dvw si móvil o desktop piden ancho completo. */
+  const imcBgUsesFullViewportWidth =
+    imcCustomWidthVw != null &&
+    (imcCustomWidthVw >= 100 ||
+      (imcCustomWidthMobileVw != null && imcCustomWidthMobileVw >= 100))
+
+  /** Con ancho personalizado (cualquier %), sin capas `max-w-[327px|1100px]` ni `px-4` que anulen el vw. */
+  const imcCustomWidthLayout = imcCustomWidthVw != null
+
   const imcBlockBackgroundStyle: React.CSSProperties = {
     background: showResult || showHighBMI ? backgroundColor || '#f5f5f5' : defaultBackground,
     ...(backgroundImageUrl
@@ -610,9 +637,8 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
             <div
               className={cn(
                 'rounded-3xl flex flex-col items-start justify-center w-full min-h-[602px] p-6 box-border md:w-full md:min-h-[350px] md:h-[430px] md:py-12 md:px-0 md:gap-8 md:items-center',
-                imcCustomWidthVw != null && imcCustomWidthVw >= 100
-                  ? 'max-w-none md:max-w-none'
-                  : 'max-w-[327px] md:max-w-[1100px]',
+                imcCustomWidthLayout && 'max-w-none md:max-w-none',
+                !imcCustomWidthLayout && 'max-w-[327px] md:max-w-[1100px]',
               )}
               style={{
                 backgroundColor: defaultCardBackground,
@@ -732,15 +758,15 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
             <div
               className={cn(
                 'w-full mx-auto flex justify-center min-w-0',
-                imcCustomWidthVw != null && imcCustomWidthVw >= 100 ? 'max-w-none px-0' : 'max-w-[1100px] px-4 md:px-0',
+                imcCustomWidthLayout && 'max-w-none px-0 md:max-w-none',
+                !imcCustomWidthLayout && 'max-w-[1100px] px-4 md:px-0',
               )}
             >
               <div
                 className={cn(
                   'rounded-3xl flex items-center justify-center w-full min-h-[570px] p-6 box-border md:w-full md:h-[472px] md:min-h-[472px] md:p-10',
-                  imcCustomWidthVw != null && imcCustomWidthVw >= 100
-                    ? 'max-w-none md:max-w-none'
-                    : 'max-w-[327px] md:max-w-[1100px]',
+                  imcCustomWidthLayout && 'max-w-none md:max-w-none',
+                  !imcCustomWidthLayout && 'max-w-[327px] md:max-w-[1100px]',
                 )}
                 style={{ backgroundColor: defaultResultCardBackground, ...fontStyle }}
               >
@@ -849,15 +875,15 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                 <div
                   className={cn(
                     'w-full mx-auto flex justify-center min-w-0',
-                    imcCustomWidthVw != null && imcCustomWidthVw >= 100 ? 'max-w-none px-0' : 'max-w-[1100px] px-4 md:px-0',
+                    imcCustomWidthLayout && 'max-w-none px-0 md:max-w-none',
+                    !imcCustomWidthLayout && 'max-w-[1100px] px-4 md:px-0',
                   )}
                 >
                   <div
                     className={cn(
                       'rounded-3xl flex items-center justify-center w-full min-h-[200px] p-6 box-border md:w-full md:min-h-[200px] md:p-10',
-                      imcCustomWidthVw != null && imcCustomWidthVw >= 100
-                        ? 'max-w-none md:max-w-none'
-                        : 'max-w-[327px] md:max-w-[1100px]',
+                      imcCustomWidthLayout && 'max-w-none md:max-w-none',
+                      !imcCustomWidthLayout && 'max-w-[327px] md:max-w-[1100px]',
                     )}
                     style={{
                       backgroundColor: defaultHighBMICardBackground || '#f8f8f8',
@@ -900,15 +926,15 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
               <div
                 className={cn(
                   'w-full mx-auto flex justify-center min-w-0',
-                  imcCustomWidthVw != null && imcCustomWidthVw >= 100 ? 'max-w-none px-0' : 'max-w-[1100px] px-4 md:px-0',
+                  imcCustomWidthLayout && 'max-w-none px-0 md:max-w-none',
+                  !imcCustomWidthLayout && 'max-w-[1100px] px-4 md:px-0',
                 )}
               >
                 <div
                   className={cn(
                     'rounded-3xl flex items-center justify-center w-full min-h-0 p-6 pb-12 box-border md:w-full md:min-h-[472px] md:h-auto md:p-10',
-                    imcCustomWidthVw != null && imcCustomWidthVw >= 100
-                      ? 'max-w-none md:max-w-none'
-                      : 'max-w-[327px] md:max-w-[1100px]',
+                    imcCustomWidthLayout && 'max-w-none md:max-w-none',
+                    !imcCustomWidthLayout && 'max-w-[327px] md:max-w-[1100px]',
                   )}
                   style={{
                     backgroundColor: defaultHighBMICardBackground,
@@ -1038,6 +1064,7 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
   return (
     <>
       {combinedStyles ? <style>{combinedStyles}</style> : null}
+      {imcBreakoutCss ? <style>{imcBreakoutCss}</style> : null}
       <div
         id={sectionId}
         data-bloque-imc-senda-font={styleId}
@@ -1056,7 +1083,7 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
             aria-hidden
             className={cn(
               'pointer-events-none absolute inset-0 left-1/2 -z-0 max-w-none min-h-full -translate-x-1/2',
-              imcCustomWidthVw >= 100 ? 'w-[100dvw] min-w-[100dvw]' : 'w-screen',
+              imcBgUsesFullViewportWidth ? 'w-[100dvw] min-w-[100dvw]' : 'w-screen',
             )}
             style={imcBlockBackgroundStyle}
           />
@@ -1068,22 +1095,11 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
           >
             <div
               className={imcInnerClass}
+              {...(imcCustomWidthMobileVw != null ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId } : {})}
               style={
-                imcCustomWidthVw >= 100
-                  ? {
-                      width: '100dvw',
-                      maxWidth: 'none',
-                      marginLeft: 'calc(50% - 50dvw)',
-                      marginRight: 'calc(50% - 50dvw)',
-                      boxSizing: 'border-box' as const,
-                    }
-                  : {
-                      width: `${imcCustomWidthVw}vw`,
-                      maxWidth: '100vw',
-                      marginLeft: `calc(50% - ${imcCustomWidthVw}vw / 2)`,
-                      marginRight: `calc(50% - ${imcCustomWidthVw}vw / 2)`,
-                      boxSizing: 'border-box' as const,
-                    }
+                imcCustomWidthMobileVw != null
+                  ? sendaBreakoutOnlyBoxSizing()
+                  : sendaCalcBreakoutInlineStyle(imcCustomWidthVw)
               }
             >
               {imcChildren}

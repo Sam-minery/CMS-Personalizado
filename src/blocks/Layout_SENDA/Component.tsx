@@ -8,6 +8,13 @@ import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { appendSendaInjectedButtonBorderRadius } from '@/utilities/sendaInjectedButtonRadius'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import type { Media, Page, Post } from '@/payload-types'
@@ -127,6 +134,7 @@ type LayoutSendaProps = {
   /** Si es true, el contenido interior usa `customWidthPercent` como ancho en vw; el fondo a ancho completo. */
   applyCustomWidth?: boolean | null
   customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
   textColor?: string | null
   boldTextColor?: string | null
   buttonBackgroundColor?: string | null
@@ -176,6 +184,7 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
     backgroundColor,
     applyCustomWidth,
     customWidthPercent,
+    customWidthPercentMobile,
     textColor,
     boldTextColor,
     buttonBackgroundColor,
@@ -495,11 +504,20 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
         })()
       : null
 
+  const layoutCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(
+    applyCustomWidth,
+    customWidthPercentMobile,
+  )
+  const layoutBreakoutCss =
+    layoutCustomWidthVw != null && layoutCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, layoutCustomWidthVw, layoutCustomWidthMobileVw)
+      : ''
+
   /** Sin invertir: móvil imagen arriba; desktop texto izq / imagen dcha. Invertido: móvil imagen arriba; desktop imagen izq / texto dcha. */
   const textContainerClass = invertLayout ? 'order-2 lg:order-2' : 'order-2 lg:order-1'
   const imageContainerClass = invertLayout ? 'order-1 lg:order-1' : 'order-1 lg:order-2'
 
-  const allBlockStyles = [combinedStyles, viewportImageCss].filter(Boolean).join('\n')
+  const allBlockStyles = [combinedStyles, viewportImageCss, layoutBreakoutCss].filter(Boolean).join('\n')
 
   return (
     <>
@@ -532,24 +550,15 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
               'relative min-w-0',
               layoutCustomWidthVw == null ? 'mx-auto w-full' : 'box-border w-full max-w-none px-0 overflow-x-visible',
             )}
+            {...(layoutCustomWidthVw != null && layoutCustomWidthMobileVw != null
+              ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+              : {})}
             style={
-              layoutCustomWidthVw != null
-                ? layoutCustomWidthVw >= 100
-                  ? {
-                      width: '100vw',
-                      maxWidth: 'none',
-                      marginLeft: 'calc(50% - 50vw)',
-                      marginRight: 'calc(50% - 50vw)',
-                      boxSizing: 'border-box' as const,
-                    }
-                  : {
-                      width: `${layoutCustomWidthVw}vw`,
-                      maxWidth: '100vw',
-                      marginLeft: `calc(50% - ${layoutCustomWidthVw}vw / 2)`,
-                      marginRight: `calc(50% - ${layoutCustomWidthVw}vw / 2)`,
-                      boxSizing: 'border-box' as const,
-                    }
-                : undefined
+              layoutCustomWidthVw == null
+                ? undefined
+                : layoutCustomWidthMobileVw != null
+                  ? sendaBreakoutOnlyBoxSizing()
+                  : sendaCalcBreakoutInlineStyle(layoutCustomWidthVw)
             }
           >
             <div className={layoutCustomWidthVw == null ? 'container' : 'mx-auto w-full max-w-none'}>

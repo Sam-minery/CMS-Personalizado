@@ -259,6 +259,10 @@ export interface Page {
      */
     heroSendaCustomWidthPercent?: number | null;
     /**
+     * Opcional. Si lo dejas vacío, en móvil se usa el mismo ancho que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px el hero usará ese ancho; desde tablet y desktop sigue el campo principal.
+     */
+    heroSendaCustomWidthPercentMobile?: number | null;
+    /**
      * Dos botones debajo del texto (izquierda). Permite título, enlace, variante, tamaño e icono SVG.
      */
     heroSendaLeftButtons?:
@@ -1393,6 +1397,10 @@ export interface CTA1SendaAlterBlock {
    */
   customWidthPercent?: number | null;
   /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
+  /**
    * Tipografía, tamaños e interlineados del Font Group se aplican a todos los RichText del bloque. Los textos de los botones de sección y del botón del popup usan el tamaño de “texto normal” (body) del grupo.
    */
   useFontGroup?: boolean | null;
@@ -1490,6 +1498,10 @@ export interface CTA2SendaBlock {
    * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
    */
   customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   textColor?: string | null;
   boldTextColor?: string | null;
   /**
@@ -1575,6 +1587,10 @@ export interface CardsSendaBlock {
    * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
    */
   customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   boldTextColor?: string | null;
   /**
    * Activa para elegir un grupo (Font Groups) en lugar de una sola fuente. Los tamaños e interlineados del grupo se aplican a todos los RichText del bloque.
@@ -1901,6 +1917,10 @@ export interface MultiFormSendaBlock {
    */
   customWidthPercent?: number | null;
   /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
+  /**
    * Opcional. Si se define, puede usarse en lugar del color de fondo. Media subida o URL externa.
    */
   backgroundImage?: {
@@ -2074,6 +2094,10 @@ export interface LayoutSendaBlock {
    * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
    */
   customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   textColor?: string | null;
   boldTextColor?: string | null;
   /**
@@ -2233,6 +2257,10 @@ export interface LayoutSendaSectionsBlock {
    * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
    */
   customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   textColor?: string | null;
   boldTextColor?: string | null;
   /**
@@ -2559,6 +2587,10 @@ export interface PricingSendaAlterBlock {
    * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
    */
   customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   textColor?: string | null;
   boldTextColor?: string | null;
   /**
@@ -2675,6 +2707,10 @@ export interface FAQSendaBlock {
    * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
    */
   customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   questionsSectionBackgroundColor?: string | null;
   questionsSectionBorderColor?: string | null;
   textColor?: string | null;
@@ -2756,6 +2792,10 @@ export interface TestimonialsSendaBlock {
    * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
    */
   customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   /**
    * Tipografía y tamaños del Font Group se aplican al título del bloque y al contenido de cada tarjeta (cita y nombre/profesión).
    */
@@ -3124,6 +3164,10 @@ export interface BloqueIMCSendaBlock {
    */
   customWidthPercent?: number | null;
   /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
+  /**
    * Hex, rgb, rgba o nombre.
    */
   cardBackgroundColor?: string | null;
@@ -3214,6 +3258,10 @@ export interface AppSendaBlock {
    * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
    */
   customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   /**
    * Color de la tarjeta interior. Nombre CSS (white, gray) o valor (#ffffff, rgb(255,255,255)).
    */
@@ -3397,6 +3445,10 @@ export interface FinalTestSendaBlock {
    * 0–100. Ej.: 100 = borde a borde sin márgenes laterales extra del contenedor; valores menores centran el bloque en ese ancho.
    */
   customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   /**
    * Opcional. Si se define, se muestra como fondo de la sección.
    */
@@ -4050,6 +4102,7 @@ export interface PagesSelect<T extends boolean = true> {
             };
         heroSendaApplyCustomWidth?: T;
         heroSendaCustomWidthPercent?: T;
+        heroSendaCustomWidthPercentMobile?: T;
         heroSendaLeftButtons?:
           | T
           | {
@@ -4354,6 +4407,7 @@ export interface CTA1SendaAlterBlockSelect<T extends boolean = true> {
   gradientDirection?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   useFontGroup?: T;
   fontGroup?: T;
   fontFamily?: T;
@@ -4392,6 +4446,7 @@ export interface CTA2SendaBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   textColor?: T;
   boldTextColor?: T;
   useFontGroup?: T;
@@ -4417,6 +4472,7 @@ export interface CardsSendaBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   boldTextColor?: T;
   useFontGroup?: T;
   fontGroup?: T;
@@ -4499,6 +4555,7 @@ export interface MultiFormSendaBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   backgroundImage?:
     | T
     | {
@@ -4575,6 +4632,7 @@ export interface LayoutSendaBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   textColor?: T;
   boldTextColor?: T;
   useFontGroup?: T;
@@ -4638,6 +4696,7 @@ export interface LayoutSendaSectionsBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   textColor?: T;
   boldTextColor?: T;
   useFontGroup?: T;
@@ -4766,6 +4825,7 @@ export interface PricingSendaAlterBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   textColor?: T;
   boldTextColor?: T;
   planGradientColor?: T;
@@ -4797,6 +4857,7 @@ export interface FAQSendaBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   questionsSectionBackgroundColor?: T;
   questionsSectionBorderColor?: T;
   textColor?: T;
@@ -4821,6 +4882,7 @@ export interface TestimonialsSendaBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   useFontGroup?: T;
   fontGroup?: T;
   fontFamily?: T;
@@ -4921,6 +4983,7 @@ export interface BloqueIMCSendaBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   cardBackgroundColor?: T;
   resultCardBackgroundColor?: T;
   resultTextColor?: T;
@@ -4953,6 +5016,7 @@ export interface AppSendaBlockSelect<T extends boolean = true> {
   backgroundColor?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   cardBackgroundColor?: T;
   contentColor?: T;
   boldTextColor?: T;
@@ -5009,6 +5073,7 @@ export interface FinalTestSendaBlockSelect<T extends boolean = true> {
   anchorId?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   backgroundImage?:
     | T
     | {
