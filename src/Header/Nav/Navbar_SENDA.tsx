@@ -98,9 +98,9 @@ function normalizeNavbarFontGroup(raw: unknown): NavbarFontGroup | null {
 
 /**
  * Texto de enlaces/botones: clase body del font group + fontFamily inline si aplica.
- * `layoutStableBold`: reserva el ancho del glifo en semibold (capa invisible) para que al activar/hover
- * el navbar no crezca unos píxeles al pasar de normal → semibold.
- * `navLinkSemiboldHover`: el padre debe llevar `group`; en hover el texto pasa a semibold.
+ * `layoutStableBold`: reserva el ancho del glifo en medium (capa invisible) para que al activar/hover
+ * el navbar no crezca unos píxeles al pasar de normal → medium (500).
+ * `navLinkMediumHover`: el padre debe llevar `group`; en hover el texto pasa a medium (500).
  */
 function NavbarTextLabel({
   text,
@@ -108,14 +108,14 @@ function NavbarTextLabel({
   fg,
   layoutStableBold,
   anchorActive,
-  navLinkSemiboldHover,
+  navLinkMediumHover,
 }: {
   text: string;
   fontStyle?: React.CSSProperties;
   fg: boolean;
   layoutStableBold?: boolean;
   anchorActive?: boolean;
-  navLinkSemiboldHover?: boolean;
+  navLinkMediumHover?: boolean;
 }) {
   if (layoutStableBold) {
     return (
@@ -128,15 +128,15 @@ function NavbarTextLabel({
       >
         <span
           aria-hidden
-          className="pointer-events-none invisible col-start-1 row-start-1 font-semibold whitespace-nowrap select-none"
+          className="pointer-events-none invisible col-start-1 row-start-1 font-medium whitespace-nowrap select-none"
         >
           {text}
         </span>
         <span
           className={cn(
             "col-start-1 row-start-1 whitespace-nowrap transition-[font-weight] duration-150",
-            anchorActive ? "font-semibold" : "font-normal",
-            navLinkSemiboldHover && "group-hover:font-semibold",
+            anchorActive ? "font-medium" : "font-normal",
+            navLinkMediumHover && "group-hover:font-medium",
           )}
         >
           {text}
@@ -144,12 +144,12 @@ function NavbarTextLabel({
       </span>
     );
   }
-  if (navLinkSemiboldHover) {
+  if (navLinkMediumHover) {
     return (
       <span
         className={cn(
           fg && "navbar-senda-fg-body-text",
-          "font-normal transition-[font-weight] duration-150 group-hover:font-semibold",
+          "font-normal transition-[font-weight] duration-150 group-hover:font-medium",
         )}
         style={fontStyle}
       >
@@ -348,9 +348,9 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
           `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) { ${fgBody} { line-height: ${bodyLhMob} !important; } }`,
         );
       }
-      // Enlace activo / hover (ancla): glifo semibold del grupo (p. ej. 600), no faux-bold de un solo archivo.
+      // Enlace activo / hover (ancla): medium (500) del grupo, no faux-bold de un solo archivo.
       styles.push(
-        `${scope} .font-semibold, ${scope} .font-semibold.navbar-senda-fg-body-text { font-weight: 600 !important; }`,
+        `${scope} .font-medium, ${scope} .font-medium.navbar-senda-fg-body-text { font-weight: 500 !important; }`,
       );
     } else if (useCustomFont && customFontFamilyName) {
       const familyCss = customFontFamilyName.replace(/"/g, '\\"');
@@ -390,7 +390,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
     }
     if (boldTextColor) {
       styles.push(
-        `[data-navbar-senda-font="${styleId}"] .font-semibold, [data-navbar-senda-font="${styleId}"] .font-bold, [data-navbar-senda-font="${styleId}"] strong, [data-navbar-senda-font="${styleId}"] b { color: ${boldTextColor} !important; }`,
+        `[data-navbar-senda-font="${styleId}"] .font-medium, [data-navbar-senda-font="${styleId}"] .font-semibold, [data-navbar-senda-font="${styleId}"] .font-bold, [data-navbar-senda-font="${styleId}"] strong, [data-navbar-senda-font="${styleId}"] b { color: ${boldTextColor} !important; }`,
       );
     }
     const navDefaultBtn = `[data-navbar-senda-font="${styleId}"] .navbar-senda-btn-default`;
@@ -445,7 +445,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
     };
   }, [isMobile, isMobileMenuOpen]);
 
-  // Resaltar nav link en semibold cuando su sección (anchor) está visible en pantalla
+  // Resaltar nav link en medium (500) cuando su sección (anchor) está visible en pantalla
   useEffect(() => {
     const anchorIds = getAnchorIdsFromNavLinks(navLinks);
     if (anchorIds.length === 0) return;
@@ -611,7 +611,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                       fontStyle={fontStyle}
                       fg={fontGroupTypographyActive}
                       layoutStableBold
-                      navLinkSemiboldHover
+                      navLinkMediumHover
                       anchorActive={activeAnchorId === navLink.link!.anchorId!.trim()}
                     />
                   </button>
@@ -629,7 +629,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                       text={navLink.title}
                       fontStyle={fontStyle}
                       fg={fontGroupTypographyActive}
-                      navLinkSemiboldHover
+                      navLinkMediumHover
                     />
                   </CMSLink>
                 )
@@ -781,7 +781,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                                 fontStyle={fontStyle}
                                 fg={fontGroupTypographyActive}
                                 layoutStableBold
-                                navLinkSemiboldHover
+                                navLinkMediumHover
                                 anchorActive={activeAnchorId === navLink.link!.anchorId!.trim()}
                               />
                             </button>
@@ -800,7 +800,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                                 text={navLink.title}
                                 fontStyle={fontStyle}
                                 fg={fontGroupTypographyActive}
-                                navLinkSemiboldHover
+                                navLinkMediumHover
                               />
                             </CMSLink>
                           </div>
@@ -978,7 +978,7 @@ const SubMenu = ({
           text={navLink.title}
           fontStyle={linkFontStyle}
           fg={fontGroupTypographyActive}
-          navLinkSemiboldHover
+          navLinkMediumHover
         />
         <motion.span
           variants={{ rotated: { rotate: 180 }, initial: { rotate: 0 } }}
@@ -1019,7 +1019,7 @@ const SubMenu = ({
                     fontStyle={linkFontStyle}
                     fg={fontGroupTypographyActive}
                     layoutStableBold
-                    navLinkSemiboldHover
+                    navLinkMediumHover
                     anchorActive={activeAnchorId === subLink.link.anchorId.trim()}
                   />
                 </button>
@@ -1037,7 +1037,7 @@ const SubMenu = ({
                       text={subLink.title}
                       fontStyle={linkFontStyle}
                       fg={fontGroupTypographyActive}
-                      navLinkSemiboldHover
+                      navLinkMediumHover
                     />
                   </CMSLink>
                 </div>

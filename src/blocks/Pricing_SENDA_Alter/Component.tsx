@@ -720,7 +720,7 @@ export const PricingSendaAlterBlock: React.FC<PricingSendaAlterProps> = (props) 
           </div>
 
           {Array.isArray(plans) && plans.length > 0 && (
-            <div className="pricing-senda-plans-grid mx-auto grid w-full max-w-xl grid-cols-1 gap-10 overflow-visible md:gap-12 lg:gap-14">
+            <div className="pricing-senda-plans-grid mx-auto grid w-full max-w-xl grid-cols-1 gap-6 overflow-visible md:gap-8 lg:gap-10">
               {plans.map((plan, index) => renderPlan(plan, index))}
             </div>
           )}

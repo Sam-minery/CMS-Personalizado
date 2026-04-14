@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import Script from 'next/script'
 import RichText from '@/components/RichText'
@@ -578,6 +578,82 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
   const showImageButtonArea = useVidivAgent || imageButtonLink != null
 
   const [footerInView, setFooterInView] = useState(false)
+
+  const heroPairBtnsRef = useRef<HTMLDivElement>(null)
+  const [pairStackVertical, setPairStackVertical] = useState(false)
+
+  const pairMeasureKey = useMemo(() => {
+    const lb =
+      Array.isArray(heroSendaLeftButtons) && heroSendaLeftButtons.length > 0
+        ? heroSendaLeftButtons.slice(0, 2)
+        : Array.isArray(links)
+          ? links.slice(0, 2).map((item) => ({
+              link: item.link,
+              appearance: 'default' as const,
+              size: 'sm' as const,
+              iconSVG: null,
+            }))
+          : []
+    if (lb.length !== 2) return ''
+    return lb
+      .map((item) => {
+        const link = (item as HeroSendaButton).link ?? (item as LinkItem).link
+        const label =
+          (link as HeroSendaLink)?.label ?? (item as HeroSendaButton).title ?? 'Button'
+        const hasIcon = (item as HeroSendaButton).iconSVG ? '1' : '0'
+        return `${label}\t${hasIcon}`
+      })
+      .join('|')
+  }, [heroSendaLeftButtons, links])
+
+  useLayoutEffect(() => {
+    if (leftButtons.length !== 2) return
+    const root = heroPairBtnsRef.current
+    if (!root || typeof ResizeObserver === 'undefined') return
+
+    const parseGapPx = (): number => {
+      const g = getComputedStyle(root).gap
+      if (!g || g === 'normal') return 12
+      const n = parseFloat(g)
+      return Number.isFinite(n) ? n : 12
+    }
+
+    const measure = () => {
+      const kids = Array.from(root.children).filter((n): n is HTMLElement => n instanceof HTMLElement)
+      if (kids.length !== 2) return
+      const [a, b] = kids
+      if (root.clientWidth <= 0) return
+
+      const gap = parseGapPx()
+      const sa = a.style.width
+      const sb = b.style.width
+      const sma = a.style.maxWidth
+      const smb = b.style.maxWidth
+      const fa = a.style.flex
+      const fb = b.style.flex
+      a.style.width = 'max-content'
+      a.style.maxWidth = 'none'
+      a.style.flex = 'none'
+      b.style.width = 'max-content'
+      b.style.maxWidth = 'none'
+      b.style.flex = 'none'
+      const naturalSum = a.offsetWidth + b.offsetWidth + gap
+      a.style.width = sa
+      a.style.maxWidth = sma
+      a.style.flex = fa
+      b.style.width = sb
+      b.style.maxWidth = smb
+      b.style.flex = fb
+
+      setPairStackVertical(naturalSum > root.clientWidth + 0.5)
+    }
+
+    const ro = new ResizeObserver(() => measure())
+    ro.observe(root)
+    measure()
+    return () => ro.disconnect()
+  }, [leftButtons.length, pairMeasureKey, fontGroupTypographyActive])
+
   useEffect(() => {
     const footer = document.querySelector('footer')
     if (!footer) return
@@ -652,10 +728,14 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
               {/* Móvil/tablet: 1 o 2 botones bajo el texto. Desktop (lg+): solo 2 botones aquí; 1 botón va abajo centrado. */}
               {leftButtons.length > 0 && (
                 <div
+                  ref={leftButtons.length === 2 ? heroPairBtnsRef : undefined}
                   className={
                     leftButtons.length === 1
                       ? 'mt-6 flex flex-wrap gap-4 md:mt-8 lg:hidden'
-                      : 'mt-6 flex flex-row flex-nowrap items-stretch gap-2 sm:gap-3 md:mt-8 md:gap-4 lg:flex-wrap lg:gap-4'
+                      : cn(
+                          'mt-6 flex items-stretch gap-3 md:mt-8 md:gap-4 lg:flex-wrap lg:gap-4',
+                          pairStackVertical ? 'flex-col' : 'flex-row flex-nowrap',
+                        )
                   }
                 >
                   {leftButtons.map((item, index) => {
@@ -667,10 +747,13 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                     const twoCols = leftButtons.length === 2
                     // Con font group el tamaño lo marca el CMS (texto normal); sin Tailwind text-xs/base para no pisarlo.
                     const labelClass = fontGroupTypographyActive
-                      ? cn('hero-senda-btn-label text-center leading-normal', twoCols && 'min-w-0 truncate')
+                      ? cn(
+                          'hero-senda-btn-label text-center leading-normal',
+                          twoCols && (pairStackVertical ? 'min-w-0 break-words' : 'min-w-0 truncate'),
+                        )
                       : cn(
                           'text-center',
-                          twoCols && 'min-w-0 truncate',
+                          twoCols && (pairStackVertical ? 'min-w-0 break-words' : 'min-w-0 truncate'),
                           !fontGroupTypographyActive && 'max-lg:text-xs max-lg:leading-tight lg:text-base lg:leading-normal',
                         )
                     return (
@@ -684,7 +767,9 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                           sendaBlockButtonPrimitiveClassName,
                           btnClassName,
                           twoCols &&
-                            'max-lg:min-w-0 max-lg:flex-1 max-lg:basis-0 max-lg:justify-center max-lg:overflow-hidden lg:inline-flex lg:w-auto lg:flex-none lg:shrink-0',
+                            (pairStackVertical
+                              ? 'w-full flex-none justify-center overflow-visible whitespace-normal'
+                              : 'w-auto max-lg:min-w-0 max-lg:flex-1 max-lg:basis-0 max-lg:shrink max-lg:justify-center max-lg:overflow-hidden lg:inline-flex lg:w-auto lg:flex-none lg:shrink-0'),
                           !twoCols && 'max-lg:overflow-hidden',
                         )}
                         style={fontStyle}
@@ -692,7 +777,10 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                         <span
                           className={
                             twoCols
-                              ? 'inline-flex min-w-0 max-w-full flex-1 flex-row flex-nowrap items-center justify-center gap-2 overflow-hidden lg:flex-initial lg:justify-start'
+                              ? cn(
+                                  'inline-flex min-w-0 max-w-full flex-1 flex-row flex-nowrap items-center justify-center gap-2 lg:flex-initial lg:justify-start',
+                                  pairStackVertical ? 'overflow-visible' : 'overflow-hidden',
+                                )
                               : 'inline-flex min-w-0 max-w-full flex-row flex-nowrap items-center justify-center gap-2 overflow-hidden'
                           }
                         >

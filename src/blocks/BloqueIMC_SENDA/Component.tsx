@@ -32,7 +32,7 @@ import {
   type FontGroupTypography,
 } from '@/utilities/fontGroupRichTextCss'
 
-/** Error Boundary para la vista IMC >= 26: si RichText/Image/CMSLink lanzan, mostramos fallback y el resto del front no se cae. */
+/** Error Boundary para el resultado “IMC alto”: si RichText/Image/CMSLink lanzan, mostramos fallback y el resto del front no se cae. */
 class HighBMIResultErrorBoundary extends Component<
   { children: React.ReactNode; fallback: React.ReactNode },
   { hasError: boolean }
@@ -124,7 +124,7 @@ export type BloqueIMCSendaBlockProps = {
   calculateButtonText?: string | null
   calculateButtonIconSVG?: string | null
   resultContent?: DefaultTypedEditorState | null
-  /** Botón del resultado cuando IMC < 26 (nombre en config: 'resultButton (IMC < 25)') */
+  /** Botón del resultado en la vista de IMC bajo (campo legacy: 'resultButton (IMC < 25)') */
   'resultButton (IMC < 25)'?: ButtonItem[] | null
   /** Clave antigua por si hay datos guardados con el nombre anterior */
   resultButton?: ButtonItem[] | null
@@ -238,7 +238,7 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
   const [showResult, setShowResult] = useState(false)
   const [showHighBMI, setShowHighBMI] = useState(false)
 
-  /** Botón IMC < 26: priorizar clave nueva del config, luego la antigua por datos ya guardados */
+  /** Botón vista IMC bajo: priorizar clave nueva del config, luego la antigua por datos ya guardados */
   const resultButton = resultButtonNewKey ?? resultButtonLegacy
 
   const uniqueId = React.useId().replace(/:/g, '-')
@@ -516,7 +516,7 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
       const calculatedBMI = weightNum / (heightInMeters * heightInMeters)
       setBmi(calculatedBMI)
 
-      if (calculatedBMI < 26) {
+      if (calculatedBMI < 25) {
         setShowResult(true)
         setShowHighBMI(false)
       } else {
@@ -815,7 +815,7 @@ export const BloqueIMCSendaBlock: React.FC<BloqueIMCSendaBlockProps> = ({
                     ) : null}
                   </div>
 
-                  {/* Espaciador solo en móvil para separar descripción y botón (IMC < 26) */}
+                  {/* Espaciador solo en móvil: descripción vs botón (vista IMC bajo) */}
                   {resultButton && resultButton.length > 0 ? (
                     <div className="w-full shrink-0 h-24 md:h-0 md:min-h-0 md:overflow-hidden" aria-hidden />
                   ) : null}

@@ -165,10 +165,10 @@ export const BloqueIMCSendaBlockConfig: Block = {
     {
       name: 'resultContent',
       type: 'richText',
-      label: 'Contenido del resultado (IMC < 26)',
+      label: 'Contenido del resultado (por debajo de la nota de corte)',
       admin: {
         description:
-          'Contenido que se mostrará cuando el IMC sea inferior a 26. Puedes usar {bmi} como placeholder para mostrar el valor del IMC.',
+          'Contenido cuando el IMC queda por debajo de la nota de corte. Puedes usar {bmi} como placeholder para mostrar el valor del IMC.',
       },
       editor: imcRichTextEditor(),
     },
@@ -176,7 +176,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
       name: 'resultButton (IMC < 25)',
       type: 'array',
       dbName: 'imc_res_btn',
-      label: 'Botón del resultado (IMC < 26)',
+      label: 'Botón del resultado (por debajo de la nota de corte)',
       maxRows: 1,
       fields: [
         link({ appearances: false }),
@@ -192,7 +192,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
     },
     {
       type: 'collapsible',
-      label: 'Contenido cuando IMC >= 26',
+      label: 'Contenido cuando el IMC alcanza o supera la nota de corte',
       fields: [
         {
           name: 'highBMIContent',
@@ -200,7 +200,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
           label: 'Contenido descriptivo',
           admin: {
             description:
-              'Contenido que se mostrará cuando el IMC sea superior o igual a 26 (ej: "Un IMC superior o igual a 26...")',
+              'Contenido cuando el IMC es igual o superior a la nota de corte (mensaje orientativo para el usuario).',
           },
           editor: imcRichTextEditor(),
         },
@@ -209,7 +209,8 @@ export const BloqueIMCSendaBlockConfig: Block = {
           type: 'group',
           label: 'Imagen',
           admin: {
-            description: 'Imagen que se mostrará cuando el IMC sea >= 26 (ej: foto del profesional)',
+            description:
+              'Imagen que se mostrará cuando el IMC sea igual o superior a la nota de corte (ej. foto del profesional).',
           },
           fields: [
             {
@@ -263,7 +264,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
           name: 'highBMIButton',
           type: 'array',
           dbName: 'imc_high_btn',
-          label: 'Botón (IMC >= 26)',
+          label: 'Botón (nota de corte alcanzada o superada)',
           maxRows: 1,
           fields: [
             link({ appearances: false }),
@@ -418,7 +419,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
         {
           name: 'resultCardBackgroundColor',
           type: 'text',
-          label: 'Color de fondo de la caja (IMC < 26)',
+          label: 'Color de fondo de la caja (por debajo de la nota de corte)',
           admin: {
             description: 'Hex, rgb, rgba o nombre.',
             placeholder: '#fafafa',
@@ -427,9 +428,10 @@ export const BloqueIMCSendaBlockConfig: Block = {
         {
           name: 'resultTextColor',
           type: 'text',
-          label: 'Color del texto (IMC < 26)',
+          label: 'Color del texto (por debajo de la nota de corte)',
           admin: {
-            description: 'Color del texto del resultado cuando el IMC es inferior a 26. Hex, rgb, rgba o nombre.',
+            description:
+              'Color del texto del resultado cuando el IMC queda por debajo de la nota de corte. Hex, rgb, rgba o nombre.',
             placeholder: '#000000',
           },
         },
@@ -472,7 +474,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
         {
           name: 'resultButtonColor',
           type: 'text',
-          label: 'Color de fondo del botón de resultado (IMC < 26)',
+          label: 'Color de fondo del botón de resultado (por debajo de la nota de corte)',
           admin: {
             description: 'Hex, rgb, rgba o nombre.',
             placeholder: '#2563eb',
@@ -481,7 +483,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
         {
           name: 'resultButtonTextColor',
           type: 'text',
-          label: 'Color del texto del botón de resultado (IMC < 26)',
+          label: 'Color del texto del botón de resultado (por debajo de la nota de corte)',
           admin: {
             description: 'Hex, rgb, rgba o nombre.',
             placeholder: '#ffffff',
@@ -490,7 +492,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
         {
           name: 'highBMICardBackgroundColor',
           type: 'text',
-          label: 'Color de fondo de la caja (IMC >= 26)',
+          label: 'Color de fondo de la caja (nota de corte alcanzada o superada)',
           admin: {
             description: 'Hex, rgb, rgba o nombre.',
             placeholder: '#f8f8f8',
@@ -499,7 +501,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
         {
           name: 'highBMITextColor',
           type: 'text',
-          label: 'Color del texto (IMC >= 26)',
+          label: 'Color del texto (nota de corte alcanzada o superada)',
           admin: {
             description: 'Hex, rgb, rgba o nombre.',
             placeholder: '#000000',
@@ -508,7 +510,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
         {
           name: 'highBMIButtonColor',
           type: 'text',
-          label: 'Color de fondo del botón (IMC >= 26)',
+          label: 'Color de fondo del botón (nota de corte alcanzada o superada)',
           admin: {
             description: 'Hex, rgb, rgba o nombre.',
             placeholder: '#2563eb',
@@ -517,7 +519,7 @@ export const BloqueIMCSendaBlockConfig: Block = {
         {
           name: 'highBMIButtonTextColor',
           type: 'text',
-          label: 'Color del texto del botón (IMC >= 26)',
+          label: 'Color del texto del botón (nota de corte alcanzada o superada)',
           admin: {
             description: 'Hex, rgb, rgba o nombre.',
             placeholder: '#ffffff',

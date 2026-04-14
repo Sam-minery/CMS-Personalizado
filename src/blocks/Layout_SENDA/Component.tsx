@@ -578,24 +578,18 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
               )}
 
               {Array.isArray(subHeadings) && subHeadings.length > 0 && (
-                <div className="grid auto-rows-min grid-cols-1 items-start gap-6 py-2 sm:grid-cols-2">
+                <div className="grid auto-rows-min grid-cols-1 items-start gap-4 py-2 sm:grid-cols-2">
                   {subHeadings.map((subHeading, index) => {
                     const iconImageSrc = getIconImageSrc(subHeading)
                     const iconSvg = subHeading?.icon?.useMedia ? null : subHeading?.icon?.iconSVG
-                    const normalizedIconSvg = iconSvg
-                      ? sanitizeSVG(iconSvg).replace(/\sheight=["'][^"']*["']/gi, '')
-                      : ''
-                    const svgWidthMatch = normalizedIconSvg.match(/\swidth=["']([^"']+)["']/i)
-                    const rawSvgWidth = svgWidthMatch?.[1]?.trim()
-                    const svgWidthCss = rawSvgWidth
-                      ? (/^\d+(\.\d+)?$/.test(rawSvgWidth) ? `${rawSvgWidth}px` : rawSvgWidth)
-                      : '14px'
+                    const normalizedIconSvg =
+                      iconSvg && String(iconSvg).trim() ? sanitizeSVG(iconSvg) : ''
                     return (
                       <div key={index} className="self-start min-w-0">
                         {subHeading?.content && (
-                          <div className="grid min-w-0 grid-cols-[auto,1fr] items-stretch gap-x-1">
+                          <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-stretch gap-x-4">
                             {iconImageSrc ? (
-                              <span className="inline-flex size-9 shrink-0 overflow-hidden rounded-md">
+                              <span className="inline-flex size-9 shrink-0 self-start overflow-hidden rounded-md">
                                 <Image
                                   src={iconImageSrc}
                                   alt={getIconAlt(subHeading)}
@@ -606,16 +600,20 @@ export const LayoutSendaBlock: React.FC<LayoutSendaProps> = (props) => {
                               </span>
                             ) : normalizedIconSvg ? (
                               <span
-                                className="relative inline-flex shrink-0 self-stretch pr-1 overflow-hidden"
-                                style={{ width: svgWidthCss }}
+                                className="inline-flex shrink-0 self-start items-start justify-start text-current"
                                 aria-hidden
                               >
                                 <span
-                                  className="absolute inset-0 [&_svg]:block [&_svg]:h-full [&_svg]:w-full [&_svg]:max-w-none"
+                                  className="inline-flex min-w-0 max-w-14 [&_svg]:block [&_svg]:h-auto [&_svg]:w-auto [&_svg]:max-h-14 [&_svg]:max-w-full [&_svg]:object-contain"
                                   dangerouslySetInnerHTML={{ __html: normalizedIconSvg }}
                                 />
                               </span>
-                            ) : null}
+                            ) : (
+                              <span
+                                aria-hidden
+                                className="w-[3px] shrink-0 self-stretch rounded-sm bg-[#334DCF]"
+                              />
+                            )}
                             <div
                               className={cn(
                                 'min-w-0',

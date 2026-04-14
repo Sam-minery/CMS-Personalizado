@@ -2996,7 +2996,7 @@ export interface BloqueIMCSendaBlock {
    */
   calculateButtonIconSVG?: string | null;
   /**
-   * Contenido que se mostrará cuando el IMC sea inferior a 26. Puedes usar {bmi} como placeholder para mostrar el valor del IMC.
+   * Contenido cuando el IMC queda por debajo de la nota de corte. Puedes usar {bmi} como placeholder para mostrar el valor del IMC.
    */
   resultContent?: {
     root: {
@@ -3041,7 +3041,7 @@ export interface BloqueIMCSendaBlock {
       }[]
     | null;
   /**
-   * Contenido que se mostrará cuando el IMC sea superior o igual a 26 (ej: "Un IMC superior o igual a 26...")
+   * Contenido cuando el IMC es igual o superior a la nota de corte (mensaje orientativo para el usuario).
    */
   highBMIContent?: {
     root: {
@@ -3059,7 +3059,7 @@ export interface BloqueIMCSendaBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Imagen que se mostrará cuando el IMC sea >= 26 (ej: foto del profesional)
+   * Imagen que se mostrará cuando el IMC sea igual o superior a la nota de corte (ej. foto del profesional).
    */
   highBMIImage?: {
     useMedia?: boolean | null;
@@ -3176,7 +3176,7 @@ export interface BloqueIMCSendaBlock {
    */
   resultCardBackgroundColor?: string | null;
   /**
-   * Color del texto del resultado cuando el IMC es inferior a 26. Hex, rgb, rgba o nombre.
+   * Color del texto del resultado cuando el IMC queda por debajo de la nota de corte. Hex, rgb, rgba o nombre.
    */
   resultTextColor?: string | null;
   /**
