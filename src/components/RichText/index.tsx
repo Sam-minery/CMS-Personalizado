@@ -6,6 +6,7 @@ import {
   SerializedLinkNode,
   type DefaultTypedEditorState,
 } from '@payloadcms/richtext-lexical'
+import type { SerializedParagraphNode } from 'lexical'
 import {
   JSXConvertersFunction,
   LinkJSXConverter,
@@ -18,6 +19,7 @@ import type { Media as MediaType } from '@/payload-types'
 
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
+import { PAYLOAD_RICHTEXT_SMALL_BODY_CLASS } from '@/constants/payloadRichTextSmallBody'
 import { cn } from '@/utilities/ui'
 
 /** Convierte "font-weight: 600" -> { fontWeight: 600 }; soporta varias propiedades. */
@@ -122,8 +124,11 @@ type MediaBlockProps = {
   disableInnerContainer?: boolean
 }
 
+type SerializedSmallBodyNode = Omit<SerializedParagraphNode, 'type'> & { type: 'small-body' }
+
 type NodeTypes =
   | DefaultNodeTypes
+  | SerializedSmallBodyNode
   | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
@@ -139,6 +144,13 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
   const defaultTextConverter = defaultConverters.text
   return {
     ...defaultConverters,
+    'small-body': ({ node, nodesToJSX }) => {
+      const children = nodesToJSX({ nodes: node.children })
+      if (!children?.length) {
+        return <p className={PAYLOAD_RICHTEXT_SMALL_BODY_CLASS}><br /></p>
+      }
+      return <p className={PAYLOAD_RICHTEXT_SMALL_BODY_CLASS}>{children}</p>
+    },
     text: (args) => {
       const inner =
         typeof defaultTextConverter === 'function'

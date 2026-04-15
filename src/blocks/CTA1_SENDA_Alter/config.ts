@@ -17,6 +17,7 @@ import {
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
+import { SmallBodyFeature } from '@/lexical-features/small-body/feature.server'
 import { link } from '@/fields/link'
 
 /** Pesos y “texto pequeño” alineados con Hero / Cards SENDA (font groups). */
@@ -45,6 +46,7 @@ const cta1RichTextEditor = () =>
       OrderedListFeature(),
       ChecklistFeature(),
       BlockquoteFeature(),
+      SmallBodyFeature(),
       HorizontalRuleFeature(),
       SubscriptFeature(),
       TextStateFeature({ state: cta1SendaRichTextState }),

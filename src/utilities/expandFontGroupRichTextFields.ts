@@ -150,6 +150,25 @@ export function expandFontGroupRichTextFields<T extends Record<string, unknown>>
   if (qmtm) headingMarginsMobile.quoteMarginTop = qmtm
   if (qmbm) headingMarginsMobile.quoteMarginBottom = qmbm
 
+  const sbDesk = styleBlock(o.smallBodyTextDesktop)
+  const sbMob = styleBlock(o.smallBodyTextMobile)
+  const sbfs = trim(sbDesk?.fontSize)
+  if (sbfs) typography.smallBody = sbfs
+  const sbfsm = trim(sbMob?.fontSize)
+  if (sbfsm) typographyMobile.smallBody = sbfsm
+  const sblh = trim(sbDesk?.lineHeight)
+  if (sblh) lineHeights.smallBody = sblh
+  const sblhm = trim(sbMob?.lineHeight)
+  if (sblhm) lineHeightsMobile.smallBody = sblhm
+  const sbmt = trim(sbDesk?.marginTop)
+  const sbmb = trim(sbDesk?.marginBottom)
+  if (sbmt) headingMargins.smallBodyMarginTop = sbmt
+  if (sbmb) headingMargins.smallBodyMarginBottom = sbmb
+  const sbmtm = trim(sbMob?.marginTop)
+  const sbmbm = trim(sbMob?.marginBottom)
+  if (sbmtm) headingMarginsMobile.smallBodyMarginTop = sbmtm
+  if (sbmbm) headingMarginsMobile.smallBodyMarginBottom = sbmbm
+
   const cfs = trim(capDesk?.fontSize)
   if (cfs) typography.caption = cfs
   const cfsm = trim(capMob?.fontSize)

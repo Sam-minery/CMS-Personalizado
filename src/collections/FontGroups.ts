@@ -93,7 +93,7 @@ export const FontGroups: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'fontFamilyName', 'preloadFonts', 'updatedAt'],
     description:
-      'Crea grupos de tipografías: fuentes, y por cada nivel (H1–H6, párrafos, listas, citas/blockquote, caption) el tamaño, interlineado y márgenes en escritorio y móvil. Si activas "Precargar siempre", las fuentes se cargarán al inicio de cada página.',
+      'Crea grupos de tipografías: fuentes, y por cada nivel (H1–H6, párrafos, listas, citas/blockquote, cuerpo pequeño / small body, caption) el tamaño, interlineado y márgenes en escritorio y móvil. Si activas "Precargar siempre", las fuentes se cargarán al inicio de cada página.',
   },
   fields: [
     {
@@ -195,6 +195,25 @@ export const FontGroups: CollectionConfig = {
       label: 'Citas (blockquote) · móvil',
       admin: {
         description: 'Opcional. Si un campo está vacío, se usa el valor de escritorio de citas.',
+      },
+      fields: richTextStyleFields(),
+    },
+    {
+      name: 'smallBodyTextDesktop',
+      type: 'group',
+      label: 'Cuerpo pequeño (small body) · escritorio',
+      admin: {
+        description:
+          'Bloque de párrafo compacto en Rich Text (clase payload-richtext-small-body). Tamaño, interlineado y márgenes del bloque.',
+      },
+      fields: richTextStyleFields(),
+    },
+    {
+      name: 'smallBodyTextMobile',
+      type: 'group',
+      label: 'Cuerpo pequeño (small body) · móvil',
+      admin: {
+        description: 'Opcional. Si un campo está vacío, se usa el valor de escritorio de cuerpo pequeño.',
       },
       fields: richTextStyleFields(),
     },

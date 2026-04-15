@@ -678,7 +678,7 @@ export interface User {
   password?: string | null;
 }
 /**
- * Crea grupos de tipografías: fuentes, y por cada nivel (H1–H6, párrafos, listas, citas/blockquote, caption) el tamaño, interlineado y márgenes en escritorio y móvil. Si activas "Precargar siempre", las fuentes se cargarán al inicio de cada página.
+ * Crea grupos de tipografías: fuentes, y por cada nivel (H1–H6, párrafos, listas, citas/blockquote, cuerpo pequeño / small body, caption) el tamaño, interlineado y márgenes en escritorio y móvil. Si activas "Precargar siempre", las fuentes se cargarán al inicio de cada página.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "font-groups".
@@ -875,6 +875,24 @@ export interface FontGroup {
    * Opcional. Si un campo está vacío, se usa el valor de escritorio de citas.
    */
   quoteTextMobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Bloque de párrafo compacto en Rich Text (clase payload-richtext-small-body). Tamaño, interlineado y márgenes del bloque.
+   */
+  smallBodyTextDesktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Si un campo está vacío, se usa el valor de escritorio de cuerpo pequeño.
+   */
+  smallBodyTextMobile?: {
     fontSize?: string | null;
     lineHeight?: string | null;
     marginTop?: string | null;
@@ -5412,6 +5430,22 @@ export interface FontGroupsSelect<T extends boolean = true> {
         marginBottom?: T;
       };
   quoteTextMobile?:
+    | T
+    | {
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  smallBodyTextDesktop?:
+    | T
+    | {
+        fontSize?: T;
+        lineHeight?: T;
+        marginTop?: T;
+        marginBottom?: T;
+      };
+  smallBodyTextMobile?:
     | T
     | {
         fontSize?: T;

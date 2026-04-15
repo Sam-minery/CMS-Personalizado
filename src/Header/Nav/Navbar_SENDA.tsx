@@ -98,9 +98,8 @@ function normalizeNavbarFontGroup(raw: unknown): NavbarFontGroup | null {
 
 /**
  * Texto de enlaces/botones: clase body del font group + fontFamily inline si aplica.
- * `layoutStableBold`: reserva el ancho del glifo en medium (capa invisible) para que al activar/hover
- * el navbar no crezca unos píxeles al pasar de normal → medium (500).
- * `navLinkMediumHover`: el padre debe llevar `group`; en hover el texto pasa a medium (500).
+ * `layoutStableBold`: capa invisible en medium (500) para reservar ancho al pasar light (300) → medium.
+ * `navLinkMediumHover`: el padre lleva `group`; inactivo light (300), hover medium (500).
  */
 function NavbarTextLabel({
   text,
@@ -135,7 +134,7 @@ function NavbarTextLabel({
         <span
           className={cn(
             "col-start-1 row-start-1 whitespace-nowrap transition-[font-weight] duration-150",
-            anchorActive ? "font-medium" : "font-normal",
+            anchorActive ? "font-medium" : "font-light",
             navLinkMediumHover && "group-hover:font-medium",
           )}
         >
@@ -149,7 +148,7 @@ function NavbarTextLabel({
       <span
         className={cn(
           fg && "navbar-senda-fg-body-text",
-          "font-normal transition-[font-weight] duration-150 group-hover:font-medium",
+          "font-light transition-[font-weight] duration-150 group-hover:font-medium",
         )}
         style={fontStyle}
       >
@@ -348,9 +347,16 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
           `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) { ${fgBody} { line-height: ${bodyLhMob} !important; } }`,
         );
       }
-      // Enlace activo / hover (ancla): medium (500) del grupo, no faux-bold de un solo archivo.
+      // Nav links (dentro de `nav`): light 300 inactivo, medium 500 hover/activo.
       styles.push(
-        `${scope} .font-medium, ${scope} .font-medium.navbar-senda-fg-body-text { font-weight: 500 !important; }`,
+        `${scope} nav .font-light, ${scope} nav .font-light.navbar-senda-fg-body-text { font-weight: 300 !important; }`,
+      );
+      styles.push(
+        `${scope} nav .font-medium, ${scope} nav .font-medium.navbar-senda-fg-body-text { font-weight: 500 !important; }`,
+      );
+      // `group-hover:font-medium` compite con `.font-light` + !important arriba: forzar 500 al hover del `.group`.
+      styles.push(
+        `${scope} nav .group:hover .group-hover\\:font-medium, ${scope} nav .group:hover .group-hover\\:font-medium.navbar-senda-fg-body-text { font-weight: 500 !important; }`,
       );
     } else if (useCustomFont && customFontFamilyName) {
       const familyCss = customFontFamilyName.replace(/"/g, '\\"');
@@ -390,7 +396,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
     }
     if (boldTextColor) {
       styles.push(
-        `[data-navbar-senda-font="${styleId}"] .font-medium, [data-navbar-senda-font="${styleId}"] .font-semibold, [data-navbar-senda-font="${styleId}"] .font-bold, [data-navbar-senda-font="${styleId}"] strong, [data-navbar-senda-font="${styleId}"] b { color: ${boldTextColor} !important; }`,
+        `[data-navbar-senda-font="${styleId}"] nav .font-medium, [data-navbar-senda-font="${styleId}"] nav .group:hover .group-hover\\:font-medium, [data-navbar-senda-font="${styleId}"] .font-semibold, [data-navbar-senda-font="${styleId}"] .font-bold, [data-navbar-senda-font="${styleId}"] strong, [data-navbar-senda-font="${styleId}"] b { color: ${boldTextColor} !important; }`,
       );
     }
     const navDefaultBtn = `[data-navbar-senda-font="${styleId}"] .navbar-senda-btn-default`;

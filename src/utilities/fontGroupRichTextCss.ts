@@ -3,6 +3,11 @@
  * Mismos conceptos que la colección `font-groups`: body vs listas, márgenes, interlineados.
  */
 
+import { PAYLOAD_RICHTEXT_SMALL_BODY_CLASS } from '@/constants/payloadRichTextSmallBody'
+
+const pNotSmallBody = (root: string) => `${root} p:not(.${PAYLOAD_RICHTEXT_SMALL_BODY_CLASS})`
+const pSmallBody = (root: string) => `${root} p.${PAYLOAD_RICHTEXT_SMALL_BODY_CLASS}`
+
 export type FontGroupTypography = {
   h1?: string | null
   h2?: string | null
@@ -14,6 +19,8 @@ export type FontGroupTypography = {
   lists?: string | null
   /** Tamaño de <blockquote> en rich text */
   quote?: string | null
+  /** Tamaño del bloque párrafo “cuerpo pequeño” (Lexical small-body) */
+  smallBody?: string | null
   caption?: string | null
 }
 
@@ -36,6 +43,8 @@ export type FontGroupHeadingMargins = {
   listsMarginBottom?: string | null
   quoteMarginTop?: string | null
   quoteMarginBottom?: string | null
+  smallBodyMarginTop?: string | null
+  smallBodyMarginBottom?: string | null
 }
 
 export type FontGroupLineHeights = {
@@ -48,6 +57,7 @@ export type FontGroupLineHeights = {
   body?: string | null
   lists?: string | null
   quote?: string | null
+  smallBody?: string | null
 }
 
 /** Viewport “móvil” para @media (max-width): por debajo de `md` en Tailwind (768px − 1). */
@@ -75,6 +85,8 @@ const HEADING_MARGIN_KEYS: (keyof FontGroupHeadingMargins)[] = [
   'listsMarginBottom',
   'quoteMarginTop',
   'quoteMarginBottom',
+  'smallBodyMarginTop',
+  'smallBodyMarginBottom',
 ]
 
 const LINE_HEIGHT_KEYS: (keyof FontGroupLineHeights)[] = [
@@ -87,6 +99,7 @@ const LINE_HEIGHT_KEYS: (keyof FontGroupLineHeights)[] = [
   'body',
   'lists',
   'quote',
+  'smallBody',
 ]
 
 /** Por cada clave: valor móvil si está relleno; si no, valor escritorio. */
@@ -152,14 +165,14 @@ export function appendTypographyBodyListSizeRules(
   const planText = planElementTextSelector(planRichtext)
   if (bodyV && listsV) {
     emit(
-      `${mainRichtext} p, ${planRichtext} p, ${payloadRichtext} p, ${planText} { font-size: ${bodyV} !important; }`,
+      `${pNotSmallBody(mainRichtext)}, ${pNotSmallBody(planRichtext)}, ${pNotSmallBody(payloadRichtext)}, ${planText} { font-size: ${bodyV} !important; }`,
     )
     emit(
       `${mainRichtext} li, ${planRichtext} li, ${payloadRichtext} li { font-size: ${listsV} !important; }`,
     )
   } else if (bodyV) {
     emit(
-      `${mainRichtext} p, ${mainRichtext} li, ${planRichtext} p, ${planRichtext} li, ${payloadRichtext} p, ${payloadRichtext} li, ${planText} { font-size: ${bodyV} !important; }`,
+      `${pNotSmallBody(mainRichtext)}, ${mainRichtext} li, ${pNotSmallBody(planRichtext)}, ${planRichtext} li, ${pNotSmallBody(payloadRichtext)}, ${payloadRichtext} li, ${planText} { font-size: ${bodyV} !important; }`,
     )
   } else if (listsV) {
     emit(
@@ -171,6 +184,13 @@ export function appendTypographyBodyListSizeRules(
   if (quoteV) {
     emit(
       `${mainRichtext} blockquote, ${planRichtext} blockquote, ${payloadRichtext} blockquote { font-size: ${quoteV} !important; }`,
+    )
+  }
+
+  const sbV = t(typo?.smallBody)
+  if (sbV) {
+    emit(
+      `${pSmallBody(mainRichtext)}, ${pSmallBody(planRichtext)}, ${pSmallBody(payloadRichtext)} { font-size: ${sbV} !important; }`,
     )
   }
 }
@@ -217,12 +237,13 @@ function emitFontGroupHeadingMarginRules(
     if (bmt) parts.push(`margin-top: ${bmt} !important;`)
     if (bmb) parts.push(`margin-bottom: ${bmb} !important;`)
     emit(
-      `${mainRichtext} p, ${planRichtext} p, ${payloadRichtext} p, ${planElementTextSelector(planRichtext)} { ${parts.join(' ')} }`,
+      `${pNotSmallBody(mainRichtext)}, ${pNotSmallBody(planRichtext)}, ${pNotSmallBody(payloadRichtext)}, ${planElementTextSelector(planRichtext)} { ${parts.join(' ')} }`,
     )
     // Entre párrafos consecutivos (mismo tamaño tipográfico): no sumar márgenes; el ritmo vertical lo da line-height.
+    const sb = PAYLOAD_RICHTEXT_SMALL_BODY_CLASS
     for (const root of [mainRichtext, planRichtext, payloadRichtext]) {
-      emit(`${root} p + p { margin-top: 0 !important; }`)
-      emit(`${root} p:has(+ p) { margin-bottom: 0 !important; }`)
+      emit(`${root} p:not(.${sb}) + p:not(.${sb}) { margin-top: 0 !important; }`)
+      emit(`${root} p:not(.${sb}):has(+ p:not(.${sb})) { margin-bottom: 0 !important; }`)
     }
   }
   const lmt = trimFontGroupValue(m.listsMarginTop)
@@ -276,6 +297,23 @@ function emitFontGroupHeadingMarginRules(
     for (const root of [mainRichtext, planRichtext, payloadRichtext]) {
       emit(`${root} blockquote + blockquote { margin-top: 0 !important; }`)
       emit(`${root} blockquote:has(+ blockquote) { margin-bottom: 0 !important; }`)
+    }
+  }
+  const sbmt = trimFontGroupValue(m.smallBodyMarginTop)
+  const sbmb = trimFontGroupValue(m.smallBodyMarginBottom)
+  if (sbmt || sbmb) {
+    const parts: string[] = []
+    if (sbmt) parts.push(`margin-top: ${sbmt} !important;`)
+    if (sbmb) parts.push(`margin-bottom: ${sbmb} !important;`)
+    const sbSel = `${pSmallBody(mainRichtext)}, ${pSmallBody(planRichtext)}, ${pSmallBody(payloadRichtext)}`
+    emit(`${sbSel} { ${parts.join(' ')} }`)
+    for (const root of [mainRichtext, planRichtext, payloadRichtext]) {
+      emit(
+        `${root} p.${PAYLOAD_RICHTEXT_SMALL_BODY_CLASS} + p.${PAYLOAD_RICHTEXT_SMALL_BODY_CLASS} { margin-top: 0 !important; }`,
+      )
+      emit(
+        `${root} p.${PAYLOAD_RICHTEXT_SMALL_BODY_CLASS}:has(+ p.${PAYLOAD_RICHTEXT_SMALL_BODY_CLASS}) { margin-bottom: 0 !important; }`,
+      )
     }
   }
 }
@@ -346,7 +384,7 @@ function emitFontGroupLineHeightRules(
   const bodyLh = trimFontGroupValue(lh.body)
   if (bodyLh) {
     emit(
-      `${mainRichtext} p, ${planRichtext} p, ${payloadRichtext} p, ${planElementTextSelector(planRichtext)} { line-height: ${bodyLh} !important; }`,
+      `${pNotSmallBody(mainRichtext)}, ${pNotSmallBody(planRichtext)}, ${pNotSmallBody(payloadRichtext)}, ${planElementTextSelector(planRichtext)} { line-height: ${bodyLh} !important; }`,
     )
   }
   const listsLh = trimFontGroupValue(lh.lists)
@@ -359,6 +397,12 @@ function emitFontGroupLineHeightRules(
   if (quoteLh) {
     emit(
       `${mainRichtext} blockquote, ${planRichtext} blockquote, ${payloadRichtext} blockquote { line-height: ${quoteLh} !important; }`,
+    )
+  }
+  const sbLh = trimFontGroupValue(lh.smallBody)
+  if (sbLh) {
+    emit(
+      `${pSmallBody(mainRichtext)}, ${pSmallBody(planRichtext)}, ${pSmallBody(payloadRichtext)} { line-height: ${sbLh} !important; }`,
     )
   }
 }

@@ -17,6 +17,8 @@ import {
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
+import { SmallBodyFeature } from '@/lexical-features/small-body/feature.server'
+
 /** Pesos y tamaño "texto pequeño" alineados con Hero / Pricing SENDA (font groups). */
 const cardsSendaRichTextState = {
   weight: {
@@ -43,6 +45,7 @@ const cardsRichTextEditor = () =>
       OrderedListFeature(),
       ChecklistFeature(),
       BlockquoteFeature(),
+      SmallBodyFeature(),
       HorizontalRuleFeature(),
       SubscriptFeature(),
       TextStateFeature({ state: cardsSendaRichTextState }),

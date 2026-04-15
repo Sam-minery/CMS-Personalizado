@@ -17,6 +17,7 @@ import {
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
+import { SmallBodyFeature } from '@/lexical-features/small-body/feature.server'
 import { link } from '@/fields/link'
 
 const appSendaRichTextState = {
@@ -44,6 +45,7 @@ const appRichTextEditor = () =>
       OrderedListFeature(),
       ChecklistFeature(),
       BlockquoteFeature(),
+      SmallBodyFeature(),
       HorizontalRuleFeature(),
       SubscriptFeature(),
       TextStateFeature({ state: appSendaRichTextState }),

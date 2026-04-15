@@ -637,7 +637,8 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
       b.style.width = 'max-content'
       b.style.maxWidth = 'none'
       b.style.flex = 'none'
-      const naturalSum = a.offsetWidth + b.offsetWidth + gap
+      const wa = a.offsetWidth
+      const wb = b.offsetWidth
       a.style.width = sa
       a.style.maxWidth = sma
       a.style.flex = fa
@@ -645,13 +646,31 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
       b.style.maxWidth = smb
       b.style.flex = fb
 
-      setPairStackVertical(naturalSum > root.clientWidth + 0.5)
+      const cw = root.clientWidth
+      const naturalSum = wa + wb + gap
+      // En fila cada botón solo tiene ~mitad del ancho: si uno necesita más, no debe truncarse para “encajar” los dos; se apilan.
+      const half = Math.max(0, (cw - gap) / 2)
+      const ε = 2
+      const needStack =
+        naturalSum > cw + ε || wa > half + ε || wb > half + ε
+      setPairStackVertical(needStack)
     }
 
     const ro = new ResizeObserver(() => measure())
     ro.observe(root)
     measure()
-    return () => ro.disconnect()
+    const fonts = document.fonts
+    let cancelled = false
+    const fontsPromise = fonts?.ready
+    if (fontsPromise) {
+      void fontsPromise.then(() => {
+        if (!cancelled) measure()
+      })
+    }
+    return () => {
+      cancelled = true
+      ro.disconnect()
+    }
   }, [leftButtons.length, pairMeasureKey, fontGroupTypographyActive])
 
   useEffect(() => {
@@ -749,11 +768,17 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                     const labelClass = fontGroupTypographyActive
                       ? cn(
                           'hero-senda-btn-label text-center leading-normal',
-                          twoCols && (pairStackVertical ? 'min-w-0 break-words' : 'min-w-0 truncate'),
+                          twoCols &&
+                            (pairStackVertical
+                              ? 'min-w-0 truncate'
+                              : 'min-w-0 whitespace-normal break-words'),
                         )
                       : cn(
                           'text-center',
-                          twoCols && (pairStackVertical ? 'min-w-0 break-words' : 'min-w-0 truncate'),
+                          twoCols &&
+                            (pairStackVertical
+                              ? 'min-w-0 truncate'
+                              : 'min-w-0 whitespace-normal break-words'),
                           !fontGroupTypographyActive && 'max-lg:text-xs max-lg:leading-tight lg:text-base lg:leading-normal',
                         )
                     return (
@@ -768,8 +793,8 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                           btnClassName,
                           twoCols &&
                             (pairStackVertical
-                              ? 'w-full flex-none justify-center overflow-visible whitespace-normal'
-                              : 'w-auto max-lg:min-w-0 max-lg:flex-1 max-lg:basis-0 max-lg:shrink max-lg:justify-center max-lg:overflow-hidden lg:inline-flex lg:w-auto lg:flex-none lg:shrink-0'),
+                              ? 'w-full flex-none justify-center overflow-hidden whitespace-normal'
+                              : 'w-auto max-lg:min-w-0 max-lg:flex-1 max-lg:basis-0 max-lg:shrink max-lg:justify-center max-lg:overflow-visible max-lg:whitespace-normal lg:inline-flex lg:w-auto lg:flex-none lg:shrink-0'),
                           !twoCols && 'max-lg:overflow-hidden',
                         )}
                         style={fontStyle}
@@ -779,7 +804,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                             twoCols
                               ? cn(
                                   'inline-flex min-w-0 max-w-full flex-1 flex-row flex-nowrap items-center justify-center gap-2 lg:flex-initial lg:justify-start',
-                                  pairStackVertical ? 'overflow-visible' : 'overflow-hidden',
+                                  pairStackVertical ? 'overflow-hidden' : 'overflow-visible',
                                 )
                               : 'inline-flex min-w-0 max-w-full flex-row flex-nowrap items-center justify-center gap-2 overflow-hidden'
                           }

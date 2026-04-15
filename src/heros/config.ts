@@ -17,6 +17,7 @@ import {
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
+import { SmallBodyFeature } from '@/lexical-features/small-body/feature.server'
 import { link } from '@/fields/link'
 import { linkGroup } from '@/fields/linkGroup'
 
@@ -46,6 +47,7 @@ const heroRichTextEditor = () =>
       OrderedListFeature(),
       ChecklistFeature(),
       BlockquoteFeature(),
+      SmallBodyFeature(),
       HorizontalRuleFeature(),
       SubscriptFeature(),
       TextStateFeature({ state: heroRichTextState }),

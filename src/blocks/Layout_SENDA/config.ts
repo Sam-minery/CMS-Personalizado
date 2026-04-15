@@ -18,6 +18,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 
 import { link } from '@/fields/link'
+import { SmallBodyFeature } from '@/lexical-features/small-body/feature.server'
 
 const layoutSendaRichTextState = {
   weight: {
@@ -44,6 +45,7 @@ const richTextEditor = () =>
       OrderedListFeature(),
       ChecklistFeature(),
       BlockquoteFeature(),
+      SmallBodyFeature(),
       HorizontalRuleFeature(),
       SubscriptFeature(),
       TextStateFeature({ state: layoutSendaRichTextState }),

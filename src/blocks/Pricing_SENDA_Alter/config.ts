@@ -17,6 +17,8 @@ import {
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
+import { SmallBodyFeature } from '@/lexical-features/small-body/feature.server'
+
 const fontGroupWeightState = {
   weight: {
     light: { label: 'Light', css: { 'font-weight': '300' } },
@@ -42,6 +44,7 @@ const richTextEditor = () =>
       OrderedListFeature(),
       ChecklistFeature(),
       BlockquoteFeature(),
+      SmallBodyFeature(),
       HorizontalRuleFeature(),
       SubscriptFeature(),
       TextStateFeature({ state: fontGroupWeightState }),
