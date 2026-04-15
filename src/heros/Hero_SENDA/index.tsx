@@ -650,7 +650,8 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
       const naturalSum = wa + wb + gap
       // En fila cada botón solo tiene ~mitad del ancho: si uno necesita más, no debe truncarse para “encajar” los dos; se apilan.
       const half = Math.max(0, (cw - gap) / 2)
-      const ε = 2
+      /** Margen por subpíxeles / safe area (p. ej. iPhone 12 Pro) para apilar antes de forzar compresión del texto. */
+      const ε = 6
       const needStack =
         naturalSum > cw + ε || wa > half + ε || wb > half + ε
       setPairStackVertical(needStack)
@@ -771,14 +772,12 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                           twoCols &&
                             (pairStackVertical
                               ? 'min-w-0 truncate'
-                              : 'min-w-0 whitespace-normal break-words'),
+                              : 'min-w-0 shrink-0 whitespace-nowrap'),
                         )
                       : cn(
                           'text-center',
                           twoCols &&
-                            (pairStackVertical
-                              ? 'min-w-0 truncate'
-                              : 'min-w-0 whitespace-normal break-words'),
+                            (pairStackVertical ? 'min-w-0 truncate' : 'min-w-0 shrink-0 whitespace-nowrap'),
                           !fontGroupTypographyActive && 'max-lg:text-xs max-lg:leading-tight lg:text-base lg:leading-normal',
                         )
                     return (
@@ -794,7 +793,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                           twoCols &&
                             (pairStackVertical
                               ? 'w-full flex-none justify-center overflow-hidden whitespace-normal'
-                              : 'w-auto max-lg:min-w-0 max-lg:flex-1 max-lg:basis-0 max-lg:shrink max-lg:justify-center max-lg:overflow-visible max-lg:whitespace-normal lg:inline-flex lg:w-auto lg:flex-none lg:shrink-0'),
+                              : 'w-auto max-lg:min-w-0 max-lg:flex-1 max-lg:basis-0 max-lg:shrink max-lg:justify-center max-lg:overflow-visible lg:inline-flex lg:w-auto lg:flex-none lg:shrink-0'),
                           !twoCols && 'max-lg:overflow-hidden',
                         )}
                         style={fontStyle}
