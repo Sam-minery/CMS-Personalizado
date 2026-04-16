@@ -615,7 +615,7 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
             }
           >
             <div className={lssCustomWidthVw == null ? 'container' : 'mx-auto w-full max-w-none'}>
-          <div className="mb-12 md:mb-18 lg:mb-14 w-full" style={fontStyle}>
+          <div className="mb-[32px] w-full md:mb-18 lg:mb-14" style={fontStyle}>
             {richText && (
               <div
                 className={cn(
@@ -631,13 +631,13 @@ export const LayoutSendaSectionsBlock: React.FC<LayoutSendaSectionsProps> = (pro
           </div>
 
           {Array.isArray(sections) && sections.length > 0 && (
-            <div className="grid grid-cols-1 gap-y-12 md:grid-cols-2 md:gap-x-8 md:gap-y-16 lg:grid-cols-4 lg:gap-y-12">
+            <div className="grid grid-cols-1 gap-y-[32px] md:grid-cols-2 md:gap-x-8 md:gap-y-16 lg:grid-cols-4 lg:gap-y-12">
               {sections.map((section, index) => renderSection(section, index))}
             </div>
           )}
 
           {Array.isArray(buttons) && buttons.length > 0 && (
-            <div className="mt-12 flex flex-wrap items-center gap-4 md:mt-18 lg:mt-14">
+            <div className="mt-[32px] flex flex-wrap items-center gap-4 md:mt-18 lg:mt-14">
               {buttons.map((button, index) => {
                 const isSecondButton = index === 1
                 if (isSecondButton) {

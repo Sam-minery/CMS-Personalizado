@@ -753,8 +753,8 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                     leftButtons.length === 1
                       ? 'mt-6 flex flex-wrap gap-4 md:mt-8 lg:hidden'
                       : cn(
-                          'mt-6 flex items-stretch gap-3 md:mt-8 md:gap-4 lg:flex-wrap lg:gap-4',
-                          pairStackVertical ? 'flex-col' : 'flex-row flex-nowrap',
+                          'mt-6 flex gap-3 md:mt-8 md:gap-4 lg:flex-wrap lg:gap-4',
+                          pairStackVertical ? 'flex-col items-start' : 'flex-row flex-nowrap items-stretch',
                         )
                   }
                 >
@@ -768,16 +768,19 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                     // Con font group el tamaño lo marca el CMS (texto normal); sin Tailwind text-xs/base para no pisarlo.
                     const labelClass = fontGroupTypographyActive
                       ? cn(
-                          'hero-senda-btn-label text-center leading-normal',
-                          twoCols &&
-                            (pairStackVertical
-                              ? 'min-w-0 truncate'
-                              : 'min-w-0 shrink-0 whitespace-nowrap'),
+                          'hero-senda-btn-label leading-normal',
+                          twoCols
+                            ? pairStackVertical
+                              ? 'min-w-0 truncate text-left'
+                              : 'text-center min-w-0 shrink-0 whitespace-nowrap'
+                            : 'text-center',
                         )
                       : cn(
-                          'text-center',
-                          twoCols &&
-                            (pairStackVertical ? 'min-w-0 truncate' : 'min-w-0 shrink-0 whitespace-nowrap'),
+                          twoCols
+                            ? pairStackVertical
+                              ? 'min-w-0 truncate text-left'
+                              : 'text-center min-w-0 shrink-0 whitespace-nowrap'
+                            : 'text-center',
                           !fontGroupTypographyActive && 'max-lg:text-xs max-lg:leading-tight lg:text-base lg:leading-normal',
                         )
                     return (
@@ -792,7 +795,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                           btnClassName,
                           twoCols &&
                             (pairStackVertical
-                              ? 'w-full flex-none justify-center overflow-hidden whitespace-normal'
+                              ? 'w-auto max-w-full flex-none self-start justify-start overflow-hidden whitespace-normal'
                               : 'w-auto max-lg:min-w-0 max-lg:flex-1 max-lg:basis-0 max-lg:shrink max-lg:justify-center max-lg:overflow-visible lg:inline-flex lg:w-auto lg:flex-none lg:shrink-0'),
                           !twoCols && 'max-lg:overflow-hidden',
                         )}
@@ -801,10 +804,11 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                         <span
                           className={
                             twoCols
-                              ? cn(
-                                  'inline-flex min-w-0 max-w-full flex-1 flex-row flex-nowrap items-center justify-center gap-2 lg:flex-initial lg:justify-start',
-                                  pairStackVertical ? 'overflow-hidden' : 'overflow-visible',
-                                )
+                              ? pairStackVertical
+                                ? 'inline-flex min-w-0 max-w-full flex-initial flex-row flex-nowrap items-center justify-start gap-2 overflow-hidden'
+                                : cn(
+                                    'inline-flex min-w-0 max-w-full flex-1 flex-row flex-nowrap items-center justify-center gap-2 overflow-visible lg:flex-initial lg:justify-start',
+                                  )
                               : 'inline-flex min-w-0 max-w-full flex-row flex-nowrap items-center justify-center gap-2 overflow-hidden'
                           }
                         >
