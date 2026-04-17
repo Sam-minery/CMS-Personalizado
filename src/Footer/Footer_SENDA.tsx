@@ -400,6 +400,9 @@ export const Footer_SENDA: React.FC<Props> = (props) => {
   const columns = Array.isArray(columnLinks) ? columnLinks : []
   const social = Array.isArray(socialMediaLinks) ? socialMediaLinks : []
   const links = Array.isArray(footerLinks) ? footerLinks : []
+  const hasLinkColumns = columns.some(
+    (col) => Array.isArray(col.links) && col.links.length > 0,
+  )
 
   const renderLink = (
     linkConfig: FooterLink | null | undefined,
@@ -468,7 +471,12 @@ export const Footer_SENDA: React.FC<Props> = (props) => {
                 </ul>
               ))}
               {social.length > 0 && (
-                <ul className="flex min-w-0 flex-col gap-3 md:min-w-[220px] md:gap-4 md:ml-10 lg:ml-12">
+                <ul
+                  className={cn(
+                    'flex min-w-0 flex-col gap-3 md:min-w-[220px] md:gap-4',
+                    hasLinkColumns && 'md:ml-10 lg:ml-12',
+                  )}
+                >
                   {social.map((s, idx) => {
                     const href = getHref(s.link)
                     const isAnchor = s.link?.type === 'anchor' && s.link?.anchorId

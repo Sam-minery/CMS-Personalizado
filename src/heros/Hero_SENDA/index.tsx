@@ -689,6 +689,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
     <>
       {useVidivAgent && (
         <Script
+          async
           src="https://app.vidiv.net/widget.js"
           strategy="afterInteractive"
           type="text/javascript"
@@ -916,7 +917,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
               className={`hero-senda-image-btn-wrap fixed bottom-6 right-6 z-40 flex justify-end transition-opacity duration-300 ${footerInView ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
             >
               {useVidivAgent ? (
-                React.createElement('vidiv-agent', { slug: 'senda-health-draft' })
+                React.createElement('vidiv-agent', { slug: 'senda-health-v2' })
               ) : (
                 <CMSLink
                   {...(imageButtonLink as React.ComponentProps<typeof CMSLink>)}
