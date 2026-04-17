@@ -21,6 +21,19 @@ export const getServerSideURL = () => {
   }
 }
 
+/**
+ * Título por defecto cuando no hay meta ni título de documento (evita el texto del template de Payload en OG/pestaña).
+ * Usa el host de `NEXT_PUBLIC_SERVER_URL` (sin “www.”).
+ */
+export const getDefaultMetadataTitle = (): string => {
+  try {
+    const host = new URL(getServerSideURL()).hostname.replace(/^www\./i, '')
+    return host || 'Site'
+  } catch {
+    return 'Site'
+  }
+}
+
 export const getClientSideURL = () => {
   if (canUseDOM) {
     const protocol = window.location.protocol

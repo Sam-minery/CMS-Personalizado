@@ -11,6 +11,7 @@ import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { Header } from '@/Header/Component'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
+import { getDefaultMetadataTitle } from '@/utilities/getURL'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { validateSlug } from '@/utilities/sanitizeHTML'
@@ -106,7 +107,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   // Si la página no existe, retornar metadatos por defecto
   if (!page) {
     return {
-      title: 'Payload Website Template',
+      title: getDefaultMetadataTitle(),
       description: '',
     }
   }

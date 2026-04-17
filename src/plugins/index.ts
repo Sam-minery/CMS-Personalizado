@@ -12,12 +12,12 @@ import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 
 import { Page, Post } from '@/payload-types'
-import { getServerSideURL } from '@/utilities/getURL'
+import { getDefaultMetadataTitle, getServerSideURL } from '@/utilities/getURL'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
   const metaTitle = doc?.meta?.title?.trim()
   if (metaTitle) return metaTitle
-  return doc?.title?.trim() || 'Payload Website Template'
+  return doc?.title?.trim() || getDefaultMetadataTitle()
 }
 
 const generateURL: GenerateURL<Post | Page> = ({ doc }) => {

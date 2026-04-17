@@ -1,16 +1,14 @@
 import type { Metadata } from 'next'
 import { getServerSideURL } from './getURL'
 
+/** Base OG sin título ni siteName: si no se pasan en `mergeOpenGraph({...})`, no se inyecta el nombre del template de Payload en redes. */
 const defaultOpenGraph: Metadata['openGraph'] = {
   type: 'website',
-  description: 'An open-source website built with Payload and Next.js.',
   images: [
     {
       url: `${getServerSideURL()}/website-template-OG.webp`,
     },
   ],
-  siteName: 'Payload Website Template',
-  title: 'Payload Website Template',
 }
 
 export const mergeOpenGraph = (og?: Metadata['openGraph']): Metadata['openGraph'] => {
