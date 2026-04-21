@@ -722,7 +722,7 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
                 {currentStep.convertStepButtonToLink &&
                 hasValidStepButtonLink(currentStep.stepButtonLink) &&
                 currentStep.stepButtonLink ? (
-                  <div className="mt-10 lg:flex lg:justify-center">
+                  <div className="mt-10 mb-6 md:mb-8 lg:flex lg:justify-center">
                     <CMSLink
                       type={currentStep.stepButtonLink.type ?? undefined}
                       reference={
@@ -774,7 +774,7 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
                     </CMSLink>
                   </div>
                 ) : (
-                  <div className="mt-10 lg:flex lg:justify-center">
+                  <div className="mt-10 mb-6 md:mb-8 lg:flex lg:justify-center">
                     <button
                       type="button"
                       disabled={selectedOptionInCurrentStep === null}

@@ -22,8 +22,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
         <InitTheme />
-        <link href="/favicon.ico" rel="icon" sizes="32x32" />
-        {/* <link href="/favicon.svg" rel="icon" type="image/svg+xml" /> */}
         {preloadFontItems.map((item) => (
           <link
             key={item.url}
@@ -47,6 +45,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
 export const metadata: Metadata = {
   metadataBase: new URL(getServerSideURL()),
+  /**
+   * Favicon: .ico activo (`sizes: 'any'` por ICO 256×256 real).
+   * SVG desactivado a propósito; descomenta la línea siguiente si quieres usarlo de nuevo.
+   */
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any', type: 'image/x-icon' },
+      // { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+  },
   openGraph: mergeOpenGraph(),
   twitter: {
     card: 'summary_large_image',
