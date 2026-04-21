@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import RichText from '@/components/RichText'
 import { CMSLink } from '@/components/Link'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
@@ -215,6 +215,11 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [selectedOptionInCurrentStep, setSelectedOptionInCurrentStep] = useState<number | null>(null)
 
+  /** En móvil, al cambiar de paso el viewport suele quedar abajo; alinear el bloque blanco arriba para ver la pregunta y las primeras opciones. */
+  const mfWhiteCardScrollRef = useRef<HTMLDivElement>(null)
+  const prevStepIndexRef = useRef(currentStepIndex)
+  const prevFormStartedRef = useRef(formStarted)
+
   const uniqueId = React.useId().replace(/:/g, '-')
   const styleId = `multi-form-senda-${uniqueId}`
 
@@ -243,6 +248,35 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
 
   const selectedFontFamily = getFontFamily()
   useGoogleFont(fontGroupTypographyActive ? undefined : selectedFontFamily)
+
+  useEffect(() => {
+    const isMobile =
+      typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
+    if (!isMobile) {
+      prevStepIndexRef.current = currentStepIndex
+      prevFormStartedRef.current = formStarted
+      return
+    }
+
+    const enteredSteps = formStarted && !prevFormStartedRef.current
+    const stepChanged =
+      formStarted && prevFormStartedRef.current && prevStepIndexRef.current !== currentStepIndex
+
+    if (enteredSteps || stepChanged) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          mfWhiteCardScrollRef.current?.scrollIntoView({
+            behavior: 'auto',
+            block: 'start',
+            inline: 'nearest',
+          })
+        })
+      })
+    }
+
+    prevStepIndexRef.current = currentStepIndex
+    prevFormStartedRef.current = formStarted
+  }, [currentStepIndex, formStarted])
 
   const fontFileUrl = customFontFileObj?.url
     ? getMediaUrl(customFontFileObj.url).replace(/([^:]\/)\/+/g, '$1')
@@ -475,13 +509,13 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
     )
     const boldColorForHover = boldTextColor ?? '#000000'
     styles.push(
-      `${sel} .mf-senda-option-btn:hover .mf-senda-option-dot { box-shadow: inset 0 0 0 6px ${boldColorForHover} !important; }`,
+      `${sel} .mf-senda-option-btn:hover .mf-senda-option-dot { box-shadow: inset 0 0 0 8px ${boldColorForHover} !important; }`,
     )
     styles.push(
-      `@media (max-width: 767px) { ${sel} .mf-senda-options-list { margin-left: -1.5rem !important; margin-right: -1.5rem !important; padding-left: 0.25rem !important; padding-right: 0.25rem !important; } }`,
+      `@media (max-width: 767px) { ${sel} .mf-senda-options-list { margin-left: -1.25rem !important; margin-right: -1.25rem !important; padding-left: 0.5rem !important; padding-right: 0.5rem !important; } }`,
     )
     styles.push(
-      `@media (min-width: 768px) { ${sel} .mf-senda-options-list { margin-left: 0 !important; margin-right: 0 !important; padding-left: 3rem !important; padding-right: 3rem !important; } }`,
+      `@media (min-width: 768px) { ${sel} .mf-senda-options-list { margin-left: 0 !important; margin-right: 0 !important; padding-left: 2rem !important; padding-right: 2rem !important; } }`,
     )
 
     if (!fontGroupTypographyActive) {
@@ -494,7 +528,9 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
     styles.push(
       `@media (max-width: ${FONT_GROUP_RICHTEXT_MOBILE_MAX}) {
         ${sel} .mf-senda-intro-richtext,
-        ${sel} .mf-senda-intro-richtext * {
+        ${sel} .mf-senda-intro-richtext *,
+        ${sel} .mf-senda-step-main-richtext,
+        ${sel} .mf-senda-step-main-richtext * {
           text-align: left !important;
         }
       }`,
@@ -570,8 +606,9 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
       )}
     >
       <div
+        ref={mfWhiteCardScrollRef}
         className={cn(
-          'mx-auto rounded-2xl pt-10 pb-6 shadow-lg md:pt-12 md:pb-8 lg:pt-14 lg:pb-10',
+          'mx-auto scroll-mt-4 rounded-2xl pt-10 pb-6 shadow-lg md:pt-12 md:pb-8 lg:pt-14 lg:pb-10',
           mfCustomWidthVw != null && mfCustomWidthVw >= 100
             ? 'w-full max-w-none px-4 sm:px-6 md:px-8 lg:px-10'
             : 'max-w-2xl px-6 md:px-8 lg:px-10',
@@ -581,7 +618,7 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
         }}
       >
             {formStarted && stepCount > 0 && (
-              <div className="w-full lg:w-1/3 lg:mx-auto pt-6 mb-8">
+              <div className="w-full lg:w-1/3 lg:mx-auto pt-0 mb-8">
                 <div className="flex items-center gap-1 lg:gap-2">
                   {stepsList.map((_, index) => {
                     const isActive = formStarted && index === currentStepIndex
@@ -606,11 +643,13 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
             {!formStarted && (
               <div style={fontStyle} className="pt-6">
                 {introRichText && (
-                  <div className={cn(richtextMainClass, 'mf-senda-intro-richtext')}>
-                    <RichText data={introRichText} enableGutter={false} enableProse={false} />
+                  <div className="px-2 sm:px-3 md:px-4 lg:px-5">
+                    <div className={cn(richtextMainClass, 'mf-senda-intro-richtext')}>
+                      <RichText data={introRichText} enableGutter={false} enableProse={false} />
+                    </div>
                   </div>
                 )}
-                <div className="lg:flex lg:justify-center">
+                <div className="mb-6 md:mb-8 lg:flex lg:justify-center">
                   <button
                     type="button"
                     onClick={() => setFormStarted(true)}
@@ -640,11 +679,11 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
             {isOnSteps && currentStep && (
               <div style={fontStyle} className="pt-6">
                 {currentStep.stepRichText && (
-                  <div className={richtextMainClass}>
+                  <div className={cn(richtextMainClass, 'mf-senda-step-main-richtext')}>
                     <RichText data={currentStep.stepRichText} enableGutter={false} enableProse={false} />
                   </div>
                 )}
-                <div className="mf-senda-options-list flex flex-col gap-2 -mx-6 px-1 md:mx-0 md:px-12">
+                <div className="mf-senda-options-list flex flex-col gap-2 -mx-[1.375rem] px-1.5 md:mx-0 md:px-8">
                   {options.map((opt, optIndex) => {
                     const isSelected = selectedOptionInCurrentStep === optIndex
                     return (
@@ -652,7 +691,7 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
                         key={optIndex}
                         type="button"
                         onClick={() => setSelectedOptionInCurrentStep(optIndex)}
-                        className="mf-senda-option-btn flex w-full items-start gap-3 text-left rounded-xl py-3 md:py-4 pl-5 pr-4 md:pl-8 md:pr-8 font-medium transition-all hover:opacity-90 focus:outline-none"
+                        className="mf-senda-option-btn flex w-full items-center gap-3 text-left rounded-3xl py-3 md:py-4 pl-5 pr-4 md:pl-6 md:pr-8 font-medium transition-all hover:opacity-90 focus:outline-none"
                         style={{
                           ...fontStyle,
                           ...(optionsBackgroundColor != null && optionsBackgroundColor !== ''
@@ -661,12 +700,12 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
                         }}
                       >
                         <span
-                          className="mf-senda-option-dot mt-1.5 h-5 w-5 flex-shrink-0 rounded-full border-2 border-neutral-800 bg-transparent transition-[box-shadow] duration-200"
+                          className="mf-senda-option-dot -ml-1 h-7 w-7 flex-shrink-0 rounded-full border-2 border-neutral-800 bg-transparent transition-[box-shadow] duration-200 md:-ml-1.5"
                           style={
                             isSelected && boldTextColor
-                              ? { boxShadow: `inset 0 0 0 6px ${boldTextColor}` }
+                              ? { boxShadow: `inset 0 0 0 8px ${boldTextColor}` }
                               : isSelected
-                                ? { boxShadow: 'inset 0 0 0 6px #000000' }
+                                ? { boxShadow: 'inset 0 0 0 8px #000000' }
                                 : undefined
                           }
                           aria-hidden

@@ -135,7 +135,7 @@ const CTA_FG_RICHTEXT =
   'cta1-senda-richtext [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-bold [&_h4]:font-bold [&_h5]:font-bold [&_h6]:font-bold [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6'
 
 export type CTA1SendaAlterBlockProps = {
-  /** Título y descripción en un único richText (área 929×120) */
+  /** Título y descripción en un único richText (área ~1200×120 en desktop) */
   title?: DefaultTypedEditorState | null
   /** Compatibilidad: bloques antiguos tenían "description" por separado */
   description?: DefaultTypedEditorState | null
@@ -635,7 +635,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
         <div
           className={cn(
             'relative z-10 flex flex-col items-center min-w-0',
-            cta1CustomWidthVw == null && 'w-full max-w-[929px] mx-auto',
+            cta1CustomWidthVw == null && 'w-full max-w-[1200px] mx-auto',
             cta1CustomWidthVw != null && 'box-border w-full max-w-none min-w-0',
           )}
           {...(cta1CustomWidthVw != null && cta1CustomWidthMobileVw != null
@@ -649,7 +649,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                 : sendaCalcBreakoutInlineStyle(cta1CustomWidthVw)
           }
         >
-          {/* Cabecera: título y descripción en un único richText — 929×120 */}
+          {/* Cabecera: título y descripción en un único richText — ~1200×120 desktop */}
           <div
             className={cn(
               'w-full mx-auto text-center min-h-[120px] flex flex-col justify-center',
@@ -668,7 +668,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
             style={{
               ...(cta1CustomWidthVw != null
                 ? { width: '100%', maxWidth: '100%' }
-                : { maxWidth: 929, width: '100%' }),
+                : { maxWidth: 1200, width: '100%' }),
               ...(textColor ? { color: textColor } : {}),
             }}
           >
@@ -689,11 +689,10 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
           {/* Contenedor secciones: 920×318; con ancho personalizado, flex 50/50 + barra vertical en el centro real */}
           <div
             className={cn(
-              'w-full mx-auto min-h-[318px]',
+              'relative w-full mx-auto min-h-[318px]',
               cta1CustomWidthVw == null &&
                 'grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch justify-items-center',
-              cta1CustomWidthVw != null &&
-                'relative flex flex-col md:flex-row md:items-stretch md:gap-0',
+              cta1CustomWidthVw != null && 'flex flex-col md:flex-row md:items-stretch md:gap-0',
             )}
             style={
               cta1CustomWidthVw == null
@@ -704,10 +703,8 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
             {/* Sección Videollamada — 436×318 */}
             <div
               className={cn(
-                'flex flex-col items-center justify-center py-6 px-6 pb-10 md:pb-6 border-b-[3px] border-white/30 min-h-[318px] w-full max-w-[436px] mx-auto',
-                cta1CustomWidthVw == null && 'md:border-b-0 md:border-r-[3px]',
-                cta1CustomWidthVw != null &&
-                  'relative z-[1] max-w-none min-w-0 md:flex-1 md:border-b-0 md:border-r-0',
+                'flex flex-col items-center justify-center py-6 px-6 pb-10 md:pb-6 min-h-[318px] w-full max-w-[436px] mx-auto',
+                cta1CustomWidthVw != null && 'relative z-[1] max-w-none min-w-0 md:flex-1',
               )}
             >
               <SectionIcon iconGroup={videocallSection?.icon} />
@@ -769,6 +766,10 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                   </div>
                 )
               })()}
+              <div
+                className="mx-auto mt-6 h-[3px] w-[334px] max-w-full shrink-0 bg-white/30 md:hidden"
+                aria-hidden
+              />
             </div>
 
             {/* Sección Teléfono — 436×318 */}
@@ -877,12 +878,10 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                 })()
               )}
             </div>
-            {cta1CustomWidthVw != null ? (
-              <div
-                aria-hidden
-                className="pointer-events-none absolute left-1/2 top-0 z-10 hidden h-full w-[3px] -translate-x-1/2 bg-white/30 md:block"
-              />
-            ) : null}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 top-1/2 z-10 hidden h-[318px] w-[3px] -translate-x-1/2 -translate-y-1/2 bg-white/30 md:block"
+            />
           </div>
         </div>
         <div className="absolute inset-0 z-0">

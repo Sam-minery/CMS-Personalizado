@@ -74,7 +74,7 @@ export const NavbarSimpleSendaBlock: React.FC<Props> = (props) => {
   const hasValidLink = !!href
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 flex h-16 items-center justify-between px-4 md:px-6">
+    <header className="absolute inset-x-0 top-0 z-50 flex h-16 w-full items-center justify-between px-4 md:px-6">
       {/* Icono enlace: esquina superior izquierda */}
       <div className="flex shrink-0 items-center justify-center">
         {hasValidLink && iconSVG ? (
@@ -111,7 +111,7 @@ export const NavbarSimpleSendaBlock: React.FC<Props> = (props) => {
             alt={imageAlt}
             width={480}
             height={80}
-            className="h-9 w-auto max-w-[200px] object-contain object-center md:h-11 md:max-w-[280px] lg:h-12 lg:max-w-[320px]"
+            className="h-9 w-auto max-w-[170px] object-contain object-center md:h-11 md:max-w-[218px] lg:h-12"
           />
         ) : null}
       </div>
