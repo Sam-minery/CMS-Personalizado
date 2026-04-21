@@ -138,8 +138,11 @@ jobs:
           mkdir -p deploy/.next/standalone/.next
           cp -a .next/static deploy/.next/standalone/.next/static
 
+          # Raíz del tar (p. ej. cwd de PM2 = carpeta del deploy).
+          # Además, Next standalone sirve public junto a server.js (mismo patrón que el Dockerfile oficial).
           if [ -d public ]; then
             cp -a public deploy/public
+            cp -a public deploy/.next/standalone/public
           fi
 
           if [ -f ecosystem.config.cjs ]; then
