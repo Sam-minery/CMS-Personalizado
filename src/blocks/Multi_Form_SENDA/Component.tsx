@@ -509,7 +509,7 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
     )
     const boldColorForHover = boldTextColor ?? '#000000'
     styles.push(
-      `${sel} .mf-senda-option-btn:hover .mf-senda-option-dot { box-shadow: inset 0 0 0 8px ${boldColorForHover} !important; }`,
+      `@media (min-width: 768px) { ${sel} .mf-senda-option-btn:hover .mf-senda-option-dot { box-shadow: inset 0 0 0 8px ${boldColorForHover} !important; } }`,
     )
     styles.push(
       `@media (max-width: 767px) { ${sel} .mf-senda-options-list { margin-left: -1.25rem !important; margin-right: -1.25rem !important; padding-left: 0.5rem !important; padding-right: 0.5rem !important; } }`,
@@ -691,7 +691,7 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
                         key={optIndex}
                         type="button"
                         onClick={() => setSelectedOptionInCurrentStep(optIndex)}
-                        className="mf-senda-option-btn flex w-full items-center gap-3 text-left rounded-3xl py-3 md:py-4 pl-5 pr-4 md:pl-6 md:pr-8 font-medium transition-all hover:opacity-90 focus:outline-none"
+                        className="mf-senda-option-btn flex w-full items-center gap-3 text-left rounded-3xl py-3 md:py-4 pl-5 pr-4 md:pl-6 md:pr-8 font-medium transition-all md:hover:opacity-90 focus:outline-none"
                         style={{
                           ...fontStyle,
                           ...(optionsBackgroundColor != null && optionsBackgroundColor !== ''
