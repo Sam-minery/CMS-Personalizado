@@ -475,6 +475,7 @@ export interface Page {
     | TestimonialsSendaBlock
     | BloqueIMCSendaBlock
     | AppSendaBlock
+    | AppSendaAlterBlock
     | FinalTestSendaBlock
   )[];
   meta?: {
@@ -3448,6 +3449,301 @@ export interface AppSendaBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AppSendaAlterBlock".
+ */
+export interface AppSendaAlterBlock {
+  /**
+   * ID para enlaces ancla (ej: app-senda-alter). Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  /**
+   * Opcional. Si se define, se muestra como fondo del bloque.
+   */
+  backgroundImage?: {
+    useMedia?: boolean | null;
+    /**
+     * Seleccione una imagen de la librería
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * URL externa de la imagen cuando no se usa imagen subida
+     */
+    src?: string | null;
+  };
+  /**
+   * Color de fondo: nombre CSS (white, black, transparent) o valor (#f5f5f5, rgb(245,245,245)). Se aplica siempre aunque el navegador esté en modo oscuro.
+   */
+  backgroundColor?: string | null;
+  /**
+   * Si está activo, el contenido (tarjeta con textos, imágenes y botones) usa el ancho en % del viewport; el fondo del bloque sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
+  /**
+   * Color de la tarjeta interior. Nombre CSS (white, gray) o valor (#ffffff, rgb(255,255,255)).
+   */
+  cardBackgroundColor?: string | null;
+  /**
+   * Color del texto del primer RichText. Nombre (black, gray) o valor (#111827, rgba(0,0,0,0.8)). Se respeta en modo claro y oscuro.
+   */
+  contentColor?: string | null;
+  /**
+   * Color para <strong> y <b> en content, contentDesktop y contentMobile. Nombre CSS o valor hex/rgba. Vacío = hereda del color del texto.
+   */
+  boldTextColor?: string | null;
+  /**
+   * Color del RichText escritorio (izquierda de la imagen) y de los tres RichText solo móvil. Nombre CSS o valor hex/rgba.
+   */
+  contentBelowImagesColor?: string | null;
+  /**
+   * Fondo de los botones: nombre (blue, #007AFF) o valor CSS. Vacío = azul por defecto.
+   */
+  buttonsBackgroundColor?: string | null;
+  /**
+   * Texto de los botones: nombre (white) o valor CSS. Vacío = blanco.
+   */
+  buttonsTextColor?: string | null;
+  /**
+   * Campo `content`: texto superior visible en móvil y escritorio (centrado en escritorio, izquierda en móvil).
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Imagen principal en escritorio, a la derecha de contentDesktop.
+   */
+  image1?: {
+    useMedia?: boolean | null;
+    /**
+     * Seleccione una imagen de la librería
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * URL externa de la imagen cuando no se usa imagen subida
+     */
+    src?: string | null;
+    /**
+     * Descripción de la imagen para accesibilidad.
+     */
+    alt?: string | null;
+  };
+  /**
+   * Primera imagen solo en móvil (tras el primer RichText móvil).
+   */
+  imageMobile1?: {
+    useMedia?: boolean | null;
+    /**
+     * Seleccione una imagen de la librería
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * URL externa de la imagen cuando no se usa imagen subida
+     */
+    src?: string | null;
+    /**
+     * Descripción de la imagen para accesibilidad.
+     */
+    alt?: string | null;
+  };
+  /**
+   * Segunda imagen solo en móvil (tras el segundo RichText móvil).
+   */
+  imageMobile2?: {
+    useMedia?: boolean | null;
+    /**
+     * Seleccione una imagen de la librería
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * URL externa de la imagen cuando no se usa imagen subida
+     */
+    src?: string | null;
+    /**
+     * Descripción de la imagen para accesibilidad.
+     */
+    alt?: string | null;
+  };
+  /**
+   * Tercera imagen solo en móvil (debajo de los botones).
+   */
+  imageMobile3?: {
+    useMedia?: boolean | null;
+    /**
+     * Seleccione una imagen de la librería
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * URL externa de la imagen cuando no se usa imagen subida
+     */
+    src?: string | null;
+    /**
+     * Descripción de la imagen para accesibilidad.
+     */
+    alt?: string | null;
+  };
+  /**
+   * RichText visible solo en tablet/escritorio, a la izquierda de la imagen escritorio. En móvil no se muestra; ahí se usan contentMobile1–3.
+   */
+  contentDesktop?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Solo móvil: debajo de content, alineado a la izquierda.
+   */
+  contentMobile1?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Solo móvil: tras la primera imagen móvil.
+   */
+  contentMobile2?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Solo móvil: tras la segunda imagen móvil y antes de los botones.
+   */
+  contentMobile3?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Hasta dos botones (ej. App Store y Google Play).
+   */
+  buttons?:
+    | {
+        /**
+         * Texto visible en el front (ej: "App Store", "Google Play").
+         */
+        title: string;
+        /**
+         * URL de la tienda (App Store o Google Play).
+         */
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+        };
+        /**
+         * Código SVG para el icono (ej. flecha). Si no se define, no se muestra icono.
+         */
+        iconSVG?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Tipografía del Font Group en todos los RichText y en el texto de los botones.
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Grupo creado en Font Groups.
+   */
+  fontGroup?: (number | null) | FontGroup;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'appSendaAlter';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "FinalTestSendaBlock".
  */
 export interface FinalTestSendaBlock {
@@ -4243,6 +4539,7 @@ export interface PagesSelect<T extends boolean = true> {
         testimonialsSenda?: T | TestimonialsSendaBlockSelect<T>;
         bloqueIMCSenda?: T | BloqueIMCSendaBlockSelect<T>;
         appSenda?: T | AppSendaBlockSelect<T>;
+        appSendaAlter?: T | AppSendaAlterBlockSelect<T>;
         finalTestSenda?: T | FinalTestSendaBlockSelect<T>;
       };
   meta?:
@@ -5059,6 +5356,90 @@ export interface AppSendaBlockSelect<T extends boolean = true> {
         alt?: T;
       };
   contentBelowImages?: T;
+  buttons?:
+    | T
+    | {
+        title?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        iconSVG?: T;
+        id?: T;
+      };
+  useFontGroup?: T;
+  fontGroup?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AppSendaAlterBlock_select".
+ */
+export interface AppSendaAlterBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  backgroundImage?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+      };
+  backgroundColor?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
+  customWidthPercentMobile?: T;
+  cardBackgroundColor?: T;
+  contentColor?: T;
+  boldTextColor?: T;
+  contentBelowImagesColor?: T;
+  buttonsBackgroundColor?: T;
+  buttonsTextColor?: T;
+  content?: T;
+  image1?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  imageMobile1?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  imageMobile2?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  imageMobile3?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        src?: T;
+        alt?: T;
+      };
+  contentDesktop?: T;
+  contentMobile1?: T;
+  contentMobile2?: T;
+  contentMobile3?: T;
   buttons?:
     | T
     | {

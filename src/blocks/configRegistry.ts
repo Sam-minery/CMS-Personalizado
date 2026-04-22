@@ -28,6 +28,7 @@ export const ALL_BLOCK_SLUGS_ORDERED: string[] = [
   'banner4',
   'banner9',
   'appSenda',
+  'appSendaAlter',
   'bloqueIMCSenda',
   'blog1',
   'blog5',

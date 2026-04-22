@@ -9,6 +9,9 @@ import { enabledBlockSlugs } from '@/projectConfig'
 const allBlockComponents: Record<string, React.ComponentType<any>> = {
   animatedPin3D: dynamic(() => import('@/blocks/3D_Animated_Pin/Component').then((m) => m.AnimatedPin3DBlock)),
   appSenda: dynamic(() => import('@/blocks/APP_SENDA/Component').then((m) => m.AppSendaBlock)),
+  appSendaAlter: dynamic(() =>
+    import('@/blocks/APP_SENDA_Alter/Component').then((m) => m.AppSendaAlterBlock),
+  ),
   finalTestSenda: dynamic(() =>
     import('@/blocks/Final_test_SENDA/Component').then((m) => m.FinalTestSendaBlock),
   ),

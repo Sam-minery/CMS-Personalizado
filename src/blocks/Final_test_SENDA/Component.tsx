@@ -561,7 +561,7 @@ export const FinalTestSendaBlock: React.FC<FinalTestSendaBlockProps> = (props) =
               style={textColor ? { color: textColor } : undefined}
             />
           )}
-          {renderButton('mt-6 flex justify-start lg:hidden')}
+          {renderButton('mt-6 flex justify-start md:mt-8 lg:mt-10')}
         </div>
         <div className="final-test-senda-col-right order-2 flex flex-col overflow-hidden rounded-3xl">
           {mainImageUrl ? (
@@ -576,7 +576,6 @@ export const FinalTestSendaBlock: React.FC<FinalTestSendaBlockProps> = (props) =
           ) : null}
         </div>
       </div>
-      {renderButton('mt-10 hidden md:mt-12 lg:mt-10 lg:flex lg:justify-center')}
     </>
   )
 

@@ -9,6 +9,7 @@ export const BLOCK_LOADER_MANIFEST: Record<
 > = {
   animatedPin3D: { path: './3D_Animated_Pin/Config', exportName: 'AnimatedPin3DBlock' },
   appSenda: { path: './APP_SENDA/config', exportName: 'AppSendaBlockConfig' },
+  appSendaAlter: { path: './APP_SENDA_Alter/config', exportName: 'AppSendaAlterBlockConfig' },
   archive: { path: './ArchiveBlock/config', exportName: 'Archive' },
   backgroundRippleEffect: { path: './Background_Ripple_Effect', exportName: 'Background_Ripple_Effect' },
   banner1: { path: './Banner1/config', exportName: 'Banner1Block' },

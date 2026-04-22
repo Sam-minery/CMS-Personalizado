@@ -19,6 +19,7 @@ import { FAQSendaBlock } from './FAQ_SENDA/config'
 import { TestimonialsSendaBlockConfig } from './Testimonials_SENDA/config'
 import { BloqueIMCSendaBlockConfig } from './BloqueIMC_SENDA/config'
 import { AppSendaBlockConfig } from './APP_SENDA/config'
+import { AppSendaAlterBlockConfig } from './APP_SENDA_Alter/config'
 import { FinalTestSendaBlockConfig } from './Final_test_SENDA/config'
 
 export const ENABLED_BLOCKS_BY_SLUG: Record<string, Block> = {
@@ -36,5 +37,6 @@ export const ENABLED_BLOCKS_BY_SLUG: Record<string, Block> = {
   "testimonialsSenda": TestimonialsSendaBlockConfig,
   "bloqueIMCSenda": BloqueIMCSendaBlockConfig,
   "appSenda": AppSendaBlockConfig,
+  "appSendaAlter": AppSendaAlterBlockConfig,
   "finalTestSenda": FinalTestSendaBlockConfig,
 }

@@ -131,6 +131,7 @@ import { CTA27Block } from '@/blocks/CTA27/Component'
 import { Header44Block } from '@/blocks/Header44/Component'
 import { Header48Block } from '@/blocks/Header48/Component'
 import { AppSendaBlock as AppSendaBlockComponent } from '@/blocks/APP_SENDA/Component'
+import { AppSendaAlterBlock as AppSendaAlterBlockComponent } from '@/blocks/APP_SENDA_Alter/Component'
 import { FinalTestSendaBlock } from '@/blocks/Final_test_SENDA/Component'
 import { AnimatedPin3DBlock } from '@/blocks/3D_Animated_Pin/Component'
 import { Pulse_Beams } from '@/blocks/Pulse_Beams/Component'
@@ -144,6 +145,7 @@ import { InfiniteMovingCardsDemo } from '@/blocks/Infinite_Moving_Cards/Componen
 const BLOCK_COMPONENTS: BlockComponentMap = {
   animatedPin3D: AnimatedPin3DBlock,
   appSenda: AppSendaBlockComponent,
+  appSendaAlter: AppSendaAlterBlockComponent,
   finalTestSenda: FinalTestSendaBlock,
   archive: ArchiveBlock,
   backgroundRippleEffect: Background_Ripple_Effect,
