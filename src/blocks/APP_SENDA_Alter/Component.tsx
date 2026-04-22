@@ -172,6 +172,63 @@ function getContentImageAlt(
   return fallback
 }
 
+const MOBILE_ALTER_IMG_CLASS = 'h-auto w-full max-w-[279px] object-contain'
+
+function readMediaDimensions(media: unknown): { width: number; height: number } | null {
+  if (!media || typeof media !== 'object') return null
+  const o = media as { width?: number | null; height?: number | null }
+  const w = typeof o.width === 'number' ? o.width : null
+  const h = typeof o.height === 'number' ? o.height : null
+  if (w != null && h != null && w > 0 && h > 0) return { width: w, height: h }
+  return null
+}
+
+/** Dimensiones del upload Payload; null si solo URL externa o media sin width/height. */
+function getContentImageIntrinsicDimensions(
+  group: ContentImageGroup | ImageMedia | null | undefined,
+): { width: number; height: number } | null {
+  if (!group || typeof group === 'number') return null
+  const g = group as ContentImageGroup
+  if ('useMedia' in g && g.useMedia && g.mediaImage && typeof g.mediaImage === 'object') {
+    const d = readMediaDimensions(g.mediaImage)
+    if (d) return d
+  }
+  if (typeof group === 'object' && 'url' in group) {
+    const d = readMediaDimensions(group)
+    if (d) return d
+  }
+  return null
+}
+
+function AppSendaAlterMobileImage({
+  url,
+  alt,
+  intrinsic,
+}: {
+  url: string
+  alt: string
+  intrinsic: { width: number; height: number } | null
+}) {
+  if (!url) return null
+  if (intrinsic) {
+    return (
+      <Image
+        src={url}
+        alt={alt}
+        width={intrinsic.width}
+        height={intrinsic.height}
+        className={MOBILE_ALTER_IMG_CLASS}
+        sizes="279px"
+      />
+    )
+  }
+  return (
+    // URL externa o media sin dimensiones: alto natural según el recurso
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={url} alt={alt} className={MOBILE_ALTER_IMG_CLASS} loading="lazy" decoding="async" />
+  )
+}
+
 export type AppSendaAlterBlockProps = {
   blockType?: string
   anchorId?: string | null
@@ -536,6 +593,9 @@ export const AppSendaAlterBlock: React.FC<AppSendaAlterBlockProps> = (props) => 
   const imageMobile1Alt = getContentImageAlt(imageMobile1, 'App image móvil 1')
   const imageMobile2Alt = getContentImageAlt(imageMobile2, 'App image móvil 2')
   const imageMobile3Alt = getContentImageAlt(imageMobile3, 'App image móvil 3')
+  const imageMobile1Intrinsic = getContentImageIntrinsicDimensions(imageMobile1)
+  const imageMobile2Intrinsic = getContentImageIntrinsicDimensions(imageMobile2)
+  const imageMobile3Intrinsic = getContentImageIntrinsicDimensions(imageMobile3)
   const backgroundImageUrl = getBackgroundImageUrl(backgroundImage)
 
   const titleRichTextClasses = cn(
@@ -685,16 +745,12 @@ export const AppSendaAlterBlock: React.FC<AppSendaAlterBlockProps> = (props) => 
               ) : null}
 
               {imageMobile1Url ? (
-                <div className="flex h-[334px] w-full max-w-full shrink-0 items-center justify-center">
-                  <div className="relative h-[334px] w-full max-w-[279px]">
-                    <Image
-                      src={imageMobile1Url}
-                      alt={imageMobile1Alt}
-                      fill
-                      className="object-contain"
-                      sizes="279px"
-                    />
-                  </div>
+                <div className="-mt-3 flex w-full max-w-full shrink-0 justify-center">
+                  <AppSendaAlterMobileImage
+                    url={imageMobile1Url}
+                    alt={imageMobile1Alt}
+                    intrinsic={imageMobile1Intrinsic}
+                  />
                 </div>
               ) : null}
 
@@ -711,16 +767,12 @@ export const AppSendaAlterBlock: React.FC<AppSendaAlterBlockProps> = (props) => 
               ) : null}
 
               {imageMobile2Url ? (
-                <div className="flex h-[334px] w-full max-w-full shrink-0 items-center justify-center">
-                  <div className="relative h-[334px] w-full max-w-[279px]">
-                    <Image
-                      src={imageMobile2Url}
-                      alt={imageMobile2Alt}
-                      fill
-                      className="object-contain"
-                      sizes="279px"
-                    />
-                  </div>
+                <div className="-mt-3 flex w-full max-w-full shrink-0 justify-center">
+                  <AppSendaAlterMobileImage
+                    url={imageMobile2Url}
+                    alt={imageMobile2Alt}
+                    intrinsic={imageMobile2Intrinsic}
+                  />
                 </div>
               ) : null}
 
@@ -738,16 +790,12 @@ export const AppSendaAlterBlock: React.FC<AppSendaAlterBlockProps> = (props) => 
 
               {renderButtonRow('w-full max-w-full justify-center')}
               {imageMobile3Url ? (
-                <div className="flex h-[334px] w-full max-w-full shrink-0 items-center justify-center">
-                  <div className="relative h-[334px] w-full max-w-[279px]">
-                    <Image
-                      src={imageMobile3Url}
-                      alt={imageMobile3Alt}
-                      fill
-                      className="object-contain"
-                      sizes="279px"
-                    />
-                  </div>
+                <div className="-mt-3 flex w-full max-w-full shrink-0 justify-center">
+                  <AppSendaAlterMobileImage
+                    url={imageMobile3Url}
+                    alt={imageMobile3Alt}
+                    intrinsic={imageMobile3Intrinsic}
+                  />
                 </div>
               ) : null}
             </div>
@@ -755,8 +803,8 @@ export const AppSendaAlterBlock: React.FC<AppSendaAlterBlockProps> = (props) => 
             <div className="mx-auto hidden w-full min-w-0 max-w-[940px] flex-col gap-5 md:flex md:gap-5 lg:gap-6">
               <div
                 className={cn(
-                  'mx-auto flex w-full min-w-0 flex-col gap-6 md:max-w-[940px] md:items-center',
-                  'xl:grid xl:min-h-[416px] xl:w-full xl:max-w-[940px] xl:grid-cols-[minmax(0,505px)_407px] xl:items-stretch xl:gap-10 xl:overflow-hidden xl:-mt-8',
+                  'mx-auto flex w-full min-w-0 flex-col gap-6 md:max-w-[940px] md:items-center md:gap-4',
+                  'xl:grid xl:min-h-[416px] xl:w-full xl:max-w-[940px] xl:grid-cols-[minmax(0,505px)_440px] xl:items-stretch xl:gap-5 xl:overflow-hidden xl:-mt-8',
                 )}
               >
                 {contentDesktop ? (
@@ -774,8 +822,8 @@ export const AppSendaAlterBlock: React.FC<AppSendaAlterBlockProps> = (props) => 
                 {image1Url ? (
                   <div
                     className={cn(
-                      'relative flex min-w-0 items-center justify-center md:mx-auto md:h-[345px] md:w-[407px] md:max-w-[407px]',
-                      'xl:mx-0 xl:h-full xl:min-h-[416px] xl:w-[407px] xl:max-w-[407px] xl:justify-self-end',
+                      'relative flex min-w-0 items-center justify-center md:mx-auto md:h-[345px] md:w-[420px] md:max-w-[420px]',
+                      'xl:mx-0 xl:h-full xl:min-h-[416px] xl:w-[440px] xl:max-w-[440px] xl:justify-self-end',
                       !contentDesktop && 'xl:col-start-2',
                     )}
                   >
@@ -784,7 +832,7 @@ export const AppSendaAlterBlock: React.FC<AppSendaAlterBlockProps> = (props) => 
                       alt={image1Alt}
                       fill
                       className="object-contain"
-                      sizes="(max-width: 1279px) 407px, 407px"
+                      sizes="(max-width: 1279px) 420px, 440px"
                     />
                   </div>
                 ) : null}

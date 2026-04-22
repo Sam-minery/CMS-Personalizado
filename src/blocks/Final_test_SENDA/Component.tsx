@@ -570,7 +570,7 @@ export const FinalTestSendaBlock: React.FC<FinalTestSendaBlockProps> = (props) =
               alt={mainImageAlt}
               width={800}
               height={600}
-              className="h-auto w-full object-cover"
+              className="h-auto w-full object-cover lg:max-h-[500px] lg:object-contain"
               sizes="(max-width: 1023px) 100vw, 50vw"
             />
           ) : null}
