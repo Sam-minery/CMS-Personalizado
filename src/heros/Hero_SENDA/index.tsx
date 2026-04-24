@@ -793,6 +793,7 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                         size="clear"
                         className={cn(
                           sendaBlockButtonPrimitiveClassName,
+                          'transition-all hover:opacity-90',
                           btnClassName,
                           twoCols &&
                             (pairStackVertical
@@ -883,7 +884,11 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                   label={undefined}
                   appearance={appearance}
                   size="clear"
-                  className={cn(sendaBlockButtonPrimitiveClassName, btnClassName)}
+                  className={cn(
+                    sendaBlockButtonPrimitiveClassName,
+                    'transition-all hover:opacity-90',
+                    btnClassName,
+                  )}
                   style={fontStyle}
                 >
                   <span className="inline-flex items-center gap-2">
@@ -924,7 +929,10 @@ export const Hero_SENDA: React.FC<Props> = (props) => {
                   label={undefined}
                   appearance="outline"
                   size="clear"
-                  className={cn(sendaBlockButtonPrimitiveClassName, 'hero-senda-btn-image')}
+                  className={cn(
+                    sendaBlockButtonPrimitiveClassName,
+                    'hero-senda-btn-image transition-all hover:opacity-90',
+                  )}
                   style={fontStyle}
                 >
                   <span className="inline-flex items-center gap-2">

@@ -649,6 +649,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                       variant={button.variant}
                       className={cn(
                         button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                        button.variant !== "link" && "transition-all hover:opacity-90",
                         button.variant === "default" && "navbar-senda-btn-default",
                       )}
                       style={fontStyle}
@@ -673,6 +674,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                       appearance={button.variant}
                       className={cn(
                         button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                        button.variant !== "link" && "transition-all hover:opacity-90",
                         button.variant === "default" && "navbar-senda-btn-default",
                       )}
                       style={fontStyle}
@@ -704,6 +706,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                       variant={firstButton.variant}
                       className={cn(
                         firstButton.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                        firstButton.variant !== "link" && "transition-all hover:opacity-90",
                         firstButton.variant === "default" && "navbar-senda-btn-default",
                       )}
                       style={fontStyle}
@@ -727,6 +730,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                       appearance={firstButton.variant}
                       className={cn(
                         firstButton.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                        firstButton.variant !== "link" && "transition-all hover:opacity-90",
                         firstButton.variant === "default" && "navbar-senda-btn-default",
                       )}
                       style={fontStyle}
@@ -827,6 +831,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                           variant={firstButton.variant}
                           className={cn(
                             firstButton.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                            firstButton.variant !== "link" && "transition-all hover:opacity-90",
                             !fontGroupTypographyActive && firstButton.variant === "link" && "text-xs",
                             firstButton.variant === "default" && "navbar-senda-btn-default",
                           )}
@@ -855,6 +860,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                             appearance={firstButton.variant}
                             className={cn(
                               firstButton.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                              firstButton.variant !== "link" && "transition-all hover:opacity-90",
                               !fontGroupTypographyActive && firstButton.variant === "link" && "text-xs",
                               firstButton.variant === "default" && "navbar-senda-btn-default",
                             )}
@@ -882,6 +888,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                             variant={button.variant}
                             className={cn(
                               button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                              button.variant !== "link" && "transition-all hover:opacity-90",
                               !fontGroupTypographyActive && button.variant === "link" && "text-xs",
                               button.variant === "default" && "navbar-senda-btn-default",
                             )}
@@ -910,6 +917,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
                               appearance={button.variant}
                               className={cn(
                                 button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                                button.variant !== "link" && "transition-all hover:opacity-90",
                                 !fontGroupTypographyActive && button.variant === "link" && "text-xs",
                                 button.variant === "default" && "navbar-senda-btn-default",
                               )}

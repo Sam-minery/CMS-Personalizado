@@ -611,7 +611,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
 
   const cta1SectionBtnClass = cn(
     sendaBlockButtonNativeClassName,
-    'font-medium border border-white/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
+    'font-medium border border-white/40 transition-all duration-200 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
     !fontGroupTypographyActive && 'text-base',
   )
 
@@ -1118,7 +1118,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                         appearance="inline"
                         className={cn(
                           sendaBlockButtonNativeSymmetricClassName,
-                          'cta1-popup-submit font-medium transition-colors border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
+                          'cta1-popup-submit font-medium border-0 transition-[filter,opacity] duration-200 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
                           !fontGroupTypographyActive && 'text-base',
                         )}
                         style={{

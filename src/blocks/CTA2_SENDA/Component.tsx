@@ -508,6 +508,7 @@ export const CTA2SendaBlock: React.FC<Props> = (props) => {
                     size={size}
                     className={cn(
                       appearance !== 'link' && sendaBlockButtonPrimitiveClassName,
+                      appearance !== 'link' && 'transition-all hover:opacity-90',
                       btnClassName,
                     )}
                     style={fontStyle}
