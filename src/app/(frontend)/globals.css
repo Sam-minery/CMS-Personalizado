@@ -118,3 +118,21 @@ html[data-theme='light'] {
     letter-spacing: normal !important;
   }
 }
+
+/**
+ * Vidiv FAB: el preflight de Tailwind (`svg { display: block; vertical-align: middle; }`) desplaza
+ * el icono dentro del botón circular del launcher. Revertimos solo dentro del FAB detectable por
+ * estilos inline típicos de Vidiv (si cambian el markup, revisar).
+ * Fuera de @layer para ganar a reglas del preflight en la misma hoja.
+ */
+html body .vidiv-widget-root button[style*='56px'][style*='border-radius'] svg {
+  display: revert !important;
+  vertical-align: revert !important;
+}
+
+html body .vidiv-widget-root button[style*='56px'][style*='border-radius'] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
