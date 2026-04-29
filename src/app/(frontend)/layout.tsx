@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
+import React, { Suspense } from 'react'
 
+import { LeadsFormularioAttributionStorage } from '@/components/LeadsFormularioAttribution/LeadsFormularioAttributionStorage'
 import { cn } from '@/utilities/ui'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
-import React from 'react'
 
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
@@ -53,6 +54,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           />
         </noscript>
         <Providers>
+          <Suspense fallback={null}>
+            <LeadsFormularioAttributionStorage />
+          </Suspense>
           {children}
           <Footer />
         </Providers>

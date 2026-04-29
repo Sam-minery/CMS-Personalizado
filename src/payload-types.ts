@@ -76,6 +76,7 @@ export interface Config {
     users: User;
     'contact-submissions': ContactSubmission;
     'form-custom-2-submissions': FormCustom2Submission;
+    'leads-formulario': LeadsFormulario;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -97,6 +98,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     'contact-submissions': ContactSubmissionsSelect<false> | ContactSubmissionsSelect<true>;
     'form-custom-2-submissions': FormCustom2SubmissionsSelect<false> | FormCustom2SubmissionsSelect<true>;
+    'leads-formulario': LeadsFormularioSelect<false> | LeadsFormularioSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -3913,6 +3915,35 @@ export interface FormCustom2Submission {
   createdAt: string;
 }
 /**
+ * Leads capturados desde el formulario SENDA (atribución). Los valores se rellenan por API al completar el flujo.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads-formulario".
+ */
+export interface LeadsFormulario {
+  id: number;
+  /**
+   * UUID generado al crear el lead (útil para Sheets y deduplicación).
+   */
+  leadRef?: string | null;
+  /**
+   * Ruta donde el usuario completó el formulario (ej. /multi-form).
+   */
+  pagePath: string;
+  campaign_name?: string | null;
+  campaign_id?: string | null;
+  utm_content?: string | null;
+  utm_source?: string | null;
+  gclid?: string | null;
+  fbclid?: string | null;
+  /**
+   * Para Apps Script: marcar como synced tras volcar a Sheets, o error si falla.
+   */
+  status: 'new' | 'synced' | 'error';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
@@ -4311,6 +4342,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'form-custom-2-submissions';
         value: number | FormCustom2Submission;
+      } | null)
+    | ({
+        relationTo: 'leads-formulario';
+        value: number | LeadsFormulario;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -5925,6 +5960,23 @@ export interface FormCustom2SubmissionsSelect<T extends boolean = true> {
   country?: T;
   date?: T;
   source?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads-formulario_select".
+ */
+export interface LeadsFormularioSelect<T extends boolean = true> {
+  leadRef?: T;
+  pagePath?: T;
+  campaign_name?: T;
+  campaign_id?: T;
+  utm_content?: T;
+  utm_source?: T;
+  gclid?: T;
+  fbclid?: T;
   status?: T;
   updatedAt?: T;
   createdAt?: T;

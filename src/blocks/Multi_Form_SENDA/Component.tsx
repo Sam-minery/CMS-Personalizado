@@ -1,7 +1,9 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import RichText from '@/components/RichText'
+import { readLeadsFormularioAttributionFromStorage } from '@/components/LeadsFormularioAttribution/LeadsFormularioAttributionStorage'
 import { CMSLink } from '@/components/Link'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
@@ -19,6 +21,7 @@ import {
   sendaBlockButtonPrimitiveClassName,
 } from '@/utilities/sendaBlockButtonClasses'
 import { appendSendaInjectedButtonBorderRadius } from '@/utilities/sendaInjectedButtonRadius'
+import { validateAndSanitizeURL } from '@/utilities/validateURL'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import { expandFontGroupRichTextFields } from '@/utilities/expandFontGroupRichTextFields'
 import {
@@ -150,6 +153,25 @@ function getHref(link: LinkGroup | null | undefined): string {
   return '#'
 }
 
+/** Misma lógica que `CMSLink`: referencia interna o URL custom validada. */
+function getSanitizedNavigationHref(link: LinkGroup | null | undefined): string | null {
+  if (!link) return null
+  if (link.type === 'reference' && link.reference?.value) {
+    const h = getHref(link)
+    return h === '#' ? null : h
+  }
+  if (link.type === 'custom' && link.url) {
+    return (
+      validateAndSanitizeURL(link.url, {
+        allowRelative: true,
+        allowAbsolute: true,
+        logBlocked: process.env.NODE_ENV === 'development',
+      }) || null
+    )
+  }
+  return null
+}
+
 function hasRichTextContent(data: DefaultTypedEditorState | null | undefined): boolean {
   if (data == null || typeof data !== 'object') return false
   const root = (data as { root?: { children?: unknown[] } }).root
@@ -182,6 +204,7 @@ const richtextIntroStepEndTailwind =
 const richtextOptionTailwind = '[&_p]:m-0 [&_h1]:text-lg [&_h2]:text-base [&_h3]:text-base [&_h4]:text-sm'
 
 export const MultiFormSendaBlock: React.FC<Props> = (props) => {
+  const router = useRouter()
   const {
     anchorId,
     introRichText,
@@ -214,6 +237,10 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
   const [formStarted, setFormStarted] = useState(false)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [selectedOptionInCurrentStep, setSelectedOptionInCurrentStep] = useState<number | null>(null)
+  /** Lead: se crea al pulsar «Continuar» en el último paso (antes de la pantalla final). */
+  const [lastStepLeadBusy, setLastStepLeadBusy] = useState(false)
+  const lastStepLeadLockRef = useRef(false)
+  const lastStepLeadCreatedRef = useRef(false)
 
   /** En móvil, al cambiar de paso el viewport suele quedar abajo; alinear el bloque blanco arriba para ver la pregunta y las primeras opciones. */
   const mfWhiteCardScrollRef = useRef<HTMLDivElement>(null)
@@ -554,6 +581,77 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
   const currentStep = isOnSteps && stepsList[currentStepIndex] ? stepsList[currentStepIndex] : null
   const options = currentStep?.options ?? []
   const backgroundImageUrl = getBackgroundImageUrl(backgroundImage)
+  const isLastStep = stepCount > 0 && currentStepIndex === stepCount - 1
+
+  useEffect(() => {
+    const onLastStep = isLastStep
+    if (!formStarted || !onLastStep) {
+      setLastStepLeadBusy(false)
+      lastStepLeadLockRef.current = false
+      lastStepLeadCreatedRef.current = false
+    }
+  }, [formStarted, isLastStep])
+
+  const submitLeadsFormularioLead = useCallback(async (): Promise<boolean> => {
+    const attr = readLeadsFormularioAttributionFromStorage()
+    const pagePath = typeof window !== 'undefined' ? window.location.pathname : ''
+    try {
+      const res = await fetch('/api/leads-formulario-submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pagePath,
+          ...attr,
+        }),
+      })
+      return res.ok
+    } catch {
+      return false
+    }
+  }, [])
+
+  const advanceAfterLastStepLead = useCallback(async () => {
+    if (lastStepLeadLockRef.current || lastStepLeadCreatedRef.current) return
+    lastStepLeadLockRef.current = true
+    setLastStepLeadBusy(true)
+    try {
+      const ok = await submitLeadsFormularioLead()
+      if (!ok) return
+      lastStepLeadCreatedRef.current = true
+      setCurrentStepIndex((i) => i + 1)
+      setSelectedOptionInCurrentStep(null)
+    } finally {
+      lastStepLeadLockRef.current = false
+      setLastStepLeadBusy(false)
+    }
+  }, [submitLeadsFormularioLead])
+
+  const navigateAfterLastStepLead = useCallback(
+    async (link: LinkGroup) => {
+      if (lastStepLeadLockRef.current || lastStepLeadCreatedRef.current) return
+      const href = getSanitizedNavigationHref(link)
+      if (!href) return
+      lastStepLeadLockRef.current = true
+      setLastStepLeadBusy(true)
+      try {
+        const ok = await submitLeadsFormularioLead()
+        if (!ok) return
+        lastStepLeadCreatedRef.current = true
+        const openNew = Boolean(link.newTab)
+        if (openNew) {
+          window.open(href, '_blank', 'noopener,noreferrer')
+        } else if (href.startsWith('http://') || href.startsWith('https://')) {
+          window.location.assign(href)
+        } else {
+          await router.push(href)
+        }
+      } finally {
+        lastStepLeadLockRef.current = false
+        setLastStepLeadBusy(false)
+      }
+    },
+    [router, submitLeadsFormularioLead],
+  )
 
   const mfCustomWidthVw =
     applyCustomWidth === true
@@ -723,62 +821,112 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
                 hasValidStepButtonLink(currentStep.stepButtonLink) &&
                 currentStep.stepButtonLink ? (
                   <div className="mt-10 mb-6 md:mb-8 lg:flex lg:justify-center">
-                    <CMSLink
-                      type={currentStep.stepButtonLink.type ?? undefined}
-                      reference={
-                        currentStep.stepButtonLink.reference?.relationTo &&
-                        currentStep.stepButtonLink.reference?.value != null
-                          ? {
-                              relationTo: currentStep.stepButtonLink.reference.relationTo,
-                              value: currentStep.stepButtonLink.reference.value as React.ComponentProps<
-                                typeof CMSLink
-                              >['reference'] extends { value: infer V } ? V : never,
-                            }
-                          : undefined
-                      }
-                      url={currentStep.stepButtonLink.url ?? undefined}
-                      newTab={currentStep.stepButtonLink.newTab ?? undefined}
-                      appearance="inline"
-                      className={cn(
-                        'mf-senda-step-btn mf-senda-step-btn-link no-underline transition-all hover:opacity-90',
-                        sendaBlockButtonNativeClassName,
-                      )}
-                      style={{
-                        ...fontStyle,
-                        backgroundColor: (selectedOptionInCurrentStep === null
-                          ? (currentStep.stepButtonBackgroundColor ?? buttonBackgroundColor)
-                          : buttonBackgroundColor) as React.CSSProperties['backgroundColor'],
-                        ['--mf-senda-step-btn-color' as string]:
-                          selectedOptionInCurrentStep === null
-                            ? (currentStep.stepButtonTextColor ?? buttonTextColor)
-                            : buttonTextColor,
-                      }}
-                    >
-                      <span className="mf-senda-btn-label inline-flex items-center gap-2">
-                        {currentStep.stepButtonLink.label?.trim() ||
-                          currentStep.stepButtonLabel?.trim() ||
-                          'Continuar'}
-                        {currentStep.stepButtonIconSVG?.trim() ? (
-                          <span
-                            className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                            dangerouslySetInnerHTML={{
-                              __html: sanitizeSVG(currentStep.stepButtonIconSVG).replace(
-                                /\sheight=["'][^"']*["']/gi,
-                                '',
-                              ),
-                            }}
-                            aria-hidden
-                          />
-                        ) : null}
-                      </span>
-                    </CMSLink>
+                    {isLastStep ? (
+                      <button
+                        type="button"
+                        disabled={selectedOptionInCurrentStep === null || lastStepLeadBusy}
+                        aria-busy={lastStepLeadBusy}
+                        onClick={() => void navigateAfterLastStepLead(currentStep.stepButtonLink!)}
+                        className={cn(
+                          'mf-senda-step-btn mf-senda-step-btn-link no-underline transition-all hover:opacity-90 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60',
+                          sendaBlockButtonNativeClassName,
+                        )}
+                        style={{
+                          ...fontStyle,
+                          backgroundColor: (selectedOptionInCurrentStep === null
+                            ? (currentStep.stepButtonBackgroundColor ?? buttonBackgroundColor)
+                            : buttonBackgroundColor) as React.CSSProperties['backgroundColor'],
+                          ['--mf-senda-step-btn-color' as string]:
+                            selectedOptionInCurrentStep === null
+                              ? (currentStep.stepButtonTextColor ?? buttonTextColor)
+                              : buttonTextColor,
+                        }}
+                      >
+                        <span className="mf-senda-btn-label inline-flex items-center gap-2">
+                          {lastStepLeadBusy
+                            ? 'Enviando…'
+                            : currentStep.stepButtonLink.label?.trim() ||
+                              currentStep.stepButtonLabel?.trim() ||
+                              'Continuar'}
+                          {currentStep.stepButtonIconSVG?.trim() && !lastStepLeadBusy ? (
+                            <span
+                              className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                              dangerouslySetInnerHTML={{
+                                __html: sanitizeSVG(currentStep.stepButtonIconSVG).replace(
+                                  /\sheight=["'][^"']*["']/gi,
+                                  '',
+                                ),
+                              }}
+                              aria-hidden
+                            />
+                          ) : null}
+                        </span>
+                      </button>
+                    ) : (
+                      <CMSLink
+                        type={currentStep.stepButtonLink.type ?? undefined}
+                        reference={
+                          currentStep.stepButtonLink.reference?.relationTo &&
+                          currentStep.stepButtonLink.reference?.value != null
+                            ? {
+                                relationTo: currentStep.stepButtonLink.reference.relationTo,
+                                value: currentStep.stepButtonLink.reference.value as React.ComponentProps<
+                                  typeof CMSLink
+                                >['reference'] extends { value: infer V } ? V : never,
+                              }
+                            : undefined
+                        }
+                        url={currentStep.stepButtonLink.url ?? undefined}
+                        newTab={currentStep.stepButtonLink.newTab ?? undefined}
+                        appearance="inline"
+                        className={cn(
+                          'mf-senda-step-btn mf-senda-step-btn-link no-underline transition-all hover:opacity-90',
+                          sendaBlockButtonNativeClassName,
+                        )}
+                        style={{
+                          ...fontStyle,
+                          backgroundColor: (selectedOptionInCurrentStep === null
+                            ? (currentStep.stepButtonBackgroundColor ?? buttonBackgroundColor)
+                            : buttonBackgroundColor) as React.CSSProperties['backgroundColor'],
+                          ['--mf-senda-step-btn-color' as string]:
+                            selectedOptionInCurrentStep === null
+                              ? (currentStep.stepButtonTextColor ?? buttonTextColor)
+                              : buttonTextColor,
+                        }}
+                      >
+                        <span className="mf-senda-btn-label inline-flex items-center gap-2">
+                          {currentStep.stepButtonLink.label?.trim() ||
+                            currentStep.stepButtonLabel?.trim() ||
+                            'Continuar'}
+                          {currentStep.stepButtonIconSVG?.trim() ? (
+                            <span
+                              className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                              dangerouslySetInnerHTML={{
+                                __html: sanitizeSVG(currentStep.stepButtonIconSVG).replace(
+                                  /\sheight=["'][^"']*["']/gi,
+                                  '',
+                                ),
+                              }}
+                              aria-hidden
+                            />
+                          ) : null}
+                        </span>
+                      </CMSLink>
+                    )}
                   </div>
                 ) : (
                   <div className="mt-10 mb-6 md:mb-8 lg:flex lg:justify-center">
                     <button
                       type="button"
-                      disabled={selectedOptionInCurrentStep === null}
+                      disabled={
+                        selectedOptionInCurrentStep === null || (isLastStep && lastStepLeadBusy)
+                      }
+                      aria-busy={isLastStep && lastStepLeadBusy}
                       onClick={() => {
+                        if (isLastStep) {
+                          void advanceAfterLastStepLead()
+                          return
+                        }
                         setCurrentStepIndex((i) => i + 1)
                         setSelectedOptionInCurrentStep(null)
                       }}
@@ -798,8 +946,10 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
                       }}
                     >
                       <span className="mf-senda-btn-label inline-flex items-center gap-2">
-                        {currentStep.stepButtonLabel?.trim() || 'Continuar'}
-                        {currentStep.stepButtonIconSVG?.trim() ? (
+                        {isLastStep && lastStepLeadBusy
+                          ? 'Enviando…'
+                          : currentStep.stepButtonLabel?.trim() || 'Continuar'}
+                        {currentStep.stepButtonIconSVG?.trim() && !(isLastStep && lastStepLeadBusy) ? (
                           <span
                             className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
                             dangerouslySetInnerHTML={{
