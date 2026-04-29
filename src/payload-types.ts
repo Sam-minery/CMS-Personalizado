@@ -3915,7 +3915,7 @@ export interface FormCustom2Submission {
   createdAt: string;
 }
 /**
- * Leads capturados desde el formulario SENDA (atribución). Los valores se rellenan por API al completar el flujo.
+ * Leads capturados desde el formulario SENDA (atribución). Alta pública: POST /api/leads-formulario-submit. En admin se pueden revisar y borrar.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "leads-formulario".

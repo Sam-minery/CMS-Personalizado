@@ -20,7 +20,8 @@ const beforeValidateLeadsFormulario: CollectionBeforeValidateHook = ({ data, ope
 export const LeadsFormulario: CollectionConfig = {
   slug: 'leads-formulario',
   access: {
-    create: () => true,
+    /** Sin usuario: no crear vía API Payload. La web usa `POST /api/leads-formulario-submit` con `overrideAccess`. */
+    create: authenticated,
     delete: authenticated,
     read: authenticated,
     update: authenticated,
@@ -41,7 +42,7 @@ export const LeadsFormulario: CollectionConfig = {
       'createdAt',
     ],
     description:
-      'Leads capturados desde el formulario SENDA (atribución). Los valores se rellenan por API al completar el flujo.',
+      'Leads capturados desde el formulario SENDA (atribución). Alta pública: POST /api/leads-formulario-submit. En admin se pueden revisar y borrar.',
   },
   hooks: {
     beforeValidate: [beforeValidateLeadsFormulario],
