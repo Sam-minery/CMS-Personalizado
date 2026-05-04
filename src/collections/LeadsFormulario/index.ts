@@ -1,7 +1,13 @@
 import { randomUUID } from 'crypto'
 
-import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
+import type {
+  CollectionAfterChangeHook,
+  CollectionBeforeValidateHook,
+  CollectionConfig,
+} from 'payload'
 
+import type { LeadsFormulario as LeadsFormularioDoc } from '@/payload-types'
+import { syncLeadFormularioToSheets } from '@/lib/syncLeadFormularioToSheets'
 import { authenticated } from '../../access/authenticated'
 
 const beforeValidateLeadsFormulario: CollectionBeforeValidateHook = ({ data, operation }) => {
@@ -15,6 +21,25 @@ const beforeValidateLeadsFormulario: CollectionBeforeValidateHook = ({ data, ope
   }
 
   return next
+}
+
+/**
+ * Push directo a Google Sheets en cada creación (fire-and-forget).
+ * Si falla, el doc queda `status: 'error'` y el endpoint de reconciliación
+ * (`/api/sync/leads-formulario-reconcile`) lo reintentará en el próximo cron.
+ *
+ */
+const afterChangeLeadsFormulario: CollectionAfterChangeHook = ({ doc, operation, req }) => {
+  if (operation !== 'create') return doc
+
+  void syncLeadFormularioToSheets(req.payload, doc as LeadsFormularioDoc).catch((err) => {
+    req.payload.logger.error(
+      { err, leadId: (doc as LeadsFormularioDoc).id },
+      'Unhandled error in syncLeadFormularioToSheets',
+    )
+  })
+
+  return doc
 }
 
 export const LeadsFormulario: CollectionConfig = {
@@ -46,6 +71,7 @@ export const LeadsFormulario: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [beforeValidateLeadsFormulario],
+    afterChange: [afterChangeLeadsFormulario],
   },
   fields: [
     {
@@ -120,7 +146,28 @@ export const LeadsFormulario: CollectionConfig = {
       ],
       admin: {
         position: 'sidebar',
-        description: 'Para Apps Script: marcar como synced tras volcar a Sheets, o error si falla.',
+        description:
+          'Sincronización con Google Sheets: synced si la fila se exportó OK, error si falló (se reintenta vía /api/sync/leads-formulario-reconcile).',
+      },
+    },
+    {
+      name: 'lastSyncAt',
+      type: 'date',
+      label: 'Última sincronización',
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        description: 'Fecha del último append exitoso a Google Sheets.',
+      },
+    },
+    {
+      name: 'lastSyncError',
+      type: 'textarea',
+      label: 'Último error de sincronización',
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        description: 'Mensaje del último intento fallido contra Google Sheets (vacío si todo OK).',
       },
     },
   ],

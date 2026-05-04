@@ -3937,9 +3937,17 @@ export interface LeadsFormulario {
   gclid?: string | null;
   fbclid?: string | null;
   /**
-   * Para Apps Script: marcar como synced tras volcar a Sheets, o error si falla.
+   * Sincronización con Google Sheets: synced si la fila se exportó OK, error si falló.
    */
   status: 'new' | 'synced' | 'error';
+  /**
+   * Fecha del último append exitoso a Google Sheets.
+   */
+  lastSyncAt?: string | null;
+  /**
+   * Mensaje del último intento fallido contra Google Sheets (vacío si todo OK).
+   */
+  lastSyncError?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -5978,6 +5986,8 @@ export interface LeadsFormularioSelect<T extends boolean = true> {
   gclid?: T;
   fbclid?: T;
   status?: T;
+  lastSyncAt?: T;
+  lastSyncError?: T;
   updatedAt?: T;
   createdAt?: T;
 }
