@@ -48,6 +48,7 @@ const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
   redirects,
+  serverExternalPackages: ['googleapis', 'google-auth-library', 'gaxios', 'gtoken'],
 }
 
 export default withPayload(nextConfig, { devBundleServerPackages: false })
