@@ -3937,7 +3937,7 @@ export interface LeadsFormulario {
   gclid?: string | null;
   fbclid?: string | null;
   /**
-   * Sincronización con Google Sheets: synced si la fila se exportó OK, error si falló.
+   * Sincronización con Google Sheets: synced si la fila se exportó OK, error si falló (se reintenta vía /api/sync/leads-formulario-reconcile).
    */
   status: 'new' | 'synced' | 'error';
   /**
