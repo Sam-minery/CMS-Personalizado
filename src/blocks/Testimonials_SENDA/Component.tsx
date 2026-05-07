@@ -595,6 +595,17 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
       typeof window !== 'undefined' &&
       window.innerWidth >= 1280 &&
       testimonialData.length > 3
+    if (desktopWideMany) {
+      // En desktop (4+), alineamos por "start" usando posición determinista.
+      // Con scrollIntoView + snap puede quedar en offsets intermedios.
+      const startOffset = cells[0]?.offsetLeft ?? 0
+      const targetLeft = Math.max(0, cell.offsetLeft - startOffset)
+      container.scrollTo({
+        left: targetLeft,
+        behavior: smooth ? 'smooth' : 'auto',
+      })
+      return
+    }
     cell.scrollIntoView({
       behavior: smooth ? 'smooth' : 'auto',
       inline: desktopWideMany ? 'start' : 'center',
@@ -602,17 +613,52 @@ export const TestimonialsSendaBlockComponent: React.FC<TestimonialsSendaBlockPro
     })
   }
 
+  /**
+   * En desktop con 4+ testimonios mostramos varias tarjetas a la vez y alineamos por `start`.
+   * Ahí `currentIndex` (calculado por centro de viewport) puede no coincidir con la tarjeta
+   * líder visible. Para navegación izquierda/derecha usamos el índice líder real.
+   */
+  const getDesktopLeadingVisibleIndex = (): number => {
+    const container = scrollContainerRef.current
+    if (!container || testimonialData.length === 0) return 0
+
+    if (typeof window === 'undefined' || window.innerWidth < 1280 || testimonialData.length <= 3) {
+      return Math.max(0, Math.min(currentIndex, testimonialData.length - 1))
+    }
+
+    const cells = container.querySelectorAll<HTMLElement>('.senda-testimonials-card-cell')
+    if (cells.length === 0) return 0
+
+    const sl = container.scrollLeft
+    const startOffset = cells[0]?.offsetLeft ?? 0
+    let bestIdx = 0
+    let bestDist = Infinity
+    cells.forEach((cell, i) => {
+      // Cuando una card i está alineada al inicio, suele cumplirse:
+      // scrollLeft ~= cell.offsetLeft - startOffset
+      // Esto hace el cálculo robusto con padding/scroll-padding.
+      const dist = Math.abs((cell.offsetLeft - sl) - startOffset)
+      if (dist < bestDist) {
+        bestDist = dist
+        bestIdx = i
+      }
+    })
+    return Math.max(0, Math.min(bestIdx, testimonialData.length - 1))
+  }
+
   const scrollLeft = () => {
     if (testimonialData.length === 0) return
-    const nextIndex = Math.max(0, currentIndex - 1)
-    if (nextIndex === currentIndex) return
+    const baseIndex = getDesktopLeadingVisibleIndex()
+    const nextIndex = Math.max(0, baseIndex - 1)
+    if (nextIndex === baseIndex) return
     scrollToTestimonialIndex(nextIndex, true)
   }
 
   const scrollRight = () => {
     if (testimonialData.length === 0) return
-    const nextIndex = Math.min(testimonialData.length - 1, currentIndex + 1)
-    if (nextIndex === currentIndex) return
+    const baseIndex = getDesktopLeadingVisibleIndex()
+    const nextIndex = Math.min(testimonialData.length - 1, baseIndex + 1)
+    if (nextIndex === baseIndex) return
     scrollToTestimonialIndex(nextIndex, true)
   }
 

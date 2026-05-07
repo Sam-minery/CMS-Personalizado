@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useMediaQuery } from "@relume_io/relume-ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { RxChevronDown } from "react-icons/rx";
 import { CMSLink } from "@/components/Link";
@@ -184,6 +183,33 @@ type Props = {
 export type Navbar_SENDAProps = React.ComponentPropsWithoutRef<"section"> & Partial<Props>;
 
 const STICKY_SCROLL_THRESHOLD = 24;
+
+/**
+ * Media query estable para SSR/hidratación:
+ * - SSR y primer render cliente devuelven false (desktop)
+ * - tras montar, sincroniza con matchMedia real
+ */
+function useStableMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
+
+    const mediaQuery = window.matchMedia(query);
+    const update = () => setMatches(mediaQuery.matches);
+    update();
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", update);
+      return () => mediaQuery.removeEventListener("change", update);
+    }
+
+    mediaQuery.addListener(update);
+    return () => mediaQuery.removeListener(update);
+  }, [query]);
+
+  return matches;
+}
 
 function scrollToAnchor(id: string) {
   if (!id || typeof document === "undefined") return;
@@ -424,7 +450,7 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
   const [activeAnchorId, setActiveAnchorId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const ratiosRef = useRef<Record<string, number>>({});
-  const isMobile = useMediaQuery("(max-width: 991px)");
+  const isMobile = useStableMediaQuery("(max-width: 991px)");
 
   useEffect(() => {
     const handleScroll = () => {
