@@ -1,5 +1,4 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
-
 /**
  * Añade los campos de auditoría de sincronización con Google Sheets a la
  * collection `leads-formulario`:

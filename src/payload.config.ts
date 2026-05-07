@@ -26,6 +26,7 @@ import fs from 'fs'
 import { Categories } from './collections/Categories'
 import { ContactSubmissions } from './collections/ContactSubmissions'
 import { FormCustom2Submissions } from './collections/FormCustom2Submissions'
+import { LeadsCta } from './collections/LeadsCta'
 import { LeadsFormulario } from './collections/LeadsFormulario'
 import { FontGroups } from './collections/FontGroups'
 import { Fonts } from './collections/Fonts'
@@ -34,6 +35,7 @@ import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
+import { NotificacionLeadsCta } from './globals/NotificacionLeadsCta'
 import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
@@ -162,12 +164,13 @@ export default buildConfig({
     ContactSubmissions,
     FormCustom2Submissions,
     LeadsFormulario,
+    LeadsCta,
   ],
   cors: (() => {
     const serverURL = getServerSideURL()
     return serverURL ? [serverURL] : []
   })(),
-  globals: [Header, Footer],
+  globals: [Header, Footer, NotificacionLeadsCta],
   plugins: [
     ...plugins,
     // Plugin oficial de Google Cloud Storage para la colección de media

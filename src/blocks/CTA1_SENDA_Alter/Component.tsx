@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useRouter } from 'next/navigation'
 import RichText from '@/components/RichText'
 import { CMSLink } from '@/components/Link'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
@@ -33,6 +34,7 @@ import {
   type FontGroupLineHeights,
   type FontGroupTypography,
 } from '@/utilities/fontGroupRichTextCss'
+import { validateAndSanitizeURL } from '@/utilities/validateURL'
 
 /** Tipos locales para no depender de payload-types (evita fallos de build si el bloque no está en projectConfig). */
 type MediaLike = {
@@ -180,6 +182,31 @@ function sanitizeAnchorId(value: string | null | undefined): string {
   return s || ''
 }
 
+/** Misma resolución de `href` que `CMSLink` para navegar tras guardar el lead CTA. */
+function resolvePhonePopupHref(link: CTA1SendaLink): string | null {
+  const type = link.type
+  const refVal = link.reference?.value
+  const rawHref =
+    type === 'reference' &&
+    refVal &&
+    typeof refVal === 'object' &&
+    'slug' in refVal &&
+    typeof (refVal as { slug?: string }).slug === 'string'
+      ? `${link.reference?.relationTo !== 'pages' ? `/${link.reference?.relationTo}` : ''}/${(refVal as { slug: string }).slug}`
+      : link.url
+
+  if (!rawHref) return null
+  const href =
+    type === 'reference'
+      ? rawHref
+      : validateAndSanitizeURL(rawHref, {
+          allowRelative: true,
+          allowAbsolute: true,
+          logBlocked: process.env.NODE_ENV === 'development',
+        })
+  return href || null
+}
+
 /** Acepta hex, rgb, rgba, nombres CSS, etc. y devuelve un valor seguro para usar en style o CSS. */
 function sanitizeCssColor(value: string | null | undefined): string {
   if (value == null || typeof value !== 'string') return ''
@@ -284,20 +311,28 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
   const uniqueId = React.useId().replace(/:/g, '-')
   const styleId = `cta1-senda-${uniqueId}`
 
+  const router = useRouter()
   const [isPhonePopupOpen, setIsPhonePopupOpen] = React.useState(false)
   const [formName, setFormName] = React.useState('')
   const [formPhone, setFormPhone] = React.useState('')
   const [agreedToTerms, setAgreedToTerms] = React.useState(false)
+  const [leadsCtaSubmitting, setLeadsCtaSubmitting] = React.useState(false)
+  const [leadsCtaSubmitError, setLeadsCtaSubmitError] = React.useState<string | null>(null)
 
   const usePhonePopup = !!phoneSection?.phonePopup?.usePopup
   const popup = phoneSection?.phonePopup
 
-  const openPhonePopup = React.useCallback(() => setIsPhonePopupOpen(true), [])
+  const openPhonePopup = React.useCallback(() => {
+    setLeadsCtaSubmitError(null)
+    setIsPhonePopupOpen(true)
+  }, [])
   const closePhonePopup = React.useCallback(() => {
     setIsPhonePopupOpen(false)
     setFormName('')
     setFormPhone('')
     setAgreedToTerms(false)
+    setLeadsCtaSubmitting(false)
+    setLeadsCtaSubmitError(null)
   }, [])
 
   React.useEffect(() => {
@@ -1070,7 +1105,6 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
             <form
               onSubmit={(e) => {
                 e.preventDefault()
-                closePhonePopup()
               }}
               className="space-y-4"
             >
@@ -1100,7 +1134,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                   onChange={(e) => setFormPhone(e.target.value)}
                   className="rounded-2xl border border-white/30 bg-white/95 text-gray-900 px-3 focus:outline-none focus:ring-2 focus:ring-white/50"
                   style={{ width: 261, height: 48 }}
-                  placeholder="666 666 666"
+                  placeholder="678 678 678"
                 />
               </div>
 
@@ -1108,29 +1142,88 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                 agreedToTerms ? (
                   (() => {
                     const btn = popup.button
-                    const link = btn.link as React.ComponentProps<typeof CMSLink> & { label?: string }
-                    const { label: linkLabel, ...linkProps } = link
+                    const link = btn.link as CTA1SendaLink
+                    const linkLabel = link.label
                     const bg = sanitizeCssColor(btn.backgroundColor) || 'rgba(255,255,255,0.2)'
                     const fg = sanitizeCssColor(btn.textColor) || '#ffffff'
+                    const displayLabel = linkLabel ? linkLabel : 'Enviar'
+
+                    const submitLeadThenNavigate = async () => {
+                      const name = formName.trim()
+                      const phone = formPhone.trim()
+                      if (!name || !phone) {
+                        setLeadsCtaSubmitError('Indica nombre y teléfono.')
+                        return
+                      }
+                      const href = resolvePhonePopupHref(link)
+                      if (!href) {
+                        setLeadsCtaSubmitError('El enlace de destino no es válido.')
+                        return
+                      }
+                      setLeadsCtaSubmitting(true)
+                      setLeadsCtaSubmitError(null)
+                      try {
+                        const res = await fetch('/api/leads-cta-submit', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ fullName: name, phone }),
+                        })
+                        let data: { error?: string; retryAfterSec?: number } = {}
+                        try {
+                          data = (await res.json()) as typeof data
+                        } catch {
+                          /* ignore */
+                        }
+                        if (!res.ok) {
+                          const msg =
+                            typeof data.error === 'string'
+                              ? data.error
+                              : 'No se pudo guardar. Inténtalo de nuevo.'
+                          setLeadsCtaSubmitError(
+                            res.status === 429 && typeof data.retryAfterSec === 'number'
+                              ? `${msg} Reintenta en ${data.retryAfterSec}s.`
+                              : msg,
+                          )
+                          return
+                        }
+                        closePhonePopup()
+                        if (link.newTab) {
+                          window.open(href, '_blank', 'noopener,noreferrer')
+                        } else {
+                          router.push(href)
+                        }
+                      } finally {
+                        setLeadsCtaSubmitting(false)
+                      }
+                    }
+
                     return (
-                      <CMSLink
-                        {...linkProps}
-                        appearance="inline"
-                        className={cn(
-                          sendaBlockButtonNativeSymmetricClassName,
-                          'cta1-popup-submit font-medium border-0 transition-[filter,opacity] duration-200 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2',
-                          !fontGroupTypographyActive && 'text-base',
-                        )}
-                        style={{
-                          ...fontStyle,
-                          backgroundColor: bg,
-                          color: fg,
-                        }}
-                      >
-                        <span className="cta1-popup-btn-label leading-normal">
-                          {linkLabel ? linkLabel : 'Enviar'}
-                        </span>
-                      </CMSLink>
+                      <div className="space-y-2">
+                        <button
+                          type="button"
+                          disabled={leadsCtaSubmitting}
+                          onClick={() => void submitLeadThenNavigate()}
+                          className={cn(
+                            sendaBlockButtonNativeSymmetricClassName,
+                            'cta1-popup-submit font-medium border-0 transition-[filter,opacity] duration-200 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 inline-flex items-center justify-center text-center cursor-pointer disabled:opacity-60 disabled:pointer-events-none',
+                            !fontGroupTypographyActive && 'text-base',
+                          )}
+                          style={{
+                            ...fontStyle,
+                            backgroundColor: bg,
+                            color: fg,
+                          }}
+                        >
+                          <span className="cta1-popup-btn-label leading-normal">
+                            {leadsCtaSubmitting ? 'Enviando…' : displayLabel}
+                          </span>
+                        </button>
+                        {leadsCtaSubmitError ? (
+                          <p className="text-sm text-red-200" role="alert">
+                            {leadsCtaSubmitError}
+                          </p>
+                        ) : null}
+                      </div>
                     )
                   })()
                 ) : (

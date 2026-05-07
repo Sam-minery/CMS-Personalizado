@@ -8,6 +8,7 @@ const MAX_REQUESTS_PER_WINDOW = 20
 type Bucket = { windowStart: number; count: number }
 
 const buckets = new Map<string, Bucket>()
+const bucketsLeadsCta = new Map<string, Bucket>()
 
 export function getClientIpFromRequest(request: Request): string {
   const forwarded = request.headers.get('x-forwarded-for')
@@ -28,6 +29,26 @@ export function consumeLeadsFormularioSubmitRateLimit(ip: string): { ok: true } 
 
   if (!existing || now - existing.windowStart >= WINDOW_MS) {
     buckets.set(key, { windowStart: now, count: 1 })
+    return { ok: true }
+  }
+
+  if (existing.count >= MAX_REQUESTS_PER_WINDOW) {
+    const retryAfterMs = WINDOW_MS - (now - existing.windowStart)
+    return { ok: false, retryAfterSec: Math.max(1, Math.ceil(retryAfterMs / 1000)) }
+  }
+
+  existing.count += 1
+  return { ok: true }
+}
+
+/** Rate limit independiente para `POST /api/leads-cta-submit`. */
+export function consumeLeadsCtaSubmitRateLimit(ip: string): { ok: true } | { ok: false; retryAfterSec: number } {
+  const key = ip || 'unknown'
+  const now = Date.now()
+  const existing = bucketsLeadsCta.get(key)
+
+  if (!existing || now - existing.windowStart >= WINDOW_MS) {
+    bucketsLeadsCta.set(key, { windowStart: now, count: 1 })
     return { ok: true }
   }
 

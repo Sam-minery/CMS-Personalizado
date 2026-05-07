@@ -77,6 +77,7 @@ export interface Config {
     'contact-submissions': ContactSubmission;
     'form-custom-2-submissions': FormCustom2Submission;
     'leads-formulario': LeadsFormulario;
+    'leads-cta': LeadsCta;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -99,6 +100,7 @@ export interface Config {
     'contact-submissions': ContactSubmissionsSelect<false> | ContactSubmissionsSelect<true>;
     'form-custom-2-submissions': FormCustom2SubmissionsSelect<false> | FormCustom2SubmissionsSelect<true>;
     'leads-formulario': LeadsFormularioSelect<false> | LeadsFormularioSelect<true>;
+    'leads-cta': LeadsCtaSelect<false> | LeadsCtaSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -116,10 +118,12 @@ export interface Config {
   globals: {
     header: Header;
     footer: Footer;
+    'notificacion-leads-cta': NotificacionLeadsCta;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    'notificacion-leads-cta': NotificacionLeadsCtaSelect<false> | NotificacionLeadsCtaSelect<true>;
   };
   locale: null;
   user: User & {
@@ -3952,6 +3956,33 @@ export interface LeadsFormulario {
   createdAt: string;
 }
 /**
+ * Leads del popup teléfono (CTA1 SENDA Alter). Alta pública: POST /api/leads-cta-submit. Estado para notificación por email.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads-cta".
+ */
+export interface LeadsCta {
+  id: number;
+  /**
+   * UUID al crear el lead (deduplicación y trazabilidad).
+   */
+  leadRef?: string | null;
+  /**
+   * Nombre y apellidos (popup CTA1 SENDA Alter o alta manual en admin).
+   */
+  fullName: string;
+  /**
+   * Teléfono (popup CTA1 SENDA Alter o alta manual en admin).
+   */
+  phone: string;
+  /**
+   * Flujo de notificación: nuevo → enviado por email, o error si falló el envío.
+   */
+  status: 'new' | 'emailed' | 'error';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
@@ -4354,6 +4385,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'leads-formulario';
         value: number | LeadsFormulario;
+      } | null)
+    | ({
+        relationTo: 'leads-cta';
+        value: number | LeadsCta;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -5993,6 +6028,18 @@ export interface LeadsFormularioSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads-cta_select".
+ */
+export interface LeadsCtaSelect<T extends boolean = true> {
+  leadRef?: T;
+  fullName?: T;
+  phone?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects_select".
  */
 export interface RedirectsSelect<T extends boolean = true> {
@@ -7527,6 +7574,35 @@ export interface Footer {
   createdAt?: string | null;
 }
 /**
+ * Configura destinatarios para notificar por Postmark cada nuevo lead del popup CTA1 SENDA Alter.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notificacion-leads-cta".
+ */
+export interface NotificacionLeadsCta {
+  id: number;
+  enabled?: boolean | null;
+  /**
+   * Lista de emails que recibirán cada nuevo lead CTA.
+   */
+  recipients?:
+    | {
+        email: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Si se deja vacío se usa POSTMARK_FROM_EMAIL desde variables de entorno.
+   */
+  fromEmail?: string | null;
+  /**
+   * Ejemplo: [SENDA]. Se añade al asunto del correo.
+   */
+  subjectPrefix?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
@@ -8337,6 +8413,24 @@ export interface FooterSelect<T extends boolean = true> {
         customFontFile?: T;
         customFontName?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notificacion-leads-cta_select".
+ */
+export interface NotificacionLeadsCtaSelect<T extends boolean = true> {
+  enabled?: T;
+  recipients?:
+    | T
+    | {
+        email?: T;
+        id?: T;
+      };
+  fromEmail?: T;
+  subjectPrefix?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
