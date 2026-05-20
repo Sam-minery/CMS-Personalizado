@@ -35,6 +35,8 @@ import {
   type FontGroupTypography,
 } from '@/utilities/fontGroupRichTextCss'
 import { validateAndSanitizeURL } from '@/utilities/validateURL'
+import { getRecaptchaEnterpriseToken } from '@/utilities/recaptchaEnterpriseClient'
+import { RECAPTCHA_ACTION_LEADS_CTA } from '@/utilities/recaptchaEnterpriseConstants'
 
 /** Tipos locales para no depender de payload-types (evita fallos de build si el bloque no está en projectConfig). */
 type MediaLike = {
@@ -1163,10 +1165,17 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                       setLeadsCtaSubmitting(true)
                       setLeadsCtaSubmitError(null)
                       try {
+                        const recaptchaToken = await getRecaptchaEnterpriseToken(RECAPTCHA_ACTION_LEADS_CTA)
+                        if (!recaptchaToken) {
+                          setLeadsCtaSubmitError(
+                            'No se pudo verificar el envío. Recarga la página e inténtalo de nuevo.',
+                          )
+                          return
+                        }
                         const res = await fetch('/api/leads-cta-submit', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ fullName: name, phone }),
+                          body: JSON.stringify({ fullName: name, phone, recaptchaToken }),
                         })
                         let data: { error?: string; retryAfterSec?: number } = {}
                         try {

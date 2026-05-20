@@ -6,6 +6,8 @@ import {
   consumeLeadsFormularioSubmitRateLimit,
   getClientIpFromRequest,
 } from '@/utilities/leadsFormularioSubmitRateLimit'
+import { RECAPTCHA_ACTION_LEADS_FORMULARIO } from '@/utilities/recaptchaEnterpriseConstants'
+import { verifyRecaptchaEnterpriseAssessment } from '@/utilities/recaptchaEnterpriseVerify'
 import { validateFormData } from '@/utilities/sanitizeHTML'
 
 const ATTRIBUTION_KEYS = [
@@ -17,7 +19,7 @@ const ATTRIBUTION_KEYS = [
   'fbclid',
 ] as const
 
-const ALLOWED_BODY_KEYS = new Set<string>(['pagePath', ...ATTRIBUTION_KEYS])
+const ALLOWED_BODY_KEYS = new Set<string>(['pagePath', 'recaptchaToken', ...ATTRIBUTION_KEYS])
 
 const MAX_PAGE_PATH_LEN = 512
 const MAX_ATTR_LEN = 2048
@@ -86,6 +88,20 @@ export async function POST(request: NextRequest) {
       if (validation !== true) {
         return NextResponse.json({ error: validation }, { status: 400 })
       }
+    }
+
+    const recaptchaTokenRaw = asOptionalString(record.recaptchaToken)
+    if (!recaptchaTokenRaw) {
+      return NextResponse.json({ error: 'recaptchaToken is required' }, { status: 400 })
+    }
+
+    const recaptcha = await verifyRecaptchaEnterpriseAssessment({
+      token: recaptchaTokenRaw,
+      expectedAction: RECAPTCHA_ACTION_LEADS_FORMULARIO,
+      userIpAddress: ip,
+    })
+    if (!recaptcha.ok) {
+      return NextResponse.json({ error: recaptcha.error }, { status: recaptcha.status })
     }
 
     const payload = await getPayload({ config })

@@ -6,9 +6,11 @@ import {
   consumeLeadsCtaSubmitRateLimit,
   getClientIpFromRequest,
 } from '@/utilities/leadsFormularioSubmitRateLimit'
+import { RECAPTCHA_ACTION_LEADS_CTA } from '@/utilities/recaptchaEnterpriseConstants'
+import { verifyRecaptchaEnterpriseAssessment } from '@/utilities/recaptchaEnterpriseVerify'
 import { validateFormData } from '@/utilities/sanitizeHTML'
 
-const ALLOWED_BODY_KEYS = new Set<string>(['fullName', 'phone'])
+const ALLOWED_BODY_KEYS = new Set<string>(['fullName', 'phone', 'recaptchaToken'])
 
 const MAX_FULL_NAME_LEN = 256
 const MAX_PHONE_LEN = 64
@@ -80,6 +82,20 @@ export async function POST(request: NextRequest) {
       if (validation !== true) {
         return NextResponse.json({ error: validation }, { status: 400 })
       }
+    }
+
+    const recaptchaTokenRaw = asString(record.recaptchaToken)?.trim() ?? ''
+    if (!recaptchaTokenRaw) {
+      return NextResponse.json({ error: 'recaptchaToken is required' }, { status: 400 })
+    }
+
+    const recaptcha = await verifyRecaptchaEnterpriseAssessment({
+      token: recaptchaTokenRaw,
+      expectedAction: RECAPTCHA_ACTION_LEADS_CTA,
+      userIpAddress: ip,
+    })
+    if (!recaptcha.ok) {
+      return NextResponse.json({ error: recaptcha.error }, { status: recaptcha.status })
     }
 
     const payload = await getPayload({ config })

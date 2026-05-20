@@ -477,6 +477,18 @@ export const Navbar_SENDA: React.FC<Navbar_SENDAProps> = (props) => {
     };
   }, [isMobile, isMobileMenuOpen]);
 
+  /** Oculta el badge reCAPTCHA en móvil mientras el menú hamburguesa está abierto (ver globals.css). */
+  useEffect(() => {
+    const root = document.documentElement
+    const cls = 'navbar-senda-mobile-menu-open'
+    if (isMobile && isMobileMenuOpen) {
+      root.classList.add(cls)
+    } else {
+      root.classList.remove(cls)
+    }
+    return () => root.classList.remove(cls)
+  }, [isMobile, isMobileMenuOpen])
+
   // Resaltar nav link en medium (500) cuando su sección (anchor) está visible en pantalla
   useEffect(() => {
     const anchorIds = getAnchorIdsFromNavLinks(navLinks);

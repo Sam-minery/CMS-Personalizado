@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import RichText from '@/components/RichText'
 import { readLeadsFormularioAttributionFromStorage } from '@/components/LeadsFormularioAttribution/LeadsFormularioAttributionStorage'
+import { getRecaptchaEnterpriseToken } from '@/utilities/recaptchaEnterpriseClient'
+import { RECAPTCHA_ACTION_LEADS_FORMULARIO } from '@/utilities/recaptchaEnterpriseConstants'
 import { CMSLink } from '@/components/Link'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
@@ -596,11 +598,14 @@ export const MultiFormSendaBlock: React.FC<Props> = (props) => {
     const attr = readLeadsFormularioAttributionFromStorage()
     const pagePath = typeof window !== 'undefined' ? window.location.pathname : ''
     try {
+      const recaptchaToken = await getRecaptchaEnterpriseToken(RECAPTCHA_ACTION_LEADS_FORMULARIO)
+      if (!recaptchaToken) return false
       const res = await fetch('/api/leads-formulario-submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           pagePath,
+          recaptchaToken,
           ...attr,
         }),
       })

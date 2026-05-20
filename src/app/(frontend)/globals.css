@@ -136,3 +136,27 @@ html body .vidiv-widget-root button[style*='56px'][style*='border-radius'] {
   justify-content: center !important;
   line-height: 1 !important;
 }
+
+/**
+ * reCAPTCHA Enterprise: badge fijo abajo-derecha.
+ * --recaptcha-badge-bottom: separación del borde (p. ej. launcher Vidiv).
+ * --recaptcha-badge-z-index: por encima de navbar (999); por debajo del popup CTA (1100).
+ */
+:root {
+  --recaptcha-badge-bottom: 5.75rem;
+  --recaptcha-badge-z-index: 40;
+}
+
+html body .grecaptcha-badge {
+  z-index: var(--recaptcha-badge-z-index) !important;
+  bottom: var(--recaptcha-badge-bottom) !important;
+}
+
+/* Mismo breakpoint que Navbar_SENDA (max-width: 991px). Clase en <html> desde el navbar. */
+@media (max-width: 991px) {
+  html.navbar-senda-mobile-menu-open body .grecaptcha-badge {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
