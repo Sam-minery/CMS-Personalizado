@@ -113,6 +113,7 @@ jobs:
           NODE_OPTIONS: ${{ secrets.NODE_OPTIONS }}
           DATABASE_URI: ${{ env.DATABASE_URI }}
           NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL_SENDA }}
+          NEXT_PUBLIC_RECAPTCHA_SITE_KEY: ${{ secrets.NEXT_PUBLIC_RECAPTCHA_SITE_KEY }}
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
           PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
