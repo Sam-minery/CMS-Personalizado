@@ -139,6 +139,16 @@ export const CTA1SendaAlterBlock: Block = {
       label: 'Sección Videollamada',
       fields: [
         {
+          name: 'quitarSeccion',
+          type: 'checkbox',
+          label: 'Quitar sección',
+          defaultValue: false,
+          admin: {
+            description:
+              'Si está marcado, no se muestra la sección de videollamada y la de llamada telefónica queda centrada en el bloque.',
+          },
+        },
+        {
           name: 'icon',
           type: 'group',
           label: 'Icono',

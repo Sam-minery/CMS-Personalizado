@@ -86,6 +86,8 @@ type PhonePopupConfig = {
 }
 
 type ContactSection = {
+  /** Solo aplica a videocallSection: oculta esa columna y centra la telefónica */
+  quitarSeccion?: boolean | null
   icon?: IconGroup | null
   labelRichText?: DefaultTypedEditorState | null
   /** Compatibilidad: antes era "label" (text) */
@@ -323,6 +325,7 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
 
   const usePhonePopup = !!phoneSection?.phonePopup?.usePopup
   const popup = phoneSection?.phonePopup
+  const hideVideocallSection = !!videocallSection?.quitarSeccion
 
   const openPhonePopup = React.useCallback(() => {
     setLeadsCtaSubmitError(null)
@@ -727,9 +730,13 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
           <div
             className={cn(
               'relative w-full mx-auto min-h-[318px]',
-              cta1CustomWidthVw == null &&
+              hideVideocallSection && 'flex justify-center items-stretch',
+              !hideVideocallSection &&
+                cta1CustomWidthVw == null &&
                 'grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch justify-items-center',
-              cta1CustomWidthVw != null && 'flex flex-col md:flex-row md:items-stretch md:gap-0',
+              !hideVideocallSection &&
+                cta1CustomWidthVw != null &&
+                'flex flex-col md:flex-row md:items-stretch md:gap-0',
             )}
             style={
               cta1CustomWidthVw == null
@@ -738,82 +745,88 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
             }
           >
             {/* Sección Videollamada — 436×318 */}
-            <div
-              className={cn(
-                'flex flex-col items-center justify-center py-6 px-6 pb-10 md:pb-6 min-h-[318px] w-full max-w-[436px] mx-auto',
-                cta1CustomWidthVw != null && 'relative z-[1] max-w-none min-w-0 md:flex-1',
-              )}
-            >
-              <SectionIcon iconGroup={videocallSection?.icon} />
-              {(videocallSection?.labelRichText || videocallSection?.label) ? (
-                <div
-                  className={cn(
-                    'cta1-senda-section-label font-normal mb-5 [&_.RichText]:text-inherit w-full text-center',
-                    fontGroupTypographyActive ? CTA_FG_RICHTEXT : 'text-lg md:text-xl',
-                  )}
-                  style={{
-                    color:
-                      sanitizeCssColor(videocallSection.labelTextColor) ||
-                      sanitizeCssColor(textColor) ||
-                      'rgba(255,255,255,1)',
-                  }}
-                >
-                  {videocallSection.labelRichText ? (
-                    <RichText
-                      data={videocallSection.labelRichText}
-                      enableGutter={false}
-                      enableProse={false}
-                    />
-                  ) : (
-                    <p>{videocallSection?.label}</p>
-                  )}
-                </div>
-              ) : null}
-              {videocallSection?.link && (() => {
-                const link = videocallSection.link as React.ComponentProps<typeof CMSLink> & { label?: string }
-                const { label: linkLabel, ...linkProps } = link
-                const bg = sanitizeCssColor(videocallSection.buttonBackgroundColor) || 'rgba(255,255,255,0.2)'
-                const fg = sanitizeCssColor(videocallSection.buttonTextColor) || '#ffffff'
-                return (
-                  <div className="cta1-senda-buttons">
-                    <CMSLink
-                      {...linkProps}
-                      appearance="inline"
-                      className={cta1SectionBtnClass}
-                      style={{
-                        ...fontStyle,
-                        backgroundColor: bg,
-                        color: fg,
-                      }}
-                    >
-                      {linkLabel ? (
-                        <span className="cta1-senda-btn-label leading-normal">{linkLabel}</span>
-                      ) : null}
-                      {videocallSection.iconSVG?.trim() ? (
-                        <span
-                          className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                          style={{ color: fg }}
-                          aria-hidden
-                          dangerouslySetInnerHTML={{
-                            __html: sanitizeSVG(videocallSection.iconSVG),
-                          }}
-                        />
-                      ) : null}
-                    </CMSLink>
-                  </div>
-                )
-              })()}
+            {!hideVideocallSection ? (
               <div
-                className="mx-auto mt-6 h-[3px] w-[334px] max-w-full shrink-0 bg-white/30 md:hidden"
-                aria-hidden
-              />
-            </div>
+                className={cn(
+                  'flex flex-col items-center justify-center py-6 px-6 pb-10 md:pb-6 min-h-[318px] w-full max-w-[436px] mx-auto',
+                  cta1CustomWidthVw != null && 'relative z-[1] max-w-none min-w-0 md:flex-1',
+                )}
+              >
+                <SectionIcon iconGroup={videocallSection?.icon} />
+                {(videocallSection?.labelRichText || videocallSection?.label) ? (
+                  <div
+                    className={cn(
+                      'cta1-senda-section-label font-normal mb-5 [&_.RichText]:text-inherit w-full text-center',
+                      fontGroupTypographyActive ? CTA_FG_RICHTEXT : 'text-lg md:text-xl',
+                    )}
+                    style={{
+                      color:
+                        sanitizeCssColor(videocallSection.labelTextColor) ||
+                        sanitizeCssColor(textColor) ||
+                        'rgba(255,255,255,1)',
+                    }}
+                  >
+                    {videocallSection.labelRichText ? (
+                      <RichText
+                        data={videocallSection.labelRichText}
+                        enableGutter={false}
+                        enableProse={false}
+                      />
+                    ) : (
+                      <p>{videocallSection?.label}</p>
+                    )}
+                  </div>
+                ) : null}
+                {videocallSection?.link && (() => {
+                  const link = videocallSection.link as React.ComponentProps<typeof CMSLink> & { label?: string }
+                  const { label: linkLabel, ...linkProps } = link
+                  const bg = sanitizeCssColor(videocallSection.buttonBackgroundColor) || 'rgba(255,255,255,0.2)'
+                  const fg = sanitizeCssColor(videocallSection.buttonTextColor) || '#ffffff'
+                  return (
+                    <div className="cta1-senda-buttons">
+                      <CMSLink
+                        {...linkProps}
+                        appearance="inline"
+                        className={cta1SectionBtnClass}
+                        style={{
+                          ...fontStyle,
+                          backgroundColor: bg,
+                          color: fg,
+                        }}
+                      >
+                        {linkLabel ? (
+                          <span className="cta1-senda-btn-label leading-normal">{linkLabel}</span>
+                        ) : null}
+                        {videocallSection.iconSVG?.trim() ? (
+                          <span
+                            className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
+                            style={{ color: fg }}
+                            aria-hidden
+                            dangerouslySetInnerHTML={{
+                              __html: sanitizeSVG(videocallSection.iconSVG),
+                            }}
+                          />
+                        ) : null}
+                      </CMSLink>
+                    </div>
+                  )
+                })()}
+                <div
+                  className="mx-auto mt-6 h-[3px] w-[334px] max-w-full shrink-0 bg-white/30 md:hidden"
+                  aria-hidden
+                />
+              </div>
+            ) : null}
+
 
             {/* Sección Teléfono — 436×318 */}
             <div
               className={cn(
                 'flex flex-col items-center justify-center py-6 px-6 min-h-[318px] w-full max-w-[436px] mx-auto',
-                cta1CustomWidthVw != null && 'relative z-[1] max-w-none min-w-0 md:flex-1',
+                !hideVideocallSection &&
+                  cta1CustomWidthVw != null &&
+                  'relative z-[1] max-w-none min-w-0 md:flex-1',
+                hideVideocallSection && 'relative z-[1]',
               )}
             >
               <SectionIcon iconGroup={phoneSection?.icon} />
@@ -915,10 +928,12 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                 })()
               )}
             </div>
-            <div
-              aria-hidden
-              className="pointer-events-none absolute left-1/2 top-1/2 z-10 hidden h-[318px] w-[3px] -translate-x-1/2 -translate-y-1/2 bg-white/30 md:block"
-            />
+            {!hideVideocallSection ? (
+              <div
+                aria-hidden
+                className="pointer-events-none absolute left-1/2 top-1/2 z-10 hidden h-[318px] w-[3px] -translate-x-1/2 -translate-y-1/2 bg-white/30 md:block"
+              />
+            ) : null}
           </div>
         </div>
         <div className="absolute inset-0 z-0">

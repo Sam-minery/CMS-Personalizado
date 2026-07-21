@@ -1158,6 +1158,10 @@ export interface CTA1SendaAlterBlock {
    */
   backgroundType?: ('video' | 'image' | 'color') | null;
   videocallSection: {
+    /**
+     * Si está marcado, no se muestra la sección de videollamada y la de llamada telefónica queda centrada en el bloque.
+     */
+    quitarSeccion?: boolean | null;
     icon?: {
       useMedia?: boolean | null;
       mediaImage?: (number | null) | Media;
@@ -4709,6 +4713,7 @@ export interface CTA1SendaAlterBlockSelect<T extends boolean = true> {
   videocallSection?:
     | T
     | {
+        quitarSeccion?: T;
         icon?:
           | T
           | {
