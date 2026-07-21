@@ -243,14 +243,20 @@ function getMediaUrlSafe(media: MediaLike | null | undefined): string {
   return url ? getMediaUrl(url) : ''
 }
 
-function SectionIcon({ iconGroup }: { iconGroup?: IconGroup | null }) {
+function SectionIcon({
+  iconGroup,
+  className,
+}: {
+  iconGroup?: IconGroup | null
+  className?: string
+}) {
   const useMedia = iconGroup?.useMedia !== false && iconGroup?.mediaImage
   const iconUrl = useMedia ? getMediaUrlSafe(iconGroup?.mediaImage) : ''
   const iconSvgCode =
     !useMedia && iconGroup?.iconSVG?.trim() ? sanitizeSVG(iconGroup.iconSVG) : ''
   if (!iconUrl && !iconSvgCode) return null
   return (
-    <div className="mb-4 flex justify-center mx-auto shrink-0" aria-hidden>
+    <div className={cn('mb-4 flex justify-center mx-auto shrink-0', className)} aria-hidden>
       {iconUrl ? (
         <img src={iconUrl} alt="" className="object-contain" style={{ width: 118, height: 118 }} />
       ) : (
@@ -262,6 +268,21 @@ function SectionIcon({ iconGroup }: { iconGroup?: IconGroup | null }) {
       )}
     </div>
   )
+}
+
+function isCta1RichTextEmpty(value?: DefaultTypedEditorState | null): boolean {
+  if (!value || !value.root || !Array.isArray(value.root.children)) return true
+  return value.root.children.every((block) => {
+    if (!block || typeof block !== 'object' || !('children' in block)) return true
+    const children = (block as { children?: unknown }).children
+    if (!Array.isArray(children)) return true
+    return children.every((child) => {
+      if (child && typeof child === 'object' && 'text' in child && typeof (child as { text: unknown }).text === 'string') {
+        return (child as { text: string }).text.trim().length === 0
+      }
+      return true
+    })
+  })
 }
 
 export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
@@ -326,6 +347,9 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
   const usePhonePopup = !!phoneSection?.phonePopup?.usePopup
   const popup = phoneSection?.phonePopup
   const hideVideocallSection = !!videocallSection?.quitarSeccion
+  const phoneHasDescriptiveText =
+    !!(phoneSection?.label && String(phoneSection.label).trim()) ||
+    !isCta1RichTextEmpty(phoneSection?.labelRichText)
 
   const openPhonePopup = React.useCallback(() => {
     setLeadsCtaSubmitError(null)
@@ -689,48 +713,97 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                 : sendaCalcBreakoutInlineStyle(cta1CustomWidthVw)
           }
         >
-          {/* Cabecera: título y descripción en un único richText — ~1200×120 desktop */}
+          {/* Cabecera: título/descripción, o icono de teléfono si se ocultó la videollamada */}
           <div
             className={cn(
-              'w-full mx-auto text-center min-h-[120px] flex flex-col justify-center',
-              fontGroupTypographyActive && CTA_FG_RICHTEXT,
-              !textColor &&
+              'w-full mx-auto text-center flex flex-col justify-center items-center',
+              hideVideocallSection ? 'min-h-0' : 'min-h-[120px]',
+              !hideVideocallSection && fontGroupTypographyActive && CTA_FG_RICHTEXT,
+              !hideVideocallSection &&
+                !textColor &&
                 !boldTextColor &&
                 'text-white [&_p]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_h4]:text-white [&_h5]:text-white [&_h6]:text-white [&_span]:text-white [&_div]:text-white [&_strong]:text-white [&_em]:text-white [&_a]:text-white [&_ul]:text-white [&_ol]:text-white [&_li]:text-white',
-              !fontGroupTypographyActive && [
-                '[&_p]:text-lg md:text-xl [&_p]:leading-relaxed',
-                '[&_h1]:text-3xl md:text-4xl [&_h1]:leading-tight [&_h1]:font-bold',
-                '[&_h2]:text-2xl md:text-3xl [&_h2]:leading-tight [&_h2]:font-bold',
-                '[&_h3]:text-xl md:text-2xl [&_h3]:font-semibold',
-                '[&_h4]:text-lg md:text-xl [&_h4]:font-semibold',
-              ],
+              !hideVideocallSection &&
+                !fontGroupTypographyActive && [
+                  '[&_p]:text-lg md:text-xl [&_p]:leading-relaxed',
+                  '[&_h1]:text-3xl md:text-4xl [&_h1]:leading-tight [&_h1]:font-bold',
+                  '[&_h2]:text-2xl md:text-3xl [&_h2]:leading-tight [&_h2]:font-bold',
+                  '[&_h3]:text-xl md:text-2xl [&_h3]:font-semibold',
+                  '[&_h4]:text-lg md:text-xl [&_h4]:font-semibold',
+                ],
             )}
             style={{
               ...(cta1CustomWidthVw != null
                 ? { width: '100%', maxWidth: '100%' }
                 : { maxWidth: 1200, width: '100%' }),
-              ...(textColor ? { color: textColor } : {}),
+              ...(!hideVideocallSection && textColor ? { color: textColor } : {}),
             }}
           >
-            {title ? <RichText data={title} enableGutter={false} enableProse={false} /> : null}
-            {description ? (
-              <div
-                className={cn(
-                  'mt-2',
-                  !fontGroupTypographyActive && '[&_.RichText]:text-base md:[&_.RichText]:text-lg',
-                  fontGroupTypographyActive && CTA_FG_RICHTEXT,
-                )}
-              >
-                <RichText data={description} enableGutter={false} enableProse={false} />
-              </div>
-            ) : null}
+            {hideVideocallSection ? (
+              <SectionIcon iconGroup={phoneSection?.icon} className="mt-6 md:mt-8 mb-3" />
+            ) : (
+              <>
+                {title ? <RichText data={title} enableGutter={false} enableProse={false} /> : null}
+                {description ? (
+                  <div
+                    className={cn(
+                      'mt-2',
+                      !fontGroupTypographyActive && '[&_.RichText]:text-base md:[&_.RichText]:text-lg',
+                      fontGroupTypographyActive && CTA_FG_RICHTEXT,
+                    )}
+                  >
+                    <RichText data={description} enableGutter={false} enableProse={false} />
+                  </div>
+                ) : null}
+              </>
+            )}
           </div>
+
+          {/* Título a ancho completo cuando se intercambia con el icono (mismo max-width que la cabecera) */}
+          {hideVideocallSection ? (
+            <div
+              className={cn(
+                'w-full mx-auto text-center min-h-0 flex flex-col justify-center pb-1 md:pb-2',
+                fontGroupTypographyActive && CTA_FG_RICHTEXT,
+                !textColor &&
+                  !boldTextColor &&
+                  'text-white [&_p]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_h4]:text-white [&_h5]:text-white [&_h6]:text-white [&_span]:text-white [&_div]:text-white [&_strong]:text-white [&_em]:text-white [&_a]:text-white [&_ul]:text-white [&_ol]:text-white [&_li]:text-white',
+                !fontGroupTypographyActive && [
+                  '[&_p]:text-lg md:text-xl [&_p]:leading-relaxed',
+                  '[&_h1]:text-3xl md:text-4xl [&_h1]:leading-tight [&_h1]:font-bold',
+                  '[&_h2]:text-2xl md:text-3xl [&_h2]:leading-tight [&_h2]:font-bold',
+                  '[&_h3]:text-xl md:text-2xl [&_h3]:font-semibold',
+                  '[&_h4]:text-lg md:text-xl [&_h4]:font-semibold',
+                ],
+              )}
+              style={{
+                ...(cta1CustomWidthVw != null
+                  ? { width: '100%', maxWidth: '100%' }
+                  : { maxWidth: 1200, width: '100%' }),
+                ...(textColor ? { color: textColor } : {}),
+              }}
+            >
+              {title ? <RichText data={title} enableGutter={false} enableProse={false} /> : null}
+              {description ? (
+                <div
+                  className={cn(
+                    'mt-2',
+                    !fontGroupTypographyActive && '[&_.RichText]:text-base md:[&_.RichText]:text-lg',
+                    fontGroupTypographyActive && CTA_FG_RICHTEXT,
+                  )}
+                >
+                  <RichText data={description} enableGutter={false} enableProse={false} />
+                </div>
+              ) : null}
+            </div>
+          ) : null}
 
           {/* Contenedor secciones: 920×318; con ancho personalizado, flex 50/50 + barra vertical en el centro real */}
           <div
             className={cn(
-              'relative w-full mx-auto min-h-[318px]',
-              hideVideocallSection && 'flex justify-center items-stretch',
+              'relative w-full mx-auto',
+              hideVideocallSection ? 'min-h-0' : 'min-h-[318px]',
+              hideVideocallSection && 'flex justify-center items-start',
               !hideVideocallSection &&
                 cta1CustomWidthVw == null &&
                 'grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch justify-items-center',
@@ -822,15 +895,18 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
             {/* Sección Teléfono — 436×318 */}
             <div
               className={cn(
-                'flex flex-col items-center justify-center py-6 px-6 min-h-[318px] w-full max-w-[436px] mx-auto',
+                'flex flex-col items-center w-full max-w-[436px] mx-auto',
+                hideVideocallSection
+                  ? 'justify-start pt-1 md:pt-2 pb-6 px-6 min-h-0'
+                  : 'justify-center py-6 px-6 min-h-[318px]',
                 !hideVideocallSection &&
                   cta1CustomWidthVw != null &&
                   'relative z-[1] max-w-none min-w-0 md:flex-1',
                 hideVideocallSection && 'relative z-[1]',
               )}
             >
-              <SectionIcon iconGroup={phoneSection?.icon} />
-              {(phoneSection?.labelRichText || phoneSection?.label) ? (
+              {!hideVideocallSection ? <SectionIcon iconGroup={phoneSection?.icon} /> : null}
+              {phoneHasDescriptiveText ? (
                 <div
                   className={cn(
                     'cta1-senda-section-label font-normal mb-5 [&_.RichText]:text-inherit w-full text-center',
@@ -838,12 +914,12 @@ export const CTA1SendaAlterBlock: React.FC<CTA1SendaAlterBlockProps> = ({
                   )}
                   style={{
                     color:
-                      sanitizeCssColor(phoneSection.labelTextColor) ||
+                      sanitizeCssColor(phoneSection?.labelTextColor) ||
                       sanitizeCssColor(textColor) ||
                       'rgba(255,255,255,1)',
                   }}
                 >
-                  {phoneSection.labelRichText ? (
+                  {!isCta1RichTextEmpty(phoneSection?.labelRichText) && phoneSection?.labelRichText ? (
                     <RichText
                       data={phoneSection.labelRichText}
                       enableGutter={false}
