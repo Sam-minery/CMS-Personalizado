@@ -73,6 +73,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 export const metadata: Metadata = {
   metadataBase: new URL(getServerSideURL()),
+  robots: {
+    index: false,
+    follow: false,
+  },
   openGraph: mergeOpenGraph(),
   twitter: {
     card: 'summary_large_image',
