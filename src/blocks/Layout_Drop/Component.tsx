@@ -1,19 +1,25 @@
 'use client'
 
 import React, { useState } from 'react'
-import Image from 'next/image'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 import RichText from '@/components/RichText'
 import { Checkbox } from '@/components/ui/checkbox'
-import type { Media, Page, Post } from '@/payload-types'
+import type { Page, Post } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
 import { cn } from '@/utilities/ui'
 
+/** Tipos locales alineados con CTA1_SENDA_Alter para resolver URLs absolutas de media. */
+type MediaLike = {
+  url?: string | null
+  alt?: string | null
+  sizes?: { large?: { url?: string }; medium?: { url?: string } }
+} | number
+
 type IconGroup = {
   useMedia?: boolean | null
-  mediaImage?: number | Media | null
+  mediaImage?: MediaLike | null
   iconSVG?: string | null
   alt?: string | null
 }
@@ -70,15 +76,18 @@ function sanitizeAnchorId(value: string | null | undefined): string {
   return s || 'layout-drop'
 }
 
-function getIconSrc(icon?: IconGroup | null): string {
-  if (!icon?.useMedia || !icon.mediaImage || typeof icon.mediaImage !== 'object') return ''
-  const url = icon.mediaImage.url
-  if (!url) return ''
-  return getMediaUrl(url).replace(/([^:]\/)\/+/g, '$1')
+function getMediaUrlSafe(media: MediaLike | null | undefined): string {
+  if (!media || typeof media === 'number') return ''
+  const m = media as {
+    url?: string
+    sizes?: { large?: { url?: string }; medium?: { url?: string } }
+  }
+  const url = m?.sizes?.large?.url || m?.sizes?.medium?.url || m?.url || ''
+  return url ? getMediaUrl(url).replace(/([^:]\/)\/+/g, '$1') : ''
 }
 
 function getIconAlt(icon?: IconGroup | null): string {
-  if (icon?.useMedia && icon.mediaImage && typeof icon.mediaImage === 'object') {
+  if (icon?.mediaImage && typeof icon.mediaImage === 'object') {
     return icon.mediaImage.alt || icon.alt || 'Icono'
   }
   return icon?.alt || 'Icono'
@@ -110,23 +119,21 @@ function IconMedia({
 }) {
   if (!icon) return null
 
-  if (icon.useMedia) {
-    const src = getIconSrc(icon)
-    if (!src) return null
-    const isGif = /\.gif(\?|$)/i.test(src)
+  const useMedia = icon.useMedia !== false && icon.mediaImage
+  const src = useMedia ? getMediaUrlSafe(icon.mediaImage) : ''
+  if (src) {
     return (
       <span className={cn('relative inline-flex shrink-0 overflow-hidden', className)}>
-        <Image
+        <img
           src={src}
           alt={getIconAlt(icon)}
-          width={48}
-          height={48}
-          unoptimized={isGif}
           className={cn('object-contain', imgClassName)}
         />
       </span>
     )
   }
+
+  if (useMedia) return null
 
   const svg = icon.iconSVG && String(icon.iconSVG).trim() ? sanitizeSVG(icon.iconSVG) : ''
   if (!svg) return null
