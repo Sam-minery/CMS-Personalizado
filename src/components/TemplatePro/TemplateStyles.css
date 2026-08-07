@@ -1,0 +1,480 @@
+/* Estilos específicos para componentes de template de Aceternity */
+
+/* Variables CSS específicas para componentes de template */
+.template-container {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+
+  --shadow-brand-var:
+    -82px 54px 27px 0px rgba(0, 0, 0, 0.01),
+    -52px 35px 25px 0px rgba(0, 0, 0, 0.04),
+    -29px 19px 21px 0px rgba(0, 0, 0, 0.15),
+    -13px 9px 16px 0px rgba(0, 0, 0, 0.25), 
+    -3px 2px 9px 0px rgba(0, 0, 0, 0.29);
+}
+
+.template-container.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+
+  --shadow-brand-var:
+    -82px 54px 27px 0px rgba(255, 255, 255, 0.01),
+    -52px 35px 25px 0px rgba(255, 255, 255, 0.04),
+    -29px 19px 21px 0px rgba(255, 255, 255, 0.15),
+    -13px 9px 16px 0px rgba(255, 255, 255, 0.25),
+    -3px 2px 9px 0px rgba(255, 255, 255, 0.29);
+}
+
+/* Estilos específicos para componentes de template */
+.template-container {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --shadow-brand: var(--shadow-brand-var);
+
+  --animate-orbit: orbit var(--orbit-duration) linear infinite;
+}
+
+@keyframes orbit {
+  0% {
+    transform: rotate(var(--initial-position, 0deg))
+      translateX(var(--translate-position, 120px))
+      rotate(calc(-1 * var(--initial-position, 0deg)));
+  }
+  100% {
+    transform: rotate(calc(var(--initial-position, 0deg) + 360deg))
+      translateX(var(--translate-position, 120px))
+      rotate(calc(-1 * (var(--initial-position, 0deg) + 360deg)));
+  }
+}
+
+/* Estilos para forzar iconos blancos en contenedores con fondo de color */
+/* Mayor especificidad para evitar conflictos con estilos de Payload */
+.template-container .icon-container-white svg,
+.template-container .icon-container-white svg * {
+  fill: white !important;
+  stroke: white !important;
+  color: white !important;
+}
+
+.template-container .icon-container-white svg path,
+.template-container .icon-container-white svg g,
+.template-container .icon-container-white svg rect,
+.template-container .icon-container-white svg circle,
+.template-container .icon-container-white svg polygon,
+.template-container .icon-container-white svg line,
+.template-container .icon-container-white svg polyline,
+.template-container .icon-container-white svg ellipse,
+.template-container .icon-container-white svg use {
+  fill: white !important;
+  stroke: white !important;
+  color: white !important;
+}
+
+/* Estilos sin template-container para compatibilidad */
+.icon-container-white svg,
+.icon-container-white svg * {
+  fill: white !important;
+  stroke: white !important;
+  color: white !important;
+}
+
+.icon-container-white svg path,
+.icon-container-white svg g,
+.icon-container-white svg rect,
+.icon-container-white svg circle,
+.icon-container-white svg polygon,
+.icon-container-white svg line,
+.icon-container-white svg polyline,
+.icon-container-white svg ellipse,
+.icon-container-white svg use {
+  fill: white !important;
+  stroke: white !important;
+  color: white !important;
+}
+
+/* Estilos base para componentes de template */
+.template-container * {
+  border-color: var(--color-border);
+  outline-color: color-mix(in srgb, var(--color-ring) 50%, transparent);
+}
+
+.template-container {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/* Clase específica para el shadow-brand */
+.shadow-brand {
+  box-shadow: var(--shadow-brand);
+}
+
+/* Estilos para imágenes de template */
+.template-image {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.template-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Estilos adicionales para LandingImages */
+.template-container .relative img {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+}
+
+.template-container .relative > div {
+  position: relative;
+  z-index: 1;
+}
+
+/* Estilos específicos para superposición de imágenes */
+.template-container .perspective-distant {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: visible;
+}
+
+/* Wrapper de cada imagen: no forzar z-index ni visibilidad aquí */
+.template-container .perspective-distant > div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Asegurar que las imágenes mantengan sus dimensiones */
+.template-container .perspective-distant img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* No forzar z-index/visibilidad; dejar que Tailwind controle stacking y transforms */
+
+/* Estilos para botones de template */
+.template-button {
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease-in-out;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.template-button:hover {
+  transform: translateY(-1px);
+}
+
+/* Estilo específico para botón primario */
+.template-button.primary {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 1px solid #000000;
+}
+
+.template-button.primary:hover {
+  background-color: #333333 !important;
+  color: #ffffff !important;
+}
+
+/* Estilo para botón outline */
+.template-button.outline {
+  background-color: transparent !important;
+  color: #000000 !important;
+  border: 1px solid #000000;
+}
+
+.template-button.outline:hover {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* Estilos para gradientes */
+.template-gradient {
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--color-primary) 10%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent) 10%, transparent) 100%);
+}
+
+/* Estilos para contenedores */
+.template-container-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Estilos para perspectivas y máscaras */
+.perspective-distant {
+  perspective: 2000px;
+}
+
+.perspective-\[4000px\] {
+  perspective: 4000px;
+}
+
+/* Máscaras CSS */
+.mask-r-from-20\%,
+[class*="mask-r-from-20%"] {
+  mask: linear-gradient(to right, black 20%, transparent);
+  -webkit-mask: linear-gradient(to right, black 20%, transparent);
+}
+
+.mask-b-from-20\%,
+[class*="mask-b-from-20%"] {
+  mask: linear-gradient(to bottom, black 20%, transparent);
+  -webkit-mask: linear-gradient(to bottom, black 20%, transparent);
+}
+
+.mask-r-from-50\%,
+[class*="mask-r-from-50%"] {
+  mask: linear-gradient(to right, black 50%, transparent);
+  -webkit-mask: linear-gradient(to right, black 50%, transparent);
+}
+
+.mask-b-from-50\%,
+[class*="mask-b-from-50%"] {
+  mask: linear-gradient(to bottom, black 50%, transparent);
+  -webkit-mask: linear-gradient(to bottom, black 50%, transparent);
+}
+
+.mask-t-from-10\%,
+[class*="mask-t-from-10%"] {
+  mask: linear-gradient(to top, black 10%, transparent);
+  -webkit-mask: linear-gradient(to top, black 10%, transparent);
+}
+
+.mask-radial-from-50\%,
+[class*="mask-radial-from-50%"] {
+  mask: radial-gradient(circle, black 50%, transparent);
+  -webkit-mask: radial-gradient(circle, black 50%, transparent);
+}
+
+.mask-t-from-50\%,
+[class*="mask-t-from-50%"] {
+  mask: linear-gradient(to top, black 50%, transparent);
+  -webkit-mask: linear-gradient(to top, black 50%, transparent);
+}
+
+/* Alturas mínimas específicas */
+.min-h-100 {
+  min-height: 25rem;
+}
+
+.min-h-140 {
+  min-height: 35rem;
+}
+
+/* Animaciones específicas */
+.template-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.template-slide-up {
+  animation: slideUp 0.8s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animaciones adicionales de tw-animate-css */
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-wiggle {
+  animation: wiggle 1s ease-in-out infinite;
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+

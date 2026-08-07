@@ -1,0 +1,138 @@
+import type { Metadata } from 'next'
+
+import { PayloadRedirects } from '@/components/PayloadRedirects'
+import configPromise from '@payload-config'
+import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
+import { draftMode } from 'next/headers'
+import React, { cache } from 'react'
+import { homeStatic } from '@/endpoints/seed/home-static'
+
+import { RenderBlocks } from '@/blocks/RenderBlocks'
+import { Header } from '@/Header/Component'
+import { RenderHero } from '@/heros/RenderHero'
+import { generateMeta } from '@/utilities/generateMeta'
+import { getDefaultMetadataTitle } from '@/utilities/getURL'
+import PageClient from './page.client'
+import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { validateSlug } from '@/utilities/sanitizeHTML'
+
+export async function generateStaticParams() {
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const pages = await payload.find({
+      collection: 'pages',
+      draft: false,
+      limit: 1000,
+      overrideAccess: false,
+      pagination: false,
+      select: {
+        slug: true,
+      },
+    })
+
+    const params = pages.docs
+      ?.filter((doc) => {
+        return doc.slug && doc.slug !== 'home'
+      })
+      .map(({ slug }) => {
+        return { slug: slug || '' }
+      })
+      .filter((param) => param.slug) // Filtrar slugs vacíos
+
+    return params || []
+  } catch (error) {
+    console.error('Error generating static params:', error)
+    return []
+  }
+}
+
+type Args = {
+  params: Promise<{
+    slug?: string
+  }>
+}
+
+export default async function Page({ params: paramsPromise }: Args) {
+  const { isEnabled: draft } = await draftMode()
+  const { slug = 'home' } = await paramsPromise
+  
+  // Validar el slug para prevenir inyección (excepto 'home' que es especial)
+  const validatedSlug = slug === 'home' ? slug : validateSlug(slug)
+  if (!validatedSlug) {
+    return <PayloadRedirects url={'/' + slug} />
+  }
+  
+  const url = '/' + validatedSlug
+
+  let page: RequiredDataFromCollectionSlug<'pages'> | null
+
+  page = await queryPageBySlug({
+    slug: validatedSlug,
+  })
+
+  // Remove this code once your website is seeded
+  if (!page && slug === 'home') {
+    page = homeStatic
+  }
+
+  if (!page) {
+    return <PayloadRedirects url={url} />
+  }
+
+  const { hero, layout } = page
+  const layoutBlocks = Array.isArray(layout) ? layout : (layout as { blocks?: unknown[] })?.blocks
+  const hasSimpleNavbar =
+    Array.isArray(layoutBlocks) &&
+    layoutBlocks.some((b) => (b as { blockType?: string })?.blockType === 'navbarSimpleSenda')
+
+  return (
+    <article>
+      {!hasSimpleNavbar && <Header />}
+      <PageClient />
+      {/* Allows redirects for valid pages too */}
+      <PayloadRedirects disableNotFound url={url} />
+
+      {draft && <LivePreviewListener />}
+
+      {hero && <RenderHero {...hero} />}
+      {layout && <RenderBlocks blocks={layout} />}
+    </article>
+  )
+}
+
+export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
+  const { slug = 'home' } = await paramsPromise
+  const page = await queryPageBySlug({ slug })
+  
+  // Si la página no existe, retornar metadatos por defecto
+  if (!page) {
+    return {
+      title: getDefaultMetadataTitle(),
+      description: '',
+    }
+  }
+  
+  return generateMeta({ doc: page })
+}
+
+const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
+  const { isEnabled: draft } = await draftMode()
+
+  const payload = await getPayload({ config: configPromise })
+
+  const result = await payload.find({
+    collection: 'pages',
+    draft,
+    depth: 4,
+    limit: 1,
+    pagination: false,
+    overrideAccess: draft,
+    where: {
+      slug: {
+        equals: slug,
+      },
+    },
+  })
+
+  return result.docs?.[0] || null
+})
