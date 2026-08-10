@@ -8,4 +8,5 @@
  */
 export const enabledBlockSlugs: string[] | null = [
   'layoutDrop',
+  'fondoDrop',
 ]

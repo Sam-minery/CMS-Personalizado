@@ -298,7 +298,7 @@ export interface Page {
       showGradient?: boolean | null;
     };
   };
-  layout: LayoutDropBlock[];
+  layout: (LayoutDropBlock | FondoDropBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -1215,6 +1215,31 @@ export interface Font {
   focalY?: number | null;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FondoDropBlock".
+ */
+export interface FondoDropBlock {
+  /**
+   * Solo el color plano de la página. Los SVG (olas, círculos, líneas) usan el color de acentuación. Añade este bloque una sola vez. En Layout DROP y otros bloques, usa fondo transparente para que se vea. Hex, rgb, rgba o nombre CSS (ej: #f8f4ff).
+   */
+  backgroundColor: string;
+  /**
+   * Color de olas, formas, líneas y nodos (tonalidades y transparencias derivadas). Si se deja vacío, se deriva del color de fondo.
+   */
+  accentColor?: string | null;
+  /**
+   * Ligero desplazamiento vertical distinto entre capas SVG y el contenido al hacer scroll.
+   */
+  enableParallax?: boolean | null;
+  /**
+   * 0 = sin movimiento extra, 1 = máximo. Recomendado: 0.25–0.45.
+   */
+  parallaxIntensity?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'fondoDrop';
+}
+/**
  * Envíos del formulario de Contact Section 2
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1892,6 +1917,7 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         layoutDrop?: T | LayoutDropBlockSelect<T>;
+        fondoDrop?: T | FondoDropBlockSelect<T>;
       };
   meta?:
     | T
@@ -2063,6 +2089,18 @@ export interface LayoutDropBlockSelect<T extends boolean = true> {
   applyCustomWidth?: T;
   customWidthPercent?: T;
   customWidthPercentMobile?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FondoDropBlock_select".
+ */
+export interface FondoDropBlockSelect<T extends boolean = true> {
+  backgroundColor?: T;
+  accentColor?: T;
+  enableParallax?: T;
+  parallaxIntensity?: T;
   id?: T;
   blockName?: T;
 }

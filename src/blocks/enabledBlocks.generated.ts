@@ -6,7 +6,9 @@
 import type { Block } from 'payload'
 
 import { LayoutDropBlock } from './Layout_Drop/config'
+import { FondoDropBlock } from './Fondo_DROP/config'
 
 export const ENABLED_BLOCKS_BY_SLUG: Record<string, Block> = {
   "layoutDrop": LayoutDropBlock,
+  "fondoDrop": FondoDropBlock,
 }
