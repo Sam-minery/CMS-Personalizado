@@ -528,6 +528,49 @@ export interface LayoutDropBlock {
     [k: string]: unknown;
   };
   /**
+   * Colores y tipografía del header.
+   */
+  headerStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
+  /**
    * Máximo 6 elementos. Cada uno con icono/GIF y texto.
    */
   elements?:
@@ -565,6 +608,57 @@ export interface LayoutDropBlock {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Colores, borde y tipografía de las cards (todos los elementos).
+   */
+  elementsStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Ej: #e5e7eb, #c2185b
+     */
+    borderColor?: string | null;
+    /**
+     * Intensidad de la sombra aplicada a las cards.
+     */
+    shadow?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
   contactForm: {
     icon?: {
       /**
@@ -662,6 +756,52 @@ export interface LayoutDropBlock {
        */
       value: string;
     };
+    /**
+     * Hex, rgb, rgba o nombre CSS. Ej: #e5e7eb, #c2185b
+     */
+    borderColor?: string | null;
+    /**
+     * Intensidad de la sombra aplicada a la caja del formulario.
+     */
+    shadow?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía del título del formulario. El texto del botón usa el tamaño “texto normal” (body) del grupo.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
   };
   privacyPolicy: {
     /**
@@ -686,6 +826,44 @@ export interface LayoutDropBlock {
       };
       [k: string]: unknown;
     };
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
   };
   button: {
     label: string;
@@ -717,34 +895,59 @@ export interface LayoutDropBlock {
     };
   };
   /**
-   * Cualquier color CSS válido.
+   * Controla la altura mínima del bloque.
+   */
+  blockHeightMode?: ('auto' | 'viewport' | 'custom') | null;
+  /**
+   * Define la altura mínima en píxeles cuando la altura es "Personalizada (px)".
+   */
+  customBlockHeightPx?: number | null;
+  /**
+   * Elige si el fondo será un color, una imagen o un video.
+   */
+  backgroundType?: ('color' | 'image' | 'video') | null;
+  video?: {
+    /**
+     * Pega la URL del video de YouTube (ej: https://www.youtube.com/watch?v=VIDEO_ID)
+     */
+    youtubeUrl?: string | null;
+  };
+  /**
+   * Imagen de fondo cuando el tipo de fondo es "Imagen".
+   */
+  backgroundImage?: (number | null) | Media;
+  /**
+   * Color plano. Hex, rgb, rgba o nombre (ej: #ffffff, rgba(0,0,0,0.5))
    */
   backgroundColor?: string | null;
+  /**
+   * Elige si el color será sólido o un degradado
+   */
+  backgroundColorMode?: ('solid' | 'gradient') | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  gradientStartColor?: string | null;
+  /**
+   * Hex, rgb, rgba o nombre.
+   */
+  gradientEndColor?: string | null;
+  gradientDirection?: ('to-right' | 'to-left' | 'to-bottom' | 'to-top' | 'diagonal-down' | 'diagonal-up') | null;
+  /**
+   * Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'layoutDrop';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "fonts".
- */
-export interface Font {
-  id: number;
-  /**
-   * Nombre descriptivo de la fuente (ej: "Mi Fuente Personalizada")
-   */
-  name?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * Crea grupos de tipografías: fuentes, y por cada nivel (H1–H6, párrafos, listas, citas/blockquote, cuerpo pequeño / small body, caption) el tamaño, interlineado y márgenes en escritorio y móvil. Si activas "Precargar siempre", las fuentes se cargarán al inicio de cada página.
@@ -988,6 +1191,28 @@ export interface FontGroup {
   preloadFonts?: boolean | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fonts".
+ */
+export interface Font {
+  id: number;
+  /**
+   * Nombre descriptivo de la fuente (ej: "Mi Fuente Personalizada")
+   */
+  name?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * Envíos del formulario de Contact Section 2
@@ -1689,6 +1914,18 @@ export interface PagesSelect<T extends boolean = true> {
 export interface LayoutDropBlockSelect<T extends boolean = true> {
   anchorId?: T;
   headerContent?: T;
+  headerStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+      };
   elements?:
     | T
     | {
@@ -1702,6 +1939,20 @@ export interface LayoutDropBlockSelect<T extends boolean = true> {
             };
         content?: T;
         id?: T;
+      };
+  elementsStyle?:
+    | T
+    | {
+        borderColor?: T;
+        shadow?: T;
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
       };
   contactForm?:
     | T
@@ -1754,12 +2005,30 @@ export interface LayoutDropBlockSelect<T extends boolean = true> {
                   };
               value?: T;
             };
+        borderColor?: T;
+        shadow?: T;
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
       };
   privacyPolicy?:
     | T
     | {
         required?: T;
         content?: T;
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
       };
   button?:
     | T
@@ -1777,7 +2046,23 @@ export interface LayoutDropBlockSelect<T extends boolean = true> {
               url?: T;
             };
       };
+  blockHeightMode?: T;
+  customBlockHeightPx?: T;
+  backgroundType?: T;
+  video?:
+    | T
+    | {
+        youtubeUrl?: T;
+      };
+  backgroundImage?: T;
   backgroundColor?: T;
+  backgroundColorMode?: T;
+  gradientStartColor?: T;
+  gradientEndColor?: T;
+  gradientDirection?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   id?: T;
   blockName?: T;
 }
