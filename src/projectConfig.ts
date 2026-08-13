@@ -8,4 +8,7 @@
  */
 export const enabledBlockSlugs: string[] | null = [
   'layoutDrop',
+  'calculadoraIMCDrop',
+  'layoutCTADrop',
+  'teamDrop',
 ]

@@ -84,6 +84,18 @@ export const BLOCK_LOADER_MANIFEST: Record<
   layoutSenda: { path: './Layout_SENDA/config', exportName: 'LayoutSendaBlock' },
   layoutSendaSections: { path: './Layout_SENDA_Sections/config', exportName: 'LayoutSendaSectionsBlock' },
   layoutDrop: { path: './Layout_Drop/config', exportName: 'LayoutDropBlock' },
+  calculadoraIMCDrop: {
+    path: './CalculadoraIMC_Drop/config',
+    exportName: 'CalculadoraIMCDropBlock',
+  },
+  layoutCTADrop: {
+    path: './LayoutCTA_Drop/config',
+    exportName: 'LayoutCTADropBlock',
+  },
+  teamDrop: {
+    path: './Team_Drop/config',
+    exportName: 'TeamDropBlock',
+  },
   navbarSimpleSenda: { path: './Navbar_Simple_SENDA/config', exportName: 'NavbarSimpleSendaBlock' },
   pricingSenda: { path: './Pricing_SENDA/config', exportName: 'PricingSendaBlock' },
   pricingSendaAlter: { path: './Pricing_SENDA_Alter/config', exportName: 'PricingSendaAlterBlock' },

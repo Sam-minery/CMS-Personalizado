@@ -920,9 +920,11 @@ export const LayoutDropBlock: React.FC<LayoutDropBlockType> = (props) => {
                     <div
                       key={element.id || index}
                       className={cn(
-                        'flex rounded-2xl border-2 bg-white',
-                        'flex-row items-center gap-3 px-3 py-5 sm:px-4 sm:py-6',
-                        'lg:min-h-[240px] lg:flex-col lg:items-center lg:justify-center lg:gap-5 lg:px-4 lg:py-12 lg:text-center',
+                        'flex min-w-0 overflow-hidden rounded-2xl border-2 bg-white',
+                        'flex-col items-center justify-center gap-3 px-3 py-5 text-center sm:gap-4 sm:px-4 sm:py-6',
+                        'lg:min-h-[240px] lg:gap-5 lg:px-4 lg:py-12',
+                        'origin-center transition-[transform,filter] duration-300 ease-out will-change-transform',
+                        'hover:z-10 hover:scale-[1.06] hover:drop-shadow-[0_0_18px_rgba(233,30,99,0.45)]',
                       )}
                       style={{
                         borderColor: cardsBorderColor,
@@ -931,24 +933,23 @@ export const LayoutDropBlock: React.FC<LayoutDropBlockType> = (props) => {
                     >
                       <div
                         className={cn(
-                          'flex h-14 w-14 shrink-0 items-center justify-center rounded-full sm:h-16 sm:w-16',
-                          'lg:h-20 lg:w-20',
+                          'flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center rounded-full sm:h-[5.5rem] sm:w-[5.5rem]',
+                          'lg:h-[6.5rem] lg:w-[6.5rem]',
                         )}
                         style={{ backgroundColor: 'rgba(233, 30, 99, 0.08)' }}
                       >
                         <IconMedia
                           icon={element.icon}
-                          className="h-9 w-9 sm:h-10 sm:w-10 lg:h-12 lg:w-12"
-                          imgClassName="h-9 w-9 sm:h-10 sm:w-10 lg:h-12 lg:w-12"
+                          className="h-[3.25rem] w-[3.25rem] sm:h-[3.75rem] sm:w-[3.75rem] lg:h-[4.5rem] lg:w-[4.5rem]"
+                          imgClassName="h-[3.25rem] w-[3.25rem] sm:h-[3.75rem] sm:w-[3.75rem] lg:h-[4.5rem] lg:w-[4.5rem]"
                         />
                       </div>
                       {element.content && (
                         <div
                           className={cn(
-                            'layout-drop-elements min-w-0 flex-1 text-left text-sm font-bold leading-snug sm:text-base',
-                            'lg:flex-none lg:text-center lg:text-base',
+                            'layout-drop-elements w-full min-w-0 max-w-full break-words text-sm font-bold leading-snug sm:text-base',
+                            '[&_p]:m-0 [&_p]:max-w-full [&_p]:break-words [&_strong]:font-bold [&_*]:max-w-full',
                             elementsCss.fontGroupActive && DROP_FG_RICHTEXT,
-                            !elementsCss.fontGroupActive && '[&_p]:m-0 [&_strong]:font-bold',
                           )}
                         >
                           <RichText

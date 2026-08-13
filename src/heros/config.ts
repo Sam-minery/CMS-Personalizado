@@ -20,6 +20,7 @@ import {
 import { SmallBodyFeature } from '@/lexical-features/small-body/feature.server'
 import { link } from '@/fields/link'
 import { linkGroup } from '@/fields/linkGroup'
+import { heroDropFields } from '@/heros/HeroDrop/fields'
 
 /** Pesos y tamaño "texto pequeño" para rich text del hero. */
 const heroRichTextState = {
@@ -102,6 +103,10 @@ export const hero: Field = {
           label: 'Hero Template',
           value: 'heroTemplate',
         },
+        {
+          label: 'Hero Drop',
+          value: 'heroDrop',
+        },
       ],
       required: true,
     },
@@ -110,10 +115,16 @@ export const hero: Field = {
       type: 'richText',
       editor: heroRichTextEditor(),
       label: false,
+      admin: {
+        condition: (_, { type } = {}) => !['heroDrop', 'none'].includes(type),
+      },
     },
     linkGroup({
       overrides: {
         maxRows: 2,
+        admin: {
+          condition: (_, { type } = {}) => !['heroDrop', 'none'].includes(type),
+        },
       },
     }),
     {
@@ -497,6 +508,7 @@ export const hero: Field = {
       ],
       label: 'Images',
     },
+    ...heroDropFields,
   ],
   label: false,
 }

@@ -176,7 +176,8 @@ export interface Page {
       | 'header1'
       | 'header5'
       | 'header138'
-      | 'heroTemplate';
+      | 'heroTemplate'
+      | 'heroDrop';
     richText?: {
       root: {
         type: string;
@@ -297,8 +298,577 @@ export interface Page {
       secondImageUrl?: string | null;
       showGradient?: boolean | null;
     };
+    /**
+     * Contenido y estilos del Hero Drop. Nombres cortos por límite Postgres (63).
+     */
+    hd?: {
+      tag?: {
+        icon?: {
+          /**
+           * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+           */
+          useMedia?: boolean | null;
+          /**
+           * Imagen o GIF del icono.
+           */
+          img?: (number | null) | Media;
+          /**
+           * Pega aquí el código SVG como alternativa a subir media.
+           */
+          svg?: string | null;
+          alt?: string | null;
+        };
+        label?: string | null;
+        backgroundColor?: string | null;
+        textColor?: string | null;
+      };
+      /**
+       * Título y descripción. Usa negrita para resaltar (p. ej. “en equilibrio.”).
+       */
+      hdr: {
+        root: {
+          type: string;
+          children: {
+            type: any;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      };
+      hsty?: {
+        /**
+         * Hex, rgb, rgba o nombre CSS.
+         */
+        color?: string | null;
+        /**
+         * Color para strong/b dentro del RichText.
+         */
+        bold?: string | null;
+        useFG?: boolean | null;
+        fg?: (number | null) | FontGroup;
+        ff?:
+          | (
+              | 'default'
+              | 'Arial, sans-serif'
+              | '"Times New Roman", serif'
+              | 'Georgia, serif'
+              | 'Verdana, sans-serif'
+              | 'Helvetica, Arial, sans-serif'
+              | '"Courier New", monospace'
+              | '"Roboto", sans-serif'
+              | '"Open Sans", sans-serif'
+              | '"Lato", sans-serif'
+              | '"Montserrat", sans-serif'
+              | '"Playfair Display", serif'
+              | '"Inter", sans-serif'
+              | '"Poppins", sans-serif'
+              | '"Raleway", sans-serif'
+            )
+          | null;
+        useCF?: boolean | null;
+        cFont?: (number | null) | Font;
+        cFontNm?: string | null;
+      };
+      /**
+       * Máximo 2. El primero es primario; el segundo, secundario.
+       */
+      buttons?:
+        | {
+            link: {
+              type?: ('reference' | 'custom') | null;
+              newTab?: boolean | null;
+              reference?:
+                | ({
+                    relationTo: 'pages';
+                    value: number | Page;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: number | Post;
+                  } | null);
+              url?: string | null;
+              label: string;
+            };
+            iconSVG?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * Máximo 3. Cada uno con icono y texto.
+       */
+      features?:
+        | {
+            icon?: {
+              /**
+               * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+               */
+              useMedia?: boolean | null;
+              /**
+               * Imagen o GIF del icono.
+               */
+              img?: (number | null) | Media;
+              /**
+               * Pega aquí el código SVG como alternativa a subir media.
+               */
+              svg?: string | null;
+              alt?: string | null;
+            };
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+          }[]
+        | null;
+      fsty?: {
+        /**
+         * Hex, rgb, rgba o nombre CSS.
+         */
+        color?: string | null;
+        /**
+         * Color para strong/b dentro del RichText.
+         */
+        bold?: string | null;
+        useFG?: boolean | null;
+        fg?: (number | null) | FontGroup;
+        ff?:
+          | (
+              | 'default'
+              | 'Arial, sans-serif'
+              | '"Times New Roman", serif'
+              | 'Georgia, serif'
+              | 'Verdana, sans-serif'
+              | 'Helvetica, Arial, sans-serif'
+              | '"Courier New", monospace'
+              | '"Roboto", sans-serif'
+              | '"Open Sans", sans-serif'
+              | '"Lato", sans-serif'
+              | '"Montserrat", sans-serif'
+              | '"Playfair Display", serif'
+              | '"Inter", sans-serif'
+              | '"Poppins", sans-serif'
+              | '"Raleway", sans-serif'
+            )
+          | null;
+        useCF?: boolean | null;
+        cFont?: (number | null) | Font;
+        cFontNm?: string | null;
+      };
+      /**
+       * Foto del hero (lado derecho en desktop).
+       */
+      media?: (number | null) | Media;
+      imgAlt?: string | null;
+      calc?: {
+        icon?: {
+          /**
+           * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+           */
+          useMedia?: boolean | null;
+          /**
+           * Imagen o GIF del icono.
+           */
+          img?: (number | null) | Media;
+          /**
+           * Pega aquí el código SVG como alternativa a subir media.
+           */
+          svg?: string | null;
+          alt?: string | null;
+        };
+        /**
+         * Título y subtítulo de la card (ej: “Calcula tu IMC”).
+         */
+        content?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        hLabel?: string | null;
+        hPh?: string | null;
+        hUnit?: string | null;
+        wLabel?: string | null;
+        wPh?: string | null;
+        wUnit?: string | null;
+        btnLabel?: string | null;
+        btnSvg?: string | null;
+        ptag?: {
+          icon?: {
+            /**
+             * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+             */
+            useMedia?: boolean | null;
+            /**
+             * Imagen o GIF del icono.
+             */
+            img?: (number | null) | Media;
+            /**
+             * Pega aquí el código SVG como alternativa a subir media.
+             */
+            svg?: string | null;
+            alt?: string | null;
+          };
+          label?: string | null;
+        };
+        /**
+         * SVG del badge circular sobre la esquina de la card.
+         */
+        floatSvg?: string | null;
+        btnBg?: string | null;
+        btnFg?: string | null;
+        cardBg?: string | null;
+        modalTitle?: string | null;
+        modalBg?: string | null;
+        recalcTxt?: string | null;
+        /**
+         * Rangos imcMin/imcMax y “Es apto” definen el resultado del popup (como CalculadoraIMC_Drop).
+         */
+        cats?:
+          | {
+              icon?: {
+                /**
+                 * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+                 */
+                useMedia?: boolean | null;
+                /**
+                 * Imagen o GIF del icono.
+                 */
+                img?: (number | null) | Media;
+                /**
+                 * Pega aquí el código SVG como alternativa a subir media.
+                 */
+                svg?: string | null;
+                alt?: string | null;
+              };
+              catLbl: string;
+              imcLbl: string;
+              imcMin: number;
+              /**
+               * Vacío = sin tope.
+               */
+              imcMax?: number | null;
+              eligible?: boolean | null;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * El flujo del popup es siempre: calcular → formulario → resultado. Activa esto para editar los textos/campos del formulario.
+         */
+        enableContact?: boolean | null;
+        /**
+         * Obligatorio: tras calcular el IMC se muestra este formulario; el resultado solo aparece al enviarlo.
+         */
+        contact?: {
+          title?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          desc?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          nPh?: string | null;
+          pPh?: string | null;
+          ePh?: string | null;
+          nIcon?: {
+            /**
+             * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+             */
+            useMedia?: boolean | null;
+            /**
+             * Imagen o GIF del icono.
+             */
+            img?: (number | null) | Media;
+            /**
+             * Pega aquí el código SVG como alternativa a subir media.
+             */
+            svg?: string | null;
+            alt?: string | null;
+          };
+          pIcon?: {
+            /**
+             * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+             */
+            useMedia?: boolean | null;
+            /**
+             * Imagen o GIF del icono.
+             */
+            img?: (number | null) | Media;
+            /**
+             * Pega aquí el código SVG como alternativa a subir media.
+             */
+            svg?: string | null;
+            alt?: string | null;
+          };
+          eIcon?: {
+            /**
+             * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+             */
+            useMedia?: boolean | null;
+            /**
+             * Imagen o GIF del icono.
+             */
+            img?: (number | null) | Media;
+            /**
+             * Pega aquí el código SVG como alternativa a subir media.
+             */
+            svg?: string | null;
+            alt?: string | null;
+          };
+          privacy?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          privReq?: boolean | null;
+          contBtn?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          contBg?: string | null;
+          contFg?: string | null;
+        };
+        /**
+         * Usa {bmi} para insertar el valor (ej. 28,4).
+         */
+        eligContent?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        eligBtns?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+                label: string;
+              };
+              svg?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        eligBg?: string | null;
+        eligFg?: string | null;
+        /**
+         * Usa {bmi} para insertar el valor.
+         */
+        noEligContent?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        noEligBtns?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+                label: string;
+              };
+              svg?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        noEligBg?: string | null;
+        noEligFg?: string | null;
+        tagBg?: string | null;
+        tagFg?: string | null;
+      };
+      /**
+       * Máximo 3. Barra inferior con icono + texto.
+       */
+      footerItems?:
+        | {
+            icon?: {
+              /**
+               * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+               */
+              useMedia?: boolean | null;
+              /**
+               * Imagen o GIF del icono.
+               */
+              img?: (number | null) | Media;
+              /**
+               * Pega aquí el código SVG como alternativa a subir media.
+               */
+              svg?: string | null;
+              alt?: string | null;
+            };
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+          }[]
+        | null;
+      osty?: {
+        /**
+         * Hex, rgb, rgba o nombre CSS.
+         */
+        color?: string | null;
+        /**
+         * Color para strong/b dentro del RichText.
+         */
+        bold?: string | null;
+        useFG?: boolean | null;
+        fg?: (number | null) | FontGroup;
+        ff?:
+          | (
+              | 'default'
+              | 'Arial, sans-serif'
+              | '"Times New Roman", serif'
+              | 'Georgia, serif'
+              | 'Verdana, sans-serif'
+              | 'Helvetica, Arial, sans-serif'
+              | '"Courier New", monospace'
+              | '"Roboto", sans-serif'
+              | '"Open Sans", sans-serif'
+              | '"Lato", sans-serif'
+              | '"Montserrat", sans-serif'
+              | '"Playfair Display", serif'
+              | '"Inter", sans-serif'
+              | '"Poppins", sans-serif'
+              | '"Raleway", sans-serif'
+            )
+          | null;
+        useCF?: boolean | null;
+        cFont?: (number | null) | Font;
+        cFontNm?: string | null;
+      };
+      /**
+       * Activa o desactiva las curvas SVG animadas del fondo (desktop y mobile).
+       */
+      curves?: boolean | null;
+      accent?: string | null;
+      bg?: string | null;
+      /**
+       * Ej: linear-gradient(...). Si está vacío, usa solo el color base.
+       */
+      bgGrad?: string | null;
+      pBtnBg?: string | null;
+      pBtnFg?: string | null;
+      sBtnFg?: string | null;
+    };
   };
-  layout: LayoutDropBlock[];
+  layout: (LayoutDropBlock | CalculadoraIMCDropBlock | LayoutCTADropBlock | TeamDropBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -499,6 +1069,271 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * Crea grupos de tipografías: fuentes, y por cada nivel (H1–H6, párrafos, listas, citas/blockquote, cuerpo pequeño / small body, caption) el tamaño, interlineado y márgenes en escritorio y móvil. Si activas "Precargar siempre", las fuentes se cargarán al inicio de cada página.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "font-groups".
+ */
+export interface FontGroup {
+  id: number;
+  /**
+   * Nombre descriptivo del grupo (ej: "Saans", "Mi familia principal")
+   */
+  name: string;
+  /**
+   * Nombre que se usará en font-family en el CSS. Debe ser el mismo para todas las variantes (ej: "Saans"). Sin comillas.
+   */
+  fontFamilyName: string;
+  /**
+   * Añade cada archivo de fuente y asígnale una variante (regular, bold, semibold, etc.).
+   */
+  fonts?:
+    | {
+        font: number | Font;
+        /**
+         * Peso y estilo que representa este archivo (se usará en @font-face como font-weight/font-style).
+         */
+        variant:
+          | 'regular'
+          | 'regularItalic'
+          | 'medium'
+          | 'mediumItalic'
+          | 'semibold'
+          | 'semiboldItalic'
+          | 'bold'
+          | 'boldItalic'
+          | 'light'
+          | 'lightItalic'
+          | 'heavy'
+          | 'heavyItalic';
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Tipografía y ritmo vertical de H1 desde el breakpoint md (≥768px).
+   */
+  heading1Desktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H1.
+   */
+  heading1Mobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Tipografía y ritmo vertical de H2 desde el breakpoint md (≥768px).
+   */
+  heading2Desktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H2.
+   */
+  heading2Mobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Tipografía y ritmo vertical de H3 desde el breakpoint md (≥768px).
+   */
+  heading3Desktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H3.
+   */
+  heading3Mobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Tipografía y ritmo vertical de H4 desde el breakpoint md (≥768px).
+   */
+  heading4Desktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H4.
+   */
+  heading4Mobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Tipografía y ritmo vertical de H5 desde el breakpoint md (≥768px).
+   */
+  heading5Desktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H5.
+   */
+  heading5Mobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Tipografía y ritmo vertical de H6 desde el breakpoint md (≥768px).
+   */
+  heading6Desktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H6.
+   */
+  heading6Mobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Texto en <p>. Las listas tienen grupo aparte.
+   */
+  bodyTextDesktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Si un campo está vacío, se usa el valor de escritorio de párrafos.
+   */
+  bodyTextMobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Tamaño, interlineado y márgenes de bloques de lista.
+   */
+  listsTextDesktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Si un campo está vacío, se usa el valor de escritorio de listas.
+   */
+  listsTextMobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Bloques de cita del rich text (<blockquote>).
+   */
+  quoteTextDesktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Si un campo está vacío, se usa el valor de escritorio de citas.
+   */
+  quoteTextMobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Bloque de párrafo compacto en Rich Text (clase payload-richtext-small-body). Tamaño, interlineado y márgenes del bloque.
+   */
+  smallBodyTextDesktop?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  /**
+   * Opcional. Si un campo está vacío, se usa el valor de escritorio de cuerpo pequeño.
+   */
+  smallBodyTextMobile?: {
+    fontSize?: string | null;
+    lineHeight?: string | null;
+    marginTop?: string | null;
+    marginBottom?: string | null;
+  };
+  captionTextDesktop?: {
+    /**
+     * El caption hereda interlineado y márgenes del bloque contenedor salvo que el front lo amplíe.
+     */
+    fontSize?: string | null;
+  };
+  /**
+   * Opcional. Si está vacío, se usa el tamaño de escritorio.
+   */
+  captionTextMobile?: {
+    /**
+     * El caption hereda interlineado y márgenes del bloque contenedor salvo que el front lo amplíe.
+     */
+    fontSize?: string | null;
+  };
+  /**
+   * Si está activado, todos los archivos de fuentes de este grupo se precargarán en el front (en cada página) para evitar que el texto se muestre con otra fuente al recargar.
+   */
+  preloadFonts?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fonts".
+ */
+export interface Font {
+  id: number;
+  /**
+   * Nombre descriptivo de la fuente (ej: "Mi Fuente Personalizada")
+   */
+  name?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -950,269 +1785,901 @@ export interface LayoutDropBlock {
   blockType: 'layoutDrop';
 }
 /**
- * Crea grupos de tipografías: fuentes, y por cada nivel (H1–H6, párrafos, listas, citas/blockquote, cuerpo pequeño / small body, caption) el tamaño, interlineado y márgenes en escritorio y móvil. Si activas "Precargar siempre", las fuentes se cargarán al inicio de cada página.
- *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "font-groups".
+ * via the `definition` "CalculadoraIMCDropBlock".
  */
-export interface FontGroup {
-  id: number;
+export interface CalculadoraIMCDropBlock {
   /**
-   * Nombre descriptivo del grupo (ej: "Saans", "Mi familia principal")
+   * ID para enlaces ancla (ej: calculadora-imc). Usar el mismo valor en el navbar en "Id ancla (misma página)".
    */
-  name: string;
+  anchorId?: string | null;
   /**
-   * Nombre que se usará en font-family en el CSS. Debe ser el mismo para todas las variantes (ej: "Saans"). Sin comillas.
+   * Título y descripción (usa negrita/colores para resaltar parte del título, ej. "el tratamiento").
    */
-  fontFamilyName: string;
+  headerContent: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  headerStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
+  categoryHeaderLabel?: string | null;
+  imcHeaderLabel?: string | null;
+  categoryHeaderIcon?: {
+    /**
+     * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+     */
+    useMedia?: boolean | null;
+    /**
+     * Imagen o GIF del icono.
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * Pega aquí el código SVG como alternativa a subir media.
+     */
+    iconSVG?: string | null;
+    alt?: string | null;
+  };
+  imcHeaderIcon?: {
+    /**
+     * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+     */
+    useMedia?: boolean | null;
+    /**
+     * Imagen o GIF del icono.
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * Pega aquí el código SVG como alternativa a subir media.
+     */
+    iconSVG?: string | null;
+    alt?: string | null;
+  };
   /**
-   * Añade cada archivo de fuente y asígnale una variante (regular, bold, semibold, etc.).
+   * Máximo 8 filas. Usa imcMin/imcMax para emparejar el IMC calculado y "Es apto" para el resultado del modal.
    */
-  fonts?:
+  categories?:
     | {
-        font: number | Font;
+        icon?: {
+          /**
+           * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+           */
+          useMedia?: boolean | null;
+          /**
+           * Imagen o GIF del icono.
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Pega aquí el código SVG como alternativa a subir media.
+           */
+          iconSVG?: string | null;
+          alt?: string | null;
+        };
         /**
-         * Peso y estilo que representa este archivo (se usará en @font-face como font-weight/font-style).
+         * Ej: Sobrepeso Grado II
          */
-        variant:
-          | 'regular'
-          | 'regularItalic'
-          | 'medium'
-          | 'mediumItalic'
-          | 'semibold'
-          | 'semiboldItalic'
-          | 'bold'
-          | 'boldItalic'
-          | 'light'
-          | 'lightItalic'
-          | 'heavy'
-          | 'heavyItalic';
+        categoryLabel: string;
+        /**
+         * Texto visible en la tabla. Ej: 27 - 29.9 o >50
+         */
+        imcLabel: string;
+        /**
+         * Límite inferior para emparejar el cálculo. Ej: 27
+         */
+        imcMin: number;
+        /**
+         * Límite superior exclusivo. Déjalo vacío para “sin tope” (ej. >50 → min 50, max vacío).
+         */
+        imcMax?: number | null;
+        /**
+         * Si el IMC del usuario cae en esta fila y está marcado, el modal muestra el resultado “apto”.
+         */
+        isEligible?: boolean | null;
+        showTag?: boolean | null;
+        tagLabel?: string | null;
+        /**
+         * SVG pequeño (ej. check) junto al texto del tag.
+         */
+        tagIconSVG?: string | null;
         id?: string | null;
       }[]
     | null;
-  /**
-   * Tipografía y ritmo vertical de H1 desde el breakpoint md (≥768px).
-   */
-  heading1Desktop?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H1.
-   */
-  heading1Mobile?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Tipografía y ritmo vertical de H2 desde el breakpoint md (≥768px).
-   */
-  heading2Desktop?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H2.
-   */
-  heading2Mobile?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Tipografía y ritmo vertical de H3 desde el breakpoint md (≥768px).
-   */
-  heading3Desktop?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H3.
-   */
-  heading3Mobile?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Tipografía y ritmo vertical de H4 desde el breakpoint md (≥768px).
-   */
-  heading4Desktop?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H4.
-   */
-  heading4Mobile?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Tipografía y ritmo vertical de H5 desde el breakpoint md (≥768px).
-   */
-  heading5Desktop?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H5.
-   */
-  heading5Mobile?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Tipografía y ritmo vertical de H6 desde el breakpoint md (≥768px).
-   */
-  heading6Desktop?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Opcional. Por debajo de md (≤767px). Si un campo está vacío, se usa el valor de escritorio de H6.
-   */
-  heading6Mobile?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Texto en <p>. Las listas tienen grupo aparte.
-   */
-  bodyTextDesktop?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Opcional. Si un campo está vacío, se usa el valor de escritorio de párrafos.
-   */
-  bodyTextMobile?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Tamaño, interlineado y márgenes de bloques de lista.
-   */
-  listsTextDesktop?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Opcional. Si un campo está vacío, se usa el valor de escritorio de listas.
-   */
-  listsTextMobile?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Bloques de cita del rich text (<blockquote>).
-   */
-  quoteTextDesktop?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Opcional. Si un campo está vacío, se usa el valor de escritorio de citas.
-   */
-  quoteTextMobile?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Bloque de párrafo compacto en Rich Text (clase payload-richtext-small-body). Tamaño, interlineado y márgenes del bloque.
-   */
-  smallBodyTextDesktop?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  /**
-   * Opcional. Si un campo está vacío, se usa el valor de escritorio de cuerpo pequeño.
-   */
-  smallBodyTextMobile?: {
-    fontSize?: string | null;
-    lineHeight?: string | null;
-    marginTop?: string | null;
-    marginBottom?: string | null;
-  };
-  captionTextDesktop?: {
+  image?: {
     /**
-     * El caption hereda interlineado y márgenes del bloque contenedor salvo que el front lo amplíe.
+     * Foto principal (idealmente recortada / sin fondo).
      */
-    fontSize?: string | null;
-  };
-  /**
-   * Opcional. Si está vacío, se usa el tamaño de escritorio.
-   */
-  captionTextMobile?: {
+    mediaImage?: (number | null) | Media;
+    alt?: string | null;
     /**
-     * El caption hereda interlineado y márgenes del bloque contenedor salvo que el front lo amplíe.
+     * Color del círculo rosa detrás de la imagen.
      */
-    fontSize?: string | null;
+    circleColor?: string | null;
+  };
+  openButton: {
+    label: string;
+    /**
+     * Código SVG (ej. flecha) a la derecha del texto.
+     */
+    iconSVG?: string | null;
+    backgroundColor?: string | null;
+    textColor?: string | null;
   };
   /**
-   * Si está activado, todos los archivos de fuentes de este grupo se precargarán en el front (en cada página) para evitar que el texto se muestre con otra fuente al recargar.
+   * Texto pequeño bajo el botón/imagen (disclaimer del IMC).
    */
-  preloadFonts?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
+  footerContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  footerStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
+  modalTitle?: string | null;
+  heightLabel?: string | null;
+  weightLabel?: string | null;
+  heightPlaceholder?: string | null;
+  weightPlaceholder?: string | null;
+  calculateButtonText?: string | null;
+  calculateButtonIconSVG?: string | null;
+  recalculateButtonText?: string | null;
+  calculateButtonColor?: string | null;
+  calculateButtonTextColor?: string | null;
+  modalCardBackgroundColor?: string | null;
+  /**
+   * Si está activo, cuando el IMC es apto se muestra primero el formulario de contacto y después el resultado.
+   */
+  enableEligibleContactForm?: boolean | null;
+  /**
+   * Se muestra tras calcular un IMC apto, antes del resultado final.
+   */
+  eligibleContactForm?: {
+    /**
+     * Ej: "Déjanos tu contacto".
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Texto bajo el título del formulario de contacto.
+     */
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Texto del input (no admite rich text).
+     */
+    namePlaceholder?: string | null;
+    /**
+     * Texto del input (no admite rich text).
+     */
+    phonePlaceholder?: string | null;
+    /**
+     * Texto del input (no admite rich text).
+     */
+    emailPlaceholder?: string | null;
+    nameIcon?: {
+      /**
+       * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+       */
+      useMedia?: boolean | null;
+      /**
+       * Imagen o GIF del icono.
+       */
+      mediaImage?: (number | null) | Media;
+      /**
+       * Pega aquí el código SVG como alternativa a subir media.
+       */
+      iconSVG?: string | null;
+      alt?: string | null;
+    };
+    phoneIcon?: {
+      /**
+       * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+       */
+      useMedia?: boolean | null;
+      /**
+       * Imagen o GIF del icono.
+       */
+      mediaImage?: (number | null) | Media;
+      /**
+       * Pega aquí el código SVG como alternativa a subir media.
+       */
+      iconSVG?: string | null;
+      alt?: string | null;
+    };
+    emailIcon?: {
+      /**
+       * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+       */
+      useMedia?: boolean | null;
+      /**
+       * Imagen o GIF del icono.
+       */
+      mediaImage?: (number | null) | Media;
+      /**
+       * Pega aquí el código SVG como alternativa a subir media.
+       */
+      iconSVG?: string | null;
+      alt?: string | null;
+    };
+    /**
+     * Texto junto al checkbox de consentimiento (puedes enlazar la política de privacidad).
+     */
+    privacyContent?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    privacyRequired?: boolean | null;
+    /**
+     * Etiqueta del botón de envío del formulario.
+     */
+    continueButtonText?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    continueButtonColor?: string | null;
+    continueButtonTextColor?: string | null;
+  };
+  /**
+   * Se muestra si la categoría emparejada tiene “Es apto”. Usa {bmi} para insertar el valor (ej. 28,4). Si el formulario de contacto está activo, este contenido aparece después de enviarlo.
+   */
+  eligibleContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  eligibleResult?: {
+    /**
+     * Hasta 2 botones cuando el resultado es apto.
+     */
+    buttons?:
+      | {
+          link: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
+            url?: string | null;
+            label: string;
+          };
+          /**
+           * Código SVG del icono (ej. flecha).
+           */
+          iconSVG?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  eligibleButtonColor?: string | null;
+  eligibleButtonTextColor?: string | null;
+  /**
+   * Se muestra si la categoría emparejada no es apta (o no hay match). Usa {bmi} para insertar el valor.
+   */
+  notEligibleContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  notEligibleResult?: {
+    buttons?:
+      | {
+          link: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
+            url?: string | null;
+            label: string;
+          };
+          /**
+           * Código SVG del icono (ej. flecha).
+           */
+          iconSVG?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  notEligibleButtonColor?: string | null;
+  notEligibleButtonTextColor?: string | null;
+  backgroundColor?: string | null;
+  tableHeaderBackgroundColor?: string | null;
+  tableCardBackgroundColor?: string | null;
+  tagBackgroundColor?: string | null;
+  tagTextColor?: string | null;
+  accentColor?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'calculadoraIMCDrop';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "fonts".
+ * via the `definition` "LayoutCTADropBlock".
  */
-export interface Font {
-  id: number;
+export interface LayoutCTADropBlock {
   /**
-   * Nombre descriptivo de la fuente (ej: "Mi Fuente Personalizada")
+   * ID para enlaces ancla (ej: como-empezar). Usar el mismo valor en el navbar en "Id ancla (misma página)".
    */
-  name?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
+  anchorId?: string | null;
+  /**
+   * Título y descripción (usa negrita/colores para resaltar parte del título).
+   */
+  headerContent: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  headerStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
+  /**
+   * Máximo 4. Tag, imagen, icono y texto.
+   */
+  steps?:
+    | {
+        tag?: {
+          label?: string | null;
+          backgroundColor?: string | null;
+          textColor?: string | null;
+        };
+        image?: (number | null) | Media;
+        icon?: {
+          /**
+           * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+           */
+          useMedia?: boolean | null;
+          /**
+           * Imagen o GIF del icono.
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Pega aquí el código SVG como alternativa a subir media.
+           */
+          iconSVG?: string | null;
+          alt?: string | null;
+        };
+        content: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  stepsStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
+  /**
+   * Botón principal con icono opcional (SVG).
+   */
+  buttons?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+          label: string;
+        };
+        /**
+         * Código SVG del icono (ej. flecha). Si está vacío se usa una flecha por defecto.
+         */
+        iconSVG?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  buttonBackgroundColor?: string | null;
+  buttonTextColor?: string | null;
+  backgroundColor?: string | null;
+  /**
+   * Activa o desactiva las estrellas, arcos y cruces animadas del fondo.
+   */
+  showDecorativeSvgs?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layoutCTADrop';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamDropBlock".
+ */
+export interface TeamDropBlock {
+  /**
+   * ID para enlaces ancla (ej: equipo). Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  /**
+   * Título principal (usa negrita/colores para resaltar parte del título, ej. "nuestro equipo").
+   */
+  headerContent: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  headerStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
+  dividerIcon?: {
+    /**
+     * Icono divisor entre el título y el texto secundario. Si no hay media ni SVG, se muestra el divisor por defecto.
+     */
+    useMedia?: boolean | null;
+    /**
+     * Imagen o GIF del icono.
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * Pega aquí el código SVG como alternativa a subir media. Si está vacío se usa el divisor por defecto.
+     */
+    iconSVG?: string | null;
+    alt?: string | null;
+  };
+  /**
+   * Párrafo introductorio bajo el icono divisor.
+   */
+  secondaryContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  secondaryStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
+  /**
+   * Máximo 6. Imagen + texto (nombre y rol).
+   */
+  members?:
+    | {
+        image: number | Media;
+        /**
+         * Nombre (negrita) y rol/descripción debajo.
+         */
+        content: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  membersStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
+  backgroundColor?: string | null;
+  /**
+   * Activa o desactiva los arcos y destellos animados del fondo.
+   */
+  showDecorativeSvgs?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'teamDrop';
 }
 /**
  * Envíos del formulario de Contact Section 2
@@ -1887,11 +3354,258 @@ export interface PagesSelect<T extends boolean = true> {
               secondImageUrl?: T;
               showGradient?: T;
             };
+        hd?:
+          | T
+          | {
+              tag?:
+                | T
+                | {
+                    icon?:
+                      | T
+                      | {
+                          useMedia?: T;
+                          img?: T;
+                          svg?: T;
+                          alt?: T;
+                        };
+                    label?: T;
+                    backgroundColor?: T;
+                    textColor?: T;
+                  };
+              hdr?: T;
+              hsty?:
+                | T
+                | {
+                    color?: T;
+                    bold?: T;
+                    useFG?: T;
+                    fg?: T;
+                    ff?: T;
+                    useCF?: T;
+                    cFont?: T;
+                    cFontNm?: T;
+                  };
+              buttons?:
+                | T
+                | {
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                          label?: T;
+                        };
+                    iconSVG?: T;
+                    id?: T;
+                  };
+              features?:
+                | T
+                | {
+                    icon?:
+                      | T
+                      | {
+                          useMedia?: T;
+                          img?: T;
+                          svg?: T;
+                          alt?: T;
+                        };
+                    content?: T;
+                    id?: T;
+                  };
+              fsty?:
+                | T
+                | {
+                    color?: T;
+                    bold?: T;
+                    useFG?: T;
+                    fg?: T;
+                    ff?: T;
+                    useCF?: T;
+                    cFont?: T;
+                    cFontNm?: T;
+                  };
+              media?: T;
+              imgAlt?: T;
+              calc?:
+                | T
+                | {
+                    icon?:
+                      | T
+                      | {
+                          useMedia?: T;
+                          img?: T;
+                          svg?: T;
+                          alt?: T;
+                        };
+                    content?: T;
+                    hLabel?: T;
+                    hPh?: T;
+                    hUnit?: T;
+                    wLabel?: T;
+                    wPh?: T;
+                    wUnit?: T;
+                    btnLabel?: T;
+                    btnSvg?: T;
+                    ptag?:
+                      | T
+                      | {
+                          icon?:
+                            | T
+                            | {
+                                useMedia?: T;
+                                img?: T;
+                                svg?: T;
+                                alt?: T;
+                              };
+                          label?: T;
+                        };
+                    floatSvg?: T;
+                    btnBg?: T;
+                    btnFg?: T;
+                    cardBg?: T;
+                    modalTitle?: T;
+                    modalBg?: T;
+                    recalcTxt?: T;
+                    cats?:
+                      | T
+                      | {
+                          icon?:
+                            | T
+                            | {
+                                useMedia?: T;
+                                img?: T;
+                                svg?: T;
+                                alt?: T;
+                              };
+                          catLbl?: T;
+                          imcLbl?: T;
+                          imcMin?: T;
+                          imcMax?: T;
+                          eligible?: T;
+                          id?: T;
+                        };
+                    enableContact?: T;
+                    contact?:
+                      | T
+                      | {
+                          title?: T;
+                          desc?: T;
+                          nPh?: T;
+                          pPh?: T;
+                          ePh?: T;
+                          nIcon?:
+                            | T
+                            | {
+                                useMedia?: T;
+                                img?: T;
+                                svg?: T;
+                                alt?: T;
+                              };
+                          pIcon?:
+                            | T
+                            | {
+                                useMedia?: T;
+                                img?: T;
+                                svg?: T;
+                                alt?: T;
+                              };
+                          eIcon?:
+                            | T
+                            | {
+                                useMedia?: T;
+                                img?: T;
+                                svg?: T;
+                                alt?: T;
+                              };
+                          privacy?: T;
+                          privReq?: T;
+                          contBtn?: T;
+                          contBg?: T;
+                          contFg?: T;
+                        };
+                    eligContent?: T;
+                    eligBtns?:
+                      | T
+                      | {
+                          link?:
+                            | T
+                            | {
+                                type?: T;
+                                newTab?: T;
+                                reference?: T;
+                                url?: T;
+                                label?: T;
+                              };
+                          svg?: T;
+                          id?: T;
+                        };
+                    eligBg?: T;
+                    eligFg?: T;
+                    noEligContent?: T;
+                    noEligBtns?:
+                      | T
+                      | {
+                          link?:
+                            | T
+                            | {
+                                type?: T;
+                                newTab?: T;
+                                reference?: T;
+                                url?: T;
+                                label?: T;
+                              };
+                          svg?: T;
+                          id?: T;
+                        };
+                    noEligBg?: T;
+                    noEligFg?: T;
+                    tagBg?: T;
+                    tagFg?: T;
+                  };
+              footerItems?:
+                | T
+                | {
+                    icon?:
+                      | T
+                      | {
+                          useMedia?: T;
+                          img?: T;
+                          svg?: T;
+                          alt?: T;
+                        };
+                    content?: T;
+                    id?: T;
+                  };
+              osty?:
+                | T
+                | {
+                    color?: T;
+                    bold?: T;
+                    useFG?: T;
+                    fg?: T;
+                    ff?: T;
+                    useCF?: T;
+                    cFont?: T;
+                    cFontNm?: T;
+                  };
+              curves?: T;
+              accent?: T;
+              bg?: T;
+              bgGrad?: T;
+              pBtnBg?: T;
+              pBtnFg?: T;
+              sBtnFg?: T;
+            };
       };
   layout?:
     | T
     | {
         layoutDrop?: T | LayoutDropBlockSelect<T>;
+        calculadoraIMCDrop?: T | CalculadoraIMCDropBlockSelect<T>;
+        layoutCTADrop?: T | LayoutCTADropBlockSelect<T>;
+        teamDrop?: T | TeamDropBlockSelect<T>;
       };
   meta?:
     | T
@@ -2063,6 +3777,334 @@ export interface LayoutDropBlockSelect<T extends boolean = true> {
   applyCustomWidth?: T;
   customWidthPercent?: T;
   customWidthPercentMobile?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CalculadoraIMCDropBlock_select".
+ */
+export interface CalculadoraIMCDropBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  headerContent?: T;
+  headerStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+      };
+  categoryHeaderLabel?: T;
+  imcHeaderLabel?: T;
+  categoryHeaderIcon?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        iconSVG?: T;
+        alt?: T;
+      };
+  imcHeaderIcon?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        iconSVG?: T;
+        alt?: T;
+      };
+  categories?:
+    | T
+    | {
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+        categoryLabel?: T;
+        imcLabel?: T;
+        imcMin?: T;
+        imcMax?: T;
+        isEligible?: T;
+        showTag?: T;
+        tagLabel?: T;
+        tagIconSVG?: T;
+        id?: T;
+      };
+  image?:
+    | T
+    | {
+        mediaImage?: T;
+        alt?: T;
+        circleColor?: T;
+      };
+  openButton?:
+    | T
+    | {
+        label?: T;
+        iconSVG?: T;
+        backgroundColor?: T;
+        textColor?: T;
+      };
+  footerContent?: T;
+  footerStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+      };
+  modalTitle?: T;
+  heightLabel?: T;
+  weightLabel?: T;
+  heightPlaceholder?: T;
+  weightPlaceholder?: T;
+  calculateButtonText?: T;
+  calculateButtonIconSVG?: T;
+  recalculateButtonText?: T;
+  calculateButtonColor?: T;
+  calculateButtonTextColor?: T;
+  modalCardBackgroundColor?: T;
+  enableEligibleContactForm?: T;
+  eligibleContactForm?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        namePlaceholder?: T;
+        phonePlaceholder?: T;
+        emailPlaceholder?: T;
+        nameIcon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+        phoneIcon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+        emailIcon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+        privacyContent?: T;
+        privacyRequired?: T;
+        continueButtonText?: T;
+        continueButtonColor?: T;
+        continueButtonTextColor?: T;
+      };
+  eligibleContent?: T;
+  eligibleResult?:
+    | T
+    | {
+        buttons?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              iconSVG?: T;
+              id?: T;
+            };
+      };
+  eligibleButtonColor?: T;
+  eligibleButtonTextColor?: T;
+  notEligibleContent?: T;
+  notEligibleResult?:
+    | T
+    | {
+        buttons?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              iconSVG?: T;
+              id?: T;
+            };
+      };
+  notEligibleButtonColor?: T;
+  notEligibleButtonTextColor?: T;
+  backgroundColor?: T;
+  tableHeaderBackgroundColor?: T;
+  tableCardBackgroundColor?: T;
+  tagBackgroundColor?: T;
+  tagTextColor?: T;
+  accentColor?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LayoutCTADropBlock_select".
+ */
+export interface LayoutCTADropBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  headerContent?: T;
+  headerStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+      };
+  steps?:
+    | T
+    | {
+        tag?:
+          | T
+          | {
+              label?: T;
+              backgroundColor?: T;
+              textColor?: T;
+            };
+        image?: T;
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+        content?: T;
+        id?: T;
+      };
+  stepsStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        iconSVG?: T;
+        id?: T;
+      };
+  buttonBackgroundColor?: T;
+  buttonTextColor?: T;
+  backgroundColor?: T;
+  showDecorativeSvgs?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamDropBlock_select".
+ */
+export interface TeamDropBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  headerContent?: T;
+  headerStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+      };
+  dividerIcon?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        iconSVG?: T;
+        alt?: T;
+      };
+  secondaryContent?: T;
+  secondaryStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+      };
+  members?:
+    | T
+    | {
+        image?: T;
+        content?: T;
+        id?: T;
+      };
+  membersStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+      };
+  backgroundColor?: T;
+  showDecorativeSvgs?: T;
   id?: T;
   blockName?: T;
 }

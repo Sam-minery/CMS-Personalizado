@@ -6,7 +6,13 @@
 import type { Block } from 'payload'
 
 import { LayoutDropBlock } from './Layout_Drop/config'
+import { CalculadoraIMCDropBlock } from './CalculadoraIMC_Drop/config'
+import { LayoutCTADropBlock } from './LayoutCTA_Drop/config'
+import { TeamDropBlock } from './Team_Drop/config'
 
 export const ENABLED_BLOCKS_BY_SLUG: Record<string, Block> = {
   "layoutDrop": LayoutDropBlock,
+  "calculadoraIMCDrop": CalculadoraIMCDropBlock,
+  "layoutCTADrop": LayoutCTADropBlock,
+  "teamDrop": TeamDropBlock,
 }
