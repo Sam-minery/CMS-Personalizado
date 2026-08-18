@@ -12,4 +12,8 @@ export const enabledBlockSlugs: string[] | null = [
   'layoutCTADrop',
   'teamDrop',
   'ctaAppDrop',
+  'layout2Drop',
+  'fondoDrop',
+  'pricingDrop',
+  'faqDrop',
 ]

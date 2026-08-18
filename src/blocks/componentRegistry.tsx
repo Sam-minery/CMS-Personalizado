@@ -119,6 +119,10 @@ import { CalculadoraIMCDropBlock } from '@/blocks/CalculadoraIMC_Drop/Component'
 import { LayoutCTADropBlock } from '@/blocks/LayoutCTA_Drop/Component'
 import { TeamDropBlock } from '@/blocks/Team_Drop/Component'
 import { CTAAppDropBlock } from '@/blocks/CTAApp_Drop/Component'
+import { Layout2DropBlock } from '@/blocks/Layout2_DROP/Component'
+import { FondoDropBlock } from '@/blocks/Fondo_DROP/Component'
+import { PricingDropBlock } from '@/blocks/Pricing_DROP/Component'
+import { FAQDropBlock } from '@/blocks/FAQ_DROP/Component'
 import { NavbarSimpleSendaBlock } from '@/blocks/Navbar_Simple_SENDA/Component'
 import { PricingSendaBlock } from '@/blocks/Pricing_SENDA/Component'
 import { PricingSendaAlterBlock } from '@/blocks/Pricing_SENDA_Alter/Component'
@@ -261,6 +265,10 @@ const BLOCK_COMPONENTS: BlockComponentMap = {
   layoutCTADrop: LayoutCTADropBlock,
   teamDrop: TeamDropBlock,
   ctaAppDrop: CTAAppDropBlock,
+  layout2Drop: Layout2DropBlock,
+  fondoDrop: FondoDropBlock,
+  pricingDrop: PricingDropBlock,
+  faqDrop: FAQDropBlock,
   navbarSimpleSenda: NavbarSimpleSendaBlock,
   pricingSenda: PricingSendaBlock,
   pricingSendaAlter: PricingSendaAlterBlock,

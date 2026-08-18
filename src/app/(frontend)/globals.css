@@ -152,9 +152,10 @@ html body .grecaptcha-badge {
   bottom: var(--recaptcha-badge-bottom) !important;
 }
 
-/* Mismo breakpoint que Navbar_SENDA (max-width: 991px). Clase en <html> desde el navbar. */
+/* Mismo breakpoint que Navbar_SENDA / Navbar_DROP (max-width: 991px). Clase en <html> desde el navbar. */
 @media (max-width: 991px) {
-  html.navbar-senda-mobile-menu-open body .grecaptcha-badge {
+  html.navbar-senda-mobile-menu-open body .grecaptcha-badge,
+  html.navbar-drop-mobile-menu-open body .grecaptcha-badge {
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;

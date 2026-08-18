@@ -868,7 +868,17 @@ export interface Page {
       sBtnFg?: string | null;
     };
   };
-  layout: (LayoutDropBlock | CalculadoraIMCDropBlock | LayoutCTADropBlock | TeamDropBlock | CTAAppDropBlock)[];
+  layout: (
+    | LayoutDropBlock
+    | CalculadoraIMCDropBlock
+    | LayoutCTADropBlock
+    | TeamDropBlock
+    | CTAAppDropBlock
+    | Layout2DropBlock
+    | FondoDropBlock
+    | PricingDropBlock
+    | FAQDropBlock
+  )[];
   meta?: {
     title?: string | null;
     /**
@@ -2969,6 +2979,798 @@ export interface CTAAppDropBlock {
   blockType: 'ctaAppDrop';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout2DropBlock".
+ */
+export interface Layout2DropBlock {
+  /**
+   * ID para enlaces ancla. Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  /**
+   * Título grande. Usa negrita para resaltar palabras (ej. "respaldado").
+   */
+  mainContent: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Subtítulo debajo del separador SVG.
+   */
+  secondaryContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Hex, rgb, rgba o nombre CSS.
+   */
+  backgroundColor?: string | null;
+  /**
+   * Aplica al RichText principal.
+   */
+  textColorPrimary?: string | null;
+  /**
+   * Aplica al RichText secundario.
+   */
+  textColorSecondary?: string | null;
+  /**
+   * Color para strong/b en ambos RichText del encabezado.
+   */
+  boldTextColor?: string | null;
+  /**
+   * Máximo 6. Desktop: filas de 3. Móvil: carrusel de una tarjeta.
+   */
+  prestaciones?:
+    | {
+        icon?: {
+          /**
+           * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+           */
+          useMedia?: boolean | null;
+          /**
+           * Imagen o GIF del icono.
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Pega aquí el código SVG como alternativa a subir media.
+           */
+          iconSVG?: string | null;
+          alt?: string | null;
+        };
+        /**
+         * Título (negrita) y descripción de la prestación.
+         */
+        content: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        backgroundColor?: string | null;
+        /**
+         * Color base del RichText de la card.
+         */
+        textColor?: string | null;
+        /**
+         * Color para strong/b (títulos de card).
+         */
+        boldTextColor?: string | null;
+        /**
+         * Círculo detrás del icono.
+         */
+        iconBackgroundColor?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'layout2Drop';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FondoDropBlock".
+ */
+export interface FondoDropBlock {
+  /**
+   * Solo el color plano de la página. Los SVG (olas, círculos, líneas) usan el color de acentuación. Añade este bloque una sola vez. En Layout DROP y otros bloques, usa fondo transparente para que se vea. Hex, rgb, rgba o nombre CSS (ej: #f8f4ff).
+   */
+  backgroundColor: string;
+  /**
+   * Color de olas, formas, líneas y nodos (tonalidades y transparencias derivadas). Si se deja vacío, se deriva del color de fondo.
+   */
+  accentColor?: string | null;
+  /**
+   * Ligero desplazamiento vertical distinto entre capas SVG y el contenido al hacer scroll.
+   */
+  enableParallax?: boolean | null;
+  /**
+   * 0 = sin movimiento extra, 1 = máximo. Recomendado: 0.25–0.45.
+   */
+  parallaxIntensity?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'fondoDrop';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PricingDropBlock".
+ */
+export interface PricingDropBlock {
+  /**
+   * ID para enlaces ancla. Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  /**
+   * Píldoras arriba a la izquierda. Varias se muestran en fila.
+   */
+  tags?:
+    | {
+        icon?: {
+          /**
+           * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+           */
+          useMedia?: boolean | null;
+          /**
+           * Imagen o GIF del icono.
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Pega aquí el código SVG como alternativa a subir media.
+           */
+          iconSVG?: string | null;
+          alt?: string | null;
+        };
+        content: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        backgroundColor?: string | null;
+        /**
+         * También se usa para el reborde fino de la píldora.
+         */
+        textColor?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Título y descripción (usa negrita para resaltar).
+   */
+  mainContent: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  mainStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText.
+     */
+    boldTextColor?: string | null;
+  };
+  /**
+   * Desktop: cubre todo el bloque. Móvil: solo a la altura del tag + texto principal, centrada hacia la derecha.
+   */
+  backgroundImage?: (number | null) | Media;
+  /**
+   * Si no hay imagen, o en móvil para la zona bajo la imagen. Hex, rgb, rgba o nombre CSS.
+   */
+  backgroundColor?: string | null;
+  /**
+   * Máximo 3. Columna a la izquierda, debajo del texto principal.
+   */
+  numberedItems?:
+    | {
+        icon?: {
+          /**
+           * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+           */
+          useMedia?: boolean | null;
+          /**
+           * Imagen o GIF del icono.
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Pega aquí el código SVG como alternativa a subir media.
+           */
+          iconSVG?: string | null;
+          alt?: string | null;
+        };
+        content: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * También tiñe el círculo del número (el número se oscurece automáticamente).
+         */
+        iconBackgroundColor?: string | null;
+        /**
+         * Hex, rgb, rgba o nombre CSS.
+         */
+        textColor?: string | null;
+        /**
+         * Color para strong/b dentro del RichText.
+         */
+        boldTextColor?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Card a la derecha (desktop) / debajo de numerados (móvil).
+   */
+  product?: {
+    backgroundColor?: string | null;
+    /**
+     * Máximo 2. En fila, separadas por una barra vertical.
+     */
+    columns?:
+      | {
+          icon?: {
+            /**
+             * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+             */
+            useMedia?: boolean | null;
+            /**
+             * Imagen o GIF del icono.
+             */
+            mediaImage?: (number | null) | Media;
+            /**
+             * Pega aquí el código SVG como alternativa a subir media.
+             */
+            iconSVG?: string | null;
+            alt?: string | null;
+          };
+          iconBackgroundColor?: string | null;
+          title?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          /**
+           * Máximo 6. Producto a la izquierda; precio o tag a la derecha.
+           */
+          items?:
+            | {
+                product: {
+                  root: {
+                    type: string;
+                    children: {
+                      type: any;
+                      version: number;
+                      [k: string]: unknown;
+                    }[];
+                    direction: ('ltr' | 'rtl') | null;
+                    format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                    indent: number;
+                    version: number;
+                  };
+                  [k: string]: unknown;
+                };
+                price?: {
+                  root: {
+                    type: string;
+                    children: {
+                      type: any;
+                      version: number;
+                      [k: string]: unknown;
+                    }[];
+                    direction: ('ltr' | 'rtl') | null;
+                    format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                    indent: number;
+                    version: number;
+                  };
+                  [k: string]: unknown;
+                } | null;
+                /**
+                 * Ej: "Incluido". Se muestra como píldora si hay contenido.
+                 */
+                tag?: {
+                  root: {
+                    type: string;
+                    children: {
+                      type: any;
+                      version: number;
+                      [k: string]: unknown;
+                    }[];
+                    direction: ('ltr' | 'rtl') | null;
+                    format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                    indent: number;
+                    version: number;
+                  };
+                  [k: string]: unknown;
+                } | null;
+                tagBackgroundColor?: string | null;
+                tagTextColor?: string | null;
+                priceTextColor?: string | null;
+                id?: string | null;
+              }[]
+            | null;
+          /**
+           * Ej: "Total estimado".
+           */
+          totalLabel?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          /**
+           * Usa el color de texto de precio del último elemento, o el propio campo.
+           */
+          totalPrice?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          totalPriceColor?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    purchase?: {
+      previousPrice?: {
+        root: {
+          type: string;
+          children: {
+            type: any;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      } | null;
+      currentPrice?: {
+        root: {
+          type: string;
+          children: {
+            type: any;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      } | null;
+      description?: {
+        root: {
+          type: string;
+          children: {
+            type: any;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      } | null;
+      backgroundColor?: string | null;
+      button?: {
+        label?: string | null;
+        /**
+         * SVG a la derecha del texto. Dejar vacío para no mostrar icono.
+         */
+        iconSVG?: string | null;
+        backgroundColor?: string | null;
+        textColor?: string | null;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+        };
+      };
+    };
+    /**
+     * Máximo 2. Debajo de la sección compra, en fila.
+     */
+    footerItems?:
+      | {
+          icon?: {
+            /**
+             * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+             */
+            useMedia?: boolean | null;
+            /**
+             * Imagen o GIF del icono.
+             */
+            mediaImage?: (number | null) | Media;
+            /**
+             * Pega aquí el código SVG como alternativa a subir media.
+             */
+            iconSVG?: string | null;
+            alt?: string | null;
+          };
+          content: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Debajo de la sección producto, alineada a la derecha en desktop.
+   */
+  finePrint?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  finePrintColor?: string | null;
+  /**
+   * Máximo 3. Al final del bloque: en fila (desktop) / apilados (móvil), centrados.
+   */
+  stats?:
+    | {
+        backgroundColor?: string | null;
+        iconBackgroundColor?: string | null;
+        icon?: {
+          /**
+           * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+           */
+          useMedia?: boolean | null;
+          /**
+           * Imagen o GIF del icono.
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Pega aquí el código SVG como alternativa a subir media.
+           */
+          iconSVG?: string | null;
+          alt?: string | null;
+        };
+        /**
+         * Opcional. En desktop va encima del contenido; en móvil, a la izquierda (ej: +10%).
+         */
+        highlight?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        content: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Hex, rgb, rgba o nombre CSS.
+         */
+        textColor?: string | null;
+        /**
+         * Color para strong/b dentro del RichText.
+         */
+        boldTextColor?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Activa para elegir un grupo de fuentes (font-groups). Sus tamaños e interlineados tienen prioridad sobre la tipografía por defecto del bloque.
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Selecciona un grupo creado en Font Groups. Se aplicarán sus fuentes y tamaños de tipografía.
+   */
+  fontGroup?: (number | null) | FontGroup;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'pricingDrop';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQDropBlock".
+ */
+export interface FAQDropBlock {
+  /**
+   * ID para enlaces ancla. Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  /**
+   * Título del bloque. Usa negrita para resaltar palabras (ej. "frecuentes").
+   */
+  mainContent: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Hex, rgb, rgba o nombre CSS.
+   */
+  backgroundColor?: string | null;
+  /**
+   * Aplica al RichText principal (texto normal), a las preguntas cerradas y a las respuestas.
+   */
+  textColor?: string | null;
+  /**
+   * Color para strong/b en el RichText principal y para el separador SVG.
+   */
+  boldTextColor?: string | null;
+  /**
+   * Fondo del contenedor del cuestionario (card en desktop) y de cada fila de pregunta.
+   */
+  questionsSectionBackgroundColor?: string | null;
+  /**
+   * Máximo 10. Cada elemento es un acordeón con pregunta y respuesta.
+   */
+  questions?:
+    | {
+        icon?: {
+          /**
+           * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+           */
+          useMedia?: boolean | null;
+          /**
+           * Imagen o GIF del icono.
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Pega aquí el código SVG como alternativa a subir media.
+           */
+          iconSVG?: string | null;
+          alt?: string | null;
+        };
+        /**
+         * Círculo detrás del icono.
+         */
+        iconBackgroundColor?: string | null;
+        questionRichText: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        answerRichText: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Color del icono, del +/− y de la pregunta abierta. Un tono más claro se usa para el reborde de la pregunta y el fondo del desplegable de respuesta.
+         */
+        accentColor?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Tipografía y tamaños del Font Group se aplican al RichText principal y a preguntas y respuestas del acordeón.
+   */
+  useFontGroup?: boolean | null;
+  /**
+   * Grupo creado en Font Groups.
+   */
+  fontGroup?: (number | null) | FontGroup;
+  fontFamily?:
+    | (
+        | 'default'
+        | 'Arial, sans-serif'
+        | '"Times New Roman", serif'
+        | 'Georgia, serif'
+        | 'Verdana, sans-serif'
+        | 'Helvetica, Arial, sans-serif'
+        | '"Courier New", monospace'
+        | '"Roboto", sans-serif'
+        | '"Open Sans", sans-serif'
+        | '"Lato", sans-serif'
+        | '"Montserrat", sans-serif'
+        | '"Playfair Display", serif'
+        | '"Inter", sans-serif'
+        | '"Poppins", sans-serif'
+        | '"Raleway", sans-serif'
+      )
+    | null;
+  useCustomFont?: boolean | null;
+  customFontFile?: (number | null) | Font;
+  customFontName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faqDrop';
+}
+/**
  * Envíos del formulario de Contact Section 2
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3894,6 +4696,10 @@ export interface PagesSelect<T extends boolean = true> {
         layoutCTADrop?: T | LayoutCTADropBlockSelect<T>;
         teamDrop?: T | TeamDropBlockSelect<T>;
         ctaAppDrop?: T | CTAAppDropBlockSelect<T>;
+        layout2Drop?: T | Layout2DropBlockSelect<T>;
+        fondoDrop?: T | FondoDropBlockSelect<T>;
+        pricingDrop?: T | PricingDropBlockSelect<T>;
+        faqDrop?: T | FAQDropBlockSelect<T>;
       };
   meta?:
     | T
@@ -4498,6 +5304,239 @@ export interface CTAAppDropBlockSelect<T extends boolean = true> {
   applyCustomWidth?: T;
   customWidthPercent?: T;
   customWidthPercentMobile?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Layout2DropBlock_select".
+ */
+export interface Layout2DropBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  mainContent?: T;
+  secondaryContent?: T;
+  backgroundColor?: T;
+  textColorPrimary?: T;
+  textColorSecondary?: T;
+  boldTextColor?: T;
+  prestaciones?:
+    | T
+    | {
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+        content?: T;
+        backgroundColor?: T;
+        textColor?: T;
+        boldTextColor?: T;
+        iconBackgroundColor?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FondoDropBlock_select".
+ */
+export interface FondoDropBlockSelect<T extends boolean = true> {
+  backgroundColor?: T;
+  accentColor?: T;
+  enableParallax?: T;
+  parallaxIntensity?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PricingDropBlock_select".
+ */
+export interface PricingDropBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  tags?:
+    | T
+    | {
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+        content?: T;
+        backgroundColor?: T;
+        textColor?: T;
+        id?: T;
+      };
+  mainContent?: T;
+  mainStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+      };
+  backgroundImage?: T;
+  backgroundColor?: T;
+  numberedItems?:
+    | T
+    | {
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+        content?: T;
+        iconBackgroundColor?: T;
+        textColor?: T;
+        boldTextColor?: T;
+        id?: T;
+      };
+  product?:
+    | T
+    | {
+        backgroundColor?: T;
+        columns?:
+          | T
+          | {
+              icon?:
+                | T
+                | {
+                    useMedia?: T;
+                    mediaImage?: T;
+                    iconSVG?: T;
+                    alt?: T;
+                  };
+              iconBackgroundColor?: T;
+              title?: T;
+              items?:
+                | T
+                | {
+                    product?: T;
+                    price?: T;
+                    tag?: T;
+                    tagBackgroundColor?: T;
+                    tagTextColor?: T;
+                    priceTextColor?: T;
+                    id?: T;
+                  };
+              totalLabel?: T;
+              totalPrice?: T;
+              totalPriceColor?: T;
+              id?: T;
+            };
+        purchase?:
+          | T
+          | {
+              previousPrice?: T;
+              currentPrice?: T;
+              description?: T;
+              backgroundColor?: T;
+              button?:
+                | T
+                | {
+                    label?: T;
+                    iconSVG?: T;
+                    backgroundColor?: T;
+                    textColor?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                        };
+                  };
+            };
+        footerItems?:
+          | T
+          | {
+              icon?:
+                | T
+                | {
+                    useMedia?: T;
+                    mediaImage?: T;
+                    iconSVG?: T;
+                    alt?: T;
+                  };
+              content?: T;
+              id?: T;
+            };
+      };
+  finePrint?: T;
+  finePrintColor?: T;
+  stats?:
+    | T
+    | {
+        backgroundColor?: T;
+        iconBackgroundColor?: T;
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+        highlight?: T;
+        content?: T;
+        textColor?: T;
+        boldTextColor?: T;
+        id?: T;
+      };
+  useFontGroup?: T;
+  fontGroup?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQDropBlock_select".
+ */
+export interface FAQDropBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  mainContent?: T;
+  backgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
+  questionsSectionBackgroundColor?: T;
+  questions?:
+    | T
+    | {
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+        iconBackgroundColor?: T;
+        questionRichText?: T;
+        answerRichText?: T;
+        accentColor?: T;
+        id?: T;
+      };
+  useFontGroup?: T;
+  fontGroup?: T;
+  fontFamily?: T;
+  useCustomFont?: T;
+  customFontFile?: T;
+  customFontName?: T;
   id?: T;
   blockName?: T;
 }

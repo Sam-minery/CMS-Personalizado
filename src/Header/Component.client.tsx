@@ -12,6 +12,49 @@ import { Navbar1 } from './Nav/Navbar1'
 import { Navbar5 } from './Nav/Navbar5'
 import { Navbar11 } from './Nav/Navbar11'
 import { NavbarTemplate } from './Nav/NavbarTemplate'
+import { Navbar_DROP } from './Nav/Navbar_DROP'
+
+/** Tipado local hasta regenerar payload-types con navbar_drop_config. */
+type NavbarDropConfig = {
+  logo?: {
+    useMedia?: boolean | null
+    media?: unknown
+    src?: string | null
+    alt?: string | null
+  } | null
+  navLinks?: Array<{
+    title?: string | null
+    link?: Record<string, unknown> | null
+    subMenuLinks?: Array<{
+      title?: string | null
+      link?: Record<string, unknown> | null
+    }> | null
+  }> | null
+  buttons?: Array<{
+    title?: string | null
+    link?: Record<string, unknown> | null
+    size?: string | null
+    variant?: string | null
+    iconSVG?: string | null
+  }> | null
+  backgroundColor?: string | null
+  mobileMenuBackgroundColor?: string | null
+  textColor?: string | null
+  boldTextColor?: string | null
+  buttonBackgroundColor?: string | null
+  buttonTextColor?: string | null
+  fontFamily?: string | null
+  useFontGroup?: boolean | null
+  fontGroup?: unknown
+  useCustomFont?: boolean | null
+  customFontFile?: {
+    id?: string | number
+    url?: string | null
+    filename?: string | null
+    name?: string | null
+  } | number | null
+  customFontName?: string | null
+}
 
 interface HeaderClientProps {
   data: Header
@@ -213,6 +256,68 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
             title: data.navbarTemplateConfig.signupButton?.title || 'Signup',
             link: data.navbarTemplateConfig.signupButton?.link || { type: 'custom', url: '/signup' },
           }}
+        />
+      </div>
+    )
+  }
+
+  // Si el tipo de navbar es navbar_drop, renderizar Navbar DROP (full-bleed en desktop)
+  // Cast: navbar_drop / navbar_drop_config aún no estan en payload-types hasta generate:types
+  const headerData = data as Omit<Header, 'navbarType'> & {
+    navbarType?: string | null
+    navbar_drop_config?: NavbarDropConfig | null
+  }
+  if (headerData.navbarType === 'navbar_drop' && headerData.navbar_drop_config) {
+    const c = headerData.navbar_drop_config
+    return (
+      <div {...(theme ? { 'data-theme': theme } : {})}>
+        <Navbar_DROP
+          logo={{
+            useMedia: c.logo?.useMedia ?? true,
+            media: c.logo?.media,
+            src: c.logo?.src ?? 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg',
+            alt: c.logo?.alt ?? 'Logo',
+          }}
+          navLinks={
+            (c.navLinks?.map((link) => ({
+              title: link.title ?? '',
+              link: link.link ?? { type: 'custom', url: '#' },
+              subMenuLinks: link.subMenuLinks?.map((sub) => ({
+                title: sub.title ?? '',
+                link: sub.link ?? { type: 'custom', url: '#' },
+              })),
+            })) ?? []) as NonNullable<React.ComponentProps<typeof Navbar_DROP>['navLinks']>
+          }
+          buttons={
+            (c.buttons?.map((btn) => ({
+              title: btn.title ?? '',
+              link: btn.link ?? { type: 'custom', url: '#' },
+              size: (btn.size as 'sm' | 'lg') ?? 'lg',
+              variant: (btn.variant as 'default' | 'secondary' | 'ghost' | 'link') ?? 'default',
+              iconSVG: btn.iconSVG ?? null,
+            })) ?? []) as NonNullable<React.ComponentProps<typeof Navbar_DROP>['buttons']>
+          }
+          backgroundColor={c.backgroundColor ?? undefined}
+          mobileMenuBackgroundColor={c.mobileMenuBackgroundColor ?? undefined}
+          textColor={c.textColor ?? undefined}
+          boldTextColor={c.boldTextColor ?? undefined}
+          buttonBackgroundColor={c.buttonBackgroundColor ?? undefined}
+          buttonTextColor={c.buttonTextColor ?? undefined}
+          fontFamily={c.fontFamily ?? undefined}
+          useFontGroup={c.useFontGroup ?? false}
+          fontGroup={c.fontGroup as React.ComponentProps<typeof Navbar_DROP>['fontGroup']}
+          useCustomFont={c.useCustomFont ?? false}
+          customFontFile={
+            c.customFontFile && typeof c.customFontFile === 'object'
+              ? {
+                  id: c.customFontFile.id,
+                  url: c.customFontFile.url ?? undefined,
+                  filename: c.customFontFile.filename ?? undefined,
+                  name: c.customFontFile.name ?? undefined,
+                }
+              : null
+          }
+          customFontName={c.customFontName ?? undefined}
         />
       </div>
     )
