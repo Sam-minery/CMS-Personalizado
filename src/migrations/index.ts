@@ -4,6 +4,7 @@ import * as migration_20260807_101942_limpieza_senda from './20260807_101942_lim
 import * as migration_20260810_095319 from './20260810_095319';
 import * as migration_20260812_092404 from './20260812_092404';
 import * as migration_20260812_115427 from './20260812_115427';
+import * as migration_20260818_091524 from './20260818_091524';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20260812_115427.up,
     down: migration_20260812_115427.down,
-    name: '20260812_115427'
+    name: '20260812_115427',
+  },
+  {
+    up: migration_20260818_091524.up,
+    down: migration_20260818_091524.down,
+    name: '20260818_091524'
   },
 ];

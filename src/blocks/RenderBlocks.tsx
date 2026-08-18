@@ -137,6 +137,7 @@ const allBlockComponents: Record<string, React.ComponentType<any>> = {
     import('@/blocks/LayoutCTA_Drop/Component').then((m) => m.LayoutCTADropBlock),
   ),
   teamDrop: dynamic(() => import('@/blocks/Team_Drop/Component').then((m) => m.TeamDropBlock)),
+  ctaAppDrop: dynamic(() => import('@/blocks/CTAApp_Drop/Component').then((m) => m.CTAAppDropBlock)),
   navbarSimpleSenda: dynamic(() =>
     import('@/blocks/Navbar_Simple_SENDA/Component').then((m) => m.NavbarSimpleSendaBlock),
   ),

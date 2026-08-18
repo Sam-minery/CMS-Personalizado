@@ -577,11 +577,11 @@ export interface Page {
             }[]
           | null;
         /**
-         * El flujo del popup es siempre: calcular → formulario → resultado. Activa esto para editar los textos/campos del formulario.
+         * Si está activo, cuando el IMC es apto se muestra primero el formulario de contacto y después el resultado. Si no es apto, el resultado se muestra directamente.
          */
         enableContact?: boolean | null;
         /**
-         * Obligatorio: tras calcular el IMC se muestra este formulario; el resultado solo aparece al enviarlo.
+         * Se muestra tras calcular un IMC apto, antes del resultado final.
          */
         contact?: {
           title?: {
@@ -868,7 +868,7 @@ export interface Page {
       sBtnFg?: string | null;
     };
   };
-  layout: (LayoutDropBlock | CalculadoraIMCDropBlock | LayoutCTADropBlock | TeamDropBlock)[];
+  layout: (LayoutDropBlock | CalculadoraIMCDropBlock | LayoutCTADropBlock | TeamDropBlock | CTAAppDropBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -2682,6 +2682,293 @@ export interface TeamDropBlock {
   blockType: 'teamDrop';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTAAppDropBlock".
+ */
+export interface CTAAppDropBlock {
+  /**
+   * ID para enlaces ancla (ej: app-drop). Usar el mismo valor en el navbar en "Id ancla (misma página)".
+   */
+  anchorId?: string | null;
+  /**
+   * Título (usa negrita para resaltar la marca, ej. "Drop by Sanitas").
+   */
+  headerContent: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  headerStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
+  /**
+   * Texto bajo el título (ej. "Empieza tu cambio desde dónde quieras").
+   */
+  subtitleContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subtitleStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
+  /**
+   * Misma imagen en escritorio y móvil.
+   */
+  mockupImage?: (number | null) | Media;
+  /**
+   * Máximo 8. En escritorio se muestran en 2 columnas; en móvil en una.
+   */
+  features?:
+    | {
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  featuresStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+    /**
+     * Color del icono de check por defecto. Hex, rgb o nombre CSS.
+     */
+    checkColor?: string | null;
+    icon?: {
+      /**
+       * Si está vacío se usa el check verde por defecto. Media o SVG sustituyen el icono de todas las filas.
+       */
+      useMedia?: boolean | null;
+      /**
+       * Imagen o GIF del icono.
+       */
+      mediaImage?: (number | null) | Media;
+      /**
+       * Pega aquí el código SVG como alternativa a subir media. Si está vacío se usa el icono por defecto.
+       */
+      iconSVG?: string | null;
+      alt?: string | null;
+    };
+  };
+  /**
+   * QR (solo escritorio), textos e iconos de App Store / Google Play.
+   */
+  downloadCard?: {
+    /**
+     * Hasta 2 imágenes. Solo se muestran en escritorio.
+     */
+    qrCodes?:
+      | {
+          image?: (number | null) | Media;
+          alt?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    desktopScanText?: string | null;
+    mobileDownloadText?: string | null;
+    phoneIcon?: {
+      /**
+       * Si está vacío se usa el icono de smartphone rosa por defecto.
+       */
+      useMedia?: boolean | null;
+      /**
+       * Imagen o GIF del icono.
+       */
+      mediaImage?: (number | null) | Media;
+      /**
+       * Pega aquí el código SVG como alternativa a subir media. Si está vacío se usa el icono por defecto.
+       */
+      iconSVG?: string | null;
+      alt?: string | null;
+    };
+    /**
+     * Hasta 2 (App Store y Google Play).
+     */
+    storeButtons?:
+      | {
+          store: 'appStore' | 'googlePlay';
+          /**
+           * URL de la tienda (App Store o Google Play).
+           */
+          link?: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            /**
+             * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+             */
+            url?: string | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  backgroundColor?: string | null;
+  /**
+   * Activa o desactiva los arcos, destellos y cruces del fondo (estilo Drop). La animación solo se reproduce en escritorio; en móvil se muestran fijos.
+   */
+  showDecorativeSvgs?: boolean | null;
+  /**
+   * Si está activo, en escritorio la imagen de la mano sube a medida que aparece el bloque y baja si se vuelve a subir. En móvil la imagen siempre es fija.
+   */
+  enableMockupScrollAnimation?: boolean | null;
+  /**
+   * 1–100. Porcentaje del bloque que debe verse para que la imagen llegue a su posición final. 100 = cuando el bloque se ve entero. 50 = cuando se ve la mitad (la imagen aparece antes).
+   */
+  mockupScrollShowPercent?: number | null;
+  /**
+   * Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ctaAppDrop';
+}
+/**
  * Envíos del formulario de Contact Section 2
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3606,6 +3893,7 @@ export interface PagesSelect<T extends boolean = true> {
         calculadoraIMCDrop?: T | CalculadoraIMCDropBlockSelect<T>;
         layoutCTADrop?: T | LayoutCTADropBlockSelect<T>;
         teamDrop?: T | TeamDropBlockSelect<T>;
+        ctaAppDrop?: T | CTAAppDropBlockSelect<T>;
       };
   meta?:
     | T
@@ -4105,6 +4393,111 @@ export interface TeamDropBlockSelect<T extends boolean = true> {
       };
   backgroundColor?: T;
   showDecorativeSvgs?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTAAppDropBlock_select".
+ */
+export interface CTAAppDropBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  headerContent?: T;
+  headerStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+      };
+  subtitleContent?: T;
+  subtitleStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+      };
+  mockupImage?: T;
+  features?:
+    | T
+    | {
+        label?: T;
+        id?: T;
+      };
+  featuresStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+        checkColor?: T;
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+      };
+  downloadCard?:
+    | T
+    | {
+        qrCodes?:
+          | T
+          | {
+              image?: T;
+              alt?: T;
+              id?: T;
+            };
+        desktopScanText?: T;
+        mobileDownloadText?: T;
+        phoneIcon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+        storeButtons?:
+          | T
+          | {
+              store?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                  };
+              id?: T;
+            };
+      };
+  backgroundColor?: T;
+  showDecorativeSvgs?: T;
+  enableMockupScrollAnimation?: T;
+  mockupScrollShowPercent?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   id?: T;
   blockName?: T;
 }

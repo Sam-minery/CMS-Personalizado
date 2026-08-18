@@ -617,21 +617,21 @@ export const heroDropFields: Field[] = [
               {
                 name: 'enableContact',
                 type: 'checkbox',
-                label: 'Mostrar campos del formulario de contacto',
+                label: 'Usar versión apto con formulario de contacto',
                 defaultValue: true,
                 admin: {
                   description:
-                    'El flujo del popup es siempre: calcular → formulario → resultado. Activa esto para editar los textos/campos del formulario.',
+                    'Si está activo, cuando el IMC es apto se muestra primero el formulario de contacto y después el resultado. Si no es apto, el resultado se muestra directamente.',
                 },
               },
               {
                 name: 'contact',
                 type: 'group',
-                label: 'Formulario de contacto (antes del resultado)',
+                label: 'Formulario de contacto (antes del resultado apto)',
                 admin: {
                   condition: (_, siblingData) => siblingData?.enableContact === true,
                   description:
-                    'Obligatorio: tras calcular el IMC se muestra este formulario; el resultado solo aparece al enviarlo.',
+                    'Se muestra tras calcular un IMC apto, antes del resultado final.',
                 },
                 fields: [
                   {

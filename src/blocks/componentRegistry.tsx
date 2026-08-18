@@ -118,6 +118,7 @@ import { LayoutDropBlock } from '@/blocks/Layout_Drop/Component'
 import { CalculadoraIMCDropBlock } from '@/blocks/CalculadoraIMC_Drop/Component'
 import { LayoutCTADropBlock } from '@/blocks/LayoutCTA_Drop/Component'
 import { TeamDropBlock } from '@/blocks/Team_Drop/Component'
+import { CTAAppDropBlock } from '@/blocks/CTAApp_Drop/Component'
 import { NavbarSimpleSendaBlock } from '@/blocks/Navbar_Simple_SENDA/Component'
 import { PricingSendaBlock } from '@/blocks/Pricing_SENDA/Component'
 import { PricingSendaAlterBlock } from '@/blocks/Pricing_SENDA_Alter/Component'
@@ -259,6 +260,7 @@ const BLOCK_COMPONENTS: BlockComponentMap = {
   calculadoraIMCDrop: CalculadoraIMCDropBlock,
   layoutCTADrop: LayoutCTADropBlock,
   teamDrop: TeamDropBlock,
+  ctaAppDrop: CTAAppDropBlock,
   navbarSimpleSenda: NavbarSimpleSendaBlock,
   pricingSenda: PricingSendaBlock,
   pricingSendaAlter: PricingSendaAlterBlock,

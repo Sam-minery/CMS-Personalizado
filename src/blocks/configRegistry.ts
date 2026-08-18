@@ -99,6 +99,7 @@ export const ALL_BLOCK_SLUGS_ORDERED: string[] = [
   'calculadoraIMCDrop',
   'layoutCTADrop',
   'teamDrop',
+  'ctaAppDrop',
   'navbarSimpleSenda',
   'pricingSenda',
   'pricingSendaAlter',

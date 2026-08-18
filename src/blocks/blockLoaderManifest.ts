@@ -96,6 +96,10 @@ export const BLOCK_LOADER_MANIFEST: Record<
     path: './Team_Drop/config',
     exportName: 'TeamDropBlock',
   },
+  ctaAppDrop: {
+    path: './CTAApp_Drop/config',
+    exportName: 'CTAAppDropBlock',
+  },
   navbarSimpleSenda: { path: './Navbar_Simple_SENDA/config', exportName: 'NavbarSimpleSendaBlock' },
   pricingSenda: { path: './Pricing_SENDA/config', exportName: 'PricingSendaBlock' },
   pricingSendaAlter: { path: './Pricing_SENDA_Alter/config', exportName: 'PricingSendaAlterBlock' },

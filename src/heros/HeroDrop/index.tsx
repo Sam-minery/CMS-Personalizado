@@ -381,6 +381,7 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
   const footerItems = Array.isArray(data.footerItems) ? data.footerItems : []
   const buttons = Array.isArray(data.buttons) ? data.buttons : []
   const categories = Array.isArray(calc?.cats) ? calc.cats : []
+  const useContactFlow = calc?.enableContact !== false
 
   const bmiFormatted =
     bmi != null ? bmi.toFixed(1).replace('.', ',') : ''
@@ -404,17 +405,15 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
       `${root} .hd-header .payload-richtext p{margin:1rem 0 0;font-size:0.8125rem;line-height:1.45;color:#4B5563;max-width:34rem;}`,
       `${root} .hd-header .payload-richtext > *:first-child{margin-top:0;}`,
       `@media (min-width:1024px){${root} .hd-header .payload-richtext h1,${root} .hd-header .payload-richtext h2{font-size:3.5rem;line-height:1.05;} ${root} .hd-header .payload-richtext p{margin:0.85rem 0 0;font-size:1.0625rem;line-height:1.55;}}`,
-      `${root} .hd-features .payload-richtext{text-align:center;}`,
-      `@media (min-width:1024px){${root} .hd-features .payload-richtext{text-align:left;}}`,
+      `${root} .hd-features .payload-richtext{text-align:left;}`,
       `${root} .hd-features .payload-richtext h3,${root} .hd-features .payload-richtext h4,${root} .hd-features .payload-richtext p:first-child,${root} .hd-features .payload-richtext strong{display:block;font-size:0.8125rem;font-weight:700;color:#101835;margin:0 0 0.25rem;line-height:1.25;}`,
       `@media (min-width:1024px){${root} .hd-features .payload-richtext h3,${root} .hd-features .payload-richtext h4,${root} .hd-features .payload-richtext p:first-child,${root} .hd-features .payload-richtext strong{font-size:0.9375rem;}}`,
       `${root} .hd-features .payload-richtext p{margin:0;font-size:0.6875rem;line-height:1.35;color:#6B7280;}`,
       `@media (min-width:1024px){${root} .hd-features .payload-richtext p{font-size:0.8125rem;line-height:1.4;}}`,
-      `${root} .hd-footer .payload-richtext{text-align:center;}`,
-      `@media (min-width:1024px){${root} .hd-footer .payload-richtext{text-align:left;}}`,
-      `${root} .hd-footer .payload-richtext h3,${root} .hd-footer .payload-richtext h4,${root} .hd-footer .payload-richtext p:first-child,${root} .hd-footer .payload-richtext strong{font-size:0.75rem;font-weight:700;color:#101835;margin:0;line-height:1.25;}`,
+      `${root} .hd-footer .payload-richtext{text-align:left;}`,
+      `${root} .hd-footer .payload-richtext h3,${root} .hd-footer .payload-richtext h4,${root} .hd-footer .payload-richtext p:first-child,${root} .hd-footer .payload-richtext strong{font-size:0.8125rem;font-weight:700;color:#101835;margin:0;line-height:1.25;}`,
       `@media (min-width:1024px){${root} .hd-footer .payload-richtext h3,${root} .hd-footer .payload-richtext h4,${root} .hd-footer .payload-richtext p:first-child,${root} .hd-footer .payload-richtext strong{font-size:0.9375rem;line-height:1.3;}}`,
-      `${root} .hd-footer .payload-richtext p{margin:0.15rem 0 0;font-size:0.625rem;line-height:1.3;color:#6B7280;}`,
+      `${root} .hd-footer .payload-richtext p{margin:0.15rem 0 0;font-size:0.75rem;line-height:1.35;color:#6B7280;}`,
       `@media (min-width:1024px){${root} .hd-footer .payload-richtext p{font-size:0.8125rem;line-height:1.4;}}`,
       `${root} .hd-calc-content .payload-richtext h3,${root} .hd-calc-content .payload-richtext h4,${root} .hd-calc-content .payload-richtext > *:first-child{font-size:1.0625rem;font-weight:700;color:#101835;margin:0;line-height:2.75rem;}`,
       `${root} .hd-calc-content .payload-richtext > *:not(:first-child){margin:0.35rem 0 0;margin-left:calc(-2.75rem - 0.75rem);width:calc(100% + 2.75rem + 0.75rem);max-width:none;font-size:0.8125rem;line-height:1.4;font-weight:400;color:#6B7280;}`,
@@ -464,13 +463,18 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
     }
     const calculatedBMI = weightNum / ((heightNum / 100) * (heightNum / 100))
     const match = matchCategory(calculatedBMI, categories)
+    const eligible = Boolean(match?.eligible)
     setBmi(calculatedBMI)
     setMatchedCategory(match)
     setFormError(null)
     setIsModalOpen(true)
-    // El resultado solo se muestra tras enviar el formulario de contacto.
-    setModalStep('contact')
-  }, [height, weight, categories])
+    // Apto + formulario activo → contacto primero; no apto → resultado directo.
+    if (eligible && useContactFlow) {
+      setModalStep('contact')
+    } else {
+      setModalStep('result')
+    }
+  }, [height, weight, categories, useContactFlow])
 
   const handleCardSubmit = useCallback(
     (event: React.FormEvent) => {
@@ -552,12 +556,18 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
   const heartGradId = `hd-heart-grad-${uid}`
 
   const stepDots = useMemo(() => {
-    const steps: ModalStep[] = ['calc', 'contact', 'result']
+    const showStepDots =
+      useContactFlow &&
+      (modalStep === 'calc' ||
+        modalStep === 'contact' ||
+        (modalStep === 'result' && isEligible))
+    if (!showStepDots) return null
+
     const activeIndex =
       modalStep === 'calc' ? 0 : modalStep === 'contact' ? 1 : 2
     return (
       <div className="flex items-center justify-center gap-2" aria-hidden>
-        {steps.map((step, index) => (
+        {(['calc', 'contact', 'result'] as const).map((step, index) => (
           <span
             key={step}
             className={cn(
@@ -569,7 +579,7 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
         ))}
       </div>
     )
-  }, [modalStep, accent])
+  }, [modalStep, accent, useContactFlow, isEligible])
 
   const calcCard = (
     <div
@@ -987,14 +997,14 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
             </div>
 
             {features.length > 0 && (
-              <div className="hd-features mt-9 grid grid-cols-3 gap-3 sm:gap-4">
+              <div className="hd-features mt-9 flex flex-col gap-4">
                 {features.map((item, index) => (
                   <div
                     key={item.id || `mob-feat-${index}`}
-                    className="flex flex-col items-center gap-3 px-0.5 text-center"
+                    className="flex items-center gap-3 text-left"
                   >
                     <span
-                      className="inline-flex h-12 w-12 items-center justify-center overflow-hidden rounded-full p-0"
+                      className="inline-flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full p-0"
                       style={{
                         backgroundColor: `color-mix(in srgb, ${accent} 12%, white)`,
                         color: accent,
@@ -1007,7 +1017,9 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
                       />
                     </span>
                     {item.content && (
-                      <RichText data={item.content} enableGutter={false} enableProse={false} />
+                      <div className="min-w-0 flex-1">
+                        <RichText data={item.content} enableGutter={false} enableProse={false} />
+                      </div>
                     )}
                   </div>
                 ))}
@@ -1022,15 +1034,15 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
         </div>
 
         {footerItems.length > 0 && (
-          <div className="hd-footer relative z-20 mt-12 rounded-[1.5rem] border border-[#EEF0F4] bg-white px-3 py-6 shadow-[0_8px_28px_rgba(16,24,53,0.05)] lg:-mt-14 lg:rounded-[1.75rem] lg:px-8 lg:py-5 lg:shadow-[0_10px_36px_rgba(16,24,53,0.06)] xl:-mt-16">
-            <div className="grid grid-cols-3 gap-0 divide-x divide-[#E8EAF0]">
+          <div className="hd-footer relative z-20 mt-12 rounded-[1.5rem] border border-[#EEF0F4] bg-white px-4 py-5 shadow-[0_8px_28px_rgba(16,24,53,0.05)] lg:-mt-14 lg:rounded-[1.75rem] lg:px-8 lg:py-5 lg:shadow-[0_10px_36px_rgba(16,24,53,0.06)] xl:-mt-16">
+            <div className="flex flex-col gap-0 divide-y divide-[#E8EAF0] lg:grid lg:grid-cols-3 lg:divide-x lg:divide-y-0">
               {footerItems.map((item, index) => (
                 <div
                   key={item.id || index}
-                  className="flex flex-col items-center gap-2 px-2 text-center first:pl-1 last:pr-1 sm:px-3 lg:flex-row lg:items-center lg:gap-3.5 lg:px-6 lg:text-left first:lg:pl-1 last:lg:pr-1"
+                  className="flex items-center gap-3 px-1 py-4 text-left first:pt-0 last:pb-0 lg:gap-3.5 lg:px-6 lg:py-0 first:lg:pl-1 last:lg:pr-1"
                 >
                   <span
-                    className="inline-flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full p-0 lg:h-12 lg:w-12"
+                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full p-0 lg:h-12 lg:w-12"
                     style={{
                       backgroundColor: `color-mix(in srgb, ${accent} 12%, white)`,
                       color: accent,
@@ -1043,7 +1055,7 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
                     />
                   </span>
                   {item.content && (
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <RichText data={item.content} enableGutter={false} enableProse={false} />
                     </div>
                   )}

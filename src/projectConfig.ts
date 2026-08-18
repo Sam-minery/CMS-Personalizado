@@ -11,4 +11,5 @@ export const enabledBlockSlugs: string[] | null = [
   'calculadoraIMCDrop',
   'layoutCTADrop',
   'teamDrop',
+  'ctaAppDrop',
 ]
