@@ -130,7 +130,14 @@ const allBlockComponents: Record<string, React.ComponentType<any>> = {
     import('@/blocks/Layout_SENDA_Sections/Component').then((m) => m.LayoutSendaSectionsBlock),
   ),
   layoutDrop: dynamic(() => import('@/blocks/Layout_Drop/Component').then((m) => m.LayoutDropBlock)),
+  layout2Drop: dynamic(() =>
+    import('@/blocks/Layout2_DROP/Component').then((m) => m.Layout2DropBlock),
+  ),
   fondoDrop: dynamic(() => import('@/blocks/Fondo_DROP/Component').then((m) => m.FondoDropBlock)),
+  pricingDrop: dynamic(() =>
+    import('@/blocks/Pricing_DROP/Component').then((m) => m.PricingDropBlock),
+  ),
+  faqDrop: dynamic(() => import('@/blocks/FAQ_DROP/Component').then((m) => m.FAQDropBlock)),
   navbarSimpleSenda: dynamic(() =>
     import('@/blocks/Navbar_Simple_SENDA/Component').then((m) => m.NavbarSimpleSendaBlock),
   ),

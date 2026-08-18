@@ -3,6 +3,9 @@ import * as migration_20260807_094132 from './20260807_094132';
 import * as migration_20260807_101942_limpieza_senda from './20260807_101942_limpieza_senda';
 import * as migration_20260810_095319 from './20260810_095319';
 import * as migration_20260810_135955 from './20260810_135955';
+import * as migration_20260812_131840 from './20260812_131840';
+import * as migration_20260814_101355 from './20260814_101355';
+import * as migration_20260814_125020 from './20260814_125020';
 
 export const migrations = [
   {
@@ -28,6 +31,21 @@ export const migrations = [
   {
     up: migration_20260810_135955.up,
     down: migration_20260810_135955.down,
-    name: '20260810_135955'
+    name: '20260810_135955',
+  },
+  {
+    up: migration_20260812_131840.up,
+    down: migration_20260812_131840.down,
+    name: '20260812_131840',
+  },
+  {
+    up: migration_20260814_101355.up,
+    down: migration_20260814_101355.down,
+    name: '20260814_101355',
+  },
+  {
+    up: migration_20260814_125020.up,
+    down: migration_20260814_125020.down,
+    name: '20260814_125020'
   },
 ];

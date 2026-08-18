@@ -10,6 +10,9 @@ node_modules
 # Ahora usamos Google Cloud Storage, no guardamos media localmente
 public/media/
 
+# Fonts de testeo (no versionar en GitHub)
+public/fonts/
+
 public/robots.txt
 public/sitemap*.xml
 

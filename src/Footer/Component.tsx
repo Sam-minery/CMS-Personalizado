@@ -18,10 +18,29 @@ import { Footer4 } from './Footer4'
 import { Footer1 } from '@/blocks/Footer1/Component'
 import { Footer5 } from '@/blocks/Footer5/Component'
 import { FooterTemplate } from './FooterTemplate'
+import { Footer_DROP } from './Footer_DROP'
 import { mapPayloadLinkToComponentLink, mapPayloadMediaToComponentMedia, mapPayloadButtonToComponentButton, createDefaultMedia } from './utils'
 
 export async function Footer() {
   const footerData: Footer = await getCachedGlobal('footer', 2)()
+
+  if (footerData?.footerType === 'footer_drop' && footerData?.footer_drop_config) {
+    const c = footerData.footer_drop_config
+    return (
+      <Footer_DROP
+        logo={c.logo}
+        secondaryLogo={c.secondaryLogo}
+        navLinks={c.navLinks}
+        socialButtons={c.socialButtons}
+        policyLinks={c.policyLinks}
+        footerText={c.footerText}
+        backgroundColor={c.backgroundColor}
+        textColor={c.textColor}
+        textColorSecondary={c.textColorSecondary}
+        hideMobileIcons={c.hideMobileIcons}
+      />
+    )
+  }
 
   // Si el tipo de footer es footer1, renderizar el componente Footer1
   if (footerData?.footerType === 'footer1' && footerData?.footer1Config) {

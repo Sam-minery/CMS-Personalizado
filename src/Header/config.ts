@@ -33,6 +33,10 @@ export const Header: GlobalConfig = {
           label: 'Navbar Template',
           value: 'navbarTemplate',
         },
+        {
+          label: 'Navbar DROP',
+          value: 'navbar_drop',
+        },
       ],
       defaultValue: 'default',
       admin: {
@@ -741,6 +745,418 @@ export const Header: GlobalConfig = {
       ],
       admin: {
         condition: (_, { navbarType }) => navbarType === 'navbarTemplate',
+      },
+    },
+    {
+      name: 'navbar_drop_config',
+      type: 'group',
+      label: 'Config Navbar DROP',
+      fields: [
+        {
+          name: 'logo',
+          type: 'group',
+          fields: [
+            {
+              name: 'useMedia',
+              type: 'checkbox',
+              label: 'Usar imagen subida',
+              defaultValue: true,
+            },
+            {
+              name: 'media',
+              type: 'upload',
+              relationTo: 'media',
+              admin: {
+                condition: (_, siblingData) => siblingData?.useMedia === true,
+              },
+            },
+            {
+              name: 'src',
+              type: 'text',
+              defaultValue: 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg',
+              admin: {
+                condition: (_, siblingData) => siblingData?.useMedia !== true,
+              },
+            },
+            {
+              name: 'alt',
+              type: 'text',
+              defaultValue: 'Logo image',
+              admin: {
+                condition: (_, siblingData) => siblingData?.useMedia !== true,
+              },
+            },
+          ],
+        },
+        {
+          name: 'backgroundColor',
+          type: 'text',
+          label: 'Color de fondo',
+          admin: { description: 'Ej: #ffffff o transparent' },
+        },
+        {
+          name: 'mobileMenuBackgroundColor',
+          type: 'text',
+          label: 'Color de fondo del menú desplegable (móvil)',
+          admin: {
+            description:
+              'Fondo del panel cuando el menú hamburguesa está abierto. Ej: #F5F3EF. Si se deja vacío, se usa #F5F3EF.',
+            placeholder: '#F5F3EF',
+          },
+        },
+        {
+          name: 'textColor',
+          type: 'text',
+          label: 'Color del texto',
+        },
+        {
+          name: 'boldTextColor',
+          type: 'text',
+          label: 'Color del texto en negrita',
+        },
+        {
+          name: 'buttonBackgroundColor',
+          type: 'text',
+          label: 'Color de fondo de botones',
+        },
+        {
+          name: 'buttonTextColor',
+          type: 'text',
+          label: 'Color del texto de botones',
+        },
+        {
+          name: 'useFontGroup',
+          type: 'checkbox',
+          label: 'Usar grupo de fuentes',
+          defaultValue: false,
+          admin: {
+            description:
+              'Sube regular + bold (u otras variantes) en Font Groups: mismo nombre de familia y pesos distintos. El enlace activo (ancla en pantalla) usa negrita real. Tamaño del texto normal (body) para enlaces y botones.',
+          },
+        },
+        {
+          name: 'fontGroup',
+          type: 'relationship',
+          relationTo: 'font-groups',
+          label: 'Grupo de fuentes',
+          admin: {
+            condition: (_, siblingData) => siblingData?.useFontGroup === true,
+            description:
+              'En el grupo, añade al menos las variantes regular y bold vinculadas a archivos .woff2/.ttf, etc.',
+          },
+        },
+        {
+          name: 'fontFamily',
+          type: 'select',
+          label: 'Familia de fuente',
+          defaultValue: 'default',
+          options: [
+            { label: 'Por defecto', value: 'default' },
+            { label: 'Arial, sans-serif', value: 'Arial, sans-serif' },
+            { label: 'Times New Roman, serif', value: '"Times New Roman", serif' },
+            { label: 'Georgia, serif', value: 'Georgia, serif' },
+            { label: 'Verdana, sans-serif', value: 'Verdana, sans-serif' },
+            { label: 'Helvetica, Arial, sans-serif', value: 'Helvetica, Arial, sans-serif' },
+            { label: 'Courier New, monospace', value: '"Courier New", monospace' },
+            { label: 'Roboto', value: '"Roboto", sans-serif' },
+            { label: 'Open Sans', value: '"Open Sans", sans-serif' },
+            { label: 'Lato', value: '"Lato", sans-serif' },
+            { label: 'Montserrat', value: '"Montserrat", sans-serif' },
+            { label: 'Playfair Display', value: '"Playfair Display", serif' },
+            { label: 'Inter', value: '"Inter", sans-serif' },
+            { label: 'Poppins', value: '"Poppins", sans-serif' },
+            { label: 'Raleway', value: '"Raleway", sans-serif' },
+          ],
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useFontGroup !== true && siblingData?.useCustomFont !== true,
+          },
+        },
+        {
+          name: 'useCustomFont',
+          type: 'checkbox',
+          label: 'Usar fuente personalizada',
+          defaultValue: false,
+          admin: {
+            condition: (_, siblingData) => siblingData?.useFontGroup !== true,
+          },
+        },
+        {
+          name: 'customFontFile',
+          type: 'upload',
+          relationTo: 'fonts',
+          label: 'Archivo de fuente',
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
+          },
+        },
+        {
+          name: 'customFontName',
+          type: 'text',
+          label: 'Nombre de la fuente personalizada',
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
+          },
+        },
+        {
+          name: 'navLinks',
+          type: 'array',
+          dbName: 'drop_nav',
+          label: 'Enlaces de navegación',
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              required: true,
+              defaultValue: 'home',
+            },
+            {
+              name: 'link',
+              type: 'group',
+              admin: { hideGutter: true },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'type',
+                      type: 'radio',
+                      admin: { layout: 'horizontal', width: '50%' },
+                      defaultValue: 'reference',
+                      options: [
+                        { label: 'Internal link', value: 'reference' },
+                        { label: 'Custom URL', value: 'custom' },
+                        { label: 'Id ancla (misma página)', value: 'anchor' },
+                      ],
+                    },
+                    {
+                      name: 'newTab',
+                      type: 'checkbox',
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.type !== 'anchor',
+                        style: { alignSelf: 'flex-end' },
+                        width: '50%',
+                      },
+                      label: 'Open in new tab',
+                    },
+                  ],
+                },
+                {
+                  name: 'reference',
+                  type: 'relationship',
+                  relationTo: ['pages', 'posts'],
+                  admin: { condition: (_, siblingData) => siblingData?.type === 'reference' },
+                  label: 'Document to link to',
+                  required: true,
+                },
+                {
+                  name: 'url',
+                  type: 'text',
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.type === 'custom',
+                    description: 'URL (http://, https:// o ruta relativa).',
+                  },
+                  label: 'Custom URL',
+                  required: true,
+                },
+                {
+                  name: 'anchorId',
+                  type: 'text',
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.type === 'anchor',
+                    description:
+                      'ID del bloque de destino (ej: mi-seccion). Debe coincidir con el "ID ancla" del bloque.',
+                  },
+                  label: 'ID ancla',
+                  required: true,
+                },
+              ],
+            },
+            {
+              name: 'subMenuLinks',
+              type: 'array',
+              dbName: 'drop_sub',
+              label: 'Submenú',
+              fields: [
+                {
+                  name: 'title',
+                  type: 'text',
+                  required: true,
+                  defaultValue: 'google',
+                },
+                {
+                  name: 'link',
+                  type: 'group',
+                  admin: { hideGutter: true },
+                  fields: [
+                    {
+                      type: 'row',
+                      fields: [
+                        {
+                          name: 'type',
+                          type: 'radio',
+                          admin: { layout: 'horizontal', width: '50%' },
+                          defaultValue: 'reference',
+                          options: [
+                            { label: 'Internal link', value: 'reference' },
+                            { label: 'Custom URL', value: 'custom' },
+                            { label: 'Id ancla (misma página)', value: 'anchor' },
+                          ],
+                        },
+                        {
+                          name: 'newTab',
+                          type: 'checkbox',
+                          admin: {
+                            condition: (_, siblingData) => siblingData?.type !== 'anchor',
+                            style: { alignSelf: 'flex-end' },
+                            width: '50%',
+                          },
+                          label: 'Open in new tab',
+                        },
+                      ],
+                    },
+                    {
+                      name: 'reference',
+                      type: 'relationship',
+                      relationTo: ['pages', 'posts'],
+                      admin: { condition: (_, siblingData) => siblingData?.type === 'reference' },
+                      label: 'Document to link to',
+                      required: true,
+                    },
+                    {
+                      name: 'url',
+                      type: 'text',
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.type === 'custom',
+                        description: 'URL (http://, https:// o ruta relativa).',
+                      },
+                      label: 'Custom URL',
+                      required: true,
+                    },
+                    {
+                      name: 'anchorId',
+                      type: 'text',
+                      required: true,
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.type === 'anchor',
+                        description:
+                          'ID del bloque de destino. Debe coincidir con el "ID ancla" del bloque.',
+                      },
+                      label: 'ID ancla',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'buttons',
+          type: 'array',
+          dbName: 'drop_btns',
+          label: 'Botones',
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              required: true,
+              defaultValue: 'youtube',
+            },
+            {
+              name: 'link',
+              type: 'group',
+              admin: { hideGutter: true },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'type',
+                      type: 'radio',
+                      admin: { layout: 'horizontal', width: '50%' },
+                      defaultValue: 'reference',
+                      options: [
+                        { label: 'Internal link', value: 'reference' },
+                        { label: 'Custom URL', value: 'custom' },
+                        { label: 'Id ancla (misma página)', value: 'anchor' },
+                      ],
+                    },
+                    {
+                      name: 'newTab',
+                      type: 'checkbox',
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.type !== 'anchor',
+                        style: { alignSelf: 'flex-end' },
+                        width: '50%',
+                      },
+                      label: 'Open in new tab',
+                    },
+                  ],
+                },
+                {
+                  name: 'reference',
+                  type: 'relationship',
+                  relationTo: ['pages', 'posts'],
+                  admin: { condition: (_, siblingData) => siblingData?.type === 'reference' },
+                  label: 'Document to link to',
+                  required: true,
+                },
+                {
+                  name: 'url',
+                  type: 'text',
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.type === 'custom',
+                    description: 'URL (http://, https:// o ruta relativa).',
+                  },
+                  label: 'Custom URL',
+                  required: true,
+                },
+                {
+                  name: 'anchorId',
+                  type: 'text',
+                  required: true,
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.type === 'anchor',
+                    description:
+                      'ID del bloque de destino. Debe coincidir con el "ID ancla" del bloque.',
+                  },
+                  label: 'ID ancla',
+                },
+              ],
+            },
+            {
+              name: 'size',
+              type: 'select',
+              options: [
+                { label: 'Small', value: 'sm' },
+                { label: 'Large', value: 'lg' },
+              ],
+              defaultValue: 'lg',
+            },
+            {
+              name: 'variant',
+              type: 'select',
+              options: [
+                { label: 'Default', value: 'default' },
+                { label: 'Secondary', value: 'secondary' },
+                { label: 'Ghost', value: 'ghost' },
+                { label: 'Link', value: 'link' },
+              ],
+              defaultValue: 'default',
+            },
+            {
+              name: 'iconSVG',
+              type: 'textarea',
+              label: 'Icono SVG (código seguro)',
+              admin: { description: 'Pega aquí el código SVG del icono' },
+            },
+          ],
+        },
+      ],
+      admin: {
+        condition: (_, { navbarType }) => navbarType === 'navbar_drop',
       },
     },
   ],
