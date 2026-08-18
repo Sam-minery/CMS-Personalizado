@@ -5340,7 +5340,6 @@ export interface Layout2DropBlockSelect<T extends boolean = true> {
   id?: T;
   blockName?: T;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "FondoDropBlock_select".
@@ -6254,7 +6253,7 @@ export interface Header {
   /**
    * Selecciona el tipo de navbar a usar
    */
-  navbarType?: ('default' | 'navbar1' | 'navbar5' | 'navbar11' | 'navbarTemplate') | null;
+  navbarType?: ('default' | 'navbar1' | 'navbar5' | 'navbar11' | 'navbarTemplate' | 'navbar_drop') | null;
   navItems?:
     | {
         link: {
@@ -6653,6 +6652,143 @@ export interface Header {
       };
     };
   };
+  navbar_drop_config?: {
+    logo?: {
+      useMedia?: boolean | null;
+      media?: (number | null) | Media;
+      src?: string | null;
+      alt?: string | null;
+    };
+    /**
+     * Ej: #ffffff o transparent
+     */
+    backgroundColor?: string | null;
+    /**
+     * Fondo del panel cuando el menú hamburguesa está abierto. Ej: #F5F3EF. Si se deja vacío, se usa #F5F3EF.
+     */
+    mobileMenuBackgroundColor?: string | null;
+    textColor?: string | null;
+    boldTextColor?: string | null;
+    buttonBackgroundColor?: string | null;
+    buttonTextColor?: string | null;
+    /**
+     * Sube regular + bold (u otras variantes) en Font Groups: mismo nombre de familia y pesos distintos. El enlace activo (ancla en pantalla) usa negrita real. Tamaño del texto normal (body) para enlaces y botones.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * En el grupo, añade al menos las variantes regular y bold vinculadas a archivos .woff2/.ttf, etc.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+    navLinks?:
+      | {
+          title: string;
+          link?: {
+            type?: ('reference' | 'custom' | 'anchor') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            /**
+             * URL (http://, https:// o ruta relativa).
+             */
+            url?: string | null;
+            /**
+             * ID del bloque de destino (ej: mi-seccion). Debe coincidir con el "ID ancla" del bloque.
+             */
+            anchorId?: string | null;
+          };
+          subMenuLinks?:
+            | {
+                title: string;
+                link?: {
+                  type?: ('reference' | 'custom' | 'anchor') | null;
+                  newTab?: boolean | null;
+                  reference?:
+                    | ({
+                        relationTo: 'pages';
+                        value: number | Page;
+                      } | null)
+                    | ({
+                        relationTo: 'posts';
+                        value: number | Post;
+                      } | null);
+                  /**
+                   * URL (http://, https:// o ruta relativa).
+                   */
+                  url?: string | null;
+                  /**
+                   * ID del bloque de destino. Debe coincidir con el "ID ancla" del bloque.
+                   */
+                  anchorId?: string | null;
+                };
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    buttons?:
+      | {
+          title: string;
+          link?: {
+            type?: ('reference' | 'custom' | 'anchor') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            /**
+             * URL (http://, https:// o ruta relativa).
+             */
+            url?: string | null;
+            /**
+             * ID del bloque de destino. Debe coincidir con el "ID ancla" del bloque.
+             */
+            anchorId?: string | null;
+          };
+          size?: ('sm' | 'lg') | null;
+          variant?: ('default' | 'secondary' | 'ghost' | 'link') | null;
+          /**
+           * Pega aquí el código SVG del icono
+           */
+          iconSVG?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -6665,7 +6801,7 @@ export interface Footer {
   /**
    * Selecciona el tipo de footer a usar
    */
-  footerType?: ('default' | 'footer1' | 'footer4' | 'footer5' | 'footerTemplate') | null;
+  footerType?: ('default' | 'footer1' | 'footer4' | 'footer5' | 'footerTemplate' | 'footer_drop') | null;
   navItems?:
     | {
         link: {
@@ -7171,6 +7307,236 @@ export interface Footer {
         }[]
       | null;
   };
+  footer_drop_config?: {
+    logo?: {
+      /**
+       * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+       */
+      useMedia?: boolean | null;
+      mediaImage?: (number | null) | Media;
+      /**
+       * Pega aquí el código SVG como alternativa a subir media.
+       */
+      iconSVG?: string | null;
+      alt?: string | null;
+      link?: {
+        type?: ('reference' | 'custom' | 'anchor') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        /**
+         * URL (http://, https:// o ruta relativa).
+         */
+        url?: string | null;
+        /**
+         * ID del bloque de destino (ej: mi-seccion). Debe coincidir con el "ID ancla" del bloque.
+         */
+        anchorId?: string | null;
+      };
+    };
+    secondaryLogo?: {
+      enabled?: boolean | null;
+      /**
+       * Si está desactivado, puedes pegar código SVG.
+       */
+      useMedia?: boolean | null;
+      mediaImage?: (number | null) | Media;
+      /**
+       * Pega aquí el código SVG como alternativa a subir media.
+       */
+      iconSVG?: string | null;
+      alt?: string | null;
+      link?: {
+        type?: ('reference' | 'custom' | 'anchor') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: number | Post;
+            } | null);
+        /**
+         * URL (http://, https:// o ruta relativa).
+         */
+        url?: string | null;
+        /**
+         * ID del bloque de destino (ej: mi-seccion). Debe coincidir con el "ID ancla" del bloque.
+         */
+        anchorId?: string | null;
+      };
+    };
+    /**
+     * En escritorio se muestran en fila. En móvil, cada uno puede llevar icono.
+     */
+    navLinks?:
+      | {
+          title: string;
+          link?: {
+            type?: ('reference' | 'custom' | 'anchor') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            /**
+             * URL (http://, https:// o ruta relativa).
+             */
+            url?: string | null;
+            /**
+             * ID del bloque de destino (ej: mi-seccion). Debe coincidir con el "ID ancla" del bloque.
+             */
+            anchorId?: string | null;
+          };
+          icon?: {
+            /**
+             * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+             */
+            useMedia?: boolean | null;
+            /**
+             * Imagen o GIF del icono. Solo se muestra en móvil.
+             */
+            mediaImage?: (number | null) | Media;
+            /**
+             * Pega aquí el código SVG. Solo se muestra en móvil.
+             */
+            iconSVG?: string | null;
+            alt?: string | null;
+          };
+          /**
+           * Círculo detrás del icono en móvil. Ej: #fce4ec.
+           */
+          iconBackgroundColor?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Máximo 3. Cada uno funciona como botón con icono opcional.
+     */
+    socialButtons?:
+      | {
+          icon?: ('none' | 'instagram' | 'facebook' | 'youtube') | null;
+          /**
+           * Texto accesible (aria-label). Si no hay icono, se muestra en el botón.
+           */
+          title?: string | null;
+          link?: {
+            type?: ('reference' | 'custom' | 'anchor') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            /**
+             * URL (http://, https:// o ruta relativa).
+             */
+            url?: string | null;
+            /**
+             * ID del bloque de destino (ej: mi-seccion). Debe coincidir con el "ID ancla" del bloque.
+             */
+            anchorId?: string | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Máximo 4 (privacidad, cookies, aviso legal, etc.).
+     */
+    policyLinks?:
+      | {
+          title: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          link?: {
+            type?: ('reference' | 'custom' | 'anchor') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            /**
+             * URL (http://, https:// o ruta relativa).
+             */
+            url?: string | null;
+            /**
+             * ID del bloque de destino (ej: mi-seccion). Debe coincidir con el "ID ancla" del bloque.
+             */
+            anchorId?: string | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Copyright u otro texto al final del footer.
+     */
+    footerText?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Hex, rgb, rgba o nombre CSS.
+     */
+    backgroundColor?: string | null;
+    /**
+     * Enlaces de navegación y texto general.
+     */
+    textColor?: string | null;
+    /**
+     * Enlaces de políticas y enlace de navegación activo.
+     */
+    textColorSecondary?: string | null;
+    /**
+     * Si está marcado, los iconos de los navlinks no se muestran en móvil.
+     */
+    hideMobileIcons?: boolean | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -7515,6 +7881,78 @@ export interface HeaderSelect<T extends boolean = true> {
                     reference?: T;
                     url?: T;
                   };
+            };
+      };
+  navbar_drop_config?:
+    | T
+    | {
+        logo?:
+          | T
+          | {
+              useMedia?: T;
+              media?: T;
+              src?: T;
+              alt?: T;
+            };
+        backgroundColor?: T;
+        mobileMenuBackgroundColor?: T;
+        textColor?: T;
+        boldTextColor?: T;
+        buttonBackgroundColor?: T;
+        buttonTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+        navLinks?:
+          | T
+          | {
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    anchorId?: T;
+                  };
+              subMenuLinks?:
+                | T
+                | {
+                    title?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                          anchorId?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+            };
+        buttons?:
+          | T
+          | {
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    anchorId?: T;
+                  };
+              size?: T;
+              variant?: T;
+              iconSVG?: T;
+              id?: T;
             };
       };
   updatedAt?: T;
@@ -7862,6 +8300,105 @@ export interface FooterSelect<T extends boolean = true> {
                   };
               id?: T;
             };
+      };
+  footer_drop_config?:
+    | T
+    | {
+        logo?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    anchorId?: T;
+                  };
+            };
+        secondaryLogo?:
+          | T
+          | {
+              enabled?: T;
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    anchorId?: T;
+                  };
+            };
+        navLinks?:
+          | T
+          | {
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    anchorId?: T;
+                  };
+              icon?:
+                | T
+                | {
+                    useMedia?: T;
+                    mediaImage?: T;
+                    iconSVG?: T;
+                    alt?: T;
+                  };
+              iconBackgroundColor?: T;
+              id?: T;
+            };
+        socialButtons?:
+          | T
+          | {
+              icon?: T;
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    anchorId?: T;
+                  };
+              id?: T;
+            };
+        policyLinks?:
+          | T
+          | {
+              title?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    anchorId?: T;
+                  };
+              id?: T;
+            };
+        footerText?: T;
+        backgroundColor?: T;
+        textColor?: T;
+        textColorSecondary?: T;
+        hideMobileIcons?: T;
       };
   updatedAt?: T;
   createdAt?: T;

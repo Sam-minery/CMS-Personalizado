@@ -26,4 +26,3 @@ export const ENABLED_BLOCKS_BY_SLUG: Record<string, Block> = {
   "pricingDrop": PricingDropBlock,
   "faqDrop": FAQDropBlock,
 }
-
