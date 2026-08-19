@@ -218,6 +218,28 @@ export const PricingDropBlock: Block = {
         placeholder: '#ffffff',
       },
     },
+    {
+      name: 'enableAnimatedBg',
+      type: 'checkbox',
+      label: 'Activar fondo animado',
+      defaultValue: false,
+      admin: {
+        description:
+          'Círculo discontinuo giratorio detrás de la imagen y sparkles con parallax al hacer scroll.',
+      },
+    },
+    {
+      name: 'animatedAccentColor',
+      type: 'text',
+      label: 'Color de acentos animados',
+      defaultValue: '#a1004a',
+      admin: {
+        condition: (_: unknown, siblingData: { enableAnimatedBg?: boolean }) =>
+          siblingData?.enableAnimatedBg === true,
+        description: 'Color de la línea discontinua y de las estrellas / sparkles.',
+        placeholder: '#a1004a',
+      },
+    },
 
     // ─── 4. Subsección numerada ────────────────────────────────
     {

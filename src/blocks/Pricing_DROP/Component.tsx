@@ -113,6 +113,8 @@ export type PricingDropBlockType = {
   } | null
   backgroundImage?: MediaLike | null
   backgroundColor?: string | null
+  enableAnimatedBg?: boolean | null
+  animatedAccentColor?: string | null
   numberedItems?: Array<{
     icon?: IconGroup | null
     content?: DefaultTypedEditorState | null
@@ -318,6 +320,67 @@ function RichScope({
   )
 }
 
+const SPARKLE_PATH =
+  'M12 1.1c.38 4.55 2.95 7.12 7.5 7.5-4.55.38-7.12 2.95-7.5 7.5-.38-4.55-2.95-7.12-7.5-7.5 4.55-.38 7.12-2.95 7.5-7.5Z'
+
+function Sparkle({
+  size,
+  opacity,
+  className,
+}: {
+  size: number
+  opacity: number
+  className?: string
+}) {
+  return (
+    <svg
+      className={cn('absolute', className)}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      opacity={opacity}
+      aria-hidden
+    >
+      <path d={SPARKLE_PATH} />
+    </svg>
+  )
+}
+
+function AnimatedOrbit({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('pricing-drop-orbit h-full w-full', className)}
+      viewBox="0 0 400 400"
+      fill="none"
+      aria-hidden
+    >
+      <circle
+        cx="200"
+        cy="200"
+        r="168"
+        stroke="currentColor"
+        strokeWidth="1.35"
+        strokeLinecap="round"
+        strokeDasharray="11 8"
+        opacity="0.48"
+      />
+      <g transform="translate(306 72) scale(0.78)" fill="currentColor" opacity="0.44">
+        <path d={SPARKLE_PATH} />
+      </g>
+      <g transform="translate(52 232) scale(0.62)" fill="currentColor" opacity="0.34">
+        <path d={SPARKLE_PATH} />
+      </g>
+      <g transform="translate(328 268) scale(0.52)" fill="currentColor" opacity="0.3">
+        <path d={SPARKLE_PATH} />
+      </g>
+      <g transform="translate(78 92) scale(0.42)" fill="currentColor" opacity="0.26">
+        <path d={SPARKLE_PATH} />
+      </g>
+    </svg>
+  )
+}
+
 export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
   const {
     anchorId,
@@ -327,6 +390,8 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
     mainStyle,
     backgroundImage,
     backgroundColor,
+    enableAnimatedBg,
+    animatedAccentColor,
     numberedItems,
     product,
     finePrint,
@@ -570,6 +635,43 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
 
   const bgImageUrl = getMediaUrlSafe(backgroundImage)
   const blockBg = sanitizeCssColor(backgroundColor) || '#ffffff'
+  const showAnimatedBg = enableAnimatedBg === true
+  const animAccent = sanitizeCssColor(animatedAccentColor) || ACCENT
+  const showDesktopDecor = Boolean(bgImageUrl) || showAnimatedBg
+  const sectionRef = React.useRef<HTMLElement>(null)
+
+  React.useEffect(() => {
+    if (!showAnimatedBg) return
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduceMotion) return
+
+    let raf = 0
+    const applyParallax = () => {
+      raf = 0
+      const el = sectionRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const delta = rect.top + rect.height / 2 - window.innerHeight / 2
+      el.style.setProperty('--pd-para-slow', `${delta * 0.035}px`)
+      el.style.setProperty('--pd-para-mid', `${delta * 0.07}px`)
+      el.style.setProperty('--pd-para-fast', `${delta * 0.13}px`)
+    }
+
+    const onScroll = () => {
+      if (raf) return
+      raf = window.requestAnimationFrame(applyParallax)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+    applyParallax()
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) window.cancelAnimationFrame(raf)
+    }
+  }, [showAnimatedBg])
   const productBg = sanitizeCssColor(product?.backgroundColor) || '#ffffff'
   const purchase = product?.purchase
   const purchaseBg = sanitizeCssColor(purchase?.backgroundColor) || '#faf7f8'
@@ -627,10 +729,17 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
 
   return (
     <section
+      ref={sectionRef}
       id={sectionId}
       data-pricing-drop={styleId}
       className="pricing-drop relative w-full overflow-hidden"
-      style={{ backgroundColor: blockBg, ...fontStyle }}
+      style={
+        {
+          backgroundColor: blockBg,
+          ...fontStyle,
+          ['--pd-anim-accent' as string]: animAccent,
+        } as React.CSSProperties
+      }
     >
       <style>{`
         [data-pricing-drop="${styleId}"] .pricing-drop-richtext strong,
@@ -781,20 +890,79 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
             display: none;
           }
         }
+        @keyframes pricing-drop-orbit-spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(-360deg); }
+        }
+        [data-pricing-drop="${styleId}"] .pricing-drop-orbit {
+          animation: pricing-drop-orbit-spin 42s linear infinite;
+          transform-origin: 50% 50%;
+          will-change: transform;
+        }
+        [data-pricing-drop="${styleId}"] .pricing-drop-sparkle-slow {
+          transform: translate3d(0, var(--pd-para-slow, 0px), 0);
+          will-change: transform;
+        }
+        [data-pricing-drop="${styleId}"] .pricing-drop-sparkle-mid {
+          transform: translate3d(0, var(--pd-para-mid, 0px), 0);
+          will-change: transform;
+        }
+        [data-pricing-drop="${styleId}"] .pricing-drop-sparkle-fast {
+          transform: translate3d(0, var(--pd-para-fast, 0px), 0);
+          will-change: transform;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          [data-pricing-drop="${styleId}"] .pricing-drop-orbit {
+            animation: none;
+          }
+          [data-pricing-drop="${styleId}"] .pricing-drop-sparkle-slow,
+          [data-pricing-drop="${styleId}"] .pricing-drop-sparkle-mid,
+          [data-pricing-drop="${styleId}"] .pricing-drop-sparkle-fast {
+            transform: none;
+          }
+        }
         ${buildFontStyles()}
       `}</style>
 
-      {/* Fondo desktop: imagen a todo el bloque */}
-      {bgImageUrl ? (
+      {/* Fondo desktop: animación detrás + PNG con transparencia */}
+      {showDesktopDecor ? (
         <div
-          className="pricing-drop-bg-desktop pointer-events-none absolute inset-0 z-0"
+          className="pricing-drop-bg-desktop pointer-events-none absolute inset-0 z-0 overflow-hidden"
           aria-hidden
+          style={{ color: animAccent }}
         >
-          <img
-            src={bgImageUrl}
-            alt=""
-            className="h-full w-full object-cover object-center"
-          />
+          {showAnimatedBg ? (
+            <>
+              <div className="pricing-drop-sparkle-slow absolute inset-0">
+                <Sparkle size={28} opacity={0.32} className="left-[16%] top-[18%]" />
+                <Sparkle size={16} opacity={0.2} className="left-[70%] top-[64%]" />
+                <Sparkle size={22} opacity={0.16} className="left-[8%] top-[62%]" />
+              </div>
+              <div className="pricing-drop-sparkle-mid absolute inset-0">
+                <Sparkle size={18} opacity={0.4} className="left-[26%] top-[52%]" />
+                <Sparkle size={24} opacity={0.26} className="left-[62%] top-[16%]" />
+                <Sparkle size={12} opacity={0.48} className="left-[78%] top-[40%]" />
+                <Sparkle size={14} opacity={0.22} className="left-[48%] top-[78%]" />
+              </div>
+              <div className="pricing-drop-sparkle-fast absolute inset-0">
+                <Sparkle size={9} opacity={0.55} className="left-[20%] top-[36%]" />
+                <Sparkle size={13} opacity={0.28} className="left-[58%] top-[70%]" />
+                <Sparkle size={17} opacity={0.18} className="left-[82%] top-[24%]" />
+                <Sparkle size={8} opacity={0.42} className="left-[12%] top-[74%]" />
+                <Sparkle size={11} opacity={0.3} className="left-[72%] top-[52%]" />
+              </div>
+              <div className="absolute left-1/2 top-1/2 aspect-square h-[82%] max-w-[min(62%,540px)] -translate-x-1/2 -translate-y-1/2">
+                <AnimatedOrbit />
+              </div>
+            </>
+          ) : null}
+          {bgImageUrl ? (
+            <img
+              src={bgImageUrl}
+              alt=""
+              className="absolute left-1/2 top-1/2 z-[1] h-[70%] w-auto max-w-[56%] -translate-x-1/2 -translate-y-1/2 object-contain"
+            />
+          ) : null}
         </div>
       ) : null}
 
@@ -802,7 +970,7 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
         <div className="flex flex-col gap-8 lg:grid lg:grid-cols-12 lg:gap-x-5 lg:gap-y-8">
           {/* Columna izquierda (móvil: fondo hasta arriba de la tabla) */}
           <div className="relative flex flex-col gap-5 lg:col-span-6 lg:gap-6">
-            {bgImageUrl ? (
+            {showDesktopDecor ? (
               <div
                 className="pricing-drop-bg-mobile pointer-events-none absolute top-0 z-0 overflow-hidden"
                 style={{
@@ -812,28 +980,49 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
                   width: '100vw',
                   maxWidth: '100vw',
                   transform: 'translateX(-50%)',
+                  color: animAccent,
                 }}
                 aria-hidden
               >
-                <img
-                  src={bgImageUrl}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover"
-                  style={{
-                    // Sujeto/centro de la foto hacia la derecha de la pantalla
-                    // (object-position bajo = se ve más el lado izquierdo de la imagen)
-                    objectPosition: '12% center',
-                  }}
-                />
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: [
-                      `linear-gradient(90deg, ${blockBg} 0%, ${blockBg} 16%, transparent 48%)`,
-                      `linear-gradient(180deg, transparent 48%, ${blockBg} 96%)`,
-                    ].join(', '),
-                  }}
-                />
+                {showAnimatedBg ? (
+                  <>
+                    <div className="pricing-drop-sparkle-slow absolute inset-0">
+                      <Sparkle size={22} opacity={0.28} className="right-[8%] top-[12%]" />
+                      <Sparkle size={14} opacity={0.18} className="right-[42%] top-[58%]" />
+                    </div>
+                    <div className="pricing-drop-sparkle-mid absolute inset-0">
+                      <Sparkle size={16} opacity={0.38} className="right-[18%] top-[36%]" />
+                      <Sparkle size={20} opacity={0.22} className="right-[4%] top-[68%]" />
+                      <Sparkle size={10} opacity={0.45} className="right-[36%] top-[20%]" />
+                    </div>
+                    <div className="pricing-drop-sparkle-fast absolute inset-0">
+                      <Sparkle size={8} opacity={0.5} className="right-[28%] top-[48%]" />
+                      <Sparkle size={12} opacity={0.26} className="right-[6%] top-[26%]" />
+                      <Sparkle size={9} opacity={0.34} className="right-[22%] top-[76%]" />
+                    </div>
+                    <div className="absolute right-0 top-1/2 aspect-square h-[88%] max-w-[78%] translate-x-[10%] -translate-y-1/2">
+                      <AnimatedOrbit />
+                    </div>
+                  </>
+                ) : null}
+                {bgImageUrl ? (
+                  <img
+                    src={bgImageUrl}
+                    alt=""
+                    className="absolute right-0 top-1/2 z-[1] h-[78%] w-auto max-w-[72%] -translate-y-1/2 object-contain object-right"
+                  />
+                ) : null}
+                {bgImageUrl ? (
+                  <div
+                    className="absolute inset-0 z-[2]"
+                    style={{
+                      background: [
+                        `linear-gradient(90deg, ${blockBg} 0%, ${blockBg} 22%, transparent 58%)`,
+                        `linear-gradient(180deg, transparent 52%, ${blockBg} 96%)`,
+                      ].join(', '),
+                    }}
+                  />
+                ) : null}
               </div>
             ) : null}
 

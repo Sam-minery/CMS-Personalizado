@@ -3211,6 +3211,14 @@ export interface PricingDropBlock {
    */
   backgroundColor?: string | null;
   /**
+   * Círculo discontinuo giratorio detrás de la imagen y sparkles con parallax al hacer scroll.
+   */
+  enableAnimatedBg?: boolean | null;
+  /**
+   * Color de la línea discontinua y de las estrellas / sparkles.
+   */
+  animatedAccentColor?: string | null;
+  /**
    * Máximo 3. Columna a la izquierda, debajo del texto principal.
    */
   numberedItems?:
@@ -5383,6 +5391,8 @@ export interface PricingDropBlockSelect<T extends boolean = true> {
       };
   backgroundImage?: T;
   backgroundColor?: T;
+  enableAnimatedBg?: T;
+  animatedAccentColor?: T;
   numberedItems?:
     | T
     | {
