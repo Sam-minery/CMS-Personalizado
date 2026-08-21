@@ -42,6 +42,7 @@ type NavbarDropConfig = {
   textColor?: string | null
   boldTextColor?: string | null
   buttonBackgroundColor?: string | null
+  buttonBackgroundColorSecondary?: string | null
   buttonTextColor?: string | null
   fontFamily?: string | null
   useFontGroup?: boolean | null
@@ -302,6 +303,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
           textColor={c.textColor ?? undefined}
           boldTextColor={c.boldTextColor ?? undefined}
           buttonBackgroundColor={c.buttonBackgroundColor ?? undefined}
+          buttonBackgroundColorSecondary={c.buttonBackgroundColorSecondary ?? undefined}
           buttonTextColor={c.buttonTextColor ?? undefined}
           fontFamily={c.fontFamily ?? undefined}
           useFontGroup={c.useFontGroup ?? false}

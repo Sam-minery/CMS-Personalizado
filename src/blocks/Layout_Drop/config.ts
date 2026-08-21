@@ -17,6 +17,7 @@ import {
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
+import { dropButtonBackgroundSecondaryField } from '@/fields/dropButtonBackgroundSecondary'
 import { SmallBodyFeature } from '@/lexical-features/small-body/feature.server'
 
 const layoutDropRichTextState = {
@@ -443,11 +444,13 @@ export const LayoutDropBlock: Block = {
           type: 'text',
           label: 'Color de fondo del botón',
           admin: {
-            description:
-              'Color sólido o degradado CSS. Ej: #a1004a o linear-gradient(90deg, #e91e63, #6a1b4d)',
-            placeholder: 'linear-gradient(90deg, #e91e63, #6a1b4d)',
+            description: 'Color sólido. Si también rellenas el secundario, se usa como degradado.',
+            placeholder: '#e91e63',
           },
         },
+        dropButtonBackgroundSecondaryField({
+          placeholder: '#6a1b4d',
+        }),
         {
           name: 'textColor',
           type: 'text',

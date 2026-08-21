@@ -17,6 +17,7 @@ import {
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
+import { dropButtonBackgroundSecondaryField } from '@/fields/dropButtonBackgroundSecondary'
 import { link } from '@/fields/link'
 import { SmallBodyFeature } from '@/lexical-features/small-body/feature.server'
 
@@ -473,6 +474,9 @@ export const PricingDropBlock: Block = {
                   defaultValue: '#a1004a',
                   admin: { placeholder: '#a1004a' },
                 },
+                dropButtonBackgroundSecondaryField({
+                  placeholder: '#6a1b4d',
+                }),
                 {
                   name: 'textColor',
                   type: 'text',

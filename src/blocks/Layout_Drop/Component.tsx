@@ -30,6 +30,10 @@ import {
   sendaResolveOptionalMobileWidthVw,
 } from '@/utilities/sendaCustomWidthBreakout'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
+import {
+  dropBlockButtonNativeClassName,
+  dropButtonBackgroundStyle,
+} from '@/utilities/dropBlockButtonClasses'
 import { cn } from '@/utilities/ui'
 
 /** Tipos locales alineados con CTA1_SENDA_Alter para resolver URLs absolutas de media. */
@@ -154,6 +158,7 @@ export type LayoutDropBlockType = {
     label?: string | null
     iconSVG?: string | null
     backgroundColor?: string | null
+    backgroundColorSecondary?: string | null
     textColor?: string | null
     link?: LinkType | null
   } | null
@@ -172,7 +177,8 @@ export type LayoutDropBlockType = {
   customWidthPercentMobile?: number | null
 }
 
-const DEFAULT_BTN_BG = 'linear-gradient(90deg, #e91e63 0%, #6a1b4d 100%)'
+const DEFAULT_BTN_BG = '#e91e63'
+const DEFAULT_BTN_BG_2 = '#6a1b4d'
 const ACCENT = '#c2185b'
 const NAVY = '#101835'
 
@@ -609,8 +615,12 @@ export const LayoutDropBlock: React.FC<LayoutDropBlockType> = (props) => {
   const sectionId = sanitizeAnchorId(anchorId)
   const privacyRequired = privacyPolicy?.required !== false
   const btnLabel = button?.label?.trim() || 'Continuar'
-  const btnBg = button?.backgroundColor?.trim() || DEFAULT_BTN_BG
   const btnFg = button?.textColor?.trim() || '#ffffff'
+  const btnStyle = dropButtonBackgroundStyle(
+    button?.backgroundColor,
+    button?.backgroundColorSecondary || (!button?.backgroundColor ? DEFAULT_BTN_BG_2 : null),
+    { color: btnFg, fallback: DEFAULT_BTN_BG },
+  )
   const btnIconSvg =
     button?.iconSVG && String(button.iconSVG).trim() ? sanitizeSVG(button.iconSVG) : ''
 
@@ -1106,16 +1116,13 @@ export const LayoutDropBlock: React.FC<LayoutDropBlockType> = (props) => {
                       type="submit"
                       disabled={isSubmitting}
                       className={cn(
-                        'mt-auto inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5',
-                        'font-semibold transition-[filter,opacity] duration-200',
-                        !formCss.fontGroupActive && 'text-base',
+                        'mt-auto w-full',
+                        dropBlockButtonNativeClassName,
+                        'transition-[filter,opacity] duration-200',
                         'hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 focus-visible:ring-offset-2',
                         'disabled:pointer-events-none disabled:opacity-60',
                       )}
-                      style={{
-                        background: btnBg,
-                        color: btnFg,
-                      }}
+                      style={btnStyle}
                     >
                       <span className="layout-drop-btn-label">
                         {isSubmitting ? 'Enviando…' : btnLabel}

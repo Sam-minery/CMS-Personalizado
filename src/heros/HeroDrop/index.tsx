@@ -9,6 +9,10 @@ import { CMSLink } from '@/components/Link'
 import { Checkbox } from '@/components/ui/checkbox'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
+import {
+  dropBlockButtonNativeClassName,
+  dropButtonBackgroundStyle,
+} from '@/utilities/dropBlockButtonClasses'
 import { cn } from '@/utilities/ui'
 
 type MediaLike = {
@@ -101,6 +105,7 @@ type HeroDropData = {
     } | null
     floatSvg?: string | null
     btnBg?: string | null
+    btnBg2?: string | null
     btnFg?: string | null
     cardBg?: string | null
     modalTitle?: string | null
@@ -121,15 +126,18 @@ type HeroDropData = {
       privReq?: boolean | null
       contBtn?: DefaultTypedEditorState | null
       contBg?: string | null
+      contBg2?: string | null
       contFg?: string | null
     } | null
     eligContent?: DefaultTypedEditorState | null
     eligBtns?: ResultButtonItem[] | null
     eligBg?: string | null
+    eligBg2?: string | null
     eligFg?: string | null
     noEligContent?: DefaultTypedEditorState | null
     noEligBtns?: ResultButtonItem[] | null
     noEligBg?: string | null
+    noEligBg2?: string | null
     noEligFg?: string | null
     tagBg?: string | null
     tagFg?: string | null
@@ -141,6 +149,7 @@ type HeroDropData = {
   bg?: string | null
   bgGrad?: string | null
   pBtnBg?: string | null
+  pBtnBg2?: string | null
   pBtnFg?: string | null
   sBtnFg?: string | null
 }
@@ -277,13 +286,18 @@ function typographyCss(
 function ResultCTAButtons({
   buttons,
   backgroundColor,
+  backgroundColorSecondary,
   textColor,
 }: {
   buttons?: ResultButtonItem[] | null
   backgroundColor: string
+  backgroundColorSecondary?: string | null
   textColor: string
 }) {
   if (!buttons?.length) return null
+  const filledStyle = dropButtonBackgroundStyle(backgroundColor, backgroundColorSecondary, {
+    color: textColor,
+  })
   return (
     <div className="mt-6 flex w-full flex-col items-stretch gap-3 sm:items-center">
       {buttons.map((buttonItem, index) => {
@@ -301,14 +315,11 @@ function ResultCTAButtons({
             label={null}
             appearance="inline"
             className={cn(
-              'inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold transition-opacity hover:opacity-90 sm:w-auto',
+              dropBlockButtonNativeClassName,
+              'w-full sm:w-auto',
               isSecondary && 'border border-[#E5E7EB] bg-white',
             )}
-            style={
-              isSecondary
-                ? { color: NAVY }
-                : { backgroundColor, color: textColor }
-            }
+            style={isSecondary ? { color: NAVY } : filledStyle}
           >
             <span>{buttonItem.link?.label}</span>
             {iconSvg ? (
@@ -350,25 +361,32 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
   const accent = sanitizeCssColor(data.accent) || '#C2005F'
   const bg = sanitizeCssColor(data.bg) || '#FFFFFF'
   const gradient = data.bgGrad?.trim() || ''
-  const primaryBtnBg = sanitizeCssColor(data.pBtnBg) || accent
   const primaryBtnText = sanitizeCssColor(data.pBtnFg) || '#FFFFFF'
+  const primaryBtnStyle = dropButtonBackgroundStyle(data.pBtnBg, data.pBtnBg2, {
+    color: primaryBtnText,
+    fallback: accent,
+  })
   const secondaryBtnText = sanitizeCssColor(data.sBtnFg) || NAVY
 
   const tagBg = sanitizeCssColor(data.tag?.backgroundColor) || '#FCE4EC'
   const tagText = sanitizeCssColor(data.tag?.textColor) || accent
   const calc = data.calc
-  const calcBtnBg = sanitizeCssColor(calc?.btnBg) || accent
   const calcBtnText = sanitizeCssColor(calc?.btnFg) || '#FFFFFF'
+  const calcBtnStyle = dropButtonBackgroundStyle(calc?.btnBg, calc?.btnBg2, {
+    color: calcBtnText,
+    fallback: accent,
+  })
   const calcCardBg = sanitizeCssColor(calc?.cardBg) || '#FFFFFF'
   const modalBg = sanitizeCssColor(calc?.modalBg) || '#FFFFFF'
   const resultTagBg = sanitizeCssColor(calc?.tagBg) || '#E8F5E9'
   const resultTagFg = sanitizeCssColor(calc?.tagFg) || '#2E7D32'
-  const eligBtnBg = sanitizeCssColor(calc?.eligBg) || accent
   const eligBtnFg = sanitizeCssColor(calc?.eligFg) || '#FFFFFF'
-  const noEligBtnBg = sanitizeCssColor(calc?.noEligBg) || accent
   const noEligBtnFg = sanitizeCssColor(calc?.noEligFg) || '#FFFFFF'
-  const contactBtnBg = sanitizeCssColor(calc?.contact?.contBg) || accent
   const contactBtnFg = sanitizeCssColor(calc?.contact?.contFg) || '#FFFFFF'
+  const contactBtnStyle = dropButtonBackgroundStyle(calc?.contact?.contBg, calc?.contact?.contBg2, {
+    color: contactBtnFg,
+    fallback: accent,
+  })
   const privacyRequired = calc?.contact?.privReq !== false
 
   const imageSrc = getMediaUrlSafe(data.media)
@@ -659,8 +677,8 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
 
         <button
           type="submit"
-          className="mt-1 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition-opacity hover:opacity-90 lg:rounded-2xl"
-          style={{ backgroundColor: calcBtnBg, color: calcBtnText }}
+          className={cn(dropBlockButtonNativeClassName, 'mt-1 w-full')}
+          style={calcBtnStyle}
         >
           <span>{calc?.btnLabel || 'Calcular mi IMC'}</span>
           {calcButtonIcon && (
@@ -885,14 +903,11 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
                       url={btn.link?.url}
                       label={null}
                       appearance="inline"
-                      className={cn(
-                        'inline-flex items-center justify-center gap-2 text-[0.9375rem] font-semibold transition-opacity hover:opacity-90',
-                        isPrimary ? 'h-12 rounded-2xl px-6' : 'h-auto bg-transparent px-0 py-2',
-                      )}
+                      className={dropBlockButtonNativeClassName}
                       style={
                         isPrimary
-                          ? { backgroundColor: primaryBtnBg, color: primaryBtnText }
-                          : { color: secondaryBtnText }
+                          ? primaryBtnStyle
+                          : { backgroundColor: '#F5F5F5', color: secondaryBtnText }
                       }
                     >
                       <span>{btn.link?.label}</span>
@@ -972,10 +987,10 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
                           url={btn.link?.url}
                           label={null}
                           appearance="inline"
-                          className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl px-3 text-[0.75rem] font-semibold transition-opacity hover:opacity-90 sm:h-11 sm:text-[0.8125rem]"
+                          className={cn(dropBlockButtonNativeClassName, 'w-full')}
                           style={
                             isPrimary
-                              ? { backgroundColor: primaryBtnBg, color: primaryBtnText }
+                              ? primaryBtnStyle
                               : { backgroundColor: '#F5F5F5', color: secondaryBtnText }
                           }
                         >
@@ -1141,8 +1156,11 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
                     type="button"
                     onClick={calculateBMI}
                     disabled={!height || !weight}
-                    className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-                    style={{ backgroundColor: calcBtnBg, color: calcBtnText }}
+                    className={cn(
+                      dropBlockButtonNativeClassName,
+                      'mt-2 w-full disabled:cursor-not-allowed disabled:opacity-50',
+                    )}
+                    style={calcBtnStyle}
                   >
                     <span>{calc?.btnLabel || 'Calcular mi IMC'}</span>
                     {calcButtonIcon ? (
@@ -1283,8 +1301,11 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
                   <button
                     type="submit"
                     disabled={isSubmittingContact}
-                    className="mt-1 inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-sm font-semibold shadow-[0_8px_20px_rgba(194,0,95,0.25)] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 [&_p]:m-0"
-                    style={{ backgroundColor: contactBtnBg, color: contactBtnFg }}
+                    className={cn(
+                      dropBlockButtonNativeClassName,
+                      'mt-1 w-full shadow-[0_8px_20px_rgba(194,0,95,0.25)] disabled:cursor-not-allowed disabled:opacity-60 [&_p]:m-0',
+                    )}
+                    style={contactBtnStyle}
                   >
                     {isSubmittingContact ? (
                       'Enviando…'
@@ -1355,7 +1376,8 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
 
                 <ResultCTAButtons
                   buttons={isEligible ? calc?.eligBtns : calc?.noEligBtns}
-                  backgroundColor={isEligible ? eligBtnBg : noEligBtnBg}
+                  backgroundColor={isEligible ? calc?.eligBg || accent : calc?.noEligBg || accent}
+                  backgroundColorSecondary={isEligible ? calc?.eligBg2 : calc?.noEligBg2}
                   textColor={isEligible ? eligBtnFg : noEligBtnFg}
                 />
 

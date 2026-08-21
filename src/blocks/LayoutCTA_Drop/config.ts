@@ -17,6 +17,7 @@ import {
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
+import { dropButtonBackgroundSecondaryField } from '@/fields/dropButtonBackgroundSecondary'
 import { SmallBodyFeature } from '@/lexical-features/small-body/feature.server'
 import { link } from '@/fields/link'
 
@@ -344,14 +345,19 @@ export const LayoutCTADropBlock: Block = {
           type: 'text',
           label: 'Color de fondo del botón',
           defaultValue: '#C2005F',
-          admin: { width: '50%', placeholder: '#C2005F' },
+          admin: { width: '33%', placeholder: '#C2005F' },
         },
+        dropButtonBackgroundSecondaryField({
+          name: 'buttonBackgroundColorSecondary',
+          label: 'Color de fondo secundario',
+          width: '33%',
+        }),
         {
           name: 'buttonTextColor',
           type: 'text',
           label: 'Color de texto del botón',
           defaultValue: '#FFFFFF',
-          admin: { width: '50%', placeholder: '#FFFFFF' },
+          admin: { width: '33%', placeholder: '#FFFFFF' },
         },
       ],
     },

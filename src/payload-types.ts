@@ -546,6 +546,10 @@ export interface Page {
          */
         floatSvg?: string | null;
         btnBg?: string | null;
+        /**
+         * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+         */
+        btnBg2?: string | null;
         btnFg?: string | null;
         cardBg?: string | null;
         modalTitle?: string | null;
@@ -700,6 +704,10 @@ export interface Page {
             [k: string]: unknown;
           } | null;
           contBg?: string | null;
+          /**
+           * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+           */
+          contBg2?: string | null;
           contFg?: string | null;
         };
         /**
@@ -742,6 +750,10 @@ export interface Page {
             }[]
           | null;
         eligBg?: string | null;
+        /**
+         * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+         */
+        eligBg2?: string | null;
         eligFg?: string | null;
         /**
          * Usa {bmi} para insertar el valor.
@@ -783,6 +795,10 @@ export interface Page {
             }[]
           | null;
         noEligBg?: string | null;
+        /**
+         * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+         */
+        noEligBg2?: string | null;
         noEligFg?: string | null;
         tagBg?: string | null;
         tagFg?: string | null;
@@ -870,6 +886,10 @@ export interface Page {
        */
       bgGrad?: string | null;
       pBtnBg?: string | null;
+      /**
+       * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+       */
+      pBtnBg2?: string | null;
       pBtnFg?: string | null;
       sBtnFg?: string | null;
     };
@@ -1727,9 +1747,13 @@ export interface LayoutDropBlock {
      */
     iconSVG?: string | null;
     /**
-     * Color sólido o degradado CSS. Ej: #a1004a o linear-gradient(90deg, #e91e63, #6a1b4d)
+     * Color sólido. Si también rellenas el secundario, se usa como degradado.
      */
     backgroundColor?: string | null;
+    /**
+     * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+     */
+    backgroundColorSecondary?: string | null;
     textColor?: string | null;
     /**
      * Si se configura, tras enviar el formulario se navega a este enlace. Si está vacío, solo se envía el formulario.
@@ -1970,6 +1994,10 @@ export interface CalculadoraIMCDropBlock {
      */
     iconSVG?: string | null;
     backgroundColor?: string | null;
+    /**
+     * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+     */
+    backgroundColorSecondary?: string | null;
     textColor?: string | null;
   };
   /**
@@ -2039,6 +2067,10 @@ export interface CalculadoraIMCDropBlock {
   calculateButtonIconSVG?: string | null;
   recalculateButtonText?: string | null;
   calculateButtonColor?: string | null;
+  /**
+   * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+   */
+  calculateButtonColorSecondary?: string | null;
   calculateButtonTextColor?: string | null;
   modalCardBackgroundColor?: string | null;
   /**
@@ -2180,6 +2212,10 @@ export interface CalculadoraIMCDropBlock {
       [k: string]: unknown;
     } | null;
     continueButtonColor?: string | null;
+    /**
+     * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+     */
+    continueButtonColorSecondary?: string | null;
     continueButtonTextColor?: string | null;
   };
   /**
@@ -2233,6 +2269,10 @@ export interface CalculadoraIMCDropBlock {
       | null;
   };
   eligibleButtonColor?: string | null;
+  /**
+   * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+   */
+  eligibleButtonColorSecondary?: string | null;
   eligibleButtonTextColor?: string | null;
   /**
    * Se muestra si la categoría emparejada no es apta (o no hay match). Usa {bmi} para insertar el valor.
@@ -2282,6 +2322,10 @@ export interface CalculadoraIMCDropBlock {
       | null;
   };
   notEligibleButtonColor?: string | null;
+  /**
+   * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+   */
+  notEligibleButtonColorSecondary?: string | null;
   notEligibleButtonTextColor?: string | null;
   backgroundColor?: string | null;
   /**
@@ -2504,6 +2548,10 @@ export interface LayoutCTADropBlock {
       }[]
     | null;
   buttonBackgroundColor?: string | null;
+  /**
+   * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+   */
+  buttonBackgroundColorSecondary?: string | null;
   buttonTextColor?: string | null;
   backgroundColor?: string | null;
   /**
@@ -3553,6 +3601,10 @@ export interface PricingDropBlock {
          */
         iconSVG?: string | null;
         backgroundColor?: string | null;
+        /**
+         * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+         */
+        backgroundColorSecondary?: string | null;
         textColor?: string | null;
         link?: {
           type?: ('reference' | 'custom') | null;
@@ -4675,6 +4727,7 @@ export interface PagesSelect<T extends boolean = true> {
                         };
                     floatSvg?: T;
                     btnBg?: T;
+                    btnBg2?: T;
                     btnFg?: T;
                     cardBg?: T;
                     modalTitle?: T;
@@ -4735,6 +4788,7 @@ export interface PagesSelect<T extends boolean = true> {
                           privReq?: T;
                           contBtn?: T;
                           contBg?: T;
+                          contBg2?: T;
                           contFg?: T;
                         };
                     eligContent?: T;
@@ -4754,6 +4808,7 @@ export interface PagesSelect<T extends boolean = true> {
                           id?: T;
                         };
                     eligBg?: T;
+                    eligBg2?: T;
                     eligFg?: T;
                     noEligContent?: T;
                     noEligBtns?:
@@ -4772,6 +4827,7 @@ export interface PagesSelect<T extends boolean = true> {
                           id?: T;
                         };
                     noEligBg?: T;
+                    noEligBg2?: T;
                     noEligFg?: T;
                     tagBg?: T;
                     tagFg?: T;
@@ -4807,6 +4863,7 @@ export interface PagesSelect<T extends boolean = true> {
               bg?: T;
               bgGrad?: T;
               pBtnBg?: T;
+              pBtnBg2?: T;
               pBtnFg?: T;
               sBtnFg?: T;
             };
@@ -4968,6 +5025,7 @@ export interface LayoutDropBlockSelect<T extends boolean = true> {
         label?: T;
         iconSVG?: T;
         backgroundColor?: T;
+        backgroundColorSecondary?: T;
         textColor?: T;
         link?:
           | T
@@ -5069,6 +5127,7 @@ export interface CalculadoraIMCDropBlockSelect<T extends boolean = true> {
         label?: T;
         iconSVG?: T;
         backgroundColor?: T;
+        backgroundColorSecondary?: T;
         textColor?: T;
       };
   footerContent?: T;
@@ -5093,6 +5152,7 @@ export interface CalculadoraIMCDropBlockSelect<T extends boolean = true> {
   calculateButtonIconSVG?: T;
   recalculateButtonText?: T;
   calculateButtonColor?: T;
+  calculateButtonColorSecondary?: T;
   calculateButtonTextColor?: T;
   modalCardBackgroundColor?: T;
   enableEligibleContactForm?: T;
@@ -5132,6 +5192,7 @@ export interface CalculadoraIMCDropBlockSelect<T extends boolean = true> {
         privacyRequired?: T;
         continueButtonText?: T;
         continueButtonColor?: T;
+        continueButtonColorSecondary?: T;
         continueButtonTextColor?: T;
       };
   eligibleContent?: T;
@@ -5155,6 +5216,7 @@ export interface CalculadoraIMCDropBlockSelect<T extends boolean = true> {
             };
       };
   eligibleButtonColor?: T;
+  eligibleButtonColorSecondary?: T;
   eligibleButtonTextColor?: T;
   notEligibleContent?: T;
   notEligibleResult?:
@@ -5177,6 +5239,7 @@ export interface CalculadoraIMCDropBlockSelect<T extends boolean = true> {
             };
       };
   notEligibleButtonColor?: T;
+  notEligibleButtonColorSecondary?: T;
   notEligibleButtonTextColor?: T;
   backgroundColor?: T;
   tableHeaderBackgroundColor?: T;
@@ -5261,6 +5324,7 @@ export interface LayoutCTADropBlockSelect<T extends boolean = true> {
         id?: T;
       };
   buttonBackgroundColor?: T;
+  buttonBackgroundColorSecondary?: T;
   buttonTextColor?: T;
   backgroundColor?: T;
   showDecorativeSvgs?: T;
@@ -5590,6 +5654,7 @@ export interface PricingDropBlockSelect<T extends boolean = true> {
                     label?: T;
                     iconSVG?: T;
                     backgroundColor?: T;
+                    backgroundColorSecondary?: T;
                     textColor?: T;
                     link?:
                       | T
@@ -6820,6 +6885,10 @@ export interface Header {
     textColor?: string | null;
     boldTextColor?: string | null;
     buttonBackgroundColor?: string | null;
+    /**
+     * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+     */
+    buttonBackgroundColorSecondary?: string | null;
     buttonTextColor?: string | null;
     /**
      * Sube regular + bold (u otras variantes) en Font Groups: mismo nombre de familia y pesos distintos. El enlace activo (ancla en pantalla) usa negrita real. Tamaño del texto normal (body) para enlaces y botones.
@@ -8049,6 +8118,7 @@ export interface HeaderSelect<T extends boolean = true> {
         textColor?: T;
         boldTextColor?: T;
         buttonBackgroundColor?: T;
+        buttonBackgroundColorSecondary?: T;
         buttonTextColor?: T;
         useFontGroup?: T;
         fontGroup?: T;

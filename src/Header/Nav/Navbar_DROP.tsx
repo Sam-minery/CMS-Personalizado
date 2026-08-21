@@ -10,8 +10,11 @@ import { useGoogleFont } from "@/utilities/useGoogleFont";
 import { getMediaUrl } from "@/utilities/getMediaUrl";
 import { sanitizeSVG } from "@/utilities/sanitizeHTML";
 import { cn } from "@/utilities/ui";
-import { sendaBlockButtonPrimitiveClassName } from "@/utilities/sendaBlockButtonClasses";
-import { appendSendaInjectedButtonBorderRadius } from "@/utilities/sendaInjectedButtonRadius";
+import {
+  appendDropInjectedButtonBorderRadius,
+  dropBlockButtonPrimitiveClassName,
+  dropButtonBackgroundCss,
+} from "@/utilities/dropBlockButtonClasses";
 import {
   expandFontGroupRichTextFields,
   type FontGroupWithExpandedRichText,
@@ -173,6 +176,7 @@ type Props = {
   textColor?: string;
   boldTextColor?: string;
   buttonBackgroundColor?: string;
+  buttonBackgroundColorSecondary?: string;
   buttonTextColor?: string;
   fontFamily?: string;
   useFontGroup?: boolean | null;
@@ -252,6 +256,7 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
     textColor,
     boldTextColor,
     buttonBackgroundColor,
+    buttonBackgroundColorSecondary,
     buttonTextColor,
     fontFamily,
     useFontGroup,
@@ -429,10 +434,16 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
       );
     }
     const navDefaultBtn = `[data-navbar-drop-font="${styleId}"] .navbar-drop-btn-default`;
-    appendSendaInjectedButtonBorderRadius(styles, navDefaultBtn);
-    if (buttonBackgroundColor || buttonTextColor) {
+    appendDropInjectedButtonBorderRadius(styles, navDefaultBtn);
+    if (buttonBackgroundColor || buttonBackgroundColorSecondary || buttonTextColor) {
       const btnBaseRules: string[] = [];
-      if (buttonBackgroundColor) btnBaseRules.push(`background-color: ${buttonBackgroundColor} !important;`);
+      if (buttonBackgroundColor || buttonBackgroundColorSecondary) {
+        const bg = dropButtonBackgroundCss(
+          buttonBackgroundColor,
+          buttonBackgroundColorSecondary,
+        );
+        btnBaseRules.push(`background: ${bg} !important;`);
+      }
       if (buttonTextColor) {
         styles.push(
           `${navDefaultBtn}, ${navDefaultBtn} * { color: ${buttonTextColor} !important; }`,
@@ -693,7 +704,7 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
                     size={button.variant === "link" ? button.size : "clear"}
                     variant={button.variant}
                     className={cn(
-                      button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                      button.variant !== "link" && dropBlockButtonPrimitiveClassName,
                       button.variant !== "link" && "transition-all hover:opacity-90",
                       button.variant === "default" && "navbar-drop-btn-default",
                     )}
@@ -718,7 +729,7 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
                     size={button.variant === "link" ? button.size : "clear"}
                     appearance={button.variant}
                     className={cn(
-                      button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                      button.variant !== "link" && dropBlockButtonPrimitiveClassName,
                       button.variant !== "link" && "transition-all hover:opacity-90",
                       button.variant === "default" && "navbar-drop-btn-default",
                     )}
@@ -750,7 +761,7 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
                       size={button.variant === "link" ? button.size : "clear"}
                       variant={button.variant}
                       className={cn(
-                        button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                        button.variant !== "link" && dropBlockButtonPrimitiveClassName,
                         button.variant !== "link" && "transition-all hover:opacity-90",
                         button.variant === "default" && "navbar-drop-btn-default",
                       )}
@@ -778,7 +789,7 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
                         size={button.variant === "link" ? button.size : "clear"}
                         appearance={button.variant}
                         className={cn(
-                          button.variant !== "link" && sendaBlockButtonPrimitiveClassName,
+                          button.variant !== "link" && dropBlockButtonPrimitiveClassName,
                           button.variant !== "link" && "transition-all hover:opacity-90",
                           button.variant === "default" && "navbar-drop-btn-default",
                         )}
@@ -1054,6 +1065,7 @@ export const Navbar_DROPDefaults: Props = {
   textColor: undefined,
   boldTextColor: undefined,
   buttonBackgroundColor: undefined,
+  buttonBackgroundColorSecondary: undefined,
   buttonTextColor: undefined,
   fontFamily: undefined,
   useFontGroup: false,

@@ -30,6 +30,10 @@ import {
   sendaResolveOptionalMobileWidthVw,
 } from '@/utilities/sendaCustomWidthBreakout'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
+import {
+  dropBlockButtonNativeClassName,
+  dropButtonBackgroundStyle,
+} from '@/utilities/dropBlockButtonClasses'
 import { cn } from '@/utilities/ui'
 
 type MediaLike = {
@@ -127,6 +131,7 @@ export type CalculadoraIMCDropBlockProps = {
     label?: string | null
     iconSVG?: string | null
     backgroundColor?: string | null
+    backgroundColorSecondary?: string | null
     textColor?: string | null
   } | null
   footerContent?: DefaultTypedEditorState | null
@@ -140,6 +145,7 @@ export type CalculadoraIMCDropBlockProps = {
   calculateButtonIconSVG?: string | null
   recalculateButtonText?: string | null
   calculateButtonColor?: string | null
+  calculateButtonColorSecondary?: string | null
   calculateButtonTextColor?: string | null
   modalCardBackgroundColor?: string | null
   enableEligibleContactForm?: boolean | null
@@ -156,15 +162,18 @@ export type CalculadoraIMCDropBlockProps = {
     privacyRequired?: boolean | null
     continueButtonText?: DefaultTypedEditorState | null
     continueButtonColor?: string | null
+    continueButtonColorSecondary?: string | null
     continueButtonTextColor?: string | null
   } | null
   eligibleContent?: DefaultTypedEditorState | null
   eligibleResult?: { buttons?: ButtonItem[] | null } | null
   eligibleButtonColor?: string | null
+  eligibleButtonColorSecondary?: string | null
   eligibleButtonTextColor?: string | null
   notEligibleContent?: DefaultTypedEditorState | null
   notEligibleResult?: { buttons?: ButtonItem[] | null } | null
   notEligibleButtonColor?: string | null
+  notEligibleButtonColorSecondary?: string | null
   notEligibleButtonTextColor?: string | null
   backgroundColor?: string | null
   tableHeaderBackgroundColor?: string | null
@@ -546,13 +555,18 @@ function IconMedia({
 function ResultCTAButtons({
   buttons,
   backgroundColor,
+  backgroundColorSecondary,
   textColor,
 }: {
   buttons?: ButtonItem[] | null
   backgroundColor: string
+  backgroundColorSecondary?: string | null
   textColor: string
 }) {
   if (!buttons?.length) return null
+  const filledStyle = dropButtonBackgroundStyle(backgroundColor, backgroundColorSecondary, {
+    color: textColor,
+  })
   return (
     <div className="mt-6 flex w-full flex-col items-stretch gap-3 sm:items-center">
       {buttons.map((buttonItem, index) => {
@@ -566,13 +580,14 @@ function ResultCTAButtons({
             label={undefined}
             appearance="inline"
             className={cn(
-              'inline-flex w-full items-center justify-center rounded-full px-8 py-3 text-sm font-semibold transition-opacity hover:opacity-90 sm:w-auto sm:min-w-[220px]',
+              dropBlockButtonNativeClassName,
+              'w-full sm:w-auto sm:min-w-[220px]',
               isSecondary && 'border-2 bg-transparent',
             )}
             style={
               isSecondary
                 ? { borderColor: backgroundColor, color: backgroundColor, backgroundColor: 'transparent' }
-                : { backgroundColor, color: textColor }
+                : filledStyle
             }
           >
             <span className="inline-flex flex-row items-center justify-center gap-2" dir="ltr">
@@ -615,6 +630,7 @@ export const CalculadoraIMCDropBlock: React.FC<CalculadoraIMCDropBlockProps> = (
     calculateButtonIconSVG,
     recalculateButtonText = 'Volver a calcular',
     calculateButtonColor,
+    calculateButtonColorSecondary,
     calculateButtonTextColor,
     modalCardBackgroundColor,
     enableEligibleContactForm,
@@ -622,10 +638,12 @@ export const CalculadoraIMCDropBlock: React.FC<CalculadoraIMCDropBlockProps> = (
     eligibleContent,
     eligibleResult,
     eligibleButtonColor,
+    eligibleButtonColorSecondary,
     eligibleButtonTextColor,
     notEligibleContent,
     notEligibleResult,
     notEligibleButtonColor,
+    notEligibleButtonColorSecondary,
     notEligibleButtonTextColor,
     backgroundColor,
     tableHeaderBackgroundColor,
@@ -671,17 +689,27 @@ export const CalculadoraIMCDropBlock: React.FC<CalculadoraIMCDropBlockProps> = (
   const tagBg = sanitizeCssColor(tagBackgroundColor, '#E7F6EA')
   const tagFg = sanitizeCssColor(tagTextColor, '#2F8F46')
   const circleColor = sanitizeCssColor(image?.circleColor, '#F3D4E4')
-  const openBtnBg = sanitizeCssColor(openButton?.backgroundColor, accent)
   const openBtnFg = sanitizeCssColor(openButton?.textColor, '#FFFFFF')
-  const calcBtnBg = sanitizeCssColor(calculateButtonColor, accent)
+  const openBtnStyle = dropButtonBackgroundStyle(
+    openButton?.backgroundColor,
+    openButton?.backgroundColorSecondary,
+    { color: openBtnFg, fallback: accent },
+  )
   const calcBtnFg = sanitizeCssColor(calculateButtonTextColor, '#FFFFFF')
+  const calcBtnStyle = dropButtonBackgroundStyle(
+    calculateButtonColor,
+    calculateButtonColorSecondary,
+    { color: calcBtnFg, fallback: accent },
+  )
   const modalBg = sanitizeCssColor(modalCardBackgroundColor, '#FFFFFF')
-  const eligBtnBg = sanitizeCssColor(eligibleButtonColor, accent)
   const eligBtnFg = sanitizeCssColor(eligibleButtonTextColor, '#FFFFFF')
-  const notEligBtnBg = sanitizeCssColor(notEligibleButtonColor, accent)
   const notEligBtnFg = sanitizeCssColor(notEligibleButtonTextColor, '#FFFFFF')
-  const contactBtnBg = sanitizeCssColor(eligibleContactForm?.continueButtonColor, accent)
   const contactBtnFg = sanitizeCssColor(eligibleContactForm?.continueButtonTextColor, '#FFFFFF')
+  const contactBtnStyle = dropButtonBackgroundStyle(
+    eligibleContactForm?.continueButtonColor,
+    eligibleContactForm?.continueButtonColorSecondary,
+    { color: contactBtnFg, fallback: accent },
+  )
   const privacyRequired = eligibleContactForm?.privacyRequired !== false
   const useContactFlow = Boolean(enableEligibleContactForm)
 
@@ -1011,8 +1039,11 @@ export const CalculadoraIMCDropBlock: React.FC<CalculadoraIMCDropBlockProps> = (
       ref={openButtonRef}
       type="button"
       onClick={openModal}
-      className="inline-flex w-full max-w-sm items-center justify-center gap-2.5 rounded-full px-10 py-4 text-[15px] font-semibold tracking-wide shadow-[0_10px_28px_rgba(194,0,95,0.28)] transition-[opacity,transform] hover:opacity-95 active:translate-y-px lg:w-auto lg:min-w-[280px]"
-      style={{ backgroundColor: openBtnBg, color: openBtnFg }}
+      className={cn(
+        dropBlockButtonNativeClassName,
+        'w-full max-w-sm shadow-[0_10px_28px_rgba(194,0,95,0.28)] transition-[opacity,transform] active:translate-y-px lg:w-auto lg:min-w-[280px]',
+      )}
+      style={openBtnStyle}
     >
       <span>{openButton?.label || 'Calcula tu IMC'}</span>
       {openIconSvg ? (
@@ -1255,8 +1286,11 @@ ${layoutBreakoutCss}`}</style>
                     type="button"
                     onClick={calculateBMI}
                     disabled={!height || !weight}
-                    className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-                    style={{ backgroundColor: calcBtnBg, color: calcBtnFg }}
+                    className={cn(
+                      dropBlockButtonNativeClassName,
+                      'mt-2 w-full disabled:cursor-not-allowed disabled:opacity-50',
+                    )}
+                    style={calcBtnStyle}
                   >
                     <span>{calculateButtonText || 'Calcular'}</span>
                     {calcIconSvg ? (
@@ -1397,8 +1431,11 @@ ${layoutBreakoutCss}`}</style>
                   <button
                     type="submit"
                     disabled={isSubmittingContact}
-                    className="mt-1 inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-sm font-semibold shadow-[0_8px_20px_rgba(194,0,95,0.25)] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 [&_p]:m-0"
-                    style={{ backgroundColor: contactBtnBg, color: contactBtnFg }}
+                    className={cn(
+                      dropBlockButtonNativeClassName,
+                      'mt-1 w-full shadow-[0_8px_20px_rgba(194,0,95,0.25)] disabled:cursor-not-allowed disabled:opacity-60 [&_p]:m-0',
+                    )}
+                    style={contactBtnStyle}
                   >
                     {isSubmittingContact ? (
                       'Enviando…'
@@ -1476,7 +1513,10 @@ ${layoutBreakoutCss}`}</style>
                   buttons={
                     isEligible ? eligibleResult?.buttons : notEligibleResult?.buttons
                   }
-                  backgroundColor={isEligible ? eligBtnBg : notEligBtnBg}
+                  backgroundColor={isEligible ? eligibleButtonColor || accent : notEligibleButtonColor || accent}
+                  backgroundColorSecondary={
+                    isEligible ? eligibleButtonColorSecondary : notEligibleButtonColorSecondary
+                  }
                   textColor={isEligible ? eligBtnFg : notEligBtnFg}
                 />
 

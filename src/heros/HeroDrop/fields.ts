@@ -17,6 +17,7 @@ import {
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
+import { dropButtonBackgroundSecondaryField } from '@/fields/dropButtonBackgroundSecondary'
 import { SmallBodyFeature } from '@/lexical-features/small-body/feature.server'
 
 const heroDropRichTextState = {
@@ -525,14 +526,19 @@ export const heroDropFields: Field[] = [
                     type: 'text',
                     label: 'Color fondo botón',
                     defaultValue: '#C2005F',
-                    admin: { width: '50%', placeholder: '#C2005F' },
+                    admin: { width: '33%', placeholder: '#C2005F' },
                   },
+                  dropButtonBackgroundSecondaryField({
+                    name: 'btnBg2',
+                    label: 'Color fondo secundario',
+                    width: '33%',
+                  }),
                   {
                     name: 'btnFg',
                     type: 'text',
                     label: 'Color texto botón',
                     defaultValue: '#FFFFFF',
-                    admin: { width: '50%', placeholder: '#FFFFFF' },
+                    admin: { width: '33%', placeholder: '#FFFFFF' },
                   },
                 ],
               },
@@ -724,14 +730,19 @@ export const heroDropFields: Field[] = [
                         type: 'text',
                         label: 'Color fondo Continuar',
                         defaultValue: '#C2005F',
-                        admin: { width: '50%' },
+                        admin: { width: '33%' },
                       },
+                      dropButtonBackgroundSecondaryField({
+                        name: 'contBg2',
+                        label: 'Color fondo secundario',
+                        width: '33%',
+                      }),
                       {
                         name: 'contFg',
                         type: 'text',
                         label: 'Color texto Continuar',
                         defaultValue: '#FFFFFF',
-                        admin: { width: '50%' },
+                        admin: { width: '33%' },
                       },
                     ],
                   },
@@ -776,14 +787,19 @@ export const heroDropFields: Field[] = [
                     type: 'text',
                     label: 'Color fondo botón apto',
                     defaultValue: '#C2005F',
-                    admin: { width: '50%' },
+                    admin: { width: '33%' },
                   },
+                  dropButtonBackgroundSecondaryField({
+                    name: 'eligBg2',
+                    label: 'Color fondo secundario',
+                    width: '33%',
+                  }),
                   {
                     name: 'eligFg',
                     type: 'text',
                     label: 'Color texto botón apto',
                     defaultValue: '#FFFFFF',
-                    admin: { width: '50%' },
+                    admin: { width: '33%' },
                   },
                 ],
               },
@@ -826,14 +842,19 @@ export const heroDropFields: Field[] = [
                     type: 'text',
                     label: 'Color fondo botón no apto',
                     defaultValue: '#C2005F',
-                    admin: { width: '50%' },
+                    admin: { width: '33%' },
                   },
+                  dropButtonBackgroundSecondaryField({
+                    name: 'noEligBg2',
+                    label: 'Color fondo secundario',
+                    width: '33%',
+                  }),
                   {
                     name: 'noEligFg',
                     type: 'text',
                     label: 'Color texto botón no apto',
                     defaultValue: '#FFFFFF',
-                    admin: { width: '50%' },
+                    admin: { width: '33%' },
                   },
                 ],
               },
@@ -946,6 +967,10 @@ export const heroDropFields: Field[] = [
             defaultValue: '#C2005F',
             admin: { placeholder: '#C2005F' },
           },
+          dropButtonBackgroundSecondaryField({
+            name: 'pBtnBg2',
+            label: 'Color fondo CTA primario secundario',
+          }),
           {
             name: 'pBtnFg',
             type: 'text',

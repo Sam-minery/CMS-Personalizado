@@ -1,5 +1,6 @@
 import type { GlobalConfig } from 'payload'
 
+import { dropButtonBackgroundSecondaryField } from '@/fields/dropButtonBackgroundSecondary'
 import { link } from '@/fields/link'
 import { revalidateHeader } from './hooks/revalidateHeader'
 
@@ -819,6 +820,10 @@ export const Header: GlobalConfig = {
           type: 'text',
           label: 'Color de fondo de botones',
         },
+        dropButtonBackgroundSecondaryField({
+          name: 'buttonBackgroundColorSecondary',
+          label: 'Color de fondo secundario de botones',
+        }),
         {
           name: 'buttonTextColor',
           type: 'text',

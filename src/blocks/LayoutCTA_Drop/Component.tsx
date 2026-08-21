@@ -30,6 +30,10 @@ import {
   sendaResolveOptionalMobileWidthVw,
 } from '@/utilities/sendaCustomWidthBreakout'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
+import {
+  dropBlockButtonNativeClassName,
+  dropButtonBackgroundStyle,
+} from '@/utilities/dropBlockButtonClasses'
 import { cn } from '@/utilities/ui'
 
 type MediaLike = {
@@ -117,6 +121,7 @@ export type LayoutCTADropBlockProps = {
   stepsStyle?: SectionTypography | null
   buttons?: ButtonItem[] | null
   buttonBackgroundColor?: string | null
+  buttonBackgroundColorSecondary?: string | null
   buttonTextColor?: string | null
   backgroundColor?: string | null
   showDecorativeSvgs?: boolean | null
@@ -824,6 +829,7 @@ export const LayoutCTADropBlock: React.FC<LayoutCTADropBlockProps> = (props) => 
     stepsStyle,
     buttons,
     buttonBackgroundColor,
+    buttonBackgroundColorSecondary,
     buttonTextColor,
     backgroundColor,
     showDecorativeSvgs,
@@ -842,8 +848,12 @@ export const LayoutCTADropBlock: React.FC<LayoutCTADropBlockProps> = (props) => 
   const buttonsList = Array.isArray(buttons) ? buttons.slice(0, 1) : []
 
   const bg = sanitizeCssColor(backgroundColor, '#FFFFFF')
-  const btnBg = sanitizeCssColor(buttonBackgroundColor, ACCENT)
   const btnFg = sanitizeCssColor(buttonTextColor, '#FFFFFF')
+  const btnStyle = dropButtonBackgroundStyle(
+    buttonBackgroundColor,
+    buttonBackgroundColorSecondary,
+    { color: btnFg, fallback: ACCENT },
+  )
   const decorativeColor = sanitizeCssColor(decorativeSvgColor, ACCENT)
   const sectionId = sanitizeAnchorId(anchorId)
 
@@ -1312,11 +1322,8 @@ export const LayoutCTADropBlock: React.FC<LayoutCTADropBlockProps> = (props) => 
                   url={btn.link?.url}
                   label={null}
                   appearance="inline"
-                  className="inline-flex h-12 w-auto max-w-none items-center justify-center gap-2 rounded-full px-9 text-base font-semibold transition-opacity hover:opacity-90 md:h-[52px] md:px-10 md:text-[1.05rem]"
-                  style={{
-                    background: `linear-gradient(90deg, ${btnBg} 0%, #7a1848 55%, #5c1240 100%)`,
-                    color: btnFg,
-                  }}
+                  className={cn(dropBlockButtonNativeClassName, 'w-auto max-w-none')}
+                  style={btnStyle}
                 >
                   <span>{btn.link?.label || 'Empezar'}</span>
                   {iconSvg && (

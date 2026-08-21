@@ -25,6 +25,10 @@ import {
   sendaCalcBreakoutInlineStyle,
   sendaResolveOptionalMobileWidthVw,
 } from '@/utilities/sendaCustomWidthBreakout'
+import {
+  dropBlockButtonNativeClassName,
+  dropButtonBackgroundStyle,
+} from '@/utilities/dropBlockButtonClasses'
 import { cn } from '@/utilities/ui'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 
@@ -159,6 +163,7 @@ export type PricingDropBlockType = {
         label?: string | null
         iconSVG?: string | null
         backgroundColor?: string | null
+        backgroundColorSecondary?: string | null
         textColor?: string | null
         link?: LinkType | null
       } | null
@@ -690,8 +695,11 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
   const purchaseBg = sanitizeCssColor(purchase?.backgroundColor) || '#faf7f8'
   const btn = purchase?.button
   const btnLabel = btn?.label?.trim() || 'Empezar ahora'
-  const btnBg = sanitizeCssColor(btn?.backgroundColor) || ACCENT
   const btnFg = sanitizeCssColor(btn?.textColor) || '#ffffff'
+  const btnStyle = dropButtonBackgroundStyle(btn?.backgroundColor, btn?.backgroundColorSecondary, {
+    color: btnFg,
+    fallback: ACCENT,
+  })
   const btnIconSvg =
     btn?.iconSVG && String(btn.iconSVG).trim() ? sanitizeSVG(btn.iconSVG) : ''
   const hasBtnLink = Boolean(
@@ -734,8 +742,8 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
   )
 
   const buttonClassName = cn(
-    'pricing-drop-btn inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3.5 font-semibold transition-opacity hover:opacity-90',
-    !fontGroupTypographyActive && 'text-base',
+    'pricing-drop-btn w-full',
+    dropBlockButtonNativeClassName,
   )
 
   const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined
@@ -1457,7 +1465,7 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
                       {...(btn.link as React.ComponentProps<typeof CMSLink>)}
                       appearance="inline"
                       className={buttonClassName}
-                      style={{ backgroundColor: btnBg, color: btnFg }}
+                      style={btnStyle}
                     >
                       {ButtonInner}
                     </CMSLink>
@@ -1465,7 +1473,7 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
                     <button
                       type="button"
                       className={buttonClassName}
-                      style={{ backgroundColor: btnBg, color: btnFg }}
+                      style={btnStyle}
                     >
                       {ButtonInner}
                     </button>
