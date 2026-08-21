@@ -6,6 +6,13 @@ import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import RichText from '@/components/RichText'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { cn } from '@/utilities/ui'
 
 type MediaLike = {
@@ -40,6 +47,9 @@ export type Layout2DropBlockType = {
     iconBackgroundColor?: string | null
     id?: string | null
   }> | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
 }
 
 const NAVY = '#101835'
@@ -47,31 +57,35 @@ const ACCENT = '#a1004a'
 const SECONDARY = '#5c6b8a'
 const ICON_BG = '#fce4ec'
 
-/** Separador SVG hardcodeado (línea magenta con diamante central). */
+/** Separador SVG hardcodeado (mismo diseño que Team_Drop: líneas + 3 círculos). */
 const HEADER_DIVIDER_SVG = (
   <svg
-    width="72"
-    height="12"
-    viewBox="0 0 72 12"
-    fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 120 16"
+    fill="none"
     aria-hidden
+    className="h-4 w-[120px]"
   >
-    <path
-      d="M2 6H30"
+    <line
+      x1="0"
+      y1="8"
+      x2="48"
+      y2="8"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="1.5"
       strokeLinecap="round"
     />
-    <path
-      d="M42 6H70"
+    <circle cx="54" cy="8" r="1.5" fill="currentColor" />
+    <circle cx="60" cy="8" r="3.5" fill="currentColor" />
+    <circle cx="66" cy="8" r="1.5" fill="currentColor" />
+    <line
+      x1="72"
+      y1="8"
+      x2="120"
+      y2="8"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="1.5"
       strokeLinecap="round"
-    />
-    <path
-      d="M36 2.5L39.5 6L36 9.5L32.5 6L36 2.5Z"
-      fill="currentColor"
     />
   </svg>
 )
@@ -86,6 +100,23 @@ function sanitizeCssColor(value: string | null | undefined): string {
   const trimmed = value.trim()
   if (!trimmed) return ''
   return trimmed.replace(/[^#a-zA-Z0-9(),.%\s/-]/g, '') || ''
+}
+
+/** Convierte un color CSS (hex preferido) a rgba con alpha para el glow del hover. */
+function colorToRgba(color: string | null | undefined, alpha = 0.45): string {
+  const c = sanitizeCssColor(color)
+  const hex = c.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i)
+  if (hex) {
+    let h = hex[1]
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2]
+    const r = parseInt(h.slice(0, 2), 16)
+    const g = parseInt(h.slice(2, 4), 16)
+    const b = parseInt(h.slice(4, 6), 16)
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`
+  }
+  const rgb = c.match(/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/i)
+  if (rgb) return `rgba(${rgb[1]}, ${rgb[2]}, ${rgb[3]}, ${alpha})`
+  return `rgba(161, 0, 74, ${alpha})`
 }
 
 function getMediaUrlSafe(media: MediaLike | null | undefined): string {
@@ -202,17 +233,20 @@ function PrestacionCard({
   total,
   showIndexBadge,
   variant = 'desktop',
+  hoverColor,
 }: {
   item: PrestacionItem
   index: number
   total: number
   showIndexBadge?: boolean
   variant?: 'desktop' | 'mobile'
+  hoverColor?: string | null
 }) {
   const cardBg = sanitizeCssColor(item.backgroundColor) || '#ffffff'
   const iconBg = sanitizeCssColor(item.iconBackgroundColor) || ICON_BG
   const textColor = sanitizeCssColor(item.textColor) || SECONDARY
   const boldColor = sanitizeCssColor(item.boldTextColor) || NAVY
+  const glow = colorToRgba(hoverColor || boldColor || ACCENT, 0.45)
   const pad = String(index + 1).padStart(2, '0')
   const totalPad = String(total).padStart(2, '0')
   const isMobile = variant === 'mobile'
@@ -221,14 +255,21 @@ function PrestacionCard({
     <article
       className={cn(
         'layout2-drop-card flex h-full w-full flex-col items-center rounded-2xl text-center shadow-[0_8px_32px_rgba(16,24,53,0.08)]',
+        'origin-center transition-[transform,filter] duration-300 ease-out will-change-transform',
+        'hover:z-10 hover:scale-[1.06]',
         isMobile ? 'px-6 py-10' : 'px-5 py-7',
       )}
-      style={{ backgroundColor: cardBg }}
+      style={
+        {
+          backgroundColor: cardBg,
+          ['--l2d-hover-glow' as string]: glow,
+        } as React.CSSProperties
+      }
     >
       <div
         className={cn(
           'flex items-center justify-center rounded-full',
-          isMobile ? 'mb-5 h-24 w-24' : 'mb-3.5 h-14 w-14',
+          isMobile ? 'mb-5 h-28 w-28' : 'mb-4 h-[4.25rem] w-[4.25rem]',
         )}
         style={{ backgroundColor: iconBg }}
       >
@@ -236,9 +277,9 @@ function PrestacionCard({
           icon={item.icon}
           className={cn(
             'text-[var(--l2d-accent,#a1004a)] [&_svg]:h-full [&_svg]:w-full [&_svg]:text-current',
-            isMobile ? 'h-12 w-12' : 'h-7 w-7',
+            isMobile ? 'h-14 w-14' : 'h-9 w-9',
           )}
-          imgClassName={isMobile ? 'h-12 w-12' : 'h-7 w-7'}
+          imgClassName={isMobile ? 'h-14 w-14' : 'h-9 w-9'}
         />
       </div>
 
@@ -278,6 +319,9 @@ export const Layout2DropBlock: React.FC<Layout2DropBlockType> = (props) => {
     textColorSecondary,
     boldTextColor,
     prestaciones,
+    applyCustomWidth,
+    customWidthPercent,
+    customWidthPercentMobile,
   } = props
 
   const uniqueId = React.useId().replace(/:/g, '-')
@@ -288,6 +332,25 @@ export const Layout2DropBlock: React.FC<Layout2DropBlockType> = (props) => {
   const primaryColor = sanitizeCssColor(textColorPrimary) || NAVY
   const secondaryColor = sanitizeCssColor(textColorSecondary) || SECONDARY
   const boldColor = sanitizeCssColor(boldTextColor) || ACCENT
+
+  const l2dCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
+  const l2dCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(
+    applyCustomWidth,
+    customWidthPercentMobile,
+  )
+  const l2dBreakoutCss =
+    l2dCustomWidthVw != null && l2dCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, l2dCustomWidthVw, l2dCustomWidthMobileVw)
+      : ''
 
   const items = Array.isArray(prestaciones)
     ? prestaciones.filter((p) => hasRichText(p?.content) || p?.icon).slice(0, 6)
@@ -339,7 +402,7 @@ export const Layout2DropBlock: React.FC<Layout2DropBlockType> = (props) => {
     <section
       id={sectionId}
       data-layout2-drop={styleId}
-      className="layout2-drop relative w-full overflow-hidden"
+      className="layout2-drop relative w-full overflow-visible"
       style={
         {
           backgroundColor: blockBg,
@@ -414,32 +477,79 @@ export const Layout2DropBlock: React.FC<Layout2DropBlockType> = (props) => {
         [data-layout2-drop="${styleId}"] .layout2-drop-card-content .payload-richtext b {
           font-weight: 700;
         }
+        [data-layout2-drop="${styleId}"] .layout2-drop-card:hover {
+          filter: drop-shadow(0 0 18px var(--l2d-hover-glow, rgba(161, 0, 74, 0.45)));
+        }
         /* Desktop: cards compactas, filas centradas → margen lateral amplio */
         [data-layout2-drop="${styleId}"] .layout2-drop-desktop-grid {
           width: 100%;
           max-width: 990px;
           margin-inline: auto;
+          overflow: visible;
         }
         [data-layout2-drop="${styleId}"] .layout2-drop-desktop-row {
           display: flex;
           flex-wrap: nowrap;
           justify-content: center;
+          align-items: stretch;
           gap: 1.35rem;
           width: 100%;
+          overflow: visible;
         }
         [data-layout2-drop="${styleId}"] .layout2-drop-desktop-row > .layout2-drop-card {
           flex: 0 0 310px;
           width: 310px;
           max-width: 310px;
+          height: auto;
+          align-self: stretch;
+        }
+        /* Con ancho personalizado: las cards llenan el ancho del contenedor */
+        [data-layout2-drop="${styleId}"] .layout2-drop-desktop-grid.layout2-drop-desktop-grid--fluid {
+          max-width: none;
+        }
+        [data-layout2-drop="${styleId}"] .layout2-drop-desktop-grid--fluid .layout2-drop-desktop-row > .layout2-drop-card {
+          flex: 1 1 0;
+          width: auto;
+          min-width: 0;
+          max-width: none;
+        }
+        /* Filas incompletas: mismo ancho de columna que en filas de 3, centradas */
+        [data-layout2-drop="${styleId}"] .layout2-drop-desktop-grid--fluid .layout2-drop-desktop-row[data-cols="1"] > .layout2-drop-card,
+        [data-layout2-drop="${styleId}"] .layout2-drop-desktop-grid--fluid .layout2-drop-desktop-row[data-cols="2"] > .layout2-drop-card {
+          flex: 0 1 calc((100% - 2 * 1.35rem) / 3);
+          max-width: calc((100% - 2 * 1.35rem) / 3);
         }
         @media (min-width: 1024px) {
           [data-layout2-drop="${styleId}"] .layout2-drop-desktop-row {
             gap: 1.5rem;
           }
+          [data-layout2-drop="${styleId}"] .layout2-drop-desktop-grid--fluid .layout2-drop-desktop-row[data-cols="1"] > .layout2-drop-card,
+          [data-layout2-drop="${styleId}"] .layout2-drop-desktop-grid--fluid .layout2-drop-desktop-row[data-cols="2"] > .layout2-drop-card {
+            flex: 0 1 calc((100% - 2 * 1.5rem) / 3);
+            max-width: calc((100% - 2 * 1.5rem) / 3);
+          }
         }
+        ${l2dBreakoutCss}
       `}</style>
 
-      <div className="relative mx-auto w-full max-w-5xl px-7 py-14 sm:px-10 sm:py-16 lg:px-12 lg:py-20">
+      <div
+        className={cn(
+          'relative min-w-0 py-14 sm:py-16 lg:py-20',
+          l2dCustomWidthVw == null
+            ? 'mx-auto w-full max-w-5xl px-7 sm:px-10 lg:px-12'
+            : 'box-border w-full max-w-none overflow-x-visible px-0',
+        )}
+        {...(l2dCustomWidthVw != null && l2dCustomWidthMobileVw != null
+          ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+          : {})}
+        style={
+          l2dCustomWidthVw == null
+            ? undefined
+            : l2dCustomWidthMobileVw != null
+              ? sendaBreakoutOnlyBoxSizing()
+              : sendaCalcBreakoutInlineStyle(l2dCustomWidthVw)
+        }
+      >
         {/* Header */}
         <div className="mx-auto mb-10 flex max-w-3xl flex-col items-center sm:mb-14">
           {hasRichText(mainContent) ? (
@@ -471,7 +581,12 @@ export const Layout2DropBlock: React.FC<Layout2DropBlockType> = (props) => {
 
         {/* Desktop: filas de 3 cards compactas, centradas */}
         {items.length > 0 ? (
-          <div className="layout2-drop-desktop-grid hidden md:flex md:flex-col md:gap-5 lg:gap-6">
+          <div
+            className={cn(
+              'layout2-drop-desktop-grid hidden md:flex md:flex-col md:gap-5 lg:gap-6',
+              l2dCustomWidthVw != null && 'layout2-drop-desktop-grid--fluid',
+            )}
+          >
             {desktopRows.map((row, rowIndex) => (
               <div
                 key={`row-${rowIndex}`}
@@ -487,6 +602,7 @@ export const Layout2DropBlock: React.FC<Layout2DropBlockType> = (props) => {
                       index={index}
                       total={items.length}
                       variant="desktop"
+                      hoverColor={boldColor}
                     />
                   )
                 })}
@@ -510,6 +626,7 @@ export const Layout2DropBlock: React.FC<Layout2DropBlockType> = (props) => {
                 total={items.length}
                 showIndexBadge
                 variant="mobile"
+                hoverColor={boldColor}
               />
             </div>
 

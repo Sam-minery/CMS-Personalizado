@@ -14,76 +14,79 @@
 #     - Invierno (CET, UTC+1):  2 AM Madrid  ← lo deseado
 #     - Verano (CEST, UTC+2):   3 AM Madrid  ← inevitable, sigue siendo madrugada
 
-name: Reconcile leads → Google Sheets (SENDA)
 
-on:
-  schedule:
-    - cron: '0 1 * * *'
-  workflow_dispatch:
 
-concurrency:
-  group: reconcile-leads-senda
-  cancel-in-progress: false
-
-jobs:
-  reconcile:
-    name: Hit reconcile endpoint
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Validate required secrets
-        env:
-          SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL_SENDA }}
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
-        run: |
-          set -e
-          if [ -z "$SERVER_URL" ]; then
-            echo "::error::Missing GitHub secret: NEXT_PUBLIC_SERVER_URL_SENDA"
-            exit 1
-          fi
-          if [ -z "$CRON_SECRET" ]; then
-            echo "::error::Missing GitHub secret: CRON_SECRET"
-            exit 1
-          fi
-
-      - name: Call /api/sync/leads-formulario-reconcile
-        env:
-          SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL_SENDA }}
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
-        run: |
-          set -e
-
-          # Normaliza la URL: quita trailing slash si existe.
-          BASE_URL="${SERVER_URL%/}"
-          ENDPOINT="${BASE_URL}/api/sync/leads-formulario-reconcile"
-
-          echo "Calling: ${ENDPOINT}"
-
-          # -fsS: fail on HTTP error, silent progress, show errors
-          # -w  : appendea metadata al final del body para parsearla
-          response=$(curl -sS \
-            -X POST "${ENDPOINT}" \
-            -H "Authorization: Bearer ${CRON_SECRET}" \
-            -H "Content-Type: application/json" \
-            -w "\n---HTTP_STATUS:%{http_code}---")
-
-          # Extrae el código HTTP del marker que añadió -w
-          status=$(echo "$response" | grep -oE "HTTP_STATUS:[0-9]+" | cut -d: -f2)
-          body=$(echo "$response" | sed '/---HTTP_STATUS:/d')
-
-          echo "Response body:"
-          echo "$body"
-          echo "HTTP status: $status"
-
-          if [ "$status" != "200" ]; then
-            echo "::error::Reconcile endpoint returned HTTP $status"
-            exit 1
-          fi
-
-          # Validación adicional: el body debe contener "success":true
-          if ! echo "$body" | grep -q '"success":true'; then
-            echo "::error::Reconcile endpoint did not return success:true"
-            exit 1
-          fi
-
-          echo "::notice::Reconcile completed successfully"
+# Activar abajo para leads
+#name: Reconcile leads → Google Sheets (SENDA)
+#
+#on:
+#  schedule:
+#    - cron: '0 1 * * *'
+#  workflow_dispatch:
+#
+#concurrency:
+#  group: reconcile-leads-senda
+#  cancel-in-progress: false
+#
+#jobs:
+#  reconcile:
+#    name: Hit reconcile endpoint
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 5
+#    steps:
+#      - name: Validate required secrets
+#        env:
+#          SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL_SENDA }}
+#          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+#        run: |
+#          set -e
+#          if [ -z "$SERVER_URL" ]; then
+#            echo "::error::Missing GitHub secret: NEXT_PUBLIC_SERVER_URL_SENDA"
+#            exit 1
+#          fi
+#          if [ -z "$CRON_SECRET" ]; then
+#            echo "::error::Missing GitHub secret: CRON_SECRET"
+#            exit 1
+#          fi
+#
+#      - name: Call /api/sync/leads-formulario-reconcile
+#        env:
+#          SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL_SENDA }}
+#          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+#        run: |
+#          set -e
+#
+#          # Normaliza la URL: quita trailing slash si existe.
+#          BASE_URL="${SERVER_URL%/}"
+#          ENDPOINT="${BASE_URL}/api/sync/leads-formulario-reconcile"
+#
+#          echo "Calling: ${ENDPOINT}"
+#
+#          # -fsS: fail on HTTP error, silent progress, show errors
+#          # -w  : appendea metadata al final del body para parsearla
+#          response=$(curl -sS \
+#            -X POST "${ENDPOINT}" \
+#            -H "Authorization: Bearer ${CRON_SECRET}" \
+#            -H "Content-Type: application/json" \
+#            -w "\n---HTTP_STATUS:%{http_code}---")
+#
+#          # Extrae el código HTTP del marker que añadió -w
+#          status=$(echo "$response" | grep -oE "HTTP_STATUS:[0-9]+" | cut -d: -f2)
+#          body=$(echo "$response" | sed '/---HTTP_STATUS:/d')
+#
+#          echo "Response body:"
+#          echo "$body"
+#          echo "HTTP status: $status"
+#
+#          if [ "$status" != "200" ]; then
+#            echo "::error::Reconcile endpoint returned HTTP $status"
+#            exit 1
+#          fi
+#
+#          # Validación adicional: el body debe contener "success":true
+#          if ! echo "$body" | grep -q '"success":true'; then
+#            echo "::error::Reconcile endpoint did not return success:true"
+#            exit 1
+#          fi
+#
+#          echo "::notice::Reconcile completed successfully"

@@ -3093,6 +3093,18 @@ export interface Layout2DropBlock {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'layout2Drop';
@@ -3636,6 +3648,18 @@ export interface PricingDropBlock {
   useCustomFont?: boolean | null;
   customFontFile?: (number | null) | Font;
   customFontName?: string | null;
+  /**
+   * Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo y la decoración siguen a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'pricingDrop';
@@ -3774,6 +3798,18 @@ export interface FAQDropBlock {
   useCustomFont?: boolean | null;
   customFontFile?: (number | null) | Font;
   customFontName?: string | null;
+  /**
+   * Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'faqDrop';
@@ -5345,6 +5381,9 @@ export interface Layout2DropBlockSelect<T extends boolean = true> {
         iconBackgroundColor?: T;
         id?: T;
       };
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   id?: T;
   blockName?: T;
 }
@@ -5509,6 +5548,9 @@ export interface PricingDropBlockSelect<T extends boolean = true> {
   useCustomFont?: T;
   customFontFile?: T;
   customFontName?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   id?: T;
   blockName?: T;
 }
@@ -5546,6 +5588,9 @@ export interface FAQDropBlockSelect<T extends boolean = true> {
   useCustomFont?: T;
   customFontFile?: T;
   customFontName?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   id?: T;
   blockName?: T;
 }
