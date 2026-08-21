@@ -304,6 +304,17 @@ export const LayoutDropBlock: Block = {
           },
         },
         {
+          name: 'hoverColor',
+          type: 'text',
+          label: 'Color de hover y círculos de iconos',
+          defaultValue: '#E91E63',
+          admin: {
+            description:
+              'Color del resplandor al pasar el ratón sobre las cards y del círculo de fondo de los iconos.',
+            placeholder: '#E91E63',
+          },
+        },
+        {
           name: 'shadow',
           type: 'select',
           label: 'Sombra de las cards',

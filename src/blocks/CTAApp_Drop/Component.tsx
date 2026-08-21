@@ -132,6 +132,7 @@ export type CTAAppDropBlockProps = {
   downloadCard?: DownloadCard | null
   backgroundColor?: string | null
   showDecorativeSvgs?: boolean | null
+  decorativeSvgColor?: string | null
   enableMockupScrollAnimation?: boolean | null
   mockupScrollShowPercent?: number | null
   applyCustomWidth?: boolean | null
@@ -194,9 +195,16 @@ function PlusSvg({ className }: { className?: string }) {
   )
 }
 
-function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }) {
+function DecorativeBackground({
+  reduceMotion,
+  color,
+}: {
+  reduceMotion: boolean | null
+  color: string
+}) {
   const [isDesktop, setIsDesktop] = React.useState(false)
   const canAnimate = Boolean(isDesktop && !reduceMotion)
+  const washed = `color-mix(in srgb, ${color} 45%, white)`
 
   React.useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)')
@@ -216,7 +224,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
   return (
     <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden>
       <motion.svg
-        className="absolute -right-14 top-[18%] h-[250px] w-[250px] text-[#D4B8E8] opacity-40 md:h-[330px] md:w-[330px]"
+        className="absolute -right-14 top-[18%] h-[250px] w-[250px] opacity-40 md:h-[330px] md:w-[330px]"
+        style={{ color: washed }}
         viewBox="0 0 200 200"
         fill="none"
         animate={canAnimate ? { rotate: [0, -7, 0], opacity: [0.24, 0.4, 0.24] } : undefined}
@@ -245,7 +254,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.svg>
 
       <motion.span
-        className="absolute left-[8%] top-[14%] text-[#C2005F]"
+        className="absolute left-[8%] top-[14%]"
+        style={{ color }}
         animate={
           canAnimate
             ? { y: [0, -9, 0], opacity: [0.3, 0.74, 0.3], scale: [0.92, 1.1, 0.92] }
@@ -257,7 +267,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute right-[10%] top-[16%] text-[#C2005F]"
+        className="absolute right-[10%] top-[16%]"
+        style={{ color }}
         animate={
           canAnimate
             ? {
@@ -274,7 +285,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute bottom-[22%] left-[16%] text-[#C2005F]"
+        className="absolute bottom-[22%] left-[16%]"
+        style={{ color }}
         animate={
           canAnimate
             ? { y: [0, -8, 0], opacity: [0.26, 0.68, 0.26], scale: [0.94, 1.08, 0.94] }
@@ -286,7 +298,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute bottom-[28%] right-[14%] text-[#C2005F]"
+        className="absolute bottom-[28%] right-[14%]"
+        style={{ color }}
         animate={
           canAnimate
             ? {
@@ -303,7 +316,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute left-[5%] top-[50%] text-[#C2005F]"
+        className="absolute left-[5%] top-[50%]"
+        style={{ color }}
         animate={
           canAnimate
             ? { y: [0, -6, 0], opacity: [0.2, 0.52, 0.2], scale: [0.95, 1.08, 0.95] }
@@ -315,7 +329,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute right-[6%] top-[54%] text-[#C2005F]"
+        className="absolute right-[6%] top-[54%]"
+        style={{ color }}
         animate={
           canAnimate
             ? { y: [0, -7, 0], opacity: [0.2, 0.5, 0.2], scale: [0.94, 1.1, 0.94] }
@@ -327,7 +342,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute right-[22%] top-[10%] text-[#C2005F]"
+        className="absolute right-[22%] top-[10%]"
+        style={{ color }}
         animate={
           canAnimate
             ? { y: [0, -5, 0], opacity: [0.18, 0.48, 0.18], scale: [0.96, 1.06, 0.96] }
@@ -795,6 +811,7 @@ export const CTAAppDropBlock: React.FC<CTAAppDropBlockProps> = (props) => {
     downloadCard,
     backgroundColor,
     showDecorativeSvgs,
+    decorativeSvgColor,
     enableMockupScrollAnimation,
     mockupScrollShowPercent,
     applyCustomWidth,
@@ -818,6 +835,7 @@ export const CTAAppDropBlock: React.FC<CTAAppDropBlockProps> = (props) => {
     : []
 
   const bg = sanitizeCssColor(backgroundColor, '#FFFFFF')
+  const decorativeColor = sanitizeCssColor(decorativeSvgColor, ACCENT)
   const checkColor = sanitizeCssColor(featuresStyle?.checkColor, CHECK_GREEN)
   const sectionId = sanitizeAnchorId(anchorId)
   const mockupSrc = getMediaUrlSafe(mockupImage)
@@ -966,7 +984,9 @@ export const CTAAppDropBlock: React.FC<CTAAppDropBlockProps> = (props) => {
       style={{ backgroundColor: bg }}
     >
       {allBlockStyles ? <style dangerouslySetInnerHTML={{ __html: allBlockStyles }} /> : null}
-      {showDecor && <DecorativeBackground reduceMotion={reduceMotion} />}
+      {showDecor && (
+        <DecorativeBackground reduceMotion={reduceMotion} color={decorativeColor} />
+      )}
 
       <div
         className={cn(

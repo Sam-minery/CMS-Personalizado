@@ -319,7 +319,13 @@ export interface Page {
           alt?: string | null;
         };
         label?: string | null;
+        /**
+         * También se aplica al fondo de los iconos (features, footer y calculadora).
+         */
         backgroundColor?: string | null;
+        /**
+         * También se aplica al borde del círculo de los iconos, si tienen borde.
+         */
         textColor?: string | null;
       };
       /**
@@ -1462,6 +1468,10 @@ export interface LayoutDropBlock {
      */
     borderColor?: string | null;
     /**
+     * Color del resplandor al pasar el ratón sobre las cards y del círculo de fondo de los iconos.
+     */
+    hoverColor?: string | null;
+    /**
      * Intensidad de la sombra aplicada a las cards.
      */
     shadow?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
@@ -2274,11 +2284,34 @@ export interface CalculadoraIMCDropBlock {
   notEligibleButtonColor?: string | null;
   notEligibleButtonTextColor?: string | null;
   backgroundColor?: string | null;
+  /**
+   * Se usa si “Color de fondo categoría” está vacío.
+   */
   tableHeaderBackgroundColor?: string | null;
+  /**
+   * Color de la cabecera de la tabla. Las filas alternan blanco y una versión más lavada de este color. Las líneas SVG decorativas usan este color y los círculos, una versión más lavada.
+   */
+  categoryBackgroundColor?: string | null;
+  /**
+   * Líneas y círculos alrededor de la imagen. Desactívalo para ocultarlos.
+   */
+  showDecorativeSvg?: boolean | null;
   tableCardBackgroundColor?: string | null;
   tagBackgroundColor?: string | null;
   tagTextColor?: string | null;
   accentColor?: string | null;
+  /**
+   * Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'calculadoraIMCDrop';
@@ -2357,7 +2390,13 @@ export interface LayoutCTADropBlock {
     | {
         tag?: {
           label?: string | null;
+          /**
+           * También se aplica al fondo de los iconos, de las flechas entre pasos y al resplandor de la card al agrandarse.
+           */
           backgroundColor?: string | null;
+          /**
+           * También se aplica al borde de los iconos y al color de las flechas entre pasos.
+           */
           textColor?: string | null;
         };
         image?: (number | null) | Media;
@@ -2471,6 +2510,22 @@ export interface LayoutCTADropBlock {
    * Activa o desactiva las estrellas, arcos y cruces animadas del fondo.
    */
   showDecorativeSvgs?: boolean | null;
+  /**
+   * Color de estrellas, arcos y cruces del fondo.
+   */
+  decorativeSvgColor?: string | null;
+  /**
+   * Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'layoutCTADrop';
@@ -2684,9 +2739,29 @@ export interface TeamDropBlock {
   };
   backgroundColor?: string | null;
   /**
+   * Color del punto sobre las fotos y del SVG divisor. El círculo degradado detrás de las imágenes usa una versión más clara de este color.
+   */
+  accentColor?: string | null;
+  /**
    * Activa o desactiva los arcos y destellos animados del fondo.
    */
   showDecorativeSvgs?: boolean | null;
+  /**
+   * Color de arcos, destellos y cruces del fondo.
+   */
+  decorativeSvgColor?: string | null;
+  /**
+   * Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
+   */
+  applyCustomWidth?: boolean | null;
+  /**
+   * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+   */
+  customWidthPercent?: number | null;
+  /**
+   * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+   */
+  customWidthPercentMobile?: number | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'teamDrop';
@@ -2954,6 +3029,10 @@ export interface CTAAppDropBlock {
    * Activa o desactiva los arcos, destellos y cruces del fondo (estilo Drop). La animación solo se reproduce en escritorio; en móvil se muestran fijos.
    */
   showDecorativeSvgs?: boolean | null;
+  /**
+   * Color de arcos, destellos y cruces del fondo.
+   */
+  decorativeSvgColor?: string | null;
   /**
    * Si está activo, en escritorio la imagen de la mano sube a medida que aparece el bloque y baja si se vuelve a subir. En móvil la imagen siempre es fija.
    */
@@ -4760,6 +4839,7 @@ export interface LayoutDropBlockSelect<T extends boolean = true> {
     | T
     | {
         borderColor?: T;
+        hoverColor?: T;
         shadow?: T;
         textColor?: T;
         boldTextColor?: T;
@@ -5064,10 +5144,15 @@ export interface CalculadoraIMCDropBlockSelect<T extends boolean = true> {
   notEligibleButtonTextColor?: T;
   backgroundColor?: T;
   tableHeaderBackgroundColor?: T;
+  categoryBackgroundColor?: T;
+  showDecorativeSvg?: T;
   tableCardBackgroundColor?: T;
   tagBackgroundColor?: T;
   tagTextColor?: T;
   accentColor?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   id?: T;
   blockName?: T;
 }
@@ -5143,6 +5228,10 @@ export interface LayoutCTADropBlockSelect<T extends boolean = true> {
   buttonTextColor?: T;
   backgroundColor?: T;
   showDecorativeSvgs?: T;
+  decorativeSvgColor?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   id?: T;
   blockName?: T;
 }
@@ -5206,7 +5295,12 @@ export interface TeamDropBlockSelect<T extends boolean = true> {
         customFontName?: T;
       };
   backgroundColor?: T;
+  accentColor?: T;
   showDecorativeSvgs?: T;
+  decorativeSvgColor?: T;
+  applyCustomWidth?: T;
+  customWidthPercent?: T;
+  customWidthPercentMobile?: T;
   id?: T;
   blockName?: T;
 }
@@ -5307,6 +5401,7 @@ export interface CTAAppDropBlockSelect<T extends boolean = true> {
       };
   backgroundColor?: T;
   showDecorativeSvgs?: T;
+  decorativeSvgColor?: T;
   enableMockupScrollAnimation?: T;
   mockupScrollShowPercent?: T;
   applyCustomWidth?: T;

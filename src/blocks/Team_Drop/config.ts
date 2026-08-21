@@ -300,12 +300,69 @@ export const TeamDropBlock: Block = {
       },
     },
     {
+      name: 'accentColor',
+      type: 'text',
+      label: 'Color de círculo, punto y separador',
+      defaultValue: '#C2005F',
+      admin: {
+        placeholder: '#C2005F',
+        description:
+          'Color del punto sobre las fotos y del SVG divisor. El círculo degradado detrás de las imágenes usa una versión más clara de este color.',
+      },
+    },
+    {
       name: 'showDecorativeSvgs',
       type: 'checkbox',
       label: 'Mostrar SVGs decorativos',
       defaultValue: true,
       admin: {
         description: 'Activa o desactiva los arcos y destellos animados del fondo.',
+      },
+    },
+    {
+      name: 'decorativeSvgColor',
+      type: 'text',
+      label: 'Color de los SVGs decorativos',
+      defaultValue: '#C2005F',
+      admin: {
+        placeholder: '#C2005F',
+        description: 'Color de arcos, destellos y cruces del fondo.',
+        condition: (_, siblingData) => siblingData?.showDecorativeSvgs !== false,
+      },
+    },
+    {
+      name: 'applyCustomWidth',
+      type: 'checkbox',
+      label: 'Aplicar ancho personalizado',
+      defaultValue: false,
+      admin: {
+        description:
+          'Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.',
+      },
+    },
+    {
+      name: 'customWidthPercent',
+      type: 'number',
+      label: 'Ancho respecto a la pantalla (%)',
+      min: 0,
+      max: 100,
+      defaultValue: 100,
+      admin: {
+        condition: (_, siblingData) => siblingData?.applyCustomWidth === true,
+        description:
+          '0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.',
+      },
+    },
+    {
+      name: 'customWidthPercentMobile',
+      type: 'number',
+      label: 'Ancho personalizado (dispositivos móvil)',
+      min: 0,
+      max: 100,
+      admin: {
+        condition: (_, siblingData) => siblingData?.applyCustomWidth === true,
+        description:
+          'Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.',
       },
     },
   ],

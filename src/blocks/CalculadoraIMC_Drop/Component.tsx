@@ -22,6 +22,13 @@ import {
 } from '@/utilities/fontGroupRichTextCss'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
 
@@ -161,10 +168,15 @@ export type CalculadoraIMCDropBlockProps = {
   notEligibleButtonTextColor?: string | null
   backgroundColor?: string | null
   tableHeaderBackgroundColor?: string | null
+  categoryBackgroundColor?: string | null
+  showDecorativeSvg?: boolean | null
   tableCardBackgroundColor?: string | null
   tagBackgroundColor?: string | null
   tagTextColor?: string | null
   accentColor?: string | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
 }
 
 type ModalStep = 'calc' | 'contact' | 'result'
@@ -617,10 +629,15 @@ export const CalculadoraIMCDropBlock: React.FC<CalculadoraIMCDropBlockProps> = (
     notEligibleButtonTextColor,
     backgroundColor,
     tableHeaderBackgroundColor,
+    categoryBackgroundColor,
+    showDecorativeSvg,
     tableCardBackgroundColor,
     tagBackgroundColor,
     tagTextColor,
     accentColor,
+    applyCustomWidth,
+    customWidthPercent,
+    customWidthPercentMobile,
   } = props
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -646,6 +663,10 @@ export const CalculadoraIMCDropBlock: React.FC<CalculadoraIMCDropBlockProps> = (
   const accent = sanitizeCssColor(accentColor, ACCENT)
   const bg = sanitizeCssColor(backgroundColor, '#FFFFFF')
   const tableHeaderBg = sanitizeCssColor(tableHeaderBackgroundColor, '#FDF2F7')
+  const categoryBg = sanitizeCssColor(categoryBackgroundColor, tableHeaderBg)
+  const categoryBgWashed = `color-mix(in srgb, ${categoryBg} 42%, white)`
+  const categorySvg = `color-mix(in srgb, ${categoryBg} 58%, ${accent})`
+  const categorySvgWashed = `color-mix(in srgb, ${categoryBg} 75%, ${accent})`
   const tableCardBg = sanitizeCssColor(tableCardBackgroundColor, '#FFFFFF')
   const tagBg = sanitizeCssColor(tagBackgroundColor, '#E7F6EA')
   const tagFg = sanitizeCssColor(tagTextColor, '#2F8F46')
@@ -843,7 +864,7 @@ export const CalculadoraIMCDropBlock: React.FC<CalculadoraIMCDropBlockProps> = (
     >
       <div
         className="grid grid-cols-2 items-center px-4 py-3.5 sm:px-6 sm:py-4"
-        style={{ backgroundColor: tableHeaderBg }}
+        style={{ backgroundColor: categoryBg }}
       >
         <div
           className="flex min-w-0 items-center gap-2 pr-3 text-[15px] font-bold tracking-tight sm:pr-4"
@@ -851,8 +872,8 @@ export const CalculadoraIMCDropBlock: React.FC<CalculadoraIMCDropBlockProps> = (
         >
           <IconMedia
             icon={categoryHeaderIcon}
-            className="h-5 w-5 shrink-0 text-[color:var(--imc-drop-accent)] [&_svg]:text-[color:var(--imc-drop-accent)]"
-            imgClassName="h-5 w-5"
+            className="h-7 w-7 shrink-0 text-[color:var(--imc-drop-accent)] [&_svg]:text-[color:var(--imc-drop-accent)] sm:h-8 sm:w-8"
+            imgClassName="h-7 w-7 sm:h-8 sm:w-8"
           />
           <span className="truncate">{categoryHeaderLabel || 'Categoría'}</span>
         </div>
@@ -863,8 +884,8 @@ export const CalculadoraIMCDropBlock: React.FC<CalculadoraIMCDropBlockProps> = (
           <div className="flex flex-1 items-center justify-center gap-2">
             <IconMedia
               icon={imcHeaderIcon}
-              className="h-5 w-5 shrink-0 text-[color:var(--imc-drop-accent)] [&_svg]:text-[color:var(--imc-drop-accent)]"
-              imgClassName="h-5 w-5"
+              className="h-7 w-7 shrink-0 text-[color:var(--imc-drop-accent)] [&_svg]:text-[color:var(--imc-drop-accent)] sm:h-8 sm:w-8"
+              imgClassName="h-7 w-7 sm:h-8 sm:w-8"
             />
             <span>{imcHeaderLabel || 'IMC'}</span>
           </div>
@@ -877,12 +898,12 @@ export const CalculadoraIMCDropBlock: React.FC<CalculadoraIMCDropBlockProps> = (
           const tagIcon = row.tagIconSVG?.trim()
             ? sanitizeSVG(row.tagIconSVG)
             : DEFAULT_CHECK_SVG
-          const zebra = idx % 2 === 1
+          const rowBg = idx % 2 === 1 ? categoryBgWashed : tableCardBg
           return (
             <li
               key={row.id || idx}
               className="grid grid-cols-2 items-center border-t border-[#F3EEF1] px-4 py-3 sm:px-6 sm:py-3.5"
-              style={{ backgroundColor: zebra ? 'rgba(252, 232, 240, 0.35)' : 'transparent' }}
+              style={{ backgroundColor: rowBg }}
             >
               <div className="flex min-w-0 items-center gap-2.5 pr-3 sm:gap-3 sm:pr-4">
                 <IconMedia
@@ -941,30 +962,31 @@ export const CalculadoraIMCDropBlock: React.FC<CalculadoraIMCDropBlockProps> = (
         }}
         aria-hidden
       />
-      {/* Arco decorativo punteado (gira lentamente) */}
-      <div
-        className="pointer-events-none absolute left-1/2 top-[6%] h-[90%] w-[98%] max-w-[500px] -translate-x-1/2"
-        aria-hidden
-      >
-        <svg
-          className="imc-drop-orbit h-full w-full opacity-50"
-          viewBox="0 0 400 400"
-          fill="none"
+      {showDecorativeSvg !== false ? (
+        <div
+          className="pointer-events-none absolute left-1/2 top-[6%] h-[90%] w-[98%] max-w-[500px] -translate-x-1/2"
+          aria-hidden
         >
-          <circle
-            cx="200"
-            cy="200"
-            r="168"
-            stroke={accent}
-            strokeWidth="1.25"
-            strokeDasharray="3 10"
-            opacity="0.45"
-          />
-          <circle cx="48" cy="118" r="3.5" fill={accent} opacity="0.55" />
-          <circle cx="340" cy="96" r="2.5" fill={accent} opacity="0.4" />
-          <circle cx="356" cy="230" r="3" fill={accent} opacity="0.35" />
-        </svg>
-      </div>
+          <svg
+            className="imc-drop-orbit h-full w-full"
+            viewBox="0 0 400 400"
+            fill="none"
+          >
+            <circle
+              cx="200"
+              cy="200"
+              r="168"
+              stroke={categorySvg}
+              strokeWidth="1.5"
+              strokeDasharray="3 10"
+              opacity="0.95"
+            />
+            <circle cx="48" cy="118" r="3.5" fill={categorySvgWashed} />
+            <circle cx="340" cy="96" r="2.5" fill={categorySvgWashed} opacity="0.9" />
+            <circle cx="356" cy="230" r="3" fill={categorySvgWashed} opacity="0.8" />
+          </svg>
+        </div>
+      ) : null}
       {imageSrc ? (
         <div className="relative z-[1] w-full max-w-[340px] lg:max-w-[390px]">
           <img
@@ -1007,6 +1029,25 @@ export const CalculadoraIMCDropBlock: React.FC<CalculadoraIMCDropBlockProps> = (
     </button>
   )
 
+  const layoutCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
+  const layoutCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(
+    applyCustomWidth,
+    customWidthPercentMobile,
+  )
+  const layoutBreakoutCss =
+    layoutCustomWidthVw != null && layoutCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(uniqueId, layoutCustomWidthVw, layoutCustomWidthMobileVw)
+      : ''
+
   return (
     <>
       <style>{`${headerCss.css}
@@ -1044,11 +1085,16 @@ ${rootSel} .imc-drop-image-cut {
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-}`}</style>
+}
+${layoutBreakoutCss}`}</style>
       <section
         id={sectionId}
         data-imc-drop-font={uniqueId}
-        className="relative overflow-hidden px-4 py-16 sm:px-6 sm:py-20 lg:py-24"
+        className={cn(
+          'relative py-16 sm:py-20 lg:py-24',
+          layoutCustomWidthVw == null && 'overflow-hidden px-4 sm:px-6',
+          layoutCustomWidthVw != null && 'overflow-x-visible px-0',
+        )}
         style={
           {
             backgroundColor: bg,
@@ -1056,29 +1102,24 @@ ${rootSel} .imc-drop-image-cut {
           } as React.CSSProperties
         }
       >
-        {/* Decoración de fondo (círculos suaves + arcos) */}
         <div
-          className="pointer-events-none absolute -left-28 -top-16 h-[420px] w-[420px] rounded-full opacity-70 blur-2xl"
-          style={{
-            background: `radial-gradient(circle, ${accent}22 0%, ${accent}10 40%, transparent 70%)`,
-          }}
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute -right-24 top-24 h-[380px] w-[380px] rounded-full opacity-60 blur-2xl"
-          style={{
-            background: `radial-gradient(circle, #B8A0F022 0%, ${accent}14 45%, transparent 70%)`,
-          }}
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute bottom-0 left-1/3 h-[280px] w-[280px] rounded-full opacity-50 blur-3xl"
-          style={{
-            background: `radial-gradient(circle, ${accent}18 0%, transparent 70%)`,
-          }}
-          aria-hidden
-        />
-        <div className="relative z-[1] mx-auto flex w-full max-w-[1120px] flex-col items-center">
+          className={cn(
+            'relative z-[1] flex w-full flex-col items-center',
+            layoutCustomWidthVw == null
+              ? 'mx-auto max-w-[1120px]'
+              : 'box-border max-w-none overflow-x-visible px-0',
+          )}
+          {...(layoutCustomWidthVw != null && layoutCustomWidthMobileVw != null
+            ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: uniqueId }
+            : {})}
+          style={
+            layoutCustomWidthVw == null
+              ? undefined
+              : layoutCustomWidthMobileVw != null
+                ? sendaBreakoutOnlyBoxSizing()
+                : sendaCalcBreakoutInlineStyle(layoutCustomWidthVw)
+          }
+        >
           {headerContent ? (
             <div
               className={cn(

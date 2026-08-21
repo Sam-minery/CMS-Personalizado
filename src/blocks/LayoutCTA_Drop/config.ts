@@ -260,14 +260,24 @@ export const LayoutCTADropBlock: Block = {
                   type: 'text',
                   label: 'Color de fondo',
                   defaultValue: '#FCE4EC',
-                  admin: { width: '50%', placeholder: '#FCE4EC' },
+                  admin: {
+                    width: '50%',
+                    placeholder: '#FCE4EC',
+                    description:
+                      'También se aplica al fondo de los iconos, de las flechas entre pasos y al resplandor de la card al agrandarse.',
+                  },
                 },
                 {
                   name: 'textColor',
                   type: 'text',
                   label: 'Color de texto',
                   defaultValue: '#C2005F',
-                  admin: { width: '50%', placeholder: '#C2005F' },
+                  admin: {
+                    width: '50%',
+                    placeholder: '#C2005F',
+                    description:
+                      'También se aplica al borde de los iconos y al color de las flechas entre pasos.',
+                  },
                 },
               ],
             },
@@ -361,6 +371,52 @@ export const LayoutCTADropBlock: Block = {
       defaultValue: true,
       admin: {
         description: 'Activa o desactiva las estrellas, arcos y cruces animadas del fondo.',
+      },
+    },
+    {
+      name: 'decorativeSvgColor',
+      type: 'text',
+      label: 'Color de los SVGs decorativos',
+      defaultValue: '#C2005F',
+      admin: {
+        placeholder: '#C2005F',
+        description: 'Color de estrellas, arcos y cruces del fondo.',
+        condition: (_, siblingData) => siblingData?.showDecorativeSvgs !== false,
+      },
+    },
+    {
+      name: 'applyCustomWidth',
+      type: 'checkbox',
+      label: 'Aplicar ancho personalizado',
+      defaultValue: false,
+      admin: {
+        description:
+          'Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.',
+      },
+    },
+    {
+      name: 'customWidthPercent',
+      type: 'number',
+      label: 'Ancho respecto a la pantalla (%)',
+      min: 0,
+      max: 100,
+      defaultValue: 100,
+      admin: {
+        condition: (_, siblingData) => siblingData?.applyCustomWidth === true,
+        description:
+          '0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.',
+      },
+    },
+    {
+      name: 'customWidthPercentMobile',
+      type: 'number',
+      label: 'Ancho personalizado (dispositivos móvil)',
+      min: 0,
+      max: 100,
+      admin: {
+        condition: (_, siblingData) => siblingData?.applyCustomWidth === true,
+        description:
+          'Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.',
       },
     },
   ],

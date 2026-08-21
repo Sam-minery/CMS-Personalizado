@@ -590,7 +590,7 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
         <span
           className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
           style={{
-            backgroundColor: `color-mix(in srgb, ${accent} 12%, white)`,
+            backgroundColor: tagBg,
             color: accent,
           }}
         >
@@ -846,9 +846,10 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
                 {features.map((item, index) => (
                   <div key={item.id || `desk-feat-${index}`} className="flex flex-col gap-2.5">
                     <span
-                      className="inline-flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border bg-transparent p-0"
+                      className="inline-flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border p-0"
                       style={{
-                        borderColor: `color-mix(in srgb, ${accent} 45%, white)`,
+                        backgroundColor: tagBg,
+                        borderColor: tagText,
                         color: accent,
                       }}
                     >
@@ -1006,7 +1007,7 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
                     <span
                       className="inline-flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full p-0"
                       style={{
-                        backgroundColor: `color-mix(in srgb, ${accent} 12%, white)`,
+                        backgroundColor: tagBg,
                         color: accent,
                       }}
                     >
@@ -1044,7 +1045,7 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
                   <span
                     className="inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full p-0 lg:h-12 lg:w-12"
                     style={{
-                      backgroundColor: `color-mix(in srgb, ${accent} 12%, white)`,
+                      backgroundColor: tagBg,
                       color: accent,
                     }}
                   >

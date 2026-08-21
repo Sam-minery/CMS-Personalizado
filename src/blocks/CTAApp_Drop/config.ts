@@ -436,6 +436,17 @@ export const CTAAppDropBlock: Block = {
       },
     },
     {
+      name: 'decorativeSvgColor',
+      type: 'text',
+      label: 'Color de los SVGs decorativos',
+      defaultValue: '#C2005F',
+      admin: {
+        placeholder: '#C2005F',
+        description: 'Color de arcos, destellos y cruces del fondo.',
+        condition: (_, siblingData) => siblingData?.showDecorativeSvgs !== false,
+      },
+    },
+    {
       name: 'enableMockupScrollAnimation',
       type: 'checkbox',
       label: 'Animar mockup al hacer scroll (solo escritorio)',

@@ -22,6 +22,13 @@ import {
 } from '@/utilities/fontGroupRichTextCss'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
 
@@ -113,16 +120,17 @@ export type LayoutCTADropBlockProps = {
   buttonTextColor?: string | null
   backgroundColor?: string | null
   showDecorativeSvgs?: boolean | null
+  decorativeSvgColor?: string | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
 }
 
 const ACCENT = '#C2005F'
 const NAVY = '#101835'
 const TAG_BG = '#FCE4EC'
-const ICON_BORDER = '#FCE8EF'
 const DOT_INACTIVE = '#F8BBD0'
-const CONNECTOR_BORDER = '#E5E7EB'
 const CARD_SHADOW = '0 10px 32px rgba(16, 24, 53, 0.08)'
-const CARD_SHADOW_ACTIVE = '0 16px 40px rgba(194, 0, 95, 0.14)'
 const DESKTOP_SCALE_ACTIVE = 1.07
 const DESKTOP_CYCLE_MS = 4200
 const DESKTOP_INTRO_STEP_MS = 1450
@@ -153,18 +161,26 @@ function SparkleSvg({ className }: { className?: string }) {
   )
 }
 
-function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }) {
+function DecorativeBackground({
+  reduceMotion,
+  color,
+}: {
+  reduceMotion: boolean | null
+  color: string
+}) {
   const loop = (duration: number, delay = 0) => ({
     duration,
     repeat: Infinity,
     ease: 'easeInOut' as const,
     delay,
   })
+  const washed = `color-mix(in srgb, ${color} 45%, white)`
 
   return (
     <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
       <motion.svg
-        className="absolute -left-10 top-[12%] h-[220px] w-[220px] text-[#E8B4D0] opacity-40 md:h-[300px] md:w-[300px]"
+        className="absolute -left-10 top-[12%] h-[220px] w-[220px] opacity-40 md:h-[300px] md:w-[300px]"
+        style={{ color: washed }}
         viewBox="0 0 200 200"
         fill="none"
         animate={reduceMotion ? undefined : { rotate: [0, 6, 0], opacity: [0.28, 0.45, 0.28] }}
@@ -175,7 +191,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.svg>
 
       <motion.svg
-        className="absolute -right-12 top-[22%] h-[240px] w-[240px] text-[#D4B8E8] opacity-40 md:h-[320px] md:w-[320px]"
+        className="absolute -right-12 top-[22%] h-[240px] w-[240px] opacity-40 md:h-[320px] md:w-[320px]"
+        style={{ color: washed }}
         viewBox="0 0 200 200"
         fill="none"
         animate={reduceMotion ? undefined : { rotate: [0, -8, 0], opacity: [0.25, 0.42, 0.25] }}
@@ -186,7 +203,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.svg>
 
       <motion.span
-        className="absolute left-[7%] top-[16%] text-[#C2005F]"
+        className="absolute left-[7%] top-[16%]"
+        style={{ color }}
         animate={
           reduceMotion
             ? undefined
@@ -198,7 +216,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute right-[9%] top-[18%] text-[#C2005F]"
+        className="absolute right-[9%] top-[18%]"
+        style={{ color }}
         animate={
           reduceMotion
             ? undefined
@@ -215,7 +234,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute bottom-[20%] left-[14%] text-[#C2005F]"
+        className="absolute bottom-[20%] left-[14%]"
+        style={{ color }}
         animate={
           reduceMotion
             ? undefined
@@ -227,7 +247,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute bottom-[26%] right-[16%] text-[#C2005F]"
+        className="absolute bottom-[26%] right-[16%]"
+        style={{ color }}
         animate={
           reduceMotion
             ? undefined
@@ -244,7 +265,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute left-[4%] top-[48%] text-[#C2005F]"
+        className="absolute left-[4%] top-[48%]"
+        style={{ color }}
         animate={
           reduceMotion
             ? undefined
@@ -256,7 +278,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute right-[5%] top-[52%] text-[#C2005F]"
+        className="absolute right-[5%] top-[52%]"
+        style={{ color }}
         animate={
           reduceMotion
             ? undefined
@@ -268,7 +291,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.svg
-        className="absolute bottom-[14%] right-[8%] h-5 w-5 text-[#E8B4D0] md:h-6 md:w-6"
+        className="absolute bottom-[14%] right-[8%] h-5 w-5 md:h-6 md:w-6"
+        style={{ color: washed }}
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -280,7 +304,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.svg>
 
       <motion.svg
-        className="absolute bottom-[32%] left-[10%] h-4 w-4 text-[#D4B8E8]"
+        className="absolute bottom-[32%] left-[10%] h-4 w-4"
+        style={{ color: washed }}
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -631,6 +656,7 @@ function StepCard({
   const tagLabel = step.tag?.label?.trim() || `Paso ${String(index + 1).padStart(2, '0')}`
   const tagBg = sanitizeCssColor(step.tag?.backgroundColor, TAG_BG)
   const tagFg = sanitizeCssColor(step.tag?.textColor, ACCENT)
+  const iconBorder = `color-mix(in srgb, ${tagFg} 32%, white)`
   const isMobile = variant === 'mobile'
   const reduceMotion = useReducedMotion()
 
@@ -661,8 +687,8 @@ function StepCard({
           )}
 
           <div
-            className="lcta-drop-step-icon absolute bottom-0 left-1/2 z-[60] flex h-12 w-12 -translate-x-1/2 translate-y-1/2 items-center justify-center rounded-full border-2 bg-white shadow-sm"
-            style={{ borderColor: ICON_BORDER, color: ACCENT }}
+            className="lcta-drop-step-icon absolute bottom-0 left-1/2 z-[60] flex h-12 w-12 -translate-x-1/2 translate-y-1/2 items-center justify-center rounded-full border-2 shadow-sm"
+            style={{ backgroundColor: tagBg, borderColor: iconBorder, color: ACCENT }}
           >
             <IconMedia icon={step.icon} className="h-6 w-6" imgClassName="h-6 w-6" />
           </div>
@@ -689,7 +715,11 @@ function StepCard({
   return (
     <article
       className="relative flex h-full min-w-0 flex-col rounded-[20px] bg-white transition-[box-shadow] duration-300"
-      style={{ boxShadow: isActive ? CARD_SHADOW_ACTIVE : CARD_SHADOW }}
+      style={{
+        boxShadow: isActive
+          ? `0 16px 44px color-mix(in srgb, ${tagBg} 85%, transparent), 0 0 32px ${tagBg}`
+          : CARD_SHADOW,
+      }}
     >
       <div className="relative w-full px-3.5 pt-3.5">
         {/* Contenedor de la imagen: el icono se ancla al 50/50 del borde inferior */}
@@ -711,8 +741,8 @@ function StepCard({
           </div>
 
           <motion.div
-            className="lcta-drop-step-icon absolute z-20 flex h-[52px] w-[52px] items-center justify-center rounded-full border-[2.5px] bg-white shadow-[0_2px_8px_rgba(16,24,53,0.08)]"
-            style={{ borderColor: ICON_BORDER, color: ACCENT, top: '100%' }}
+            className="lcta-drop-step-icon absolute z-20 flex h-[52px] w-[52px] items-center justify-center rounded-full border-[2.5px] shadow-[0_2px_8px_rgba(16,24,53,0.08)]"
+            style={{ backgroundColor: tagBg, borderColor: iconBorder, color: ACCENT, top: '100%' }}
             initial={false}
             animate={{
               left: isActive ? '50%' : '18%',
@@ -756,14 +786,26 @@ function StepCard({
   )
 }
 
-function Connector({ className }: { className?: string }) {
+function Connector({
+  className,
+  backgroundColor,
+  color,
+}: {
+  className?: string
+  backgroundColor: string
+  color: string
+}) {
   return (
     <div
       className={cn(
-        'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border bg-white shadow-[0_2px_10px_rgba(16,24,53,0.12)]',
+        'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border shadow-[0_2px_10px_rgba(16,24,53,0.12)]',
         className,
       )}
-      style={{ borderColor: CONNECTOR_BORDER, color: ACCENT }}
+      style={{
+        backgroundColor,
+        borderColor: `color-mix(in srgb, ${color} 32%, white)`,
+        color,
+      }}
       aria-hidden
     >
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -785,6 +827,10 @@ export const LayoutCTADropBlock: React.FC<LayoutCTADropBlockProps> = (props) => 
     buttonTextColor,
     backgroundColor,
     showDecorativeSvgs,
+    decorativeSvgColor,
+    applyCustomWidth,
+    customWidthPercent,
+    customWidthPercentMobile,
   } = props
 
   const reactId = useId().replace(/:/g, '').toLowerCase()
@@ -798,6 +844,7 @@ export const LayoutCTADropBlock: React.FC<LayoutCTADropBlockProps> = (props) => 
   const bg = sanitizeCssColor(backgroundColor, '#FFFFFF')
   const btnBg = sanitizeCssColor(buttonBackgroundColor, ACCENT)
   const btnFg = sanitizeCssColor(buttonTextColor, '#FFFFFF')
+  const decorativeColor = sanitizeCssColor(decorativeSvgColor, ACCENT)
   const sectionId = sanitizeAnchorId(anchorId)
 
   const headerCss = buildSectionFontCss(rootSel, 'lcta-drop-header', headerStyle, {
@@ -919,11 +966,35 @@ export const LayoutCTADropBlock: React.FC<LayoutCTADropBlockProps> = (props) => 
         transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
       }
 
+  const styleId = `lcta-drop-${reactId}`
+  const layoutCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
+  const layoutCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(
+    applyCustomWidth,
+    customWidthPercentMobile,
+  )
+  const layoutBreakoutCss =
+    layoutCustomWidthVw != null && layoutCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, layoutCustomWidthVw, layoutCustomWidthMobileVw)
+      : ''
+
   return (
     <section
       id={sectionId}
       {...{ [rootAttr]: '' }}
-      className="relative overflow-x-visible py-14 md:overflow-x-clip md:py-24"
+      className={cn(
+        'relative py-14 md:py-24',
+        layoutCustomWidthVw == null && 'overflow-x-visible md:overflow-x-clip',
+        layoutCustomWidthVw != null && 'overflow-x-visible',
+      )}
       style={{ backgroundColor: bg }}
     >
       <style>{`
@@ -999,13 +1070,31 @@ export const LayoutCTADropBlock: React.FC<LayoutCTADropBlockProps> = (props) => 
         @media (prefers-reduced-motion: reduce) {
           ${rootSel} .lcta-drop-carousel { scroll-behavior: auto; }
         }
+        ${layoutBreakoutCss}
       `}</style>
 
       {showDecorativeSvgs !== false && (
-        <DecorativeBackground reduceMotion={reduceMotion} />
+        <DecorativeBackground reduceMotion={reduceMotion} color={decorativeColor} />
       )}
 
-      <div className="relative z-[1] mx-auto w-full max-w-[1320px] px-3 sm:px-5 lg:px-6 md:overflow-visible overflow-x-visible">
+      <div
+        className={cn(
+          'relative z-[1] w-full overflow-x-visible md:overflow-visible',
+          layoutCustomWidthVw == null
+            ? 'mx-auto max-w-[1320px] px-3 sm:px-5 lg:px-6'
+            : 'box-border max-w-none px-0',
+        )}
+        {...(layoutCustomWidthVw != null && layoutCustomWidthMobileVw != null
+          ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+          : {})}
+        style={
+          layoutCustomWidthVw == null
+            ? undefined
+            : layoutCustomWidthMobileVw != null
+              ? sendaBreakoutOnlyBoxSizing()
+              : sendaCalcBreakoutInlineStyle(layoutCustomWidthVw)
+        }
+      >
         {headerContent && (
           <motion.div
             className="mx-auto mb-10 max-w-[720px] text-center md:mb-16"
@@ -1138,7 +1227,14 @@ export const LayoutCTADropBlock: React.FC<LayoutCTADropBlockProps> = (props) => 
                         scale: { duration: 0.7, ease: DESKTOP_INTRO_EASE, delay: 0.15 },
                       }}
                     >
-                      <Connector className="mx-auto" />
+                      <Connector
+                        className="mx-auto"
+                        backgroundColor={sanitizeCssColor(
+                          visibleSteps[leftIdx]?.tag?.backgroundColor,
+                          TAG_BG,
+                        )}
+                        color={sanitizeCssColor(visibleSteps[leftIdx]?.tag?.textColor, ACCENT)}
+                      />
                     </motion.div>
                   )
                 })}

@@ -20,6 +20,13 @@ import {
 } from '@/utilities/fontGroupRichTextCss'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 import { cn } from '@/utilities/ui'
 
@@ -87,7 +94,12 @@ export type TeamDropBlockProps = {
   members?: MemberItem[] | null
   membersStyle?: SectionTypography | null
   backgroundColor?: string | null
+  accentColor?: string | null
   showDecorativeSvgs?: boolean | null
+  decorativeSvgColor?: string | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
 }
 
 const ACCENT = '#C2005F'
@@ -99,11 +111,11 @@ const CARD_SHADOW = '0 10px 32px rgba(16, 24, 53, 0.08)'
 
 const DEFAULT_DIVIDER_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 16" fill="none" aria-hidden="true">
-  <line x1="0" y1="8" x2="48" y2="8" stroke="${ACCENT}" stroke-width="1.5" stroke-linecap="round"/>
-  <circle cx="54" cy="8" r="1.5" fill="${ACCENT}"/>
-  <circle cx="60" cy="8" r="3.5" fill="${ACCENT}"/>
-  <circle cx="66" cy="8" r="1.5" fill="${ACCENT}"/>
-  <line x1="72" y1="8" x2="120" y2="8" stroke="${ACCENT}" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="0" y1="8" x2="48" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="54" cy="8" r="1.5" fill="currentColor"/>
+  <circle cx="60" cy="8" r="3.5" fill="currentColor"/>
+  <circle cx="66" cy="8" r="1.5" fill="currentColor"/>
+  <line x1="72" y1="8" x2="120" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
 </svg>
 `.trim()
 
@@ -134,19 +146,27 @@ function PlusSvg({ className }: { className?: string }) {
   )
 }
 
-function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }) {
+function DecorativeBackground({
+  reduceMotion,
+  color,
+}: {
+  reduceMotion: boolean | null
+  color: string
+}) {
   const loop = (duration: number, delay = 0) => ({
     duration,
     repeat: Infinity,
     ease: 'easeInOut' as const,
     delay,
   })
+  const washed = `color-mix(in srgb, ${color} 45%, white)`
 
   return (
     <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
       {/* Arcos abiertos izquierdos */}
       <motion.svg
-        className="absolute -left-14 top-[6%] h-[240px] w-[240px] text-[#E8B4D0] opacity-40 md:h-[320px] md:w-[320px]"
+        className="absolute -left-14 top-[6%] h-[240px] w-[240px] opacity-40 md:h-[320px] md:w-[320px]"
+        style={{ color: washed }}
         viewBox="0 0 200 200"
         fill="none"
         animate={reduceMotion ? undefined : { rotate: [0, 5, 0], opacity: [0.28, 0.45, 0.28] }}
@@ -176,7 +196,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
 
       {/* Arcos abiertos derechos */}
       <motion.svg
-        className="absolute -right-16 top-[14%] h-[260px] w-[260px] text-[#D4B8E8] opacity-40 md:h-[340px] md:w-[340px]"
+        className="absolute -right-16 top-[14%] h-[260px] w-[260px] opacity-40 md:h-[340px] md:w-[340px]"
+        style={{ color: washed }}
         viewBox="0 0 200 200"
         fill="none"
         animate={reduceMotion ? undefined : { rotate: [0, -6, 0], opacity: [0.25, 0.42, 0.25] }}
@@ -206,7 +227,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
 
       {/* Curva suave inferior izquierda */}
       <motion.svg
-        className="absolute -left-6 bottom-[10%] h-[140px] w-[180px] text-[#E8B4D0] opacity-35 md:h-[180px] md:w-[220px]"
+        className="absolute -left-6 bottom-[10%] h-[140px] w-[180px] opacity-35 md:h-[180px] md:w-[220px]"
+        style={{ color: washed }}
         viewBox="0 0 180 120"
         fill="none"
         animate={reduceMotion ? undefined : { y: [0, -6, 0], opacity: [0.22, 0.38, 0.22] }}
@@ -228,7 +250,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.svg>
 
       <motion.span
-        className="absolute left-[9%] top-[13%] text-[#C2005F]"
+        className="absolute left-[9%] top-[13%]"
+        style={{ color }}
         animate={
           reduceMotion
             ? undefined
@@ -240,7 +263,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute right-[11%] top-[15%] text-[#C2005F]"
+        className="absolute right-[11%] top-[15%]"
+        style={{ color }}
         animate={
           reduceMotion
             ? undefined
@@ -257,7 +281,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute bottom-[20%] left-[14%] text-[#C2005F]"
+        className="absolute bottom-[20%] left-[14%]"
+        style={{ color }}
         animate={
           reduceMotion
             ? undefined
@@ -269,7 +294,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute bottom-[24%] right-[13%] text-[#C2005F]"
+        className="absolute bottom-[24%] right-[13%]"
+        style={{ color }}
         animate={
           reduceMotion
             ? undefined
@@ -286,7 +312,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute right-[6%] top-[48%] text-[#C2005F]"
+        className="absolute right-[6%] top-[48%]"
+        style={{ color }}
         animate={
           reduceMotion
             ? undefined
@@ -298,7 +325,8 @@ function DecorativeBackground({ reduceMotion }: { reduceMotion: boolean | null }
       </motion.span>
 
       <motion.span
-        className="absolute left-[5%] top-[46%] text-[#C2005F]"
+        className="absolute left-[5%] top-[46%]"
+        style={{ color }}
         animate={
           reduceMotion
             ? undefined
@@ -640,12 +668,16 @@ function MemberCard({
   total,
   variant,
   membersFontGroupActive,
+  accentColor,
+  glowColor,
 }: {
   member: MemberItem
   index: number
   total: number
   variant: 'desktop' | 'mobile'
   membersFontGroupActive: boolean
+  accentColor: string
+  glowColor: string
 }) {
   const imageSrc = getMediaUrlSafe(member.image)
   const imageAlt =
@@ -653,6 +685,7 @@ function MemberCard({
       ? member.image.alt || `Miembro ${index + 1}`
       : `Miembro ${index + 1}`
   const counter = `${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`
+  const glowGradient = `radial-gradient(ellipse 72% 68% at 62% 46%, ${glowColor} 0%, ${glowColor} 55%, color-mix(in srgb, ${glowColor} 40%, transparent) 78%, transparent 100%)`
 
   if (variant === 'mobile') {
     return (
@@ -668,7 +701,7 @@ function MemberCard({
           <span
             className="pointer-events-none absolute left-[6%] top-[-2%] z-0 h-[104%] w-[108%] rounded-[46%_54%_48%_52%]"
             style={{
-              background: `radial-gradient(ellipse 72% 68% at 62% 46%, ${GLOW} 0%, ${GLOW} 55%, rgba(249, 239, 248, 0.4) 78%, transparent 100%)`,
+              background: glowGradient,
             }}
             aria-hidden
           />
@@ -716,13 +749,13 @@ function MemberCard({
         <span
           className="absolute -right-[8%] top-[8%] z-0 h-[88%] w-[108%] rounded-[46%_54%_48%_52%]"
           style={{
-            background: `radial-gradient(ellipse 72% 68% at 62% 46%, ${GLOW} 0%, ${GLOW} 55%, rgba(249, 239, 248, 0.4) 78%, transparent 100%)`,
+            background: glowGradient,
           }}
           aria-hidden
         />
         <span
           className="absolute right-[8%] top-[19%] z-[2] h-2.5 w-2.5 rounded-full border-2 border-white"
-          style={{ backgroundColor: '#EA0B7C' }}
+          style={{ backgroundColor: accentColor }}
           aria-hidden
         />
         {imageSrc ? (
@@ -766,7 +799,12 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
     members,
     membersStyle,
     backgroundColor,
+    accentColor,
     showDecorativeSvgs,
+    decorativeSvgColor,
+    applyCustomWidth,
+    customWidthPercent,
+    customWidthPercentMobile,
   } = props
 
   const reactId = useId().replace(/:/g, '').toLowerCase()
@@ -776,6 +814,9 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
 
   const membersList = Array.isArray(members) ? members.slice(0, 6) : []
   const bg = sanitizeCssColor(backgroundColor, '#FFFFFF')
+  const accent = sanitizeCssColor(accentColor, ACCENT)
+  const glow = `color-mix(in srgb, ${accent} 16%, white)`
+  const decorativeColor = sanitizeCssColor(decorativeSvgColor, ACCENT)
   const sectionId = sanitizeAnchorId(anchorId)
 
   const headerCss = buildSectionFontCss(rootSel, 'team-drop-header', headerStyle, {
@@ -839,11 +880,35 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
         transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
       }
 
+  const styleId = `team-drop-${reactId}`
+  const layoutCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
+  const layoutCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(
+    applyCustomWidth,
+    customWidthPercentMobile,
+  )
+  const layoutBreakoutCss =
+    layoutCustomWidthVw != null && layoutCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, layoutCustomWidthVw, layoutCustomWidthMobileVw)
+      : ''
+
   return (
     <section
       id={sectionId}
       {...{ [rootAttr]: '' }}
-      className="relative overflow-x-clip py-14 md:py-24"
+      className={cn(
+        'relative py-14 md:py-24',
+        layoutCustomWidthVw == null && 'overflow-x-clip',
+        layoutCustomWidthVw != null && 'overflow-x-visible',
+      )}
       style={{ backgroundColor: bg }}
     >
       <style>{`
@@ -909,13 +974,31 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
         @media (prefers-reduced-motion: reduce) {
           ${rootSel} .team-drop-carousel { scroll-behavior: auto; }
         }
+        ${layoutBreakoutCss}
       `}</style>
 
       {showDecorativeSvgs !== false && (
-        <DecorativeBackground reduceMotion={reduceMotion} />
+        <DecorativeBackground reduceMotion={reduceMotion} color={decorativeColor} />
       )}
 
-      <div className="relative z-[1] mx-auto w-full max-w-[1320px] px-4 sm:px-5 lg:px-6">
+      <div
+        className={cn(
+          'relative z-[1] w-full',
+          layoutCustomWidthVw == null
+            ? 'mx-auto max-w-[1320px] px-4 sm:px-5 lg:px-6'
+            : 'box-border max-w-none overflow-x-visible px-0',
+        )}
+        {...(layoutCustomWidthVw != null && layoutCustomWidthMobileVw != null
+          ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+          : {})}
+        style={
+          layoutCustomWidthVw == null
+            ? undefined
+            : layoutCustomWidthMobileVw != null
+              ? sendaBreakoutOnlyBoxSizing()
+              : sendaCalcBreakoutInlineStyle(layoutCustomWidthVw)
+        }
+      >
         <motion.div
           className="mx-auto mb-10 max-w-[720px] text-center md:mb-14"
           {...(fadeUp || {})}
@@ -934,10 +1017,10 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
             </div>
           )}
 
-          <div className="mx-auto mt-4 flex justify-center md:mt-5">
+          <div className="mx-auto mt-4 flex justify-center md:mt-5" style={{ color: accent }}>
             <IconMedia
               icon={dividerIcon}
-              className="h-4 w-[120px] text-[#C2005F]"
+              className="h-4 w-[120px]"
               imgClassName="h-4 w-auto"
               fallbackSvg={DEFAULT_DIVIDER_SVG}
             />
@@ -987,6 +1070,8 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
                   total={membersList.length}
                   variant="desktop"
                   membersFontGroupActive={membersCss.fontGroupActive}
+                  accentColor={accent}
+                  glowColor={glow}
                 />
               ))}
             </div>
@@ -1043,6 +1128,8 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
                       total={membersList.length}
                       variant="mobile"
                       membersFontGroupActive={membersCss.fontGroupActive}
+                      accentColor={accent}
+                      glowColor={glow}
                     />
                   </div>
                 ))}

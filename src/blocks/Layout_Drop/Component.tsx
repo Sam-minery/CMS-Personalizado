@@ -74,6 +74,7 @@ type ShadowLevel = 'none' | 'sm' | 'md' | 'lg' | 'xl'
 
 type ElementsStyle = SectionTypography & {
   borderColor?: string | null
+  hoverColor?: string | null
   shadow?: ShadowLevel | null
   /** @deprecated usar `shadow` */
   enableShadow?: boolean | null
@@ -615,6 +616,9 @@ export const LayoutDropBlock: React.FC<LayoutDropBlockType> = (props) => {
 
   const cardsBorderColor =
     sanitizeCssColor(elementsStyle?.borderColor) || '#e5e7eb'
+  const hoverColor = sanitizeCssColor(elementsStyle?.hoverColor) || '#e91e63'
+  const iconCircleBg = `color-mix(in srgb, ${hoverColor} 8%, white)`
+  const formIconCircleBg = `color-mix(in srgb, ${hoverColor} 10%, white)`
   const formBorderColor =
     sanitizeCssColor(contactForm?.borderColor) || '#e5e7eb'
   const cardsShadowStyle = resolveShadowStyle(
@@ -672,12 +676,18 @@ export const LayoutDropBlock: React.FC<LayoutDropBlockType> = (props) => {
       ? buildSendaCalcBreakoutResponsiveCss(styleId, layoutCustomWidthVw, layoutCustomWidthMobileVw)
       : ''
 
+  const hoverCss = [
+    `${rootSel} .layout-drop-card { filter: drop-shadow(0 0 18px rgb(from ${hoverColor} r g b / 0)); }`,
+    `${rootSel} .layout-drop-card:hover { filter: drop-shadow(0 0 18px rgb(from ${hoverColor} r g b / 0.45)); }`,
+  ].join('\n')
+
   const allBlockStyles = [
     headerCss.css,
     elementsCss.css,
     formCss.css,
     privacyCss.css,
     layoutBreakoutCss,
+    hoverCss,
   ]
     .filter(Boolean)
     .join('\n')
@@ -920,11 +930,11 @@ export const LayoutDropBlock: React.FC<LayoutDropBlockType> = (props) => {
                     <div
                       key={element.id || index}
                       className={cn(
-                        'flex min-w-0 overflow-hidden rounded-2xl border-2 bg-white',
+                        'layout-drop-card flex min-w-0 overflow-hidden rounded-2xl border-2 bg-white',
                         'flex-col items-center justify-center gap-3 px-3 py-5 text-center sm:gap-4 sm:px-4 sm:py-6',
                         'lg:min-h-[240px] lg:gap-5 lg:px-4 lg:py-12',
                         'origin-center transition-[transform,filter] duration-300 ease-out will-change-transform',
-                        'hover:z-10 hover:scale-[1.06] hover:drop-shadow-[0_0_18px_rgba(233,30,99,0.45)]',
+                        'hover:z-10 hover:scale-[1.06]',
                       )}
                       style={{
                         borderColor: cardsBorderColor,
@@ -936,7 +946,7 @@ export const LayoutDropBlock: React.FC<LayoutDropBlockType> = (props) => {
                           'flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center rounded-full sm:h-[5.5rem] sm:w-[5.5rem]',
                           'lg:h-[6.5rem] lg:w-[6.5rem]',
                         )}
-                        style={{ backgroundColor: 'rgba(233, 30, 99, 0.08)' }}
+                        style={{ backgroundColor: iconCircleBg }}
                       >
                         <IconMedia
                           icon={element.icon}
@@ -973,7 +983,7 @@ export const LayoutDropBlock: React.FC<LayoutDropBlockType> = (props) => {
                   <div className="mb-6 flex items-start gap-3 sm:mb-8">
                     <div
                       className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full"
-                      style={{ backgroundColor: 'rgba(233, 30, 99, 0.1)' }}
+                      style={{ backgroundColor: formIconCircleBg }}
                     >
                       <IconMedia
                         icon={contactForm?.icon}

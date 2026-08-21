@@ -826,7 +826,31 @@ export const CalculadoraIMCDropBlock: Block = {
           type: 'text',
           label: 'Color fondo cabecera tabla',
           defaultValue: '#FDF2F7',
-          admin: { placeholder: '#FDF2F7' },
+          admin: {
+            placeholder: '#FDF2F7',
+            description:
+              'Se usa si “Color de fondo categoría” está vacío.',
+          },
+        },
+        {
+          name: 'categoryBackgroundColor',
+          type: 'text',
+          label: 'Color de fondo categoría',
+          defaultValue: '#FDF2F7',
+          admin: {
+            placeholder: '#FDF2F7',
+            description:
+              'Color de la cabecera de la tabla. Las filas alternan blanco y una versión más lavada de este color. Las líneas SVG decorativas usan este color y los círculos, una versión más lavada.',
+          },
+        },
+        {
+          name: 'showDecorativeSvg',
+          type: 'checkbox',
+          label: 'Mostrar SVG decorativos',
+          defaultValue: true,
+          admin: {
+            description: 'Líneas y círculos alrededor de la imagen. Desactívalo para ocultarlos.',
+          },
         },
         {
           name: 'tableCardBackgroundColor',
@@ -852,11 +876,46 @@ export const CalculadoraIMCDropBlock: Block = {
         {
           name: 'accentColor',
           type: 'text',
-          label: 'Color acento (iconos / blobs)',
+          label: 'Color acento (iconos)',
           defaultValue: '#C2005F',
           admin: { placeholder: '#C2005F' },
         },
       ],
+    },
+    {
+      name: 'applyCustomWidth',
+      type: 'checkbox',
+      label: 'Aplicar ancho personalizado',
+      defaultValue: false,
+      admin: {
+        description:
+          'Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.',
+      },
+    },
+    {
+      name: 'customWidthPercent',
+      type: 'number',
+      label: 'Ancho respecto a la pantalla (%)',
+      min: 0,
+      max: 100,
+      defaultValue: 100,
+      admin: {
+        condition: (_, siblingData) => siblingData?.applyCustomWidth === true,
+        description:
+          '0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.',
+      },
+    },
+    {
+      name: 'customWidthPercentMobile',
+      type: 'number',
+      label: 'Ancho personalizado (dispositivos móvil)',
+      min: 0,
+      max: 100,
+      admin: {
+        condition: (_, siblingData) => siblingData?.applyCustomWidth === true,
+        description:
+          'Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.',
+      },
     },
   ],
 }
