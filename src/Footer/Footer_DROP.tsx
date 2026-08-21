@@ -431,7 +431,7 @@ export const Footer_DROP: React.FC<FooterDropProps> = (props) => {
   return (
     <footer
       data-footer-drop={uniqueId}
-      className="footer-drop relative mt-auto overflow-hidden min-[992px]:rounded-t-[2.5rem] min-[992px]:shadow-[0_-8px_32px_rgba(16,24,53,0.06)]"
+      className="footer-drop relative mx-4 mt-auto mb-5 overflow-hidden rounded-[2.5rem] shadow-[0_8px_32px_rgba(16,24,53,0.08)] min-[992px]:mx-6 min-[992px]:mb-6"
       style={
         {
           backgroundColor: bg,
@@ -443,7 +443,7 @@ export const Footer_DROP: React.FC<FooterDropProps> = (props) => {
     >
       {/* ── Desktop ─────────────────────────────────────────── */}
       <div className="hidden min-[992px]:block">
-        <div className="flex min-h-[5.5rem] items-stretch px-8 py-5 lg:px-12">
+        <div className="flex min-h-[8rem] items-stretch px-8 py-8 lg:px-12 lg:py-10">
           <div className="flex shrink-0 items-center gap-5 pr-6 lg:gap-6 lg:pr-8">
             {showPrimary ? (
               <FooterAction
@@ -475,9 +475,7 @@ export const Footer_DROP: React.FC<FooterDropProps> = (props) => {
             ) : null}
           </div>
 
-          <div className="mx-4 w-px shrink-0 self-stretch" style={{ backgroundColor: DIVIDER }} aria-hidden />
-
-          <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-2.5 px-4">
+          <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-5 px-4">
             {nav.length > 0 ? (
               <nav className="flex flex-wrap items-center justify-center" aria-label="Navegación">
                 {nav.map((item, index) => (
@@ -526,7 +524,7 @@ export const Footer_DROP: React.FC<FooterDropProps> = (props) => {
 
         {hasRichText(footerText) ? (
           <div
-            className="footer-drop-richtext border-t px-8 py-3 text-center text-[11px] leading-relaxed [&_a]:underline [&_p]:m-0"
+            className="footer-drop-richtext border-t px-8 py-4 text-center text-[11px] leading-relaxed [&_a]:underline [&_p]:m-0"
             style={{ color: primary, borderColor: DIVIDER }}
           >
             <RichText data={footerText!} enableGutter={false} enableProse={false} />

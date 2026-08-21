@@ -49,7 +49,6 @@ function colorWithAlpha(color: string, alpha: number): string {
   return `color-mix(in srgb, ${safe} ${Math.round(alpha * 100)}%, transparent)`
 }
 
-/** Mezcla hacia blanco o negro. amount 0–1. */
 function mixTone(color: string, amount: number, toward: 'white' | 'black' = 'white'): string {
   const rgb = parseRgb(color)
   if (!rgb) return sanitizeCssColor(color)
@@ -80,7 +79,6 @@ type Palette = {
   mid: string
   strong: string
   stroke: string
-  strokeSoft: string
   node: string
   nodeSoft: string
 }
@@ -98,286 +96,88 @@ function buildPalette(backgroundColor: string, accentColor?: string): Palette {
     mid: colorWithAlpha(accent, 0.18),
     strong: colorWithAlpha(deep, 0.26),
     stroke: colorWithAlpha(deep, 0.7),
-    strokeSoft: colorWithAlpha(accent, 0.45),
     node: deep,
     nodeSoft: colorWithAlpha(accent, 0.75),
   }
 }
 
-const LAYER_SPEEDS = { slow: 0.92, mid: 0.82, fast: 0.7, waves: 0.97 } as const
+const LAYER_SPEEDS = { slow: 0.94, mid: 0.86, fast: 0.76, waves: 0.97 } as const
+
+/** Misma estrella 4 puntas que Pricing_DROP / estilo DROP. */
+const SPARKLE_PATH =
+  'M12 1.1c.38 4.55 2.95 7.12 7.5 7.5-4.55.38-7.12 2.95-7.5 7.5-.38-4.55-2.95-7.12-7.5-7.5 4.55-.38 7.12-2.95 7.5-7.5Z'
 
 type ScatterItem =
   | {
-      kind: 'circle'
+      kind: 'sparkle'
       x: number
       y: number
-      r: number
-      fill: keyof Pick<Palette, 'soft' | 'softMid' | 'mid' | 'strong'>
-      blur?: number
+      size: number
+      opacity: number
     }
   | {
-      kind: 'blob'
-      d: string
+      kind: 'orbit'
       x: number
       y: number
-      w: number
-      h: number
-      fill: keyof Pick<Palette, 'soft' | 'softMid' | 'mid' | 'strong'>
-      blur?: number
+      size: number
+      opacity: number
+      dash?: string
+      strokeWidth?: number
       rotate?: number
     }
-  | {
-      kind: 'arc'
-      d: string
-      x: number
-      y: number
-      w: number
-      h: number
-      stroke: keyof Pick<Palette, 'stroke' | 'strokeSoft'>
-      width?: number
-      nodes?: Array<{ cx: number; cy: number; r: number }>
-    }
 
-/**
- * Elementos únicos repartidos por la altura (yFrac 0–1 en página corta).
- * En páginas largas se recolocan por bandas de viewport con offsets distintos
- * (sin espejo ni franja idéntica).
- */
+/** Catálogo con tamaños/opacidades ya distintos; al expandir se varían más por banda. */
 const SCATTER_SLOW: ScatterItem[] = [
-  { kind: 'circle', x: -4, y: 0.06, r: 14, fill: 'soft', blur: 28 },
-  { kind: 'circle', x: 92, y: 0.12, r: 18, fill: 'softMid', blur: 22 },
-  { kind: 'circle', x: 86, y: 0.28, r: 11, fill: 'soft', blur: 18 },
-  { kind: 'circle', x: -6, y: 0.42, r: 16, fill: 'mid', blur: 26 },
-  { kind: 'circle', x: 96, y: 0.55, r: 13, fill: 'soft', blur: 20 },
-  { kind: 'circle', x: 8, y: 0.68, r: 16, fill: 'softMid', blur: 30 },
-  { kind: 'circle', x: 88, y: 0.82, r: 10, fill: 'soft', blur: 16 },
-  { kind: 'circle', x: 102, y: 0.36, r: 15, fill: 'softMid', blur: 24 },
-  { kind: 'circle', x: 94, y: 0.72, r: 12, fill: 'soft', blur: 18 },
-  {
-    kind: 'blob',
-    x: -12,
-    y: 0.18,
-    w: 36,
-    h: 26,
-    fill: 'soft',
-    blur: 24,
-    d: 'M10 80 C40 20 90 10 130 55 C160 90 140 140 90 150 C40 160 0 120 10 80 Z',
-  },
-  {
-    kind: 'blob',
-    x: 82,
-    y: 0.48,
-    w: 32,
-    h: 28,
-    fill: 'softMid',
-    blur: 20,
-    rotate: 18,
-    d: 'M20 100 C50 40 120 30 150 80 C170 120 130 160 80 155 C30 150 0 130 20 100 Z',
-  },
-  {
-    kind: 'blob',
-    x: -8,
-    y: 0.75,
-    w: 34,
-    h: 24,
-    fill: 'soft',
-    blur: 22,
-    d: 'M0 90 C60 40 140 50 180 100 C200 130 160 170 100 160 C40 150 -10 130 0 90 Z',
-  },
-  {
-    kind: 'blob',
-    x: 88,
-    y: 0.22,
-    w: 30,
-    h: 24,
-    fill: 'soft',
-    blur: 18,
-    rotate: -8,
-    d: 'M40 90 C80 30 150 40 170 90 C185 125 140 160 90 150 C45 140 20 120 40 90 Z',
-  },
+  { kind: 'orbit', x: -4, y: 0.1, size: 36, opacity: 0.38, dash: '10 9', strokeWidth: 1.45 },
+  { kind: 'orbit', x: 84, y: 0.48, size: 22, opacity: 0.22, dash: '3 11', strokeWidth: 1.15 },
+  { kind: 'orbit', x: 88, y: 0.78, size: 42, opacity: 0.3, dash: '14 7', strokeWidth: 1.5 },
+  { kind: 'orbit', x: -2, y: 0.4, size: 18, opacity: 0.26, dash: '6 12', strokeWidth: 1.2 },
+  { kind: 'sparkle', x: 8, y: 0.32, size: 28, opacity: 0.48 },
+  { kind: 'sparkle', x: 92, y: 0.18, size: 11, opacity: 0.24 },
+  { kind: 'sparkle', x: 6, y: 0.68, size: 19, opacity: 0.36 },
+  { kind: 'sparkle', x: 90, y: 0.58, size: 8, opacity: 0.42 },
 ]
 
 const SCATTER_MID: ScatterItem[] = [
-  { kind: 'circle', x: 8, y: 0.08, r: 7, fill: 'mid' },
-  { kind: 'circle', x: 92, y: 0.2, r: 9, fill: 'strong', blur: 10 },
-  { kind: 'circle', x: -3, y: 0.33, r: 12, fill: 'mid', blur: 12 },
-  { kind: 'circle', x: 90, y: 0.38, r: 5, fill: 'softMid' },
-  { kind: 'circle', x: 105, y: 0.5, r: 15, fill: 'soft', blur: 14 },
-  { kind: 'circle', x: 10, y: 0.58, r: 8, fill: 'mid' },
-  { kind: 'circle', x: 88, y: 0.7, r: 6, fill: 'strong' },
-  { kind: 'circle', x: 4, y: 0.88, r: 10, fill: 'softMid', blur: 8 },
-  { kind: 'circle', x: 98, y: 0.14, r: 8, fill: 'mid', blur: 8 },
-  { kind: 'circle', x: 100, y: 0.64, r: 7, fill: 'strong', blur: 6 },
-  {
-    kind: 'blob',
-    x: 82,
-    y: 0.05,
-    w: 28,
-    h: 20,
-    fill: 'mid',
-    rotate: -12,
-    d: 'M30 70 C70 20 140 25 160 70 C175 105 130 140 80 130 C35 122 10 100 30 70 Z',
-  },
-  {
-    kind: 'blob',
-    x: -8,
-    y: 0.62,
-    w: 30,
-    h: 22,
-    fill: 'softMid',
-    rotate: 8,
-    d: 'M15 90 C55 35 130 40 155 85 C170 115 125 150 70 145 C25 140 0 120 15 90 Z',
-  },
-  {
-    kind: 'blob',
-    x: 90,
-    y: 0.42,
-    w: 26,
-    h: 22,
-    fill: 'mid',
-    rotate: 14,
-    d: 'M25 85 C65 35 140 45 160 90 C170 120 125 155 75 145 C35 135 10 115 25 85 Z',
-  },
-  {
-    kind: 'arc',
-    x: -5,
-    y: 0.15,
-    w: 28,
-    h: 40,
-    stroke: 'strokeSoft',
-    width: 1.4,
-    d: 'M20 280 C80 160 40 60 120 20',
-    nodes: [{ cx: 55, cy: 150, r: 3.5 }],
-  },
-  {
-    kind: 'arc',
-    x: 82,
-    y: 0.35,
-    w: 28,
-    h: 45,
-    stroke: 'stroke',
-    width: 1.3,
-    d: 'M200 20 C140 100 180 200 80 280',
-    nodes: [
-      { cx: 160, cy: 90, r: 3 },
-      { cx: 130, cy: 190, r: 4 },
-    ],
-  },
-  {
-    kind: 'arc',
-    x: -6,
-    y: 0.55,
-    w: 30,
-    h: 28,
-    stroke: 'strokeSoft',
-    width: 1.2,
-    d: 'M10 180 C80 60 140 100 200 40',
-    nodes: [{ cx: 90, cy: 90, r: 3.2 }],
-  },
-  {
-    kind: 'arc',
-    x: 86,
-    y: 0.58,
-    w: 26,
-    h: 38,
-    stroke: 'strokeSoft',
-    width: 1.25,
-    d: 'M60 20 C140 70 100 160 180 240',
-    nodes: [{ cx: 110, cy: 110, r: 3 }],
-  },
+  { kind: 'orbit', x: 86, y: 0.08, size: 30, opacity: 0.36, dash: '11 8', strokeWidth: 1.45, rotate: 22 },
+  { kind: 'orbit', x: -6, y: 0.55, size: 48, opacity: 0.24, dash: '4 10', strokeWidth: 1.2 },
+  { kind: 'orbit', x: 90, y: 0.62, size: 16, opacity: 0.34, dash: '9 9', strokeWidth: 1.3, rotate: -14 },
+  { kind: 'orbit', x: 8, y: 0.28, size: 26, opacity: 0.2, dash: '2 9', strokeWidth: 1.1, rotate: 8 },
+  { kind: 'sparkle', x: 94, y: 0.36, size: 26, opacity: 0.5 },
+  { kind: 'sparkle', x: 6, y: 0.16, size: 9, opacity: 0.28 },
+  { kind: 'sparkle', x: 90, y: 0.7, size: 17, opacity: 0.4 },
+  { kind: 'sparkle', x: 10, y: 0.44, size: 13, opacity: 0.22 },
+  { kind: 'sparkle', x: 96, y: 0.5, size: 21, opacity: 0.33 },
 ]
 
 const SCATTER_FAST: ScatterItem[] = [
-  {
-    kind: 'arc',
-    x: -4,
-    y: 0.1,
-    w: 32,
-    h: 35,
-    stroke: 'stroke',
-    width: 1.5,
-    d: 'M20 220 C80 100 140 60 220 100',
-    nodes: [
-      { cx: 70, cy: 140, r: 4 },
-      { cx: 160, cy: 70, r: 3.5 },
-    ],
-  },
-  {
-    kind: 'arc',
-    x: 78,
-    y: 0.22,
-    w: 32,
-    h: 50,
-    stroke: 'strokeSoft',
-    width: 1.25,
-    d: 'M240 10 C180 90 220 180 60 260',
-    nodes: [{ cx: 190, cy: 120, r: 3 }],
-  },
-  {
-    kind: 'arc',
-    x: -8,
-    y: 0.4,
-    w: 26,
-    h: 42,
-    stroke: 'strokeSoft',
-    width: 1.1,
-    d: 'M30 20 C90 90 20 180 70 270',
-    nodes: [{ cx: 50, cy: 140, r: 3 }],
-  },
-  {
-    kind: 'arc',
-    x: 84,
-    y: 0.62,
-    w: 30,
-    h: 30,
-    stroke: 'stroke',
-    width: 1.35,
-    d: 'M40 180 C100 60 160 140 220 40',
-    nodes: [
-      { cx: 90, cy: 100, r: 3.5 },
-      { cx: 170, cy: 80, r: 3 },
-    ],
-  },
-  {
-    kind: 'arc',
-    x: 88,
-    y: 0.78,
-    w: 26,
-    h: 36,
-    stroke: 'strokeSoft',
-    width: 1.2,
-    d: 'M40 10 C100 80 60 160 140 230',
-    nodes: [{ cx: 70, cy: 100, r: 3.2 }],
-  },
-  {
-    kind: 'arc',
-    x: 90,
-    y: 0.08,
-    w: 24,
-    h: 32,
-    stroke: 'stroke',
-    width: 1.3,
-    d: 'M40 10 C110 50 80 140 160 200',
-    nodes: [{ cx: 85, cy: 80, r: 3.5 }],
-  },
-  { kind: 'circle', x: 12, y: 0.18, r: 2.2, fill: 'strong' },
-  { kind: 'circle', x: 8, y: 0.48, r: 2.8, fill: 'strong' },
-  { kind: 'circle', x: 92, y: 0.65, r: 2, fill: 'mid' },
-  { kind: 'circle', x: 10, y: 0.85, r: 2.5, fill: 'strong' },
-  { kind: 'circle', x: 96, y: 0.3, r: 2.4, fill: 'strong' },
-  { kind: 'circle', x: 94, y: 0.52, r: 2.1, fill: 'mid' },
+  { kind: 'sparkle', x: 10, y: 0.06, size: 7, opacity: 0.52 },
+  { kind: 'sparkle', x: 92, y: 0.26, size: 18, opacity: 0.3 },
+  { kind: 'sparkle', x: 4, y: 0.48, size: 12, opacity: 0.44 },
+  { kind: 'sparkle', x: 96, y: 0.52, size: 24, opacity: 0.26 },
+  { kind: 'sparkle', x: 88, y: 0.06, size: 10, opacity: 0.48 },
+  { kind: 'sparkle', x: 8, y: 0.78, size: 15, opacity: 0.34 },
+  { kind: 'sparkle', x: 94, y: 0.84, size: 6, opacity: 0.4 },
+  { kind: 'orbit', x: 88, y: 0.34, size: 14, opacity: 0.36, dash: '8 10', strokeWidth: 1.35, rotate: -18 },
+  { kind: 'orbit', x: -5, y: 0.28, size: 32, opacity: 0.22, dash: '5 9', strokeWidth: 1.15, rotate: 12 },
 ]
 
-/** Offsets irregulares por banda para que no se note un patrón vertical. */
-const BAND_X_JITTER = [0, 5, -8, 3, -4, 9, -2, 6, -10, 2]
-const BAND_Y_JITTER = [0.04, 0.18, 0.31, 0.47, 0.61, 0.73, 0.88]
+const BAND_X_JITTER = [0, 4, -6, 2, -3, 5, -8, 3]
+const BAND_Y_JITTER = [0.06, 0.18, 0.32, 0.46, 0.6, 0.74, 0.86]
+const SIZE_SCALE = [0.55, 0.72, 0.88, 1.05, 1.22, 1.4, 0.65, 1.15]
+const OPACITY_SCALE = [0.7, 0.85, 1.0, 1.15, 1.3, 0.78, 1.08, 0.92]
+const ROTATE_JITTER = [0, 12, -18, 25, -8, 32, -22, 6]
+const DASH_VARIANTS = ['11 8', '3 10', '8 12', '14 6', '5 9', '2 8', '10 10', '7 11']
 
-/** Empuja piezas fuera de la franja central (~28–72%) hacia los laterales. */
 function nudgeAwayFromCenter(x: number): number {
-  if (x > 26 && x < 74) {
-    return x < 50 ? Math.min(x, 16) : Math.max(x, 84)
+  if (x > 24 && x < 76) {
+    return x < 50 ? Math.min(x, 14) : Math.max(x, 86)
   }
   return x
+}
+
+function clamp(n: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, n))
 }
 
 function expandScatterForHeight(
@@ -391,105 +191,150 @@ function expandScatterForHeight(
   for (let b = 0; b < bands; b++) {
     const bandTop = b * vh
     const start = (b * 3) % items.length
-    // Un poco menos denso que antes
-    const count = Math.min(items.length, 2 + (b % 3))
+    // 1–2 piezas por banda (antes 2–4)
+    const count = 1 + (b % 2)
     for (let k = 0; k < count; k++) {
-      const item = items[(start + k * 2) % items.length]
+      const base = items[(start + k * 2) % items.length]
+      const idx = b * 5 + k * 3
       const xJ = BAND_X_JITTER[(b + k) % BAND_X_JITTER.length]
       const yJ = BAND_Y_JITTER[(b * 2 + k) % BAND_Y_JITTER.length]
       const x = nudgeAwayFromCenter(
-        Math.max(-15, Math.min(110, item.x + xJ * (b % 2 === 0 ? 1 : -1))),
+        Math.max(-12, Math.min(108, base.x + xJ * (b % 2 === 0 ? 1 : -1))),
       )
-      const maxYInBand = b === bands - 1 ? vh * 0.45 : vh * 0.92
+      const maxYInBand = b === bands - 1 ? vh * 0.4 : vh * 0.9
       const yAbs = bandTop + Math.min(yJ * vh, maxYInBand)
-      result.push({ ...item, x, yAbs })
+
+      const sizeMul = SIZE_SCALE[idx % SIZE_SCALE.length]
+      const opacMul = OPACITY_SCALE[(idx + 2) % OPACITY_SCALE.length]
+
+      if (base.kind === 'sparkle') {
+        result.push({
+          ...base,
+          x,
+          yAbs,
+          size: Math.round(clamp(base.size * sizeMul, 5, 34)),
+          opacity: clamp(base.opacity * opacMul, 0.16, 0.55),
+        })
+      } else {
+        result.push({
+          ...base,
+          x,
+          yAbs,
+          size: Math.round(clamp(base.size * sizeMul, 12, 52)),
+          opacity: clamp(base.opacity * opacMul, 0.14, 0.42),
+          rotate: (base.rotate ?? 0) + ROTATE_JITTER[idx % ROTATE_JITTER.length],
+          dash: DASH_VARIANTS[(idx + b) % DASH_VARIANTS.length],
+          strokeWidth: clamp((base.strokeWidth ?? 1.2) * (0.85 + (idx % 4) * 0.08), 1.0, 1.6),
+        })
+      }
     }
   }
 
   return result
 }
 
+function DashedOrbit({
+  sizeVw,
+  color,
+  opacity,
+  dash = '11 8',
+  strokeWidth = 1.15,
+  rotate = 0,
+}: {
+  sizeVw: number
+  color: string
+  opacity: number
+  dash?: string
+  strokeWidth?: number
+  rotate?: number
+}) {
+  return (
+    <svg
+      className="overflow-visible"
+      width={`${sizeVw}vw`}
+      height={`${sizeVw}vw`}
+      viewBox="0 0 400 400"
+      fill="none"
+      style={{ transform: rotate ? `rotate(${rotate}deg)` : undefined, opacity }}
+      aria-hidden
+    >
+      <circle
+        cx="200"
+        cy="200"
+        r="168"
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeDasharray={dash}
+      />
+      <circle cx="48" cy="118" r="3.2" fill={color} opacity="0.7" />
+      <circle cx="340" cy="96" r="2.6" fill={color} opacity="0.55" />
+      <circle cx="356" cy="230" r="2.8" fill={color} opacity="0.5" />
+    </svg>
+  )
+}
+
+function SparkleMark({
+  size,
+  color,
+  opacity,
+}: {
+  size: number
+  color: string
+  opacity: number
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill={color}
+      opacity={opacity}
+      aria-hidden
+    >
+      <path d={SPARKLE_PATH} />
+    </svg>
+  )
+}
+
 function ScatterLayer({
   items,
-  palette,
+  accent,
   layerId,
 }: {
   items: Array<ScatterItem & { yAbs: number }>
-  palette: Palette
+  accent: string
   layerId: string
 }) {
   return (
     <>
       {items.map((item, i) => {
-        const top = item.yAbs
         const uid = `${layerId}-${i}`
-
-        if (item.kind === 'circle') {
-          const size = `${item.r * 2}vw`
-          return (
-            <div
-              key={uid}
-              className="absolute"
-              style={{
-                left: `${item.x}%`,
-                top,
-                width: size,
-                height: size,
-                marginLeft: `-${item.r}vw`,
-                marginTop: `-${item.r}vw`,
-                borderRadius: '50%',
-                background: palette[item.fill],
-                filter: item.blur ? `blur(${item.blur}px)` : undefined,
-              }}
-            />
-          )
+        const style: React.CSSProperties = {
+          left: `${item.x}%`,
+          top: item.yAbs,
+          transform: 'translate(-50%, -50%)',
         }
 
-        if (item.kind === 'blob') {
+        if (item.kind === 'sparkle') {
           return (
-            <svg
-              key={uid}
-              className="absolute overflow-visible"
-              style={{
-                left: `${item.x}%`,
-                top,
-                width: `${item.w}vw`,
-                height: `${item.h}vw`,
-                transform: item.rotate ? `rotate(${item.rotate}deg)` : undefined,
-                filter: item.blur ? `blur(${item.blur}px)` : undefined,
-              }}
-              viewBox="0 0 200 180"
-              aria-hidden
-            >
-              <path d={item.d} fill={palette[item.fill]} />
-            </svg>
+            <div key={uid} className="absolute" style={style}>
+              <SparkleMark size={item.size} color={accent} opacity={item.opacity} />
+            </div>
           )
         }
 
         return (
-          <svg
-            key={uid}
-            className="absolute overflow-visible"
-            style={{
-              left: `${item.x}%`,
-              top,
-              width: `${item.w}vw`,
-              height: `${item.h}vw`,
-            }}
-            viewBox="0 0 400 300"
-            aria-hidden
-          >
-            <path
-              d={item.d}
-              fill="none"
-              stroke={palette[item.stroke]}
-              strokeWidth={item.width ?? 1.25}
-              strokeLinecap="round"
+          <div key={uid} className="absolute" style={style}>
+            <DashedOrbit
+              sizeVw={item.size}
+              color={accent}
+              opacity={item.opacity}
+              dash={item.dash}
+              strokeWidth={item.strokeWidth}
+              rotate={item.rotate}
             />
-            {item.nodes?.map((n, ni) => (
-              <circle key={`${uid}-n${ni}`} cx={n.cx} cy={n.cy} r={n.r} fill={palette.node} />
-            ))}
-          </svg>
+          </div>
         )
       })}
     </>
@@ -511,7 +356,6 @@ function PageEndWaves({ palette, waveHeight }: { palette: Palette; waveHeight: n
           <feGaussianBlur stdDeviation="6" />
         </filter>
       </defs>
-      {/* Capas full-bleed: cada path entra y sale por los laterales y cierra abajo */}
       <path
         d="M0 195 C160 95 300 250 480 185 C660 120 780 55 960 100 C1140 145 1280 210 1440 155 L1440 420 L0 420 Z"
         fill={palette.soft}
@@ -649,6 +493,7 @@ export const FondoDropBlock: React.FC<FondoDropProps> = ({
       style={{
         zIndex: -1,
         backgroundColor: palette.base,
+        color: palette.accent,
       }}
     >
       <div
@@ -656,7 +501,7 @@ export const FondoDropBlock: React.FC<FondoDropProps> = ({
         className="absolute top-0 left-0 w-full will-change-transform"
         style={{ height: layerHeight }}
       >
-        <ScatterLayer items={slowItems} palette={palette} layerId="slow" />
+        <ScatterLayer items={slowItems} accent={palette.accent} layerId="slow" />
       </div>
 
       <div
@@ -664,7 +509,7 @@ export const FondoDropBlock: React.FC<FondoDropProps> = ({
         className="absolute top-0 left-0 w-full will-change-transform"
         style={{ height: layerHeight }}
       >
-        <ScatterLayer items={midItems} palette={palette} layerId="mid" />
+        <ScatterLayer items={midItems} accent={palette.accent} layerId="mid" />
       </div>
 
       <div
@@ -672,7 +517,7 @@ export const FondoDropBlock: React.FC<FondoDropProps> = ({
         className="absolute top-0 left-0 w-full will-change-transform"
         style={{ height: layerHeight }}
       >
-        <ScatterLayer items={fastItems} palette={palette} layerId="fast" />
+        <ScatterLayer items={fastItems} accent={palette.accent} layerId="fast" />
       </div>
 
       <div

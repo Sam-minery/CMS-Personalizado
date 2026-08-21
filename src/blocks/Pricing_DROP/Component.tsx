@@ -18,6 +18,13 @@ import {
 } from '@/utilities/fontGroupRichTextCss'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { cn } from '@/utilities/ui'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 
@@ -180,6 +187,9 @@ export type PricingDropBlockType = {
   useCustomFont?: boolean | null
   customFontFile?: FontFile | number | null
   customFontName?: string | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
   blockIndex?: number
 }
 
@@ -350,7 +360,7 @@ function Sparkle({
 function AnimatedOrbit({ className }: { className?: string }) {
   return (
     <svg
-      className={cn('pricing-drop-orbit h-full w-full', className)}
+      className={cn('pricing-drop-orbit h-full w-full opacity-55', className)}
       viewBox="0 0 400 400"
       fill="none"
       aria-hidden
@@ -403,6 +413,9 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
     useCustomFont,
     customFontFile,
     customFontName,
+    applyCustomWidth,
+    customWidthPercent,
+    customWidthPercentMobile,
   } = props
 
   const anchorSlug = sanitizeAnchorId(anchorId)
@@ -727,12 +740,35 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
 
   const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined
 
+  const pdCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
+  const pdCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(
+    applyCustomWidth,
+    customWidthPercentMobile,
+  )
+
+  const pdBreakoutCss =
+    pdCustomWidthVw != null && pdCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, pdCustomWidthVw, pdCustomWidthMobileVw)
+      : ''
+
   return (
     <section
       ref={sectionRef}
       id={sectionId}
       data-pricing-drop={styleId}
-      className="pricing-drop relative w-full overflow-hidden"
+      className={cn(
+        'pricing-drop relative w-full',
+        pdCustomWidthVw != null ? 'overflow-x-clip' : 'overflow-hidden',
+      )}
       style={
         {
           backgroundColor: blockBg,
@@ -895,21 +931,25 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
           to { transform: rotate(-360deg); }
         }
         [data-pricing-drop="${styleId}"] .pricing-drop-orbit {
-          animation: pricing-drop-orbit-spin 42s linear infinite;
           transform-origin: 50% 50%;
-          will-change: transform;
         }
-        [data-pricing-drop="${styleId}"] .pricing-drop-sparkle-slow {
-          transform: translate3d(0, var(--pd-para-slow, 0px), 0);
-          will-change: transform;
-        }
-        [data-pricing-drop="${styleId}"] .pricing-drop-sparkle-mid {
-          transform: translate3d(0, var(--pd-para-mid, 0px), 0);
-          will-change: transform;
-        }
-        [data-pricing-drop="${styleId}"] .pricing-drop-sparkle-fast {
-          transform: translate3d(0, var(--pd-para-fast, 0px), 0);
-          will-change: transform;
+        @media (min-width: 1024px) {
+          [data-pricing-drop="${styleId}"] .pricing-drop-orbit {
+            animation: pricing-drop-orbit-spin 42s linear infinite;
+            will-change: transform;
+          }
+          [data-pricing-drop="${styleId}"] .pricing-drop-sparkle-slow {
+            transform: translate3d(0, var(--pd-para-slow, 0px), 0);
+            will-change: transform;
+          }
+          [data-pricing-drop="${styleId}"] .pricing-drop-sparkle-mid {
+            transform: translate3d(0, var(--pd-para-mid, 0px), 0);
+            will-change: transform;
+          }
+          [data-pricing-drop="${styleId}"] .pricing-drop-sparkle-fast {
+            transform: translate3d(0, var(--pd-para-fast, 0px), 0);
+            will-change: transform;
+          }
         }
         @media (prefers-reduced-motion: reduce) {
           [data-pricing-drop="${styleId}"] .pricing-drop-orbit {
@@ -922,6 +962,7 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
           }
         }
         ${buildFontStyles()}
+        ${pdBreakoutCss}
       `}</style>
 
       {/* Fondo desktop: animación detrás + PNG con transparencia */}
@@ -932,7 +973,7 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
           style={{ color: animAccent }}
         >
           {showAnimatedBg ? (
-            <>
+            <div className="absolute inset-0 opacity-70">
               <div className="pricing-drop-sparkle-slow absolute inset-0">
                 <Sparkle size={28} opacity={0.32} className="left-[16%] top-[18%]" />
                 <Sparkle size={16} opacity={0.2} className="left-[70%] top-[64%]" />
@@ -954,7 +995,7 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
               <div className="absolute left-1/2 top-1/2 aspect-square h-[82%] max-w-[min(62%,540px)] -translate-x-1/2 -translate-y-1/2">
                 <AnimatedOrbit />
               </div>
-            </>
+            </div>
           ) : null}
           {bgImageUrl ? (
             <img
@@ -966,10 +1007,28 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
         </div>
       ) : null}
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-5 py-10 sm:px-8 lg:px-32 lg:py-14 xl:px-40 2xl:px-48">
+      <div
+        className={cn(
+          'relative z-10 min-w-0 py-10 lg:py-14',
+          pdCustomWidthVw == null
+            ? 'mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-32 xl:px-40 2xl:px-48'
+            : 'box-border w-full max-w-none overflow-x-visible px-0',
+        )}
+        {...(pdCustomWidthVw != null && pdCustomWidthMobileVw != null
+          ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+          : {})}
+        style={
+          pdCustomWidthVw == null
+            ? undefined
+            : pdCustomWidthMobileVw != null
+              ? sendaBreakoutOnlyBoxSizing()
+              : sendaCalcBreakoutInlineStyle(pdCustomWidthVw)
+        }
+      >
         <div className="flex flex-col gap-8 lg:grid lg:grid-cols-12 lg:gap-x-5 lg:gap-y-8">
           {/* Columna izquierda (móvil: fondo hasta arriba de la tabla) */}
           <div className="relative flex flex-col gap-5 lg:col-span-6 lg:gap-6">
+            {/* Móvil: imagen + círculo/sparkles estáticos (sin giro ni parallax) */}
             {showDesktopDecor ? (
               <div
                 className="pricing-drop-bg-mobile pointer-events-none absolute top-0 z-0 overflow-hidden"
@@ -985,17 +1044,17 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
                 aria-hidden
               >
                 {showAnimatedBg ? (
-                  <>
-                    <div className="pricing-drop-sparkle-slow absolute inset-0">
+                  <div className="absolute inset-0 opacity-70">
+                    <div className="absolute inset-0">
                       <Sparkle size={22} opacity={0.28} className="right-[8%] top-[12%]" />
                       <Sparkle size={14} opacity={0.18} className="right-[42%] top-[58%]" />
                     </div>
-                    <div className="pricing-drop-sparkle-mid absolute inset-0">
+                    <div className="absolute inset-0">
                       <Sparkle size={16} opacity={0.38} className="right-[18%] top-[36%]" />
                       <Sparkle size={20} opacity={0.22} className="right-[4%] top-[68%]" />
                       <Sparkle size={10} opacity={0.45} className="right-[36%] top-[20%]" />
                     </div>
-                    <div className="pricing-drop-sparkle-fast absolute inset-0">
+                    <div className="absolute inset-0">
                       <Sparkle size={8} opacity={0.5} className="right-[28%] top-[48%]" />
                       <Sparkle size={12} opacity={0.26} className="right-[6%] top-[26%]" />
                       <Sparkle size={9} opacity={0.34} className="right-[22%] top-[76%]" />
@@ -1003,7 +1062,7 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
                     <div className="absolute right-0 top-1/2 aspect-square h-[88%] max-w-[78%] translate-x-[10%] -translate-y-1/2">
                       <AnimatedOrbit />
                     </div>
-                  </>
+                  </div>
                 ) : null}
                 {bgImageUrl ? (
                   <img

@@ -23,6 +23,13 @@ import {
 } from '@/utilities/fontGroupRichTextCss'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { sanitizeSVG } from '@/utilities/sanitizeHTML'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 import { cn } from '@/utilities/ui'
 import { useGoogleFont } from '@/utilities/useGoogleFont'
 
@@ -100,6 +107,9 @@ export type FAQDropBlockType = {
   useCustomFont?: boolean | null
   customFontFile?: FontFile | number | null
   customFontName?: string | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
   blockIndex?: number
 }
 
@@ -110,19 +120,36 @@ const ICON_BG = '#fce4ec'
 const FAQ_FG_RICHTEXT =
   'faq-drop-richtext [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-bold [&_h4]:font-bold [&_h5]:font-bold [&_h6]:font-bold [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6'
 
-/** Separador SVG hardcodeado (igual que Layout2 DROP). */
+/** Separador SVG hardcodeado (mismo diseño que Layout2 DROP: líneas + 3 círculos). */
 const HEADER_DIVIDER_SVG = (
   <svg
-    width="72"
-    height="12"
-    viewBox="0 0 72 12"
-    fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 120 16"
+    fill="none"
     aria-hidden
+    className="h-4 w-[120px]"
   >
-    <path d="M2 6H30" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    <path d="M42 6H70" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    <path d="M36 2.5L39.5 6L36 9.5L32.5 6L36 2.5Z" fill="currentColor" />
+    <line
+      x1="0"
+      y1="8"
+      x2="48"
+      y2="8"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+    <circle cx="54" cy="8" r="1.5" fill="currentColor" />
+    <circle cx="60" cy="8" r="3.5" fill="currentColor" />
+    <circle cx="66" cy="8" r="1.5" fill="currentColor" />
+    <line
+      x1="72"
+      y1="8"
+      x2="120"
+      y2="8"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
   </svg>
 )
 
@@ -270,6 +297,9 @@ export const FAQDropBlock: React.FC<FAQDropBlockType> = (props) => {
     useCustomFont,
     customFontFile,
     customFontName,
+    applyCustomWidth,
+    customWidthPercent,
+    customWidthPercentMobile,
   } = props
 
   const uniqueId = React.useId().replace(/:/g, '-')
@@ -501,11 +531,33 @@ export const FAQDropBlock: React.FC<FAQDropBlockType> = (props) => {
 
   const fontStyles = buildFontStyles()
 
+  const fqdCustomWidthVw =
+    applyCustomWidth === true
+      ? (() => {
+          const p = customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+
+  const fqdCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(
+    applyCustomWidth,
+    customWidthPercentMobile,
+  )
+  const fqdBreakoutCss =
+    fqdCustomWidthVw != null && fqdCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(styleId, fqdCustomWidthVw, fqdCustomWidthMobileVw)
+      : ''
+
   return (
     <section
       id={sectionId}
       data-faq-drop={styleId}
-      className="faq-drop relative w-full overflow-hidden"
+      className={cn(
+        'faq-drop relative w-full',
+        fqdCustomWidthVw == null ? 'overflow-hidden' : 'overflow-visible',
+      )}
       style={
         {
           backgroundColor: blockBg,
@@ -652,18 +704,37 @@ export const FAQDropBlock: React.FC<FAQDropBlockType> = (props) => {
           }
           [data-faq-drop="${styleId}"] .faq-drop-question {
             font-size: 1.05rem;
+            line-height: 1.25;
           }
           [data-faq-drop="${styleId}"] .faq-drop-answer {
             font-size: 0.95rem;
           }
           [data-faq-drop="${styleId}"] .faq-drop-toggle {
-            width: 2rem;
-            height: 2rem;
+            width: 1.875rem;
+            height: 1.875rem;
           }
         }
+        ${fqdBreakoutCss}
       `}</style>
 
-      <div className="relative mx-auto w-full max-w-6xl px-5 py-14 sm:px-8 sm:py-16 lg:px-32 lg:py-20 xl:px-40 2xl:px-48">
+      <div
+        className={cn(
+          'relative min-w-0 py-14 sm:py-16 lg:py-20',
+          fqdCustomWidthVw == null
+            ? 'mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-32 xl:px-40 2xl:px-48'
+            : 'box-border w-full max-w-none overflow-x-visible px-0',
+        )}
+        {...(fqdCustomWidthVw != null && fqdCustomWidthMobileVw != null
+          ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: styleId }
+          : {})}
+        style={
+          fqdCustomWidthVw == null
+            ? undefined
+            : fqdCustomWidthMobileVw != null
+              ? sendaBreakoutOnlyBoxSizing()
+              : sendaCalcBreakoutInlineStyle(fqdCustomWidthVw)
+        }
+      >
         <div className="mx-auto mb-8 flex max-w-3xl flex-col items-center sm:mb-12">
           {hasRichText(mainContent) ? (
             <div
@@ -682,7 +753,7 @@ export const FAQDropBlock: React.FC<FAQDropBlockType> = (props) => {
         </div>
 
         {questionsList.length > 0 ? (
-          <div className="faq-drop-panel rounded-2xl md:rounded-[1.5rem] md:px-8 md:py-8 lg:px-10 lg:py-10">
+          <div className="faq-drop-panel rounded-3xl md:rounded-[1.75rem] md:px-8 md:py-8 lg:px-10 lg:py-10">
             <Accordion type="multiple" className="grid items-start justify-stretch gap-3 md:gap-3.5">
               {questionsList.map((q, index) => {
                 const accent = sanitizeCssColor(q.accentColor) || ACCENT
@@ -692,7 +763,7 @@ export const FAQDropBlock: React.FC<FAQDropBlockType> = (props) => {
                   <AccordionItem
                     key={q.id || `faq-drop-item-${index}`}
                     value={`faq-drop-item-${index}`}
-                    className="faq-drop-item rounded-xl border-0 first:border-t-0 shadow-[0_6px_24px_rgba(16,24,53,0.07)] md:rounded-xl"
+                    className="faq-drop-item rounded-2xl border-0 first:border-t-0 shadow-[0_6px_24px_rgba(16,24,53,0.07)] md:rounded-2xl"
                     style={
                       {
                         ['--faq-accent' as string]: accent,
@@ -703,17 +774,17 @@ export const FAQDropBlock: React.FC<FAQDropBlockType> = (props) => {
                   >
                     <AccordionTrigger
                       icon={<PlusMinusToggle />}
-                      className="faq-drop-trigger px-4 py-3.5 md:px-5 md:py-4 [&[data-state=open]>svg]:rotate-0"
+                      className="faq-drop-trigger px-4 py-2.5 md:px-5 md:py-2.5 [&[data-state=open]>svg]:rotate-0"
                     >
                       <span className="flex min-w-0 flex-1 items-center gap-3 md:gap-3.5">
                         <span
-                          className="faq-drop-icon-wrap flex h-9 w-9 shrink-0 items-center justify-center rounded-full md:h-10 md:w-10"
+                          className="faq-drop-icon-wrap flex h-9 w-9 shrink-0 items-center justify-center rounded-full md:h-9 md:w-9"
                           aria-hidden
                         >
                           <IconMedia
                             icon={q.icon}
-                            className="h-4 w-4 text-current [&_svg]:h-full [&_svg]:w-full [&_svg]:text-current md:h-[1.15rem] md:w-[1.15rem]"
-                            imgClassName="h-4 w-4 md:h-[1.15rem] md:w-[1.15rem]"
+                            className="h-4 w-4 text-current [&_svg]:h-full [&_svg]:w-full [&_svg]:text-current md:h-4 md:w-4"
+                            imgClassName="h-4 w-4 md:h-4 md:w-4"
                           />
                         </span>
                         <span className="faq-drop-question min-w-0 flex-1 text-left">
