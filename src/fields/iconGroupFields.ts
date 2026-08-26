@@ -5,6 +5,7 @@ import { svgCodeField } from '@/fields/svgCode'
 type IconGroupFieldsOptions = {
   defaultUseMedia?: boolean
   description?: string
+  svgDescription?: string
 }
 
 /** Icono: media/GIF subido o código SVG con preview en el admin. */
@@ -36,7 +37,8 @@ export function iconGroupFields(opts?: IconGroupFieldsOptions): Field[] {
       label: 'Código SVG del icono',
       admin: {
         condition: (_: unknown, siblingData: { useMedia?: boolean }) => siblingData?.useMedia !== true,
-        description: 'Pega aquí el código SVG como alternativa a subir media.',
+        description:
+          opts?.svgDescription ?? 'Pega aquí el código SVG como alternativa a subir media.',
       },
     }),
     {

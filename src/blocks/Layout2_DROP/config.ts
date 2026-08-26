@@ -17,6 +17,8 @@ import {
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
+import { colorField } from '@/fields/color'
+import { iconGroupFields } from '@/fields/iconGroupFields'
 import { SmallBodyFeature } from '@/lexical-features/small-body/feature.server'
 
 const layout2DropRichTextState = {
@@ -53,45 +55,6 @@ const richTextEditor = () =>
     ],
   })
 
-const iconGroupFields = (opts?: { defaultUseMedia?: boolean; description?: string }) => [
-  {
-    name: 'useMedia',
-    type: 'checkbox' as const,
-    label: 'Usar imagen / GIF subido',
-    defaultValue: opts?.defaultUseMedia ?? false,
-    admin: {
-      description:
-        opts?.description ??
-        'Si está desactivado, puedes pegar código SVG en el campo "Código SVG".',
-    },
-  },
-  {
-    name: 'mediaImage',
-    type: 'upload' as const,
-    relationTo: 'media' as const,
-    label: 'Icono / GIF (media)',
-    admin: {
-      condition: (_: unknown, siblingData: { useMedia?: boolean }) => siblingData?.useMedia === true,
-      description: 'Imagen o GIF del icono.',
-    },
-  },
-  {
-    name: 'iconSVG',
-    type: 'textarea' as const,
-    label: 'Código SVG del icono',
-    admin: {
-      condition: (_: unknown, siblingData: { useMedia?: boolean }) => siblingData?.useMedia !== true,
-      description: 'Pega aquí el código SVG como alternativa a subir media.',
-    },
-  },
-  {
-    name: 'alt',
-    type: 'text' as const,
-    label: 'Texto alternativo',
-    defaultValue: 'Icono',
-  },
-]
-
 export const Layout2DropBlock: Block = {
   slug: 'layout2Drop',
   // Nombre corto en DB: evita enums/tablas > 63 chars (límite Postgres)
@@ -103,181 +66,210 @@ export const Layout2DropBlock: Block = {
   },
   fields: [
     {
-      name: 'anchorId',
-      type: 'text',
-      label: 'ID ancla',
-      admin: {
-        description:
-          'ID para enlaces ancla. Usar el mismo valor en el navbar en "Id ancla (misma página)".',
-      },
-    },
-
-    // ─── Header ───────────────────────────────────────────────
-    {
-      name: 'mainContent',
-      type: 'richText',
-      label: 'RichText principal',
-      required: true,
-      editor: richTextEditor(),
-      admin: {
-        description: 'Título grande. Usa negrita para resaltar palabras (ej. "respaldado").',
-      },
-    },
-    {
-      name: 'secondaryContent',
-      type: 'richText',
-      label: 'RichText secundario',
-      editor: richTextEditor(),
-      admin: {
-        description: 'Subtítulo debajo del separador SVG.',
-      },
-    },
-    {
-      name: 'backgroundColor',
-      type: 'text',
-      label: 'Color de fondo',
-      defaultValue: '#ffffff',
-      admin: {
-        description: 'Hex, rgb, rgba o nombre CSS.',
-        placeholder: '#ffffff',
-      },
-    },
-    {
-      name: 'textColorPrimary',
-      type: 'text',
-      label: 'Color de texto principal',
-      defaultValue: '#101835',
-      admin: {
-        description: 'Aplica al RichText principal.',
-        placeholder: '#101835',
-      },
-    },
-    {
-      name: 'textColorSecondary',
-      type: 'text',
-      label: 'Color de texto secundario',
-      defaultValue: '#5c6b8a',
-      admin: {
-        description: 'Aplica al RichText secundario.',
-        placeholder: '#5c6b8a',
-      },
-    },
-    {
-      name: 'boldTextColor',
-      type: 'text',
-      label: 'Color de texto negrita',
-      defaultValue: '#a1004a',
-      admin: {
-        description: 'Color para strong/b en ambos RichText del encabezado.',
-        placeholder: '#a1004a',
-      },
-    },
-
-    // ─── Prestaciones ─────────────────────────────────────────
-    {
-      name: 'prestaciones',
-      type: 'array',
-      dbName: 'l2d_pre',
-      label: 'Prestaciones',
-      maxRows: 6,
-      labels: { singular: 'Prestación', plural: 'Prestaciones' },
-      admin: {
-        description:
-          'Máximo 6. Desktop: filas de 3. Móvil: carrusel de una tarjeta.',
-        initCollapsed: true,
-      },
-      fields: [
+      type: 'tabs',
+      tabs: [
         {
-          name: 'icon',
-          type: 'group',
-          label: 'Icono',
-          fields: iconGroupFields({ defaultUseMedia: false }),
-        },
-        {
-          name: 'content',
-          type: 'richText',
           label: 'Contenido',
-          required: true,
-          editor: richTextEditor(),
-          admin: {
-            description: 'Título (negrita) y descripción de la prestación.',
-          },
+          fields: [
+            {
+              name: 'anchorId',
+              type: 'text',
+              label: 'ID ancla',
+              admin: {
+                description:
+                  'ID para enlaces ancla. Usar el mismo valor en el navbar en "Id ancla (misma página)".',
+              },
+            },
+            {
+              name: 'mainContent',
+              type: 'richText',
+              label: 'RichText principal',
+              required: true,
+              editor: richTextEditor(),
+              admin: {
+                description: 'Título grande. Usa negrita para resaltar palabras (ej. "respaldado").',
+              },
+            },
+            {
+              name: 'secondaryContent',
+              type: 'richText',
+              label: 'RichText secundario',
+              editor: richTextEditor(),
+              admin: {
+                description: 'Subtítulo debajo del separador SVG.',
+              },
+            },
+            {
+              name: 'prestaciones',
+              type: 'array',
+              dbName: 'l2d_pre',
+              label: 'Prestaciones',
+              maxRows: 6,
+              labels: { singular: 'Prestación', plural: 'Prestaciones' },
+              admin: {
+                description: 'Máximo 6. Desktop: filas de 3. Móvil: carrusel de una tarjeta.',
+                initCollapsed: true,
+                components: {
+                  RowLabel: '@/fields/dropArrayRowLabels#PrestacionRowLabel',
+                },
+              },
+              fields: [
+                {
+                  name: 'icon',
+                  type: 'group',
+                  label: 'Icono',
+                  fields: iconGroupFields({ defaultUseMedia: false }),
+                },
+                {
+                  name: 'content',
+                  type: 'richText',
+                  label: 'Contenido',
+                  required: true,
+                  editor: richTextEditor(),
+                  admin: {
+                    description: 'Título (negrita) y descripción de la prestación.',
+                  },
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    colorField({
+                      name: 'backgroundColor',
+                      label: 'Color de fondo de subsección',
+                      defaultValue: '#ffffff',
+                      width: '50%',
+                      placeholder: '#ffffff',
+                    }),
+                    colorField({
+                      name: 'iconBackgroundColor',
+                      label: 'Color de fondo del icono',
+                      defaultValue: '#fce4ec',
+                      width: '50%',
+                      placeholder: '#fce4ec',
+                      admin: {
+                        description: 'Círculo detrás del icono.',
+                      },
+                    }),
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    colorField({
+                      name: 'textColor',
+                      label: 'Color de texto subsección',
+                      defaultValue: '#5c6b8a',
+                      width: '50%',
+                      placeholder: '#5c6b8a',
+                      admin: {
+                        description: 'Color base del RichText de la card.',
+                      },
+                    }),
+                    colorField({
+                      name: 'boldTextColor',
+                      label: 'Color de texto negrita subsección',
+                      defaultValue: '#101835',
+                      width: '50%',
+                      placeholder: '#101835',
+                      admin: {
+                        description: 'Color para strong/b (títulos de card).',
+                      },
+                    }),
+                  ],
+                },
+              ],
+            },
+          ],
         },
         {
-          name: 'backgroundColor',
-          type: 'text',
-          label: 'Color de fondo de subsección',
-          defaultValue: '#ffffff',
-          admin: { placeholder: '#ffffff' },
+          label: 'Estilos',
+          fields: [
+            colorField({
+              name: 'backgroundColor',
+              label: 'Color de fondo',
+              defaultValue: '#ffffff',
+              placeholder: '#ffffff',
+              admin: {
+                description: 'Hex, rgb, rgba o nombre CSS.',
+              },
+            }),
+            {
+              type: 'row',
+              fields: [
+                colorField({
+                  name: 'textColorPrimary',
+                  label: 'Color de texto principal',
+                  defaultValue: '#101835',
+                  width: '50%',
+                  placeholder: '#101835',
+                  admin: {
+                    description: 'Aplica al RichText principal.',
+                  },
+                }),
+                colorField({
+                  name: 'textColorSecondary',
+                  label: 'Color de texto secundario',
+                  defaultValue: '#5c6b8a',
+                  width: '50%',
+                  placeholder: '#5c6b8a',
+                  admin: {
+                    description: 'Aplica al RichText secundario.',
+                  },
+                }),
+              ],
+            },
+            colorField({
+              name: 'boldTextColor',
+              label: 'Color de texto negrita',
+              defaultValue: '#a1004a',
+              placeholder: '#a1004a',
+              admin: {
+                description: 'Color para strong/b en ambos RichText del encabezado.',
+              },
+            }),
+          ],
         },
         {
-          name: 'textColor',
-          type: 'text',
-          label: 'Color de texto subsección',
-          defaultValue: '#5c6b8a',
-          admin: {
-            description: 'Color base del RichText de la card.',
-            placeholder: '#5c6b8a',
-          },
-        },
-        {
-          name: 'boldTextColor',
-          type: 'text',
-          label: 'Color de texto negrita subsección',
-          defaultValue: '#101835',
-          admin: {
-            description: 'Color para strong/b (títulos de card).',
-            placeholder: '#101835',
-          },
-        },
-        {
-          name: 'iconBackgroundColor',
-          type: 'text',
-          label: 'Color de fondo del icono',
-          defaultValue: '#fce4ec',
-          admin: {
-            description: 'Círculo detrás del icono.',
-            placeholder: '#fce4ec',
-          },
+          label: 'Fondo y layout',
+          fields: [
+            {
+              name: 'applyCustomWidth',
+              type: 'checkbox',
+              label: 'Aplicar ancho personalizado',
+              defaultValue: false,
+              admin: {
+                description:
+                  'Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.',
+              },
+            },
+            {
+              name: 'customWidthPercent',
+              type: 'number',
+              label: 'Ancho respecto a la pantalla (%)',
+              min: 0,
+              max: 100,
+              defaultValue: 100,
+              admin: {
+                condition: (_, siblingData) => siblingData?.applyCustomWidth === true,
+                description:
+                  '0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.',
+              },
+            },
+            {
+              name: 'customWidthPercentMobile',
+              type: 'number',
+              label: 'Ancho personalizado (dispositivos móvil)',
+              min: 0,
+              max: 100,
+              admin: {
+                condition: (_, siblingData) => siblingData?.applyCustomWidth === true,
+                description:
+                  'Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.',
+              },
+            },
+          ],
         },
       ],
-    },
-
-    // ─── Ancho personalizado ──────────────────────────────────
-    {
-      name: 'applyCustomWidth',
-      type: 'checkbox',
-      label: 'Aplicar ancho personalizado',
-      defaultValue: false,
-      admin: {
-        description:
-          'Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.',
-      },
-    },
-    {
-      name: 'customWidthPercent',
-      type: 'number',
-      label: 'Ancho respecto a la pantalla (%)',
-      min: 0,
-      max: 100,
-      defaultValue: 100,
-      admin: {
-        condition: (_, siblingData) => siblingData?.applyCustomWidth === true,
-        description:
-          '0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.',
-      },
-    },
-    {
-      name: 'customWidthPercentMobile',
-      type: 'number',
-      label: 'Ancho personalizado (dispositivos móvil)',
-      min: 0,
-      max: 100,
-      admin: {
-        condition: (_, siblingData) => siblingData?.applyCustomWidth === true,
-        description:
-          'Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.',
-      },
     },
   ],
 }

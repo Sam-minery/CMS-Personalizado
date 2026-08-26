@@ -2399,46 +2399,6 @@ export interface LayoutCTADropBlock {
     };
     [k: string]: unknown;
   };
-  headerStyle?: {
-    /**
-     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
-     */
-    textColor?: string | null;
-    /**
-     * Color para strong/b dentro del RichText de esta sección.
-     */
-    boldTextColor?: string | null;
-    /**
-     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
-     */
-    useFontGroup?: boolean | null;
-    /**
-     * Grupo creado en Font Groups.
-     */
-    fontGroup?: (number | null) | FontGroup;
-    fontFamily?:
-      | (
-          | 'default'
-          | 'Arial, sans-serif'
-          | '"Times New Roman", serif'
-          | 'Georgia, serif'
-          | 'Verdana, sans-serif'
-          | 'Helvetica, Arial, sans-serif'
-          | '"Courier New", monospace'
-          | '"Roboto", sans-serif'
-          | '"Open Sans", sans-serif'
-          | '"Lato", sans-serif'
-          | '"Montserrat", sans-serif'
-          | '"Playfair Display", serif'
-          | '"Inter", sans-serif'
-          | '"Poppins", sans-serif'
-          | '"Raleway", sans-serif'
-        )
-      | null;
-    useCustomFont?: boolean | null;
-    customFontFile?: (number | null) | Font;
-    customFontName?: string | null;
-  };
   /**
    * Máximo 4. Tag, imagen, icono y texto.
    */
@@ -2489,6 +2449,76 @@ export interface LayoutCTADropBlock {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Botón principal con icono opcional (SVG).
+   */
+  buttons?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          /**
+           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
+           */
+          url?: string | null;
+          label: string;
+        };
+        /**
+         * Código SVG del icono (ej. flecha). Si está vacío se usa una flecha por defecto.
+         */
+        iconSVG?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  headerStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
   stepsStyle?: {
     /**
      * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
@@ -2529,36 +2559,6 @@ export interface LayoutCTADropBlock {
     customFontFile?: (number | null) | Font;
     customFontName?: string | null;
   };
-  /**
-   * Botón principal con icono opcional (SVG).
-   */
-  buttons?:
-    | {
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null);
-          /**
-           * Enter a valid URL (http://, https://, or relative path like /about). Dangerous schemes like javascript: are not allowed.
-           */
-          url?: string | null;
-          label: string;
-        };
-        /**
-         * Código SVG del icono (ej. flecha). Si está vacío se usa una flecha por defecto.
-         */
-        iconSVG?: string | null;
-        id?: string | null;
-      }[]
-    | null;
   buttonBackgroundColor?: string | null;
   /**
    * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
@@ -2567,13 +2567,13 @@ export interface LayoutCTADropBlock {
   buttonTextColor?: string | null;
   backgroundColor?: string | null;
   /**
-   * Activa o desactiva las estrellas, arcos y cruces animadas del fondo.
-   */
-  showDecorativeSvgs?: boolean | null;
-  /**
    * Color de estrellas, arcos y cruces del fondo.
    */
   decorativeSvgColor?: string | null;
+  /**
+   * Activa o desactiva las estrellas, arcos y cruces animadas del fondo.
+   */
+  showDecorativeSvgs?: boolean | null;
   /**
    * Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
    */
@@ -2617,6 +2617,66 @@ export interface TeamDropBlock {
     };
     [k: string]: unknown;
   };
+  dividerIcon?: {
+    /**
+     * Icono divisor entre el título y el texto secundario. Si no hay media ni SVG, se muestra el divisor por defecto.
+     */
+    useMedia?: boolean | null;
+    /**
+     * Imagen o GIF del icono.
+     */
+    mediaImage?: (number | null) | Media;
+    /**
+     * Pega aquí el código SVG como alternativa a subir media. Si está vacío se usa el divisor por defecto.
+     */
+    iconSVG?: string | null;
+    alt?: string | null;
+  };
+  /**
+   * Párrafo introductorio bajo el icono divisor.
+   */
+  secondaryContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Máximo 6. Imagen + texto (nombre y rol).
+   */
+  members?:
+    | {
+        image: number | Media;
+        /**
+         * Nombre (negrita) y rol/descripción debajo.
+         */
+        content: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
   headerStyle?: {
     /**
      * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
@@ -2657,39 +2717,6 @@ export interface TeamDropBlock {
     customFontFile?: (number | null) | Font;
     customFontName?: string | null;
   };
-  dividerIcon?: {
-    /**
-     * Icono divisor entre el título y el texto secundario. Si no hay media ni SVG, se muestra el divisor por defecto.
-     */
-    useMedia?: boolean | null;
-    /**
-     * Imagen o GIF del icono.
-     */
-    mediaImage?: (number | null) | Media;
-    /**
-     * Pega aquí el código SVG como alternativa a subir media. Si está vacío se usa el divisor por defecto.
-     */
-    iconSVG?: string | null;
-    alt?: string | null;
-  };
-  /**
-   * Párrafo introductorio bajo el icono divisor.
-   */
-  secondaryContent?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
   secondaryStyle?: {
     /**
      * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
@@ -2730,33 +2757,6 @@ export interface TeamDropBlock {
     customFontFile?: (number | null) | Font;
     customFontName?: string | null;
   };
-  /**
-   * Máximo 6. Imagen + texto (nombre y rol).
-   */
-  members?:
-    | {
-        image: number | Media;
-        /**
-         * Nombre (negrita) y rol/descripción debajo.
-         */
-        content: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        };
-        id?: string | null;
-      }[]
-    | null;
   membersStyle?: {
     /**
      * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
@@ -2803,13 +2803,13 @@ export interface TeamDropBlock {
    */
   accentColor?: string | null;
   /**
-   * Activa o desactiva los arcos y destellos animados del fondo.
-   */
-  showDecorativeSvgs?: boolean | null;
-  /**
    * Color de arcos, destellos y cruces del fondo.
    */
   decorativeSvgColor?: string | null;
+  /**
+   * Activa o desactiva los arcos y destellos animados del fondo.
+   */
+  showDecorativeSvgs?: boolean | null;
   /**
    * Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
    */
@@ -2853,46 +2853,6 @@ export interface CTAAppDropBlock {
     };
     [k: string]: unknown;
   };
-  headerStyle?: {
-    /**
-     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
-     */
-    textColor?: string | null;
-    /**
-     * Color para strong/b dentro del RichText de esta sección.
-     */
-    boldTextColor?: string | null;
-    /**
-     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
-     */
-    useFontGroup?: boolean | null;
-    /**
-     * Grupo creado en Font Groups.
-     */
-    fontGroup?: (number | null) | FontGroup;
-    fontFamily?:
-      | (
-          | 'default'
-          | 'Arial, sans-serif'
-          | '"Times New Roman", serif'
-          | 'Georgia, serif'
-          | 'Verdana, sans-serif'
-          | 'Helvetica, Arial, sans-serif'
-          | '"Courier New", monospace'
-          | '"Roboto", sans-serif'
-          | '"Open Sans", sans-serif'
-          | '"Lato", sans-serif'
-          | '"Montserrat", sans-serif'
-          | '"Playfair Display", serif'
-          | '"Inter", sans-serif'
-          | '"Poppins", sans-serif'
-          | '"Raleway", sans-serif'
-        )
-      | null;
-    useCustomFont?: boolean | null;
-    customFontFile?: (number | null) | Font;
-    customFontName?: string | null;
-  };
   /**
    * Texto bajo el título (ej. "Empieza tu cambio desde dónde quieras").
    */
@@ -2911,46 +2871,6 @@ export interface CTAAppDropBlock {
     };
     [k: string]: unknown;
   } | null;
-  subtitleStyle?: {
-    /**
-     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
-     */
-    textColor?: string | null;
-    /**
-     * Color para strong/b dentro del RichText de esta sección.
-     */
-    boldTextColor?: string | null;
-    /**
-     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
-     */
-    useFontGroup?: boolean | null;
-    /**
-     * Grupo creado en Font Groups.
-     */
-    fontGroup?: (number | null) | FontGroup;
-    fontFamily?:
-      | (
-          | 'default'
-          | 'Arial, sans-serif'
-          | '"Times New Roman", serif'
-          | 'Georgia, serif'
-          | 'Verdana, sans-serif'
-          | 'Helvetica, Arial, sans-serif'
-          | '"Courier New", monospace'
-          | '"Roboto", sans-serif'
-          | '"Open Sans", sans-serif'
-          | '"Lato", sans-serif'
-          | '"Montserrat", sans-serif'
-          | '"Playfair Display", serif'
-          | '"Inter", sans-serif'
-          | '"Poppins", sans-serif'
-          | '"Raleway", sans-serif'
-        )
-      | null;
-    useCustomFont?: boolean | null;
-    customFontFile?: (number | null) | Font;
-    customFontName?: string | null;
-  };
   /**
    * Misma imagen en escritorio y móvil.
    */
@@ -2964,65 +2884,6 @@ export interface CTAAppDropBlock {
         id?: string | null;
       }[]
     | null;
-  featuresStyle?: {
-    /**
-     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
-     */
-    textColor?: string | null;
-    /**
-     * Color para strong/b dentro del RichText de esta sección.
-     */
-    boldTextColor?: string | null;
-    /**
-     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
-     */
-    useFontGroup?: boolean | null;
-    /**
-     * Grupo creado en Font Groups.
-     */
-    fontGroup?: (number | null) | FontGroup;
-    fontFamily?:
-      | (
-          | 'default'
-          | 'Arial, sans-serif'
-          | '"Times New Roman", serif'
-          | 'Georgia, serif'
-          | 'Verdana, sans-serif'
-          | 'Helvetica, Arial, sans-serif'
-          | '"Courier New", monospace'
-          | '"Roboto", sans-serif'
-          | '"Open Sans", sans-serif'
-          | '"Lato", sans-serif'
-          | '"Montserrat", sans-serif'
-          | '"Playfair Display", serif'
-          | '"Inter", sans-serif'
-          | '"Poppins", sans-serif'
-          | '"Raleway", sans-serif'
-        )
-      | null;
-    useCustomFont?: boolean | null;
-    customFontFile?: (number | null) | Font;
-    customFontName?: string | null;
-    /**
-     * Color del icono de check por defecto. Hex, rgb o nombre CSS.
-     */
-    checkColor?: string | null;
-    icon?: {
-      /**
-       * Si está vacío se usa el check verde por defecto. Media o SVG sustituyen el icono de todas las filas.
-       */
-      useMedia?: boolean | null;
-      /**
-       * Imagen o GIF del icono.
-       */
-      mediaImage?: (number | null) | Media;
-      /**
-       * Pega aquí el código SVG como alternativa a subir media. Si está vacío se usa el icono por defecto.
-       */
-      iconSVG?: string | null;
-      alt?: string | null;
-    };
-  };
   /**
    * QR (solo escritorio), textos e iconos de App Store / Google Play.
    */
@@ -3084,15 +2945,154 @@ export interface CTAAppDropBlock {
         }[]
       | null;
   };
+  headerStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
+  subtitleStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
+  featuresStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+    /**
+     * Color del icono de check por defecto. Hex, rgb o nombre CSS.
+     */
+    checkColor?: string | null;
+    icon?: {
+      /**
+       * Si está vacío se usa el check verde por defecto. Media o SVG sustituyen el icono de todas las filas.
+       */
+      useMedia?: boolean | null;
+      /**
+       * Imagen o GIF del icono.
+       */
+      mediaImage?: (number | null) | Media;
+      /**
+       * Pega aquí el código SVG como alternativa a subir media. Si está vacío se usa el icono por defecto.
+       */
+      iconSVG?: string | null;
+      alt?: string | null;
+    };
+  };
   backgroundColor?: string | null;
-  /**
-   * Activa o desactiva los arcos, destellos y cruces del fondo (estilo Drop). La animación solo se reproduce en escritorio; en móvil se muestran fijos.
-   */
-  showDecorativeSvgs?: boolean | null;
   /**
    * Color de arcos, destellos y cruces del fondo.
    */
   decorativeSvgColor?: string | null;
+  /**
+   * Activa o desactiva los arcos, destellos y cruces del fondo (estilo Drop). La animación solo se reproduce en escritorio; en móvil se muestran fijos.
+   */
+  showDecorativeSvgs?: boolean | null;
   /**
    * Si está activo, en escritorio la imagen de la mano sube a medida que aparece el bloque y baja si se vuelve a subir. En móvil la imagen siempre es fija.
    */
@@ -3163,22 +3163,6 @@ export interface Layout2DropBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Hex, rgb, rgba o nombre CSS.
-   */
-  backgroundColor?: string | null;
-  /**
-   * Aplica al RichText principal.
-   */
-  textColorPrimary?: string | null;
-  /**
-   * Aplica al RichText secundario.
-   */
-  textColorSecondary?: string | null;
-  /**
-   * Color para strong/b en ambos RichText del encabezado.
-   */
-  boldTextColor?: string | null;
-  /**
    * Máximo 6. Desktop: filas de 3. Móvil: carrusel de una tarjeta.
    */
   prestaciones?:
@@ -3218,6 +3202,10 @@ export interface Layout2DropBlock {
         };
         backgroundColor?: string | null;
         /**
+         * Círculo detrás del icono.
+         */
+        iconBackgroundColor?: string | null;
+        /**
          * Color base del RichText de la card.
          */
         textColor?: string | null;
@@ -3225,13 +3213,25 @@ export interface Layout2DropBlock {
          * Color para strong/b (títulos de card).
          */
         boldTextColor?: string | null;
-        /**
-         * Círculo detrás del icono.
-         */
-        iconBackgroundColor?: string | null;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Hex, rgb, rgba o nombre CSS.
+   */
+  backgroundColor?: string | null;
+  /**
+   * Aplica al RichText principal.
+   */
+  textColorPrimary?: string | null;
+  /**
+   * Aplica al RichText secundario.
+   */
+  textColorSecondary?: string | null;
+  /**
+   * Color para strong/b en ambos RichText del encabezado.
+   */
+  boldTextColor?: string | null;
   /**
    * Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
    */
@@ -3843,22 +3843,6 @@ export interface FAQDropBlock {
     [k: string]: unknown;
   };
   /**
-   * Hex, rgb, rgba o nombre CSS.
-   */
-  backgroundColor?: string | null;
-  /**
-   * Aplica al RichText principal (texto normal), a las preguntas cerradas y a las respuestas.
-   */
-  textColor?: string | null;
-  /**
-   * Color para strong/b en el RichText principal y para el separador SVG.
-   */
-  boldTextColor?: string | null;
-  /**
-   * Fondo del contenedor del cuestionario (card en desktop) y de cada fila de pregunta.
-   */
-  questionsSectionBackgroundColor?: string | null;
-  /**
    * Máximo 10. Cada elemento es un acordeón con pregunta y respuesta.
    */
   questions?:
@@ -3919,6 +3903,22 @@ export interface FAQDropBlock {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Hex, rgb, rgba o nombre CSS.
+   */
+  backgroundColor?: string | null;
+  /**
+   * Fondo del contenedor del cuestionario (card en desktop) y de cada fila de pregunta.
+   */
+  questionsSectionBackgroundColor?: string | null;
+  /**
+   * Aplica al RichText principal (texto normal), a las preguntas cerradas y a las respuestas.
+   */
+  textColor?: string | null;
+  /**
+   * Color para strong/b en el RichText principal y para el separador SVG.
+   */
+  boldTextColor?: string | null;
   /**
    * Tipografía y tamaños del Font Group se aplican al RichText principal y a preguntas y respuestas del acordeón.
    */
@@ -5285,18 +5285,6 @@ export interface CalculadoraIMCDropBlockSelect<T extends boolean = true> {
 export interface LayoutCTADropBlockSelect<T extends boolean = true> {
   anchorId?: T;
   headerContent?: T;
-  headerStyle?:
-    | T
-    | {
-        textColor?: T;
-        boldTextColor?: T;
-        useFontGroup?: T;
-        fontGroup?: T;
-        fontFamily?: T;
-        useCustomFont?: T;
-        customFontFile?: T;
-        customFontName?: T;
-      };
   steps?:
     | T
     | {
@@ -5319,18 +5307,6 @@ export interface LayoutCTADropBlockSelect<T extends boolean = true> {
         content?: T;
         id?: T;
       };
-  stepsStyle?:
-    | T
-    | {
-        textColor?: T;
-        boldTextColor?: T;
-        useFontGroup?: T;
-        fontGroup?: T;
-        fontFamily?: T;
-        useCustomFont?: T;
-        customFontFile?: T;
-        customFontName?: T;
-      };
   buttons?:
     | T
     | {
@@ -5346,12 +5322,36 @@ export interface LayoutCTADropBlockSelect<T extends boolean = true> {
         iconSVG?: T;
         id?: T;
       };
+  headerStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+      };
+  stepsStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+      };
   buttonBackgroundColor?: T;
   buttonBackgroundColorSecondary?: T;
   buttonTextColor?: T;
   backgroundColor?: T;
-  showDecorativeSvgs?: T;
   decorativeSvgColor?: T;
+  showDecorativeSvgs?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
   customWidthPercentMobile?: T;
@@ -5365,6 +5365,22 @@ export interface LayoutCTADropBlockSelect<T extends boolean = true> {
 export interface TeamDropBlockSelect<T extends boolean = true> {
   anchorId?: T;
   headerContent?: T;
+  dividerIcon?:
+    | T
+    | {
+        useMedia?: T;
+        mediaImage?: T;
+        iconSVG?: T;
+        alt?: T;
+      };
+  secondaryContent?: T;
+  members?:
+    | T
+    | {
+        image?: T;
+        content?: T;
+        id?: T;
+      };
   headerStyle?:
     | T
     | {
@@ -5377,15 +5393,6 @@ export interface TeamDropBlockSelect<T extends boolean = true> {
         customFontFile?: T;
         customFontName?: T;
       };
-  dividerIcon?:
-    | T
-    | {
-        useMedia?: T;
-        mediaImage?: T;
-        iconSVG?: T;
-        alt?: T;
-      };
-  secondaryContent?: T;
   secondaryStyle?:
     | T
     | {
@@ -5397,13 +5404,6 @@ export interface TeamDropBlockSelect<T extends boolean = true> {
         useCustomFont?: T;
         customFontFile?: T;
         customFontName?: T;
-      };
-  members?:
-    | T
-    | {
-        image?: T;
-        content?: T;
-        id?: T;
       };
   membersStyle?:
     | T
@@ -5419,8 +5419,8 @@ export interface TeamDropBlockSelect<T extends boolean = true> {
       };
   backgroundColor?: T;
   accentColor?: T;
-  showDecorativeSvgs?: T;
   decorativeSvgColor?: T;
+  showDecorativeSvgs?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
   customWidthPercentMobile?: T;
@@ -5434,58 +5434,13 @@ export interface TeamDropBlockSelect<T extends boolean = true> {
 export interface CTAAppDropBlockSelect<T extends boolean = true> {
   anchorId?: T;
   headerContent?: T;
-  headerStyle?:
-    | T
-    | {
-        textColor?: T;
-        boldTextColor?: T;
-        useFontGroup?: T;
-        fontGroup?: T;
-        fontFamily?: T;
-        useCustomFont?: T;
-        customFontFile?: T;
-        customFontName?: T;
-      };
   subtitleContent?: T;
-  subtitleStyle?:
-    | T
-    | {
-        textColor?: T;
-        boldTextColor?: T;
-        useFontGroup?: T;
-        fontGroup?: T;
-        fontFamily?: T;
-        useCustomFont?: T;
-        customFontFile?: T;
-        customFontName?: T;
-      };
   mockupImage?: T;
   features?:
     | T
     | {
         label?: T;
         id?: T;
-      };
-  featuresStyle?:
-    | T
-    | {
-        textColor?: T;
-        boldTextColor?: T;
-        useFontGroup?: T;
-        fontGroup?: T;
-        fontFamily?: T;
-        useCustomFont?: T;
-        customFontFile?: T;
-        customFontName?: T;
-        checkColor?: T;
-        icon?:
-          | T
-          | {
-              useMedia?: T;
-              mediaImage?: T;
-              iconSVG?: T;
-              alt?: T;
-            };
       };
   downloadCard?:
     | T
@@ -5522,9 +5477,54 @@ export interface CTAAppDropBlockSelect<T extends boolean = true> {
               id?: T;
             };
       };
+  headerStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+      };
+  subtitleStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+      };
+  featuresStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
+        checkColor?: T;
+        icon?:
+          | T
+          | {
+              useMedia?: T;
+              mediaImage?: T;
+              iconSVG?: T;
+              alt?: T;
+            };
+      };
   backgroundColor?: T;
-  showDecorativeSvgs?: T;
   decorativeSvgColor?: T;
+  showDecorativeSvgs?: T;
   enableMockupScrollAnimation?: T;
   mockupScrollShowPercent?: T;
   applyCustomWidth?: T;
@@ -5541,10 +5541,6 @@ export interface Layout2DropBlockSelect<T extends boolean = true> {
   anchorId?: T;
   mainContent?: T;
   secondaryContent?: T;
-  backgroundColor?: T;
-  textColorPrimary?: T;
-  textColorSecondary?: T;
-  boldTextColor?: T;
   prestaciones?:
     | T
     | {
@@ -5558,11 +5554,15 @@ export interface Layout2DropBlockSelect<T extends boolean = true> {
             };
         content?: T;
         backgroundColor?: T;
+        iconBackgroundColor?: T;
         textColor?: T;
         boldTextColor?: T;
-        iconBackgroundColor?: T;
         id?: T;
       };
+  backgroundColor?: T;
+  textColorPrimary?: T;
+  textColorSecondary?: T;
+  boldTextColor?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
   customWidthPercentMobile?: T;
@@ -5746,10 +5746,6 @@ export interface PricingDropBlockSelect<T extends boolean = true> {
 export interface FAQDropBlockSelect<T extends boolean = true> {
   anchorId?: T;
   mainContent?: T;
-  backgroundColor?: T;
-  textColor?: T;
-  boldTextColor?: T;
-  questionsSectionBackgroundColor?: T;
   questions?:
     | T
     | {
@@ -5767,6 +5763,10 @@ export interface FAQDropBlockSelect<T extends boolean = true> {
         accentColor?: T;
         id?: T;
       };
+  backgroundColor?: T;
+  questionsSectionBackgroundColor?: T;
+  textColor?: T;
+  boldTextColor?: T;
   useFontGroup?: T;
   fontGroup?: T;
   fontFamily?: T;

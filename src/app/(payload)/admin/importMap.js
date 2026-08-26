@@ -24,6 +24,14 @@ import { SvgCodeField as SvgCodeField_de48ad8c8ae591674230819b4fda907e } from '@
 import { RowLabel as RowLabel_40db424a7c8315869f5a64ccc5c84709 } from '@/blocks/Layout_Drop/RowLabel'
 import { CategoryRowLabel as CategoryRowLabel_97084208c913b017169db0811450c374 } from '@/blocks/CalculadoraIMC_Drop/RowLabel'
 import { ButtonRowLabel as ButtonRowLabel_97084208c913b017169db0811450c374 } from '@/blocks/CalculadoraIMC_Drop/RowLabel'
+import { StepRowLabel as StepRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { ButtonRowLabel as ButtonRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { MemberRowLabel as MemberRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { FeatureRowLabel as FeatureRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { QrRowLabel as QrRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { StoreButtonRowLabel as StoreButtonRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { PrestacionRowLabel as PrestacionRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { QuestionRowLabel as QuestionRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
 import { OverviewComponent as OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaImageComponent as MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
@@ -67,6 +75,14 @@ export const importMap = {
   "@/blocks/Layout_Drop/RowLabel#RowLabel": RowLabel_40db424a7c8315869f5a64ccc5c84709,
   "@/blocks/CalculadoraIMC_Drop/RowLabel#CategoryRowLabel": CategoryRowLabel_97084208c913b017169db0811450c374,
   "@/blocks/CalculadoraIMC_Drop/RowLabel#ButtonRowLabel": ButtonRowLabel_97084208c913b017169db0811450c374,
+  "@/fields/dropArrayRowLabels#StepRowLabel": StepRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#ButtonRowLabel": ButtonRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#MemberRowLabel": MemberRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#FeatureRowLabel": FeatureRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#QrRowLabel": QrRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#StoreButtonRowLabel": StoreButtonRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#PrestacionRowLabel": PrestacionRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#QuestionRowLabel": QuestionRowLabel_8756c3efb303823105007e48ea3676d4,
   "@payloadcms/plugin-seo/client#OverviewComponent": OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaImageComponent": MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860,
