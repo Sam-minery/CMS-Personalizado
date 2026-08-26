@@ -1867,46 +1867,6 @@ export interface CalculadoraIMCDropBlock {
     };
     [k: string]: unknown;
   };
-  headerStyle?: {
-    /**
-     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
-     */
-    textColor?: string | null;
-    /**
-     * Color para strong/b dentro del RichText de esta sección.
-     */
-    boldTextColor?: string | null;
-    /**
-     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
-     */
-    useFontGroup?: boolean | null;
-    /**
-     * Grupo creado en Font Groups.
-     */
-    fontGroup?: (number | null) | FontGroup;
-    fontFamily?:
-      | (
-          | 'default'
-          | 'Arial, sans-serif'
-          | '"Times New Roman", serif'
-          | 'Georgia, serif'
-          | 'Verdana, sans-serif'
-          | 'Helvetica, Arial, sans-serif'
-          | '"Courier New", monospace'
-          | '"Roboto", sans-serif'
-          | '"Open Sans", sans-serif'
-          | '"Lato", sans-serif'
-          | '"Montserrat", sans-serif'
-          | '"Playfair Display", serif'
-          | '"Inter", sans-serif'
-          | '"Poppins", sans-serif'
-          | '"Raleway", sans-serif'
-        )
-      | null;
-    useCustomFont?: boolean | null;
-    customFontFile?: (number | null) | Font;
-    customFontName?: string | null;
-  };
   categoryHeaderLabel?: string | null;
   imcHeaderLabel?: string | null;
   categoryHeaderIcon?: {
@@ -1999,19 +1959,6 @@ export interface CalculadoraIMCDropBlock {
      */
     circleColor?: string | null;
   };
-  openButton: {
-    label: string;
-    /**
-     * Código SVG (ej. flecha) a la derecha del texto.
-     */
-    iconSVG?: string | null;
-    backgroundColor?: string | null;
-    /**
-     * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
-     */
-    backgroundColorSecondary?: string | null;
-    textColor?: string | null;
-  };
   /**
    * Texto pequeño bajo el botón/imagen (disclaimer del IMC).
    */
@@ -2030,6 +1977,46 @@ export interface CalculadoraIMCDropBlock {
     };
     [k: string]: unknown;
   } | null;
+  headerStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText de esta sección.
+     */
+    boldTextColor?: string | null;
+    /**
+     * Tipografía, tamaños e interlineados del Font Group se aplican al RichText de esta sección.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * Grupo creado en Font Groups.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
+  };
   footerStyle?: {
     /**
      * Hex, rgb, rgba o nombre CSS. Aplica al texto de esta sección.
@@ -2070,6 +2057,36 @@ export interface CalculadoraIMCDropBlock {
     customFontFile?: (number | null) | Font;
     customFontName?: string | null;
   };
+  openButton: {
+    label: string;
+    /**
+     * Código SVG (ej. flecha) a la derecha del texto.
+     */
+    iconSVG?: string | null;
+    backgroundColor?: string | null;
+    /**
+     * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+     */
+    backgroundColorSecondary?: string | null;
+    textColor?: string | null;
+  };
+  backgroundColor?: string | null;
+  tableCardBackgroundColor?: string | null;
+  /**
+   * Se usa si “Color de fondo categoría” está vacío.
+   */
+  tableHeaderBackgroundColor?: string | null;
+  /**
+   * Color de la cabecera de la tabla. Las filas alternan blanco y una versión más lavada de este color. Las líneas SVG decorativas usan este color y los círculos, una versión más lavada.
+   */
+  categoryBackgroundColor?: string | null;
+  tagBackgroundColor?: string | null;
+  tagTextColor?: string | null;
+  accentColor?: string | null;
+  /**
+   * Líneas y círculos alrededor de la imagen. Desactívalo para ocultarlos.
+   */
+  showDecorativeSvg?: boolean | null;
   modalTitle?: string | null;
   heightLabel?: string | null;
   weightLabel?: string | null;
@@ -2339,23 +2356,6 @@ export interface CalculadoraIMCDropBlock {
    */
   notEligibleButtonColorSecondary?: string | null;
   notEligibleButtonTextColor?: string | null;
-  backgroundColor?: string | null;
-  /**
-   * Se usa si “Color de fondo categoría” está vacío.
-   */
-  tableHeaderBackgroundColor?: string | null;
-  /**
-   * Color de la cabecera de la tabla. Las filas alternan blanco y una versión más lavada de este color. Las líneas SVG decorativas usan este color y los círculos, una versión más lavada.
-   */
-  categoryBackgroundColor?: string | null;
-  /**
-   * Líneas y círculos alrededor de la imagen. Desactívalo para ocultarlos.
-   */
-  showDecorativeSvg?: boolean | null;
-  tableCardBackgroundColor?: string | null;
-  tagBackgroundColor?: string | null;
-  tagTextColor?: string | null;
-  accentColor?: string | null;
   /**
    * Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo sigue a ancho completo. Si no lo marcas, el diseño no cambia.
    */
@@ -5086,18 +5086,6 @@ export interface LayoutDropBlockSelect<T extends boolean = true> {
 export interface CalculadoraIMCDropBlockSelect<T extends boolean = true> {
   anchorId?: T;
   headerContent?: T;
-  headerStyle?:
-    | T
-    | {
-        textColor?: T;
-        boldTextColor?: T;
-        useFontGroup?: T;
-        fontGroup?: T;
-        fontFamily?: T;
-        useCustomFont?: T;
-        customFontFile?: T;
-        customFontName?: T;
-      };
   categoryHeaderLabel?: T;
   imcHeaderLabel?: T;
   categoryHeaderIcon?:
@@ -5144,16 +5132,19 @@ export interface CalculadoraIMCDropBlockSelect<T extends boolean = true> {
         alt?: T;
         circleColor?: T;
       };
-  openButton?:
+  footerContent?: T;
+  headerStyle?:
     | T
     | {
-        label?: T;
-        iconSVG?: T;
-        backgroundColor?: T;
-        backgroundColorSecondary?: T;
         textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
       };
-  footerContent?: T;
   footerStyle?:
     | T
     | {
@@ -5166,6 +5157,23 @@ export interface CalculadoraIMCDropBlockSelect<T extends boolean = true> {
         customFontFile?: T;
         customFontName?: T;
       };
+  openButton?:
+    | T
+    | {
+        label?: T;
+        iconSVG?: T;
+        backgroundColor?: T;
+        backgroundColorSecondary?: T;
+        textColor?: T;
+      };
+  backgroundColor?: T;
+  tableCardBackgroundColor?: T;
+  tableHeaderBackgroundColor?: T;
+  categoryBackgroundColor?: T;
+  tagBackgroundColor?: T;
+  tagTextColor?: T;
+  accentColor?: T;
+  showDecorativeSvg?: T;
   modalTitle?: T;
   heightLabel?: T;
   weightLabel?: T;
@@ -5264,14 +5272,6 @@ export interface CalculadoraIMCDropBlockSelect<T extends boolean = true> {
   notEligibleButtonColor?: T;
   notEligibleButtonColorSecondary?: T;
   notEligibleButtonTextColor?: T;
-  backgroundColor?: T;
-  tableHeaderBackgroundColor?: T;
-  categoryBackgroundColor?: T;
-  showDecorativeSvg?: T;
-  tableCardBackgroundColor?: T;
-  tagBackgroundColor?: T;
-  tagTextColor?: T;
-  accentColor?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
   customWidthPercentMobile?: T;

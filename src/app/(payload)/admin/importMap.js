@@ -22,6 +22,8 @@ import { LinkFeatureClient as LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { ColorField as ColorField_fefe83621f3815412b5c63d5648284ce } from '@/fields/color/ColorField'
 import { SvgCodeField as SvgCodeField_de48ad8c8ae591674230819b4fda907e } from '@/fields/svgCode/SvgCodeField'
 import { RowLabel as RowLabel_40db424a7c8315869f5a64ccc5c84709 } from '@/blocks/Layout_Drop/RowLabel'
+import { CategoryRowLabel as CategoryRowLabel_97084208c913b017169db0811450c374 } from '@/blocks/CalculadoraIMC_Drop/RowLabel'
+import { ButtonRowLabel as ButtonRowLabel_97084208c913b017169db0811450c374 } from '@/blocks/CalculadoraIMC_Drop/RowLabel'
 import { OverviewComponent as OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaImageComponent as MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
@@ -63,6 +65,8 @@ export const importMap = {
   "@/fields/color/ColorField#ColorField": ColorField_fefe83621f3815412b5c63d5648284ce,
   "@/fields/svgCode/SvgCodeField#SvgCodeField": SvgCodeField_de48ad8c8ae591674230819b4fda907e,
   "@/blocks/Layout_Drop/RowLabel#RowLabel": RowLabel_40db424a7c8315869f5a64ccc5c84709,
+  "@/blocks/CalculadoraIMC_Drop/RowLabel#CategoryRowLabel": CategoryRowLabel_97084208c913b017169db0811450c374,
+  "@/blocks/CalculadoraIMC_Drop/RowLabel#ButtonRowLabel": ButtonRowLabel_97084208c913b017169db0811450c374,
   "@payloadcms/plugin-seo/client#OverviewComponent": OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaImageComponent": MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860,
