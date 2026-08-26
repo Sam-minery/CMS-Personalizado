@@ -206,7 +206,7 @@ export const PricingDropBlock: Block = {
       label: 'Imagen de fondo',
       admin: {
         description:
-          'Desktop: cubre todo el bloque. Móvil: solo a la altura del tag + texto principal, centrada hacia la derecha.',
+          'Desktop: cubre todo el bloque. Móvil: por defecto solo a la altura del tag + texto principal, hacia la derecha. Activa «Cambiar posición imagen mobile» para centrarla en todo el fondo.',
       },
     },
     {
@@ -217,6 +217,16 @@ export const PricingDropBlock: Block = {
         description:
           'Si no hay imagen, o en móvil para la zona bajo la imagen. Hex, rgb, rgba o nombre CSS.',
         placeholder: '#ffffff',
+      },
+    },
+    {
+      name: 'centerMobileImage',
+      type: 'checkbox',
+      label: 'Cambiar posición imagen mobile',
+      defaultValue: false,
+      admin: {
+        description:
+          'En móvil, centra la imagen y el SVG decorativo ocupando todo el fondo del bloque, con transparencia para no tapar el contenido. Si no lo marcas, el diseño móvil no cambia.',
       },
     },
     {
@@ -243,6 +253,16 @@ export const PricingDropBlock: Block = {
     },
 
     // ─── 4. Subsección numerada ────────────────────────────────
+    {
+      name: 'hideNumbering',
+      type: 'checkbox',
+      label: 'Desactivar numeración',
+      defaultValue: false,
+      admin: {
+        description:
+          'Si está activo, las filas numeradas se muestran solo con icono y texto, sin el círculo 1 / 2 / 3. Si no lo marcas, el diseño no cambia.',
+      },
+    },
     {
       name: 'numberedItems',
       type: 'array',

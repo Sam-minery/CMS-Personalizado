@@ -68,7 +68,7 @@ type ButtonWithLink = {
   };
   size?: 'sm' | 'lg';
   variant?: 'default' | 'secondary' | 'ghost' | 'link';
-  /** Código SVG opcional para mostrar a la derecha del texto del botón */
+  /** Código SVG opcional para mostrar a la izquierda del texto del botón */
   iconSVG?: string | null;
 };
 
@@ -166,6 +166,32 @@ function NavbarTextLabel({
   );
 }
 
+/** SVG a la izquierda, texto a la derecha. */
+function NavbarDropButtonContent({
+  title,
+  iconSVG,
+  fontStyle,
+  fontGroupTypographyActive,
+}: {
+  title: string;
+  iconSVG?: string | null;
+  fontStyle?: React.CSSProperties;
+  fontGroupTypographyActive: boolean;
+}) {
+  return (
+    <span className="inline-flex flex-row flex-nowrap items-center gap-2">
+      {iconSVG ? (
+        <span
+          className="inline-flex h-5 w-5 shrink-0 [&_svg]:h-full [&_svg]:w-full"
+          dangerouslySetInnerHTML={{ __html: sanitizeSVG(iconSVG) }}
+          aria-hidden
+        />
+      ) : null}
+      <NavbarTextLabel text={title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
+    </span>
+  );
+}
+
 type Props = {
   logo: ImageProps;
   navLinks: NavLink[];
@@ -187,8 +213,6 @@ type Props = {
 };
 
 export type Navbar_DROPProps = React.ComponentPropsWithoutRef<"section"> & Partial<Props>;
-
-const STICKY_SCROLL_THRESHOLD = 24;
 
 /**
  * Media query estable para SSR/hidratación:
@@ -459,35 +483,29 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
   const combinedStyles = buildStyles();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isFixed, setIsFixed] = useState(false);
   const [navbarHeight, setNavbarHeight] = useState(0);
   const [activeAnchorId, setActiveAnchorId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
   const ratiosRef = useRef<Record<string, number>>({});
   const isMobile = useStableMediaQuery("(max-width: 991px)");
 
   useEffect(() => {
-    const handleScroll = () => {
-      const el = containerRef.current;
-      if (!el) return;
-      if (isMobile) {
-        setIsFixed(true);
-      } else {
-        const rect = el.getBoundingClientRect();
-        setIsFixed(window.scrollY > 0 && rect.top <= 0);
-      }
-    };
     const measure = () => {
-      const section = containerRef.current;
-      if (section) setNavbarHeight(section.offsetHeight);
+      const bar = barRef.current;
+      if (bar) setNavbarHeight(bar.offsetHeight);
     };
     measure();
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", measure);
+    const bar = barRef.current;
+    const ro =
+      typeof ResizeObserver !== "undefined" && bar
+        ? new ResizeObserver(() => measure())
+        : null;
+    if (bar && ro) ro.observe(bar);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", measure);
+      ro?.disconnect();
     };
   }, [isMobile, isMobileMenuOpen]);
 
@@ -544,6 +562,9 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
   const mobileExpandedBg = mobileMenuBackgroundColor?.trim() || MOBILE_MENU_EXPANDED_BG;
 
   const fontStyle = selectedFontFamily ? { fontFamily: selectedFontFamily } : undefined;
+  const spacerExtraPx = isMobile ? 20 : 8;
+  const spacerFallbackPx = isMobile ? 72 : 64;
+  const spacerHeightPx = (navbarHeight > 0 ? navbarHeight : spacerFallbackPx) + spacerExtraPx;
 
   /** Barras: w-8 + h-0.5 + my-1 (4px) → distancia entre centros = 10px. */
   const renderMobileHamburger = () => (
@@ -611,6 +632,7 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
           }
         >
         <div
+          ref={barRef}
           className={cn(
             "navbar-drop-font-inherit relative flex min-w-0 items-center justify-between gap-4 lg:gap-6",
             isMenuExpanded && isMobile ? "w-full shrink-0" : "size-full",
@@ -711,16 +733,12 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
                     style={fontStyle}
                     onClick={() => scrollToAnchor(button.link!.anchorId!)}
                   >
-                    <span className="inline-flex items-center gap-2">
-                      <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
-                      {button.iconSVG ? (
-                        <span
-                          className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                          dangerouslySetInnerHTML={{ __html: sanitizeSVG(button.iconSVG) }}
-                          aria-hidden
-                        />
-                      ) : null}
-                    </span>
+                    <NavbarDropButtonContent
+                      title={button.title}
+                      iconSVG={button.iconSVG}
+                      fontStyle={fontStyle}
+                      fontGroupTypographyActive={fontGroupTypographyActive}
+                    />
                   </Button>
                 ) : (
                   <CMSLink
@@ -728,6 +746,7 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
                     {...(button.link as React.ComponentProps<typeof CMSLink>)}
                     size={button.variant === "link" ? button.size : "clear"}
                     appearance={button.variant}
+                    label={null}
                     className={cn(
                       button.variant !== "link" && dropBlockButtonPrimitiveClassName,
                       button.variant !== "link" && "transition-all hover:opacity-90",
@@ -735,16 +754,12 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
                     )}
                     style={fontStyle}
                   >
-                    <span className="inline-flex items-center gap-2">
-                      <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
-                      {button.iconSVG ? (
-                        <span
-                          className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                          dangerouslySetInnerHTML={{ __html: sanitizeSVG(button.iconSVG) }}
-                          aria-hidden
-                        />
-                      ) : null}
-                    </span>
+                    <NavbarDropButtonContent
+                      title={button.title}
+                      iconSVG={button.iconSVG}
+                      fontStyle={fontStyle}
+                      fontGroupTypographyActive={fontGroupTypographyActive}
+                    />
                   </CMSLink>
                 )
               )}
@@ -771,16 +786,12 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
                         setIsMobileMenuOpen(false);
                       }}
                     >
-                      <span className="inline-flex items-center gap-2">
-                        <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
-                        {button.iconSVG ? (
-                          <span
-                            className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                            dangerouslySetInnerHTML={{ __html: sanitizeSVG(button.iconSVG) }}
-                            aria-hidden
-                          />
-                        ) : null}
-                      </span>
+                      <NavbarDropButtonContent
+                        title={button.title}
+                        iconSVG={button.iconSVG}
+                        fontStyle={fontStyle}
+                        fontGroupTypographyActive={fontGroupTypographyActive}
+                      />
                     </Button>
                   ) : (
                     <div key={index} onClick={() => setIsMobileMenuOpen(false)}>
@@ -788,6 +799,7 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
                         {...(button.link as React.ComponentProps<typeof CMSLink>)}
                         size={button.variant === "link" ? button.size : "clear"}
                         appearance={button.variant}
+                        label={null}
                         className={cn(
                           button.variant !== "link" && dropBlockButtonPrimitiveClassName,
                           button.variant !== "link" && "transition-all hover:opacity-90",
@@ -795,16 +807,12 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
                         )}
                         style={fontStyle}
                       >
-                        <span className="inline-flex items-center gap-2">
-                          <NavbarTextLabel text={button.title} fontStyle={fontStyle} fg={fontGroupTypographyActive} />
-                          {button.iconSVG ? (
-                            <span
-                              className="inline-flex shrink-0 w-5 h-5 [&_svg]:w-full [&_svg]:h-full"
-                              dangerouslySetInnerHTML={{ __html: sanitizeSVG(button.iconSVG) }}
-                              aria-hidden
-                            />
-                          ) : null}
-                        </span>
+                        <NavbarDropButtonContent
+                          title={button.title}
+                          iconSVG={button.iconSVG}
+                          fontStyle={fontStyle}
+                          fontGroupTypographyActive={fontGroupTypographyActive}
+                        />
                       </CMSLink>
                     </div>
                   )
@@ -884,6 +892,11 @@ export const Navbar_DROP: React.FC<Navbar_DROPProps> = (props) => {
           )}
       </nav>
     </section>
+      <div
+        aria-hidden
+        className="pointer-events-none w-full shrink-0"
+        style={{ height: spacerHeightPx }}
+      />
     </>
   );
 };

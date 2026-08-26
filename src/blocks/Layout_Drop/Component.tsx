@@ -924,7 +924,7 @@ export const LayoutDropBlock: React.FC<LayoutDropBlockType> = (props) => {
               {headerContent && (
                 <div
                   className={cn(
-                    'layout-drop-header mx-auto mb-10 max-w-3xl text-center md:mb-12 lg:mb-14',
+                    'layout-drop-header mx-auto mb-10 max-w-3xl text-center md:mb-12 lg:mb-14 lg:max-w-[70%]',
                     headerCss.fontGroupActive && DROP_FG_RICHTEXT,
                     !headerCss.fontGroupActive &&
                       '[&_h1]:text-3xl [&_h1]:font-bold [&_h1]:leading-tight md:[&_h1]:text-4xl lg:[&_h1]:text-5xl [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:leading-tight md:[&_h2]:text-4xl lg:[&_h2]:text-5xl [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:leading-tight md:[&_h3]:text-3xl [&_p]:mt-4 [&_p]:text-base [&_p]:leading-relaxed md:[&_p]:text-lg [&_strong]:font-bold',

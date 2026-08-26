@@ -324,7 +324,7 @@ export interface Page {
          */
         backgroundColor?: string | null;
         /**
-         * También se aplica al borde del círculo de los iconos, si tienen borde.
+         * Color del texto del tag.
          */
         textColor?: string | null;
       };
@@ -892,6 +892,18 @@ export interface Page {
       pBtnBg2?: string | null;
       pBtnFg?: string | null;
       sBtnFg?: string | null;
+      /**
+       * Si está activo, el contenido del hero usa el ancho en % del viewport indicado; el fondo y la decoración siguen a ancho completo. Los popups (calculadora IMC) no cambian de ancho ni de estilo. Si no lo marcas, el diseño no cambia.
+       */
+      applyCustomWidth?: boolean | null;
+      /**
+       * 0–100. Ej.: 50 = el contenido ocupa el 50% del ancho de la ventana, centrado; sin paddings laterales extra sobre ese ancho.
+       */
+      customWidthPercent?: number | null;
+      /**
+       * Opcional. Si lo dejas vacío, en móvil se usa el mismo “Ancho respecto a la pantalla (%)” que arriba. Si indicas un valor (0–100), solo en pantallas menores a 768px de ancho el bloque usará ese ancho; desde tablet y desktop sigue el campo principal.
+       */
+      customWidthPercentMobile?: number | null;
     };
   };
   layout: (
@@ -3342,13 +3354,17 @@ export interface PricingDropBlock {
     boldTextColor?: string | null;
   };
   /**
-   * Desktop: cubre todo el bloque. Móvil: solo a la altura del tag + texto principal, centrada hacia la derecha.
+   * Desktop: cubre todo el bloque. Móvil: por defecto solo a la altura del tag + texto principal, hacia la derecha. Activa «Cambiar posición imagen mobile» para centrarla en todo el fondo.
    */
   backgroundImage?: (number | null) | Media;
   /**
    * Si no hay imagen, o en móvil para la zona bajo la imagen. Hex, rgb, rgba o nombre CSS.
    */
   backgroundColor?: string | null;
+  /**
+   * En móvil, centra la imagen y el SVG decorativo ocupando todo el fondo del bloque, con transparencia para no tapar el contenido. Si no lo marcas, el diseño móvil no cambia.
+   */
+  centerMobileImage?: boolean | null;
   /**
    * Círculo discontinuo giratorio detrás de la imagen y sparkles con parallax al hacer scroll.
    */
@@ -3357,6 +3373,10 @@ export interface PricingDropBlock {
    * Color de la línea discontinua y de las estrellas / sparkles.
    */
   animatedAccentColor?: string | null;
+  /**
+   * Si está activo, las filas numeradas se muestran solo con icono y texto, sin el círculo 1 / 2 / 3. Si no lo marcas, el diseño no cambia.
+   */
+  hideNumbering?: boolean | null;
   /**
    * Máximo 3. Columna a la izquierda, debajo del texto principal.
    */
@@ -4866,6 +4886,9 @@ export interface PagesSelect<T extends boolean = true> {
               pBtnBg2?: T;
               pBtnFg?: T;
               sBtnFg?: T;
+              applyCustomWidth?: T;
+              customWidthPercent?: T;
+              customWidthPercentMobile?: T;
             };
       };
   layout?:
@@ -5589,8 +5612,10 @@ export interface PricingDropBlockSelect<T extends boolean = true> {
       };
   backgroundImage?: T;
   backgroundColor?: T;
+  centerMobileImage?: T;
   enableAnimatedBg?: T;
   animatedAccentColor?: T;
+  hideNumbering?: T;
   numberedItems?:
     | T
     | {
