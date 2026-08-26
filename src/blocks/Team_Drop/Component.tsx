@@ -690,7 +690,7 @@ function MemberCard({
   if (variant === 'mobile') {
     return (
       <article
-        className="relative flex h-full w-full flex-col items-center overflow-hidden rounded-2xl bg-white px-5 pb-6 pt-7"
+        className="relative flex h-full w-full flex-col items-center overflow-hidden rounded-2xl bg-white px-5 pb-3 pt-7"
         style={{ boxShadow: CARD_SHADOW }}
       >
         {/*
@@ -721,6 +721,7 @@ function MemberCard({
           <RichText
             data={member.content}
             enableGutter={false}
+            enableProse={false}
             className={cn(
               'team-drop-members w-full text-center text-[17px] font-bold leading-[1.3]',
               membersFontGroupActive && DROP_FG_RICHTEXT,
@@ -745,7 +746,7 @@ function MemberCard({
       className="flex h-full w-full flex-col overflow-hidden rounded-[18px] bg-white"
       style={{ boxShadow: CARD_SHADOW }}
     >
-      <div className="relative aspect-[6/7] w-full overflow-hidden bg-white">
+      <div className="relative aspect-[6/7] w-full shrink-0 overflow-hidden bg-white">
         <span
           className="absolute -right-[8%] top-[8%] z-0 h-[88%] w-[108%] rounded-[46%_54%_48%_52%]"
           style={{
@@ -770,11 +771,12 @@ function MemberCard({
         )}
       </div>
 
-      <div className="flex flex-1 flex-col px-3.5 pb-3 pt-1.5 text-left" style={{ color: NAVY }}>
+      <div className="flex min-h-0 flex-1 flex-col px-3.5 pb-2 pt-1.5 text-left" style={{ color: NAVY }}>
         {member.content && (
           <RichText
             data={member.content}
             enableGutter={false}
+            enableProse={false}
             className={cn(
               'team-drop-members text-[15px] font-bold leading-[1.25]',
               membersFontGroupActive && DROP_FG_RICHTEXT,
@@ -915,18 +917,25 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
         ${headerCss.css}
         ${secondaryCss.css}
         ${membersCss.css}
-        ${rootSel} .team-drop-header.team-drop-richtext h1,
-        ${rootSel} .team-drop-header.team-drop-richtext h2,
-        ${rootSel} .team-drop-header .payload-richtext h1,
-        ${rootSel} .team-drop-header .payload-richtext h2 {
+        ${rootSel} .team-drop-header.team-drop-richtext :is(h1,h2,h3,h4,h5,h6),
+        ${rootSel} .team-drop-header .payload-richtext :is(h1,h2,h3,h4,h5,h6) {
           letter-spacing: -0.025em;
           font-weight: 700;
           line-height: 1.15;
           margin: 0;
         }
+        ${rootSel} .team-drop-header .payload-richtext :is(h1,h2,h3,h4,h5,h6) + :is(h1,h2,h3,h4,h5,h6) {
+          margin-top: 0.2em;
+        }
         ${rootSel} .team-drop-header.team-drop-richtext p,
         ${rootSel} .team-drop-header .payload-richtext p {
           margin: 0;
+        }
+        ${rootSel} .team-drop-members .payload-richtext :is(h1,h2,h3,h4,h5,h6) {
+          margin: 0 0 0.15em;
+        }
+        ${rootSel} .team-drop-members .payload-richtext :is(h1,h2,h3,h4,h5,h6):last-child {
+          margin-bottom: 0;
         }
         @media (min-width: 768px) {
           ${rootSel} .team-drop-header.team-drop-richtext h1,
@@ -953,23 +962,27 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
         ${rootSel} .team-drop-carousel {
           display: flex;
           align-items: stretch;
-          gap: 0.75rem;
+          gap: 0;
           overflow-x: auto;
           overflow-y: hidden;
           scroll-snap-type: x mandatory;
           scroll-behavior: smooth;
           -webkit-overflow-scrolling: touch;
           scrollbar-width: none;
-          padding: 0.5rem 14% 0.75rem;
-          scroll-padding-inline: 14%;
+          padding: 0.5rem 0 0.75rem;
+          scroll-padding-inline: 0;
+          overscroll-behavior-x: contain;
         }
         ${rootSel} .team-drop-carousel::-webkit-scrollbar { display: none; }
         ${rootSel} .team-drop-carousel-item {
           position: relative;
-          flex: 0 0 72%;
-          max-width: 300px;
-          scroll-snap-align: center;
+          box-sizing: border-box;
+          flex: 0 0 100%;
+          width: 100%;
+          max-width: 100%;
+          scroll-snap-align: start;
           scroll-snap-stop: always;
+          padding-inline: 2.75rem;
         }
         @media (prefers-reduced-motion: reduce) {
           ${rootSel} .team-drop-carousel { scroll-behavior: auto; }
@@ -1000,7 +1013,7 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
         }
       >
         <motion.div
-          className="mx-auto mb-10 max-w-[720px] text-center md:mb-14"
+          className="mx-auto mb-8 max-w-[720px] text-center md:mb-10"
           {...(fadeUp || {})}
         >
           {headerContent && (
@@ -1008,6 +1021,7 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
               <RichText
                 data={headerContent}
                 enableGutter={false}
+                enableProse={false}
                 className={cn(
                   'team-drop-header',
                   headerCss.fontGroupActive && DROP_FG_RICHTEXT,
@@ -1017,7 +1031,7 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
             </div>
           )}
 
-          <div className="mx-auto mt-4 flex justify-center md:mt-5" style={{ color: accent }}>
+          <div className="mx-auto mt-2.5 flex justify-center md:mt-3" style={{ color: accent }}>
             <IconMedia
               icon={dividerIcon}
               className="h-4 w-[120px]"
@@ -1028,12 +1042,13 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
 
           {secondaryContent && (
             <div
-              className="mx-auto mt-5 max-w-[640px] md:mt-6"
+              className="mx-auto mt-3 max-w-[640px] md:mt-3.5"
               style={!secondaryCss.fontGroupActive ? { color: MUTED } : undefined}
             >
               <RichText
                 data={secondaryContent}
                 enableGutter={false}
+                enableProse={false}
                 className={cn(
                   'team-drop-secondary',
                   secondaryCss.fontGroupActive && DROP_FG_RICHTEXT,
@@ -1053,7 +1068,7 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
           >
             <div
               className={cn(
-                'mx-auto grid w-full gap-4 lg:gap-5',
+                'mx-auto grid w-full items-stretch gap-4 lg:gap-5',
                 membersList.length >= 6 && 'grid-cols-6',
                 membersList.length === 5 && 'grid-cols-5',
                 membersList.length === 4 && 'grid-cols-4',
@@ -1081,12 +1096,12 @@ export const TeamDropBlock: React.FC<TeamDropBlockProps> = (props) => {
         {/* Mobile: carrusel + flechas + dots */}
         {membersList.length > 0 && (
           <motion.div
-            className="relative -mx-4 mb-2 sm:-mx-5 md:hidden"
+            className="relative mb-2 md:hidden"
             {...(fadeUp
               ? { ...fadeUp, transition: { ...fadeUp.transition, delay: 0.08 } }
               : {})}
           >
-            <div className="relative">
+            <div className="relative overflow-x-hidden">
               {membersList.length > 1 && (
                 <>
                   <button

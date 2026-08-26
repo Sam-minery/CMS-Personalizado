@@ -124,8 +124,10 @@ export type PricingDropBlockType = {
   } | null
   backgroundImage?: MediaLike | null
   backgroundColor?: string | null
+  centerMobileImage?: boolean | null
   enableAnimatedBg?: boolean | null
   animatedAccentColor?: string | null
+  hideNumbering?: boolean | null
   numberedItems?: Array<{
     icon?: IconGroup | null
     content?: DefaultTypedEditorState | null
@@ -405,8 +407,10 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
     mainStyle,
     backgroundImage,
     backgroundColor,
+    centerMobileImage,
     enableAnimatedBg,
     animatedAccentColor,
+    hideNumbering,
     numberedItems,
     product,
     finePrint,
@@ -656,6 +660,8 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
   const showAnimatedBg = enableAnimatedBg === true
   const animAccent = sanitizeCssColor(animatedAccentColor) || ACCENT
   const showDesktopDecor = Boolean(bgImageUrl) || showAnimatedBg
+  const hideNumbers = hideNumbering === true
+  const centerMobileBg = centerMobileImage === true
   const sectionRef = React.useRef<HTMLElement>(null)
 
   React.useEffect(() => {
@@ -1037,7 +1043,7 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
           {/* Columna izquierda (móvil: fondo hasta arriba de la tabla) */}
           <div className="relative flex flex-col gap-5 lg:col-span-6 lg:gap-6">
             {/* Móvil: imagen + círculo/sparkles estáticos (sin giro ni parallax) */}
-            {showDesktopDecor ? (
+            {showDesktopDecor && !centerMobileBg ? (
               <div
                 className="pricing-drop-bg-mobile pointer-events-none absolute top-0 z-0 overflow-hidden"
                 style={{
@@ -1076,7 +1082,7 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
                   <img
                     src={bgImageUrl}
                     alt=""
-                    className="absolute right-0 top-1/2 z-[1] h-[78%] w-auto max-w-[72%] -translate-y-1/2 object-contain object-right"
+                    className="absolute right-0 top-1/2 z-[1] h-[78%] w-auto max-w-[72%] -translate-y-1/2 translate-x-[22%] object-contain object-right opacity-[0.58]"
                   />
                 ) : null}
                 {bgImageUrl ? (
@@ -1088,6 +1094,38 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
                         `linear-gradient(180deg, transparent 52%, ${blockBg} 96%)`,
                       ].join(', '),
                     }}
+                  />
+                ) : null}
+              </div>
+            ) : null}
+
+            {/* Móvil: imagen + círculo al ancho del richtext, hasta la tabla */}
+            {showDesktopDecor && centerMobileBg ? (
+              <div
+                className="pricing-drop-bg-mobile pointer-events-none absolute left-0 right-0 top-0 z-0 overflow-hidden"
+                style={{
+                  // Hasta el borde superior de la tabla comparativa (cubre el gap-8 móvil)
+                  bottom: '-2rem',
+                  color: animAccent,
+                }}
+                aria-hidden
+              >
+                {showAnimatedBg ? (
+                  <div className="absolute inset-0 opacity-40">
+                    <Sparkle size={18} opacity={0.28} className="left-[8%] top-[12%]" />
+                    <Sparkle size={12} opacity={0.2} className="right-[10%] top-[58%]" />
+                    <Sparkle size={14} opacity={0.32} className="right-[18%] top-[22%]" />
+                    <Sparkle size={10} opacity={0.4} className="left-[22%] top-[72%]" />
+                    <div className="absolute left-1/2 top-0 aspect-square h-full -translate-x-1/2">
+                      <AnimatedOrbit />
+                    </div>
+                  </div>
+                ) : null}
+                {bgImageUrl ? (
+                  <img
+                    src={bgImageUrl}
+                    alt=""
+                    className="absolute left-1/2 top-0 z-[1] h-full w-auto max-w-none -translate-x-1/2 object-contain object-center opacity-[0.28]"
                   />
                 ) : null}
               </div>
@@ -1158,19 +1196,21 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
                   return (
                     <li key={item.id || `num-${index}`} className="flex items-center">
                       <div className="flex shrink-0 items-center gap-1.5">
+                        {hideNumbers ? null : (
+                          <span
+                            className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold"
+                            style={{ backgroundColor: iconBg, color: numColor }}
+                          >
+                            {index + 1}
+                          </span>
+                        )}
                         <span
-                          className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold"
-                          style={{ backgroundColor: iconBg, color: numColor }}
-                        >
-                          {index + 1}
-                        </span>
-                        <span
-                          className="flex h-10 w-10 items-center justify-center rounded-full"
+                          className="flex h-10 w-10 items-center justify-center rounded-full lg:h-12 lg:w-12"
                           style={{ backgroundColor: iconBg }}
                         >
                           <IconMedia
                             icon={item.icon}
-                            className="h-5 w-5"
+                            className="h-5 w-5 lg:h-6 lg:w-6"
                             imgClassName="h-full w-full"
                           />
                         </span>
@@ -1494,7 +1534,7 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
                     >
                       <IconMedia
                         icon={item.icon}
-                        className="h-5 w-5 shrink-0"
+                        className="h-5 w-5 shrink-0 lg:h-6 lg:w-6"
                         imgClassName="h-full w-full"
                       />
                       <RichScope
@@ -1546,12 +1586,12 @@ export const PricingDropBlock: React.FC<PricingDropBlockType> = (props) => {
                     style={{ backgroundColor: cardBg }}
                   >
                     <span
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full lg:h-14 lg:w-14"
                       style={{ backgroundColor: iconBg }}
                     >
                       <IconMedia
                         icon={stat.icon}
-                        className="h-5 w-5"
+                        className="h-5 w-5 lg:h-7 lg:w-7"
                         imgClassName="h-full w-full"
                       />
                     </span>

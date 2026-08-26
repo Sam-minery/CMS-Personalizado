@@ -943,16 +943,16 @@ export const CTAAppDropBlock: React.FC<CTAAppDropBlockProps> = (props) => {
     .join('\n')
 
   const storeBadgeClass =
-    'inline-flex h-[44px] min-w-[160px] items-center gap-2.5 rounded-[9px] bg-black px-3.5 text-white transition-opacity hover:opacity-90'
+    'inline-flex h-[44px] w-full max-w-[138px] min-w-0 items-center gap-2 rounded-[9px] bg-black px-2.5 text-white transition-opacity hover:opacity-90'
   const storeBadgeMobileClass =
-    'inline-flex h-[42px] min-w-0 flex-1 items-center justify-center gap-2 rounded-[9px] bg-black px-2.5 text-white transition-opacity hover:opacity-90'
+    'inline-flex h-[50px] min-w-0 flex-1 items-center justify-center gap-2 rounded-[9px] bg-black px-2.5 text-white transition-opacity hover:opacity-90'
 
   const renderStoreButtons = (layout: 'stack' | 'row') =>
     storeButtons.length > 0 ? (
       <div
         className={cn(
           'flex shrink-0',
-          layout === 'stack' ? 'flex-col gap-2' : 'w-full flex-row items-center justify-center gap-2',
+          layout === 'stack' ? 'w-[138px] flex-col gap-2' : 'w-full flex-row items-center justify-center gap-2',
         )}
       >
         {storeButtons.map((btn, index) => {
@@ -1143,9 +1143,9 @@ export const CTAAppDropBlock: React.FC<CTAAppDropBlockProps> = (props) => {
                     style={{ boxShadow: CARD_SHADOW }}
                   >
                     {/* Desktop card */}
-                    <div className="hidden items-center gap-4 lg:flex xl:gap-5">
+                    <div className="hidden items-center gap-3 lg:flex xl:gap-4">
                       {qrList.length > 0 && (
-                        <div className="flex shrink-0 gap-2">
+                        <div className="flex shrink-0 gap-5 xl:gap-6">
                           {qrList.map((qr, index) => {
                             const src = getMediaUrlSafe(qr.image)
                             if (!src) return null
@@ -1160,15 +1160,19 @@ export const CTAAppDropBlock: React.FC<CTAAppDropBlockProps> = (props) => {
                           })}
                         </div>
                       )}
-                      <div className="flex min-w-0 flex-1 items-center gap-2">
-                        <PhoneGlyph icon={downloadCard?.phoneIcon} />
-                        <p className="text-sm leading-snug text-[#666666]">{desktopScanText}</p>
+                      <div className="flex min-w-0 flex-1 items-center justify-center">
+                        <div className="flex min-w-0 max-w-[10.75rem] items-center gap-2 xl:max-w-[12rem]">
+                          <PhoneGlyph icon={downloadCard?.phoneIcon} />
+                          <p className="min-w-0 text-xs leading-snug text-[#666666] xl:text-[13px]">
+                            {desktopScanText}
+                          </p>
+                        </div>
                       </div>
                       {storeButtons.length > 0 && (
-                        <>
+                        <div className="flex shrink-0 items-center gap-3 xl:gap-4">
                           <div className="h-12 w-px shrink-0 bg-[#E5E7EB]" aria-hidden />
                           {renderStoreButtons('stack')}
-                        </>
+                        </div>
                       )}
                     </div>
 

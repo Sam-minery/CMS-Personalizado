@@ -14,6 +14,13 @@ import {
   dropButtonBackgroundStyle,
 } from '@/utilities/dropBlockButtonClasses'
 import { cn } from '@/utilities/ui'
+import {
+  SENDA_CUSTOM_BREAKOUT_ATTR,
+  buildSendaCalcBreakoutResponsiveCss,
+  sendaBreakoutOnlyBoxSizing,
+  sendaCalcBreakoutInlineStyle,
+  sendaResolveOptionalMobileWidthVw,
+} from '@/utilities/sendaCustomWidthBreakout'
 
 type MediaLike = {
   url?: string | null
@@ -152,6 +159,9 @@ type HeroDropData = {
   pBtnBg2?: string | null
   pBtnFg?: string | null
   sBtnFg?: string | null
+  applyCustomWidth?: boolean | null
+  customWidthPercent?: number | null
+  customWidthPercentMobile?: number | null
 }
 
 type HeroDropProps = {
@@ -401,6 +411,24 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
   const categories = Array.isArray(calc?.cats) ? calc.cats : []
   const useContactFlow = calc?.enableContact !== false
 
+  const hdCustomWidthVw =
+    data.applyCustomWidth === true
+      ? (() => {
+          const p = data.customWidthPercent
+          if (typeof p !== 'number' || Number.isNaN(p)) return 100
+          const clamped = Math.min(100, Math.max(0, p))
+          return clamped <= 0 ? 100 : clamped
+        })()
+      : null
+  const hdCustomWidthMobileVw = sendaResolveOptionalMobileWidthVw(
+    data.applyCustomWidth,
+    data.customWidthPercentMobile,
+  )
+  const hdBreakoutCss =
+    hdCustomWidthVw != null && hdCustomWidthMobileVw != null
+      ? buildSendaCalcBreakoutResponsiveCss(rootClass, hdCustomWidthVw, hdCustomWidthMobileVw)
+      : ''
+
   const bmiFormatted =
     bmi != null ? bmi.toFixed(1).replace('.', ',') : ''
   const isEligible = Boolean(matchedCategory?.eligible)
@@ -451,8 +479,11 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
       `${root} .hd-heart-fab .hd-heart-custom{transition:transform .35s cubic-bezier(.22,1,.36,1);transform-origin:center;}`,
       `${root} .hd-heart-fab:hover .hd-heart-custom,${root} .hd-heart-fab:focus-visible .hd-heart-custom{transform:scale(1.2);}`,
       `@media (prefers-reduced-motion:reduce){${root} .hd-curves,${root} .hd-curves path{animation:none!important;} ${root} .hd-heart-fab .hd-heart-icon,${root} .hd-heart-fab .hd-heart-path,${root} .hd-heart-fab .hd-heart-custom{transition:none!important;} ${root} .hd-heart-fab:hover .hd-heart-icon,${root} .hd-heart-fab:focus-visible .hd-heart-icon,${root} .hd-heart-fab:hover .hd-heart-custom,${root} .hd-heart-fab:focus-visible .hd-heart-custom{transform:none;}}`,
+      hdCustomWidthVw != null
+        ? `${root} > .hd-modal{width:100%;max-width:none;margin:0;padding:1rem;box-sizing:border-box;}${root} > .hd-modal .hd-modal-dialog{width:100%;max-width:28rem;margin:0;box-sizing:border-box;}`
+        : '',
     ].join('')
-  }, [rootClass, data.hsty, data.fsty, data.osty, accent])
+  }, [rootClass, data.hsty, data.fsty, data.osty, accent, hdCustomWidthVw])
 
   const resetContactForm = useCallback(() => {
     setContactName('')
@@ -757,6 +788,7 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
       }}
     >
       <style dangerouslySetInnerHTML={{ __html: scopedCss }} />
+      {hdBreakoutCss ? <style dangerouslySetInnerHTML={{ __html: hdBreakoutCss }} /> : null}
 
       {showCurves && (
         <svg
@@ -834,7 +866,24 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
         </svg>
       )}
 
-      <div className="relative z-10 mx-auto w-full max-w-[1280px] px-4 pb-8 pt-6 sm:px-6 lg:px-10 lg:pb-14 lg:pt-14 xl:px-12">
+      <div
+        className={cn(
+          'relative z-10 pb-8 pt-6 lg:pb-14 lg:pt-14',
+          hdCustomWidthVw == null
+            ? 'mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-10 xl:px-12'
+            : 'box-border w-full max-w-none overflow-x-visible px-0',
+        )}
+        {...(hdCustomWidthVw != null && hdCustomWidthMobileVw != null
+          ? { [SENDA_CUSTOM_BREAKOUT_ATTR]: rootClass }
+          : {})}
+        style={
+          hdCustomWidthVw == null
+            ? undefined
+            : hdCustomWidthMobileVw != null
+              ? sendaBreakoutOnlyBoxSizing()
+              : sendaCalcBreakoutInlineStyle(hdCustomWidthVw)
+        }
+      >
         <div className="relative lg:min-h-[600px] xl:min-h-[640px]">
           {/* ========== DESKTOP (sin cambios de layout mobile) ========== */}
           <div className="relative z-20 hidden max-w-[44%] pt-2 lg:block xl:max-w-[42%]">
@@ -862,12 +911,14 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
             {features.length > 0 && (
               <div className="hd-features mt-9 grid grid-cols-3 gap-5">
                 {features.map((item, index) => (
-                  <div key={item.id || `desk-feat-${index}`} className="flex flex-col gap-2.5">
+                  <div
+                    key={item.id || `desk-feat-${index}`}
+                    className="flex items-center gap-3 text-left"
+                  >
                     <span
-                      className="inline-flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border p-0"
+                      className="inline-flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full p-0"
                       style={{
                         backgroundColor: tagBg,
-                        borderColor: tagText,
                         color: accent,
                       }}
                     >
@@ -878,7 +929,9 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
                       />
                     </span>
                     {item.content && (
-                      <RichText data={item.content} enableGutter={false} enableProse={false} />
+                      <div className="min-w-0 flex-1">
+                        <RichText data={item.content} enableGutter={false} enableProse={false} />
+                      </div>
                     )}
                   </div>
                 ))}
@@ -1084,7 +1137,7 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
 
       {isModalOpen ? (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          className="hd-modal fixed inset-0 z-[100] flex items-center justify-center p-4"
           role="presentation"
         >
           <button
@@ -1098,7 +1151,7 @@ export const HeroDrop: React.FC<HeroDropProps> = ({ hd }) => {
             role="dialog"
             aria-modal="true"
             aria-labelledby={`${uid}-modal-title`}
-            className="relative z-[1] w-full max-w-md rounded-3xl p-6 shadow-2xl sm:p-8"
+            className="hd-modal-dialog relative z-[1] w-full max-w-md rounded-3xl p-6 shadow-2xl sm:p-8"
             style={{ backgroundColor: modalBg }}
           >
             <button
