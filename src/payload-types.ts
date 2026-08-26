@@ -1399,6 +1399,44 @@ export interface LayoutDropBlock {
     [k: string]: unknown;
   };
   /**
+   * Máximo 6 elementos. Cada uno con icono/GIF y texto.
+   */
+  elements?:
+    | {
+        icon?: {
+          /**
+           * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+           */
+          useMedia?: boolean | null;
+          /**
+           * Imagen o GIF del icono.
+           */
+          mediaImage?: (number | null) | Media;
+          /**
+           * Pega aquí el código SVG como alternativa a subir media.
+           */
+          iconSVG?: string | null;
+          alt?: string | null;
+        };
+        content: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * Colores y tipografía del header.
    */
   headerStyle?: {
@@ -1441,44 +1479,6 @@ export interface LayoutDropBlock {
     customFontFile?: (number | null) | Font;
     customFontName?: string | null;
   };
-  /**
-   * Máximo 6 elementos. Cada uno con icono/GIF y texto.
-   */
-  elements?:
-    | {
-        icon?: {
-          /**
-           * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
-           */
-          useMedia?: boolean | null;
-          /**
-           * Imagen o GIF del icono.
-           */
-          mediaImage?: (number | null) | Media;
-          /**
-           * Pega aquí el código SVG como alternativa a subir media.
-           */
-          iconSVG?: string | null;
-          alt?: string | null;
-        };
-        content: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        };
-        id?: string | null;
-      }[]
-    | null;
   /**
    * Colores, borde y tipografía de las cards (todos los elementos).
    */
@@ -1533,6 +1533,39 @@ export interface LayoutDropBlock {
     useCustomFont?: boolean | null;
     customFontFile?: (number | null) | Font;
     customFontName?: string | null;
+  };
+  button: {
+    label: string;
+    /**
+     * SVG a la derecha del texto (ej. flecha). Dejar vacío para no mostrar icono.
+     */
+    iconSVG?: string | null;
+    /**
+     * Color sólido. Si también rellenas el secundario, se usa como degradado.
+     */
+    backgroundColor?: string | null;
+    /**
+     * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+     */
+    backgroundColorSecondary?: string | null;
+    textColor?: string | null;
+    /**
+     * Si se configura, tras enviar el formulario se navega a este enlace. Si está vacío, solo se envía el formulario.
+     */
+    link?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
+    };
   };
   contactForm: {
     icon?: {
@@ -1739,39 +1772,6 @@ export interface LayoutDropBlock {
     useCustomFont?: boolean | null;
     customFontFile?: (number | null) | Font;
     customFontName?: string | null;
-  };
-  button: {
-    label: string;
-    /**
-     * SVG a la derecha del texto (ej. flecha). Dejar vacío para no mostrar icono.
-     */
-    iconSVG?: string | null;
-    /**
-     * Color sólido. Si también rellenas el secundario, se usa como degradado.
-     */
-    backgroundColor?: string | null;
-    /**
-     * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
-     */
-    backgroundColorSecondary?: string | null;
-    textColor?: string | null;
-    /**
-     * Si se configura, tras enviar el formulario se navega a este enlace. Si está vacío, solo se envía el formulario.
-     */
-    link?: {
-      type?: ('reference' | 'custom') | null;
-      newTab?: boolean | null;
-      reference?:
-        | ({
-            relationTo: 'pages';
-            value: number | Page;
-          } | null)
-        | ({
-            relationTo: 'posts';
-            value: number | Post;
-          } | null);
-      url?: string | null;
-    };
   };
   /**
    * Controla la altura mínima del bloque.
@@ -4902,18 +4902,6 @@ export interface PagesSelect<T extends boolean = true> {
 export interface LayoutDropBlockSelect<T extends boolean = true> {
   anchorId?: T;
   headerContent?: T;
-  headerStyle?:
-    | T
-    | {
-        textColor?: T;
-        boldTextColor?: T;
-        useFontGroup?: T;
-        fontGroup?: T;
-        fontFamily?: T;
-        useCustomFont?: T;
-        customFontFile?: T;
-        customFontName?: T;
-      };
   elements?:
     | T
     | {
@@ -4927,6 +4915,18 @@ export interface LayoutDropBlockSelect<T extends boolean = true> {
             };
         content?: T;
         id?: T;
+      };
+  headerStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
       };
   elementsStyle?:
     | T
@@ -4942,6 +4942,23 @@ export interface LayoutDropBlockSelect<T extends boolean = true> {
         useCustomFont?: T;
         customFontFile?: T;
         customFontName?: T;
+      };
+  button?:
+    | T
+    | {
+        label?: T;
+        iconSVG?: T;
+        backgroundColor?: T;
+        backgroundColorSecondary?: T;
+        textColor?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
       };
   contactForm?:
     | T
@@ -5018,23 +5035,6 @@ export interface LayoutDropBlockSelect<T extends boolean = true> {
         useCustomFont?: T;
         customFontFile?: T;
         customFontName?: T;
-      };
-  button?:
-    | T
-    | {
-        label?: T;
-        iconSVG?: T;
-        backgroundColor?: T;
-        backgroundColorSecondary?: T;
-        textColor?: T;
-        link?:
-          | T
-          | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
-            };
       };
   blockHeightMode?: T;
   customBlockHeightPx?: T;

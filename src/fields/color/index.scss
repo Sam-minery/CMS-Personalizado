@@ -1,0 +1,46 @@
+.color-field {
+  .color-field__row {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--base) / 2);
+  }
+
+  .color-field__swatch {
+    position: relative;
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--style-radius-s, 4px);
+    border: 1px solid var(--theme-elevation-150);
+    overflow: hidden;
+    cursor: pointer;
+    background-color: var(--theme-elevation-50);
+    background-image:
+      linear-gradient(45deg, var(--theme-elevation-100) 25%, transparent 25%),
+      linear-gradient(-45deg, var(--theme-elevation-100) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--theme-elevation-100) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--theme-elevation-100) 75%);
+    background-size: 10px 10px;
+    background-position: 0 0, 0 5px, 5px -5px, -5px 0;
+  }
+
+  .color-field__swatch--disabled {
+    cursor: default;
+  }
+
+  .color-field__swatch input[type='color'] {
+    position: absolute;
+    inset: -25%;
+    width: 150%;
+    height: 150%;
+    padding: 0;
+    border: none;
+    cursor: inherit;
+    opacity: 0;
+  }
+
+  .color-field__text {
+    flex: 1;
+    min-width: 0;
+  }
+}
