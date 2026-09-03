@@ -8,6 +8,9 @@ import {
   ParagraphFeature,
 } from '@payloadcms/richtext-lexical'
 
+import { colorField } from '@/fields/color'
+import { iconGroupFields } from '@/fields/iconGroupFields'
+import { svgCodeField } from '@/fields/svgCode'
 import { link } from '@/fields/link'
 import { simpleLink } from '@/fields/simpleLink'
 import { revalidateFooter } from './hooks/revalidateFooter'
@@ -100,57 +103,19 @@ const logoMediaFields = (opts?: { altDefault?: string }): Field[] => [
       condition: (_, siblingData) => siblingData?.useMedia === true,
     },
   },
-  {
+  svgCodeField({
     name: 'iconSVG',
-    type: 'textarea',
     label: 'Código SVG del logo',
     admin: {
       condition: (_, siblingData) => siblingData?.useMedia !== true,
       description: 'Pega aquí el código SVG como alternativa a subir media.',
     },
-  },
+  }),
   {
     name: 'alt',
     type: 'text',
     label: 'Texto alternativo',
     defaultValue: opts?.altDefault ?? 'Logo',
-  },
-]
-
-const iconGroupFields = (): Field[] => [
-  {
-    name: 'useMedia',
-    type: 'checkbox',
-    label: 'Usar imagen / GIF subido',
-    defaultValue: false,
-    admin: {
-      description: 'Si está desactivado, puedes pegar código SVG en el campo "Código SVG".',
-    },
-  },
-  {
-    name: 'mediaImage',
-    type: 'upload',
-    relationTo: 'media',
-    label: 'Icono / GIF (media)',
-    admin: {
-      condition: (_, siblingData) => siblingData?.useMedia === true,
-      description: 'Imagen o GIF del icono. Solo se muestra en móvil.',
-    },
-  },
-  {
-    name: 'iconSVG',
-    type: 'textarea',
-    label: 'Código SVG del icono',
-    admin: {
-      condition: (_, siblingData) => siblingData?.useMedia !== true,
-      description: 'Pega aquí el código SVG. Solo se muestra en móvil.',
-    },
-  },
-  {
-    name: 'alt',
-    type: 'text',
-    label: 'Texto alternativo',
-    defaultValue: 'Icono',
   },
 ]
 
@@ -885,234 +850,267 @@ export const Footer: GlobalConfig = {
       label: 'Config Footer DROP',
       fields: [
         {
-          name: 'logo',
-          type: 'group',
-          label: 'Logo principal',
-          fields: [
-            ...logoMediaFields({ altDefault: 'Logo' }),
+          type: 'tabs',
+          tabs: [
             {
-              name: 'link',
-              type: 'group',
-              label: 'Enlace del logo',
-              admin: { hideGutter: true },
-              fields: dropLinkFields(),
-            },
-          ],
-        },
-        {
-          name: 'secondaryLogo',
-          type: 'group',
-          label: 'Logo secundario (opcional)',
-          fields: [
-            {
-              name: 'enabled',
-              type: 'checkbox',
-              label: 'Mostrar logo secundario',
-              defaultValue: false,
-            },
-            {
-              name: 'useMedia',
-              type: 'checkbox',
-              label: 'Usar imagen subida',
-              defaultValue: true,
-              admin: {
-                condition: (_, siblingData) => siblingData?.enabled === true,
-                description: 'Si está desactivado, puedes pegar código SVG.',
-              },
-            },
-            {
-              name: 'mediaImage',
-              type: 'upload',
-              relationTo: 'media',
-              label: 'Imagen del logo',
-              admin: {
-                condition: (_, siblingData) =>
-                  siblingData?.enabled === true && siblingData?.useMedia === true,
-              },
-            },
-            {
-              name: 'iconSVG',
-              type: 'textarea',
-              label: 'Código SVG del logo',
-              admin: {
-                condition: (_, siblingData) =>
-                  siblingData?.enabled === true && siblingData?.useMedia !== true,
-                description: 'Pega aquí el código SVG como alternativa a subir media.',
-              },
-            },
-            {
-              name: 'alt',
-              type: 'text',
-              label: 'Texto alternativo',
-              defaultValue: 'Logo secundario',
-              admin: {
-                condition: (_, siblingData) => siblingData?.enabled === true,
-              },
-            },
-            {
-              name: 'link',
-              type: 'group',
-              label: 'Enlace del logo',
-              admin: {
-                hideGutter: true,
-                condition: (_, siblingData) => siblingData?.enabled === true,
-              },
-              fields: dropLinkFields(),
-            },
-          ],
-        },
-        {
-          name: 'navLinks',
-          type: 'array',
-          dbName: 'ftd_nav',
-          label: 'Enlaces de navegación',
-          admin: {
-            description: 'En escritorio se muestran en fila. En móvil, cada uno puede llevar icono.',
-            initCollapsed: true,
-          },
-          fields: [
-            {
-              name: 'title',
-              type: 'text',
-              required: true,
-              defaultValue: 'INICIO',
-            },
-            {
-              name: 'link',
-              type: 'group',
-              admin: { hideGutter: true },
-              fields: dropLinkFields(),
-            },
-            {
-              name: 'icon',
-              type: 'group',
-              label: 'Icono (solo móvil, opcional)',
-              fields: iconGroupFields(),
-            },
-            {
-              name: 'iconBackgroundColor',
-              type: 'text',
-              label: 'Color de fondo del icono (móvil, opcional)',
-              defaultValue: '#fce4ec',
-              admin: {
-                description: 'Círculo detrás del icono en móvil. Ej: #fce4ec.',
-                placeholder: '#fce4ec',
-              },
-            },
-          ],
-        },
-        {
-          name: 'socialButtons',
-          type: 'array',
-          dbName: 'ftd_soc',
-          label: 'Botones sociales',
-          maxRows: 3,
-          admin: {
-            description: 'Máximo 3. Cada uno funciona como botón con icono opcional.',
-            initCollapsed: true,
-          },
-          fields: [
-            {
-              name: 'icon',
-              type: 'select',
-              label: 'Icono',
-              defaultValue: 'none',
-              options: [
-                { label: 'Sin icono', value: 'none' },
-                { label: 'Icono Instagram', value: 'instagram' },
-                { label: 'Icono Facebook', value: 'facebook' },
-                { label: 'Icono YouTube', value: 'youtube' },
+              label: 'Contenido',
+              fields: [
+                {
+                  name: 'logo',
+                  type: 'group',
+                  label: 'Logo principal',
+                  fields: [
+                    ...logoMediaFields({ altDefault: 'Logo' }),
+                    {
+                      name: 'link',
+                      type: 'group',
+                      label: 'Enlace del logo',
+                      admin: { hideGutter: true },
+                      fields: dropLinkFields(),
+                    },
+                  ],
+                },
+                {
+                  name: 'secondaryLogo',
+                  type: 'group',
+                  label: 'Logo secundario (opcional)',
+                  fields: [
+                    {
+                      name: 'enabled',
+                      type: 'checkbox',
+                      label: 'Mostrar logo secundario',
+                      defaultValue: false,
+                    },
+                    {
+                      name: 'useMedia',
+                      type: 'checkbox',
+                      label: 'Usar imagen subida',
+                      defaultValue: true,
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.enabled === true,
+                        description: 'Si está desactivado, puedes pegar código SVG.',
+                      },
+                    },
+                    {
+                      name: 'mediaImage',
+                      type: 'upload',
+                      relationTo: 'media',
+                      label: 'Imagen del logo',
+                      admin: {
+                        condition: (_, siblingData) =>
+                          siblingData?.enabled === true && siblingData?.useMedia === true,
+                      },
+                    },
+                    svgCodeField({
+                      name: 'iconSVG',
+                      label: 'Código SVG del logo',
+                      admin: {
+                        condition: (_, siblingData) =>
+                          siblingData?.enabled === true && siblingData?.useMedia !== true,
+                        description: 'Pega aquí el código SVG como alternativa a subir media.',
+                      },
+                    }),
+                    {
+                      name: 'alt',
+                      type: 'text',
+                      label: 'Texto alternativo',
+                      defaultValue: 'Logo secundario',
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.enabled === true,
+                      },
+                    },
+                    {
+                      name: 'link',
+                      type: 'group',
+                      label: 'Enlace del logo',
+                      admin: {
+                        hideGutter: true,
+                        condition: (_, siblingData) => siblingData?.enabled === true,
+                      },
+                      fields: dropLinkFields(),
+                    },
+                  ],
+                },
+                {
+                  name: 'navLinks',
+                  type: 'array',
+                  dbName: 'ftd_nav',
+                  label: 'Enlaces de navegación',
+                  admin: {
+                    description:
+                      'En escritorio se muestran en fila. En móvil, cada uno puede llevar icono.',
+                    initCollapsed: true,
+                    components: {
+                      RowLabel: '@/fields/dropArrayRowLabels#NavLinkRowLabel',
+                    },
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      required: true,
+                      defaultValue: 'INICIO',
+                    },
+                    {
+                      name: 'link',
+                      type: 'group',
+                      admin: { hideGutter: true },
+                      fields: dropLinkFields(),
+                    },
+                    {
+                      name: 'icon',
+                      type: 'group',
+                      label: 'Icono (solo móvil, opcional)',
+                      fields: iconGroupFields({
+                        defaultUseMedia: false,
+                        description:
+                          'Si está desactivado, puedes pegar código SVG. El icono solo se muestra en móvil.',
+                        svgDescription: 'Pega aquí el código SVG. Solo se muestra en móvil.',
+                      }),
+                    },
+                    colorField({
+                      name: 'iconBackgroundColor',
+                      label: 'Color de fondo del icono (móvil, opcional)',
+                      defaultValue: '#fce4ec',
+                      placeholder: '#fce4ec',
+                      admin: {
+                        description: 'Círculo detrás del icono en móvil. Ej: #fce4ec.',
+                      },
+                    }),
+                  ],
+                },
+                {
+                  name: 'socialButtons',
+                  type: 'array',
+                  dbName: 'ftd_soc',
+                  label: 'Botones sociales',
+                  maxRows: 3,
+                  admin: {
+                    description: 'Máximo 3. Cada uno funciona como botón con icono opcional.',
+                    initCollapsed: true,
+                    components: {
+                      RowLabel: '@/fields/dropArrayRowLabels#SocialRowLabel',
+                    },
+                  },
+                  fields: [
+                    {
+                      name: 'icon',
+                      type: 'select',
+                      label: 'Icono',
+                      defaultValue: 'none',
+                      options: [
+                        { label: 'Sin icono', value: 'none' },
+                        { label: 'Icono Instagram', value: 'instagram' },
+                        { label: 'Icono Facebook', value: 'facebook' },
+                        { label: 'Icono YouTube', value: 'youtube' },
+                      ],
+                    },
+                    {
+                      name: 'title',
+                      type: 'text',
+                      label: 'Título',
+                      admin: {
+                        description:
+                          'Texto accesible (aria-label). Si no hay icono, se muestra en el botón.',
+                      },
+                    },
+                    {
+                      name: 'link',
+                      type: 'group',
+                      admin: { hideGutter: true },
+                      fields: dropLinkFields(),
+                    },
+                  ],
+                },
+                {
+                  name: 'policyLinks',
+                  type: 'array',
+                  dbName: 'ftd_pol',
+                  label: 'Enlaces de políticas',
+                  maxRows: 4,
+                  admin: {
+                    description: 'Máximo 4 (privacidad, cookies, aviso legal, etc.).',
+                    initCollapsed: true,
+                    components: {
+                      RowLabel: '@/fields/dropArrayRowLabels#PolicyRowLabel',
+                    },
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'richText',
+                      label: 'Título',
+                      required: true,
+                      editor: footerDropRichTextEditor(),
+                    },
+                    {
+                      name: 'link',
+                      type: 'group',
+                      admin: { hideGutter: true },
+                      fields: dropLinkFields(),
+                    },
+                  ],
+                },
+                {
+                  name: 'footerText',
+                  type: 'richText',
+                  label: 'Texto final',
+                  editor: footerDropRichTextEditor(),
+                  admin: {
+                    description: 'Copyright u otro texto al final del footer.',
+                  },
+                },
               ],
             },
             {
-              name: 'title',
-              type: 'text',
-              label: 'Título',
-              admin: {
-                description: 'Texto accesible (aria-label). Si no hay icono, se muestra en el botón.',
-              },
-            },
-            {
-              name: 'link',
-              type: 'group',
-              admin: { hideGutter: true },
-              fields: dropLinkFields(),
+              label: 'Estilos',
+              fields: [
+                colorField({
+                  name: 'backgroundColor',
+                  label: 'Color de fondo del footer',
+                  defaultValue: '#ffffff',
+                  placeholder: '#ffffff',
+                  admin: {
+                    description: 'Hex, rgb, rgba o nombre CSS.',
+                  },
+                }),
+                {
+                  type: 'row',
+                  fields: [
+                    colorField({
+                      name: 'textColor',
+                      label: 'Color de texto principal',
+                      defaultValue: '#101835',
+                      width: '50%',
+                      placeholder: '#101835',
+                      admin: {
+                        description: 'Enlaces de navegación y texto general.',
+                      },
+                    }),
+                    colorField({
+                      name: 'textColorSecondary',
+                      label: 'Color de texto secundario',
+                      defaultValue: '#a1004a',
+                      width: '50%',
+                      placeholder: '#a1004a',
+                      admin: {
+                        description: 'Enlaces de políticas y enlace de navegación activo.',
+                      },
+                    }),
+                  ],
+                },
+                {
+                  name: 'hideMobileIcons',
+                  type: 'checkbox',
+                  label: 'Ocultar iconos en dispositivo móvil',
+                  defaultValue: false,
+                  admin: {
+                    description: 'Si está marcado, los iconos de los navlinks no se muestran en móvil.',
+                  },
+                },
+              ],
             },
           ],
-        },
-        {
-          name: 'policyLinks',
-          type: 'array',
-          dbName: 'ftd_pol',
-          label: 'Enlaces de políticas',
-          maxRows: 4,
-          admin: {
-            description: 'Máximo 4 (privacidad, cookies, aviso legal, etc.).',
-            initCollapsed: true,
-          },
-          fields: [
-            {
-              name: 'title',
-              type: 'richText',
-              label: 'Título',
-              required: true,
-              editor: footerDropRichTextEditor(),
-            },
-            {
-              name: 'link',
-              type: 'group',
-              admin: { hideGutter: true },
-              fields: dropLinkFields(),
-            },
-          ],
-        },
-        {
-          name: 'footerText',
-          type: 'richText',
-          label: 'Texto final',
-          editor: footerDropRichTextEditor(),
-          admin: {
-            description: 'Copyright u otro texto al final del footer.',
-          },
-        },
-        {
-          name: 'backgroundColor',
-          type: 'text',
-          label: 'Color de fondo del footer',
-          defaultValue: '#ffffff',
-          admin: {
-            description: 'Hex, rgb, rgba o nombre CSS.',
-            placeholder: '#ffffff',
-          },
-        },
-        {
-          name: 'textColor',
-          type: 'text',
-          label: 'Color de texto principal',
-          defaultValue: '#101835',
-          admin: {
-            description: 'Enlaces de navegación y texto general.',
-            placeholder: '#101835',
-          },
-        },
-        {
-          name: 'textColorSecondary',
-          type: 'text',
-          label: 'Color de texto secundario',
-          defaultValue: '#a1004a',
-          admin: {
-            description: 'Enlaces de políticas y enlace de navegación activo.',
-            placeholder: '#a1004a',
-          },
-        },
-        {
-          name: 'hideMobileIcons',
-          type: 'checkbox',
-          label: 'Ocultar iconos en dispositivo móvil',
-          defaultValue: false,
-          admin: {
-            description: 'Si está marcado, los iconos de los navlinks no se muestran en móvil.',
-          },
         },
       ],
       admin: {

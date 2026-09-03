@@ -19,18 +19,26 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { LinkFeatureClient as LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { ColorField as ColorField_fefe83621f3815412b5c63d5648284ce } from '@/fields/color/ColorField'
 import { SvgCodeField as SvgCodeField_de48ad8c8ae591674230819b4fda907e } from '@/fields/svgCode/SvgCodeField'
+import { ColorField as ColorField_fefe83621f3815412b5c63d5648284ce } from '@/fields/color/ColorField'
+import { ButtonRowLabel as ButtonRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { HeroFeatureRowLabel as HeroFeatureRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { FooterItemRowLabel as FooterItemRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { HeroCategoryRowLabel as HeroCategoryRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
 import { RowLabel as RowLabel_40db424a7c8315869f5a64ccc5c84709 } from '@/blocks/Layout_Drop/RowLabel'
 import { CategoryRowLabel as CategoryRowLabel_97084208c913b017169db0811450c374 } from '@/blocks/CalculadoraIMC_Drop/RowLabel'
 import { ButtonRowLabel as ButtonRowLabel_97084208c913b017169db0811450c374 } from '@/blocks/CalculadoraIMC_Drop/RowLabel'
 import { StepRowLabel as StepRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
-import { ButtonRowLabel as ButtonRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
 import { MemberRowLabel as MemberRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
 import { FeatureRowLabel as FeatureRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
 import { QrRowLabel as QrRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
 import { StoreButtonRowLabel as StoreButtonRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
 import { PrestacionRowLabel as PrestacionRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { TagRowLabel as TagRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { NumberedItemRowLabel as NumberedItemRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { CompareItemRowLabel as CompareItemRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { ColumnRowLabel as ColumnRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { StatRowLabel as StatRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
 import { QuestionRowLabel as QuestionRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
 import { OverviewComponent as OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
@@ -42,7 +50,12 @@ import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { RowLabel as RowLabel_ec255a65fa6fa8d1faeb09cf35284224 } from '@/Header/RowLabel'
+import { SubMenuRowLabel as SubMenuRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { NavLinkRowLabel as NavLinkRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { NamedButtonRowLabel as NamedButtonRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
 import { RowLabel as RowLabel_1f6ff6ff633e3695d348f4f3c58f1466 } from '@/Footer/RowLabel'
+import { SocialRowLabel as SocialRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
+import { PolicyRowLabel as PolicyRowLabel_8756c3efb303823105007e48ea3676d4 } from '@/fields/dropArrayRowLabels'
 import { default as default_642f24b8a8431b93928df383466a3593 } from '@/components/AdminCustomCSS'
 import { default as default_8a7ab0eb7ab5c511aba12e68480bfe5e } from '@/components/BeforeLogin'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -70,18 +83,26 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#LinkFeatureClient": LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@/fields/color/ColorField#ColorField": ColorField_fefe83621f3815412b5c63d5648284ce,
   "@/fields/svgCode/SvgCodeField#SvgCodeField": SvgCodeField_de48ad8c8ae591674230819b4fda907e,
+  "@/fields/color/ColorField#ColorField": ColorField_fefe83621f3815412b5c63d5648284ce,
+  "@/fields/dropArrayRowLabels#ButtonRowLabel": ButtonRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#HeroFeatureRowLabel": HeroFeatureRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#FooterItemRowLabel": FooterItemRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#HeroCategoryRowLabel": HeroCategoryRowLabel_8756c3efb303823105007e48ea3676d4,
   "@/blocks/Layout_Drop/RowLabel#RowLabel": RowLabel_40db424a7c8315869f5a64ccc5c84709,
   "@/blocks/CalculadoraIMC_Drop/RowLabel#CategoryRowLabel": CategoryRowLabel_97084208c913b017169db0811450c374,
   "@/blocks/CalculadoraIMC_Drop/RowLabel#ButtonRowLabel": ButtonRowLabel_97084208c913b017169db0811450c374,
   "@/fields/dropArrayRowLabels#StepRowLabel": StepRowLabel_8756c3efb303823105007e48ea3676d4,
-  "@/fields/dropArrayRowLabels#ButtonRowLabel": ButtonRowLabel_8756c3efb303823105007e48ea3676d4,
   "@/fields/dropArrayRowLabels#MemberRowLabel": MemberRowLabel_8756c3efb303823105007e48ea3676d4,
   "@/fields/dropArrayRowLabels#FeatureRowLabel": FeatureRowLabel_8756c3efb303823105007e48ea3676d4,
   "@/fields/dropArrayRowLabels#QrRowLabel": QrRowLabel_8756c3efb303823105007e48ea3676d4,
   "@/fields/dropArrayRowLabels#StoreButtonRowLabel": StoreButtonRowLabel_8756c3efb303823105007e48ea3676d4,
   "@/fields/dropArrayRowLabels#PrestacionRowLabel": PrestacionRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#TagRowLabel": TagRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#NumberedItemRowLabel": NumberedItemRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#CompareItemRowLabel": CompareItemRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#ColumnRowLabel": ColumnRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#StatRowLabel": StatRowLabel_8756c3efb303823105007e48ea3676d4,
   "@/fields/dropArrayRowLabels#QuestionRowLabel": QuestionRowLabel_8756c3efb303823105007e48ea3676d4,
   "@payloadcms/plugin-seo/client#OverviewComponent": OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,
@@ -93,7 +114,12 @@ export const importMap = {
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
   "@/Header/RowLabel#RowLabel": RowLabel_ec255a65fa6fa8d1faeb09cf35284224,
+  "@/fields/dropArrayRowLabels#SubMenuRowLabel": SubMenuRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#NavLinkRowLabel": NavLinkRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#NamedButtonRowLabel": NamedButtonRowLabel_8756c3efb303823105007e48ea3676d4,
   "@/Footer/RowLabel#RowLabel": RowLabel_1f6ff6ff633e3695d348f4f3c58f1466,
+  "@/fields/dropArrayRowLabels#SocialRowLabel": SocialRowLabel_8756c3efb303823105007e48ea3676d4,
+  "@/fields/dropArrayRowLabels#PolicyRowLabel": PolicyRowLabel_8756c3efb303823105007e48ea3676d4,
   "@/components/AdminCustomCSS#default": default_642f24b8a8431b93928df383466a3593,
   "@/components/BeforeLogin#default": default_8a7ab0eb7ab5c511aba12e68480bfe5e,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1

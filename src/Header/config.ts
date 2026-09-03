@@ -1,6 +1,8 @@
 import type { GlobalConfig } from 'payload'
 
+import { colorField } from '@/fields/color'
 import { dropButtonBackgroundSecondaryField } from '@/fields/dropButtonBackgroundSecondary'
+import { svgCodeField } from '@/fields/svgCode'
 import { link } from '@/fields/link'
 import { revalidateHeader } from './hooks/revalidateHeader'
 
@@ -754,163 +756,59 @@ export const Header: GlobalConfig = {
       label: 'Config Navbar DROP',
       fields: [
         {
-          name: 'logo',
-          type: 'group',
-          fields: [
+          type: 'tabs',
+          tabs: [
             {
-              name: 'useMedia',
-              type: 'checkbox',
-              label: 'Usar imagen subida',
-              defaultValue: true,
-            },
-            {
-              name: 'media',
-              type: 'upload',
-              relationTo: 'media',
-              admin: {
-                condition: (_, siblingData) => siblingData?.useMedia === true,
-              },
-            },
-            {
-              name: 'src',
-              type: 'text',
-              defaultValue: 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg',
-              admin: {
-                condition: (_, siblingData) => siblingData?.useMedia !== true,
-              },
-            },
-            {
-              name: 'alt',
-              type: 'text',
-              defaultValue: 'Logo image',
-              admin: {
-                condition: (_, siblingData) => siblingData?.useMedia !== true,
-              },
-            },
-          ],
-        },
-        {
-          name: 'backgroundColor',
-          type: 'text',
-          label: 'Color de fondo',
-          admin: { description: 'Ej: #ffffff o transparent' },
-        },
-        {
-          name: 'mobileMenuBackgroundColor',
-          type: 'text',
-          label: 'Color de fondo del menú desplegable (móvil)',
-          admin: {
-            description:
-              'Fondo del panel cuando el menú hamburguesa está abierto. Ej: #F5F3EF. Si se deja vacío, se usa #F5F3EF.',
-            placeholder: '#F5F3EF',
-          },
-        },
-        {
-          name: 'textColor',
-          type: 'text',
-          label: 'Color del texto',
-        },
-        {
-          name: 'boldTextColor',
-          type: 'text',
-          label: 'Color del texto en negrita',
-        },
-        {
-          name: 'buttonBackgroundColor',
-          type: 'text',
-          label: 'Color de fondo de botones',
-        },
-        dropButtonBackgroundSecondaryField({
-          name: 'buttonBackgroundColorSecondary',
-          label: 'Color de fondo secundario de botones',
-        }),
-        {
-          name: 'buttonTextColor',
-          type: 'text',
-          label: 'Color del texto de botones',
-        },
-        {
-          name: 'useFontGroup',
-          type: 'checkbox',
-          label: 'Usar grupo de fuentes',
-          defaultValue: false,
-          admin: {
-            description:
-              'Sube regular + bold (u otras variantes) en Font Groups: mismo nombre de familia y pesos distintos. El enlace activo (ancla en pantalla) usa negrita real. Tamaño del texto normal (body) para enlaces y botones.',
-          },
-        },
-        {
-          name: 'fontGroup',
-          type: 'relationship',
-          relationTo: 'font-groups',
-          label: 'Grupo de fuentes',
-          admin: {
-            condition: (_, siblingData) => siblingData?.useFontGroup === true,
-            description:
-              'En el grupo, añade al menos las variantes regular y bold vinculadas a archivos .woff2/.ttf, etc.',
-          },
-        },
-        {
-          name: 'fontFamily',
-          type: 'select',
-          label: 'Familia de fuente',
-          defaultValue: 'default',
-          options: [
-            { label: 'Por defecto', value: 'default' },
-            { label: 'Arial, sans-serif', value: 'Arial, sans-serif' },
-            { label: 'Times New Roman, serif', value: '"Times New Roman", serif' },
-            { label: 'Georgia, serif', value: 'Georgia, serif' },
-            { label: 'Verdana, sans-serif', value: 'Verdana, sans-serif' },
-            { label: 'Helvetica, Arial, sans-serif', value: 'Helvetica, Arial, sans-serif' },
-            { label: 'Courier New, monospace', value: '"Courier New", monospace' },
-            { label: 'Roboto', value: '"Roboto", sans-serif' },
-            { label: 'Open Sans', value: '"Open Sans", sans-serif' },
-            { label: 'Lato', value: '"Lato", sans-serif' },
-            { label: 'Montserrat', value: '"Montserrat", sans-serif' },
-            { label: 'Playfair Display', value: '"Playfair Display", serif' },
-            { label: 'Inter', value: '"Inter", sans-serif' },
-            { label: 'Poppins', value: '"Poppins", sans-serif' },
-            { label: 'Raleway', value: '"Raleway", sans-serif' },
-          ],
-          admin: {
-            condition: (_, siblingData) =>
-              siblingData?.useFontGroup !== true && siblingData?.useCustomFont !== true,
-          },
-        },
-        {
-          name: 'useCustomFont',
-          type: 'checkbox',
-          label: 'Usar fuente personalizada',
-          defaultValue: false,
-          admin: {
-            condition: (_, siblingData) => siblingData?.useFontGroup !== true,
-          },
-        },
-        {
-          name: 'customFontFile',
-          type: 'upload',
-          relationTo: 'fonts',
-          label: 'Archivo de fuente',
-          admin: {
-            condition: (_, siblingData) =>
-              siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
-          },
-        },
-        {
-          name: 'customFontName',
-          type: 'text',
-          label: 'Nombre de la fuente personalizada',
-          admin: {
-            condition: (_, siblingData) =>
-              siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
-          },
-        },
-        {
-          name: 'navLinks',
-          type: 'array',
-          dbName: 'drop_nav',
-          label: 'Enlaces de navegación',
-          fields: [
+              label: 'Contenido',
+              fields: [
+                {
+                  name: 'logo',
+                  type: 'group',
+                  fields: [
+                    {
+                      name: 'useMedia',
+                      type: 'checkbox',
+                      label: 'Usar imagen subida',
+                      defaultValue: true,
+                    },
+                    {
+                      name: 'media',
+                      type: 'upload',
+                      relationTo: 'media',
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.useMedia === true,
+                      },
+                    },
+                    {
+                      name: 'src',
+                      type: 'text',
+                      defaultValue: 'https://d22po4pjz3o32e.cloudfront.net/logo-image.svg',
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.useMedia !== true,
+                      },
+                    },
+                    {
+                      name: 'alt',
+                      type: 'text',
+                      defaultValue: 'Logo image',
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.useMedia !== true,
+                      },
+                    },
+                  ],
+                },
+                {
+                  name: 'navLinks',
+                  type: 'array',
+                  dbName: 'drop_nav',
+                  label: 'Enlaces de navegación',
+                  admin: {
+                    initCollapsed: true,
+                    components: {
+                      RowLabel: '@/fields/dropArrayRowLabels#NavLinkRowLabel',
+                    },
+                  },
+                  fields: [
             {
               name: 'title',
               type: 'text',
@@ -984,6 +882,12 @@ export const Header: GlobalConfig = {
               type: 'array',
               dbName: 'drop_sub',
               label: 'Submenú',
+              admin: {
+                initCollapsed: true,
+                components: {
+                  RowLabel: '@/fields/dropArrayRowLabels#SubMenuRowLabel',
+                },
+              },
               fields: [
                 {
                   name: 'title',
@@ -1062,6 +966,12 @@ export const Header: GlobalConfig = {
           type: 'array',
           dbName: 'drop_btns',
           label: 'Botones',
+          admin: {
+            initCollapsed: true,
+            components: {
+              RowLabel: '@/fields/dropArrayRowLabels#NamedButtonRowLabel',
+            },
+          },
           fields: [
             {
               name: 'title',
@@ -1151,11 +1061,163 @@ export const Header: GlobalConfig = {
               ],
               defaultValue: 'default',
             },
-            {
+            svgCodeField({
               name: 'iconSVG',
-              type: 'textarea',
               label: 'Icono SVG (código seguro)',
               admin: { description: 'Pega aquí el código SVG del icono' },
+            }),
+          ],
+        },
+              ],
+            },
+            {
+              label: 'Estilos',
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    colorField({
+                      name: 'backgroundColor',
+                      label: 'Color de fondo',
+                      width: '50%',
+                      placeholder: '#ffffff',
+                      admin: { description: 'Ej: #ffffff o transparent' },
+                    }),
+                    colorField({
+                      name: 'mobileMenuBackgroundColor',
+                      label: 'Color de fondo del menú desplegable (móvil)',
+                      width: '50%',
+                      placeholder: '#F5F3EF',
+                      admin: {
+                        description:
+                          'Fondo del panel cuando el menú hamburguesa está abierto. Ej: #F5F3EF. Si se deja vacío, se usa #F5F3EF.',
+                      },
+                    }),
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    colorField({
+                      name: 'textColor',
+                      label: 'Color del texto',
+                      width: '50%',
+                      placeholder: '#101835',
+                    }),
+                    colorField({
+                      name: 'boldTextColor',
+                      label: 'Color del texto en negrita',
+                      width: '50%',
+                      placeholder: '#C2005F',
+                    }),
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    colorField({
+                      name: 'buttonBackgroundColor',
+                      label: 'Color de fondo de botones',
+                      width: '33%',
+                      placeholder: '#C2005F',
+                    }),
+                    dropButtonBackgroundSecondaryField({
+                      name: 'buttonBackgroundColorSecondary',
+                      label: 'Color de fondo secundario de botones',
+                      width: '33%',
+                    }),
+                    colorField({
+                      name: 'buttonTextColor',
+                      label: 'Color del texto de botones',
+                      width: '33%',
+                      placeholder: '#FFFFFF',
+                    }),
+                  ],
+                },
+                {
+                  type: 'collapsible',
+                  label: 'Tipografía',
+                  admin: { initCollapsed: true },
+                  fields: [
+                    {
+                      name: 'useFontGroup',
+                      type: 'checkbox',
+                      label: 'Usar grupo de fuentes',
+                      defaultValue: false,
+                      admin: {
+                        description:
+                          'Sube regular + bold (u otras variantes) en Font Groups: mismo nombre de familia y pesos distintos. El enlace activo (ancla en pantalla) usa negrita real. Tamaño del texto normal (body) para enlaces y botones.',
+                      },
+                    },
+                    {
+                      name: 'fontGroup',
+                      type: 'relationship',
+                      relationTo: 'font-groups',
+                      label: 'Grupo de fuentes',
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.useFontGroup === true,
+                        description:
+                          'En el grupo, añade al menos las variantes regular y bold vinculadas a archivos .woff2/.ttf, etc.',
+                      },
+                    },
+                    {
+                      name: 'fontFamily',
+                      type: 'select',
+                      label: 'Familia de fuente',
+                      defaultValue: 'default',
+                      options: [
+                        { label: 'Por defecto', value: 'default' },
+                        { label: 'Arial, sans-serif', value: 'Arial, sans-serif' },
+                        { label: 'Times New Roman, serif', value: '"Times New Roman", serif' },
+                        { label: 'Georgia, serif', value: 'Georgia, serif' },
+                        { label: 'Verdana, sans-serif', value: 'Verdana, sans-serif' },
+                        { label: 'Helvetica, Arial, sans-serif', value: 'Helvetica, Arial, sans-serif' },
+                        { label: 'Courier New, monospace', value: '"Courier New", monospace' },
+                        { label: 'Roboto', value: '"Roboto", sans-serif' },
+                        { label: 'Open Sans', value: '"Open Sans", sans-serif' },
+                        { label: 'Lato', value: '"Lato", sans-serif' },
+                        { label: 'Montserrat', value: '"Montserrat", sans-serif' },
+                        { label: 'Playfair Display', value: '"Playfair Display", serif' },
+                        { label: 'Inter', value: '"Inter", sans-serif' },
+                        { label: 'Poppins', value: '"Poppins", sans-serif' },
+                        { label: 'Raleway', value: '"Raleway", sans-serif' },
+                      ],
+                      admin: {
+                        condition: (_, siblingData) =>
+                          siblingData?.useFontGroup !== true && siblingData?.useCustomFont !== true,
+                      },
+                    },
+                    {
+                      name: 'useCustomFont',
+                      type: 'checkbox',
+                      label: 'Usar fuente personalizada',
+                      defaultValue: false,
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.useFontGroup !== true,
+                      },
+                    },
+                    {
+                      name: 'customFontFile',
+                      type: 'upload',
+                      relationTo: 'fonts',
+                      label: 'Archivo de fuente',
+                      admin: {
+                        condition: (_, siblingData) =>
+                          siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
+                      },
+                    },
+                    {
+                      name: 'customFontName',
+                      type: 'text',
+                      label: 'Nombre de la fuente personalizada',
+                      admin: {
+                        condition: (_, siblingData) =>
+                          siblingData?.useFontGroup !== true && siblingData?.useCustomFont === true,
+                      },
+                    },
+                  ],
+                },
+              ],
             },
           ],
         },

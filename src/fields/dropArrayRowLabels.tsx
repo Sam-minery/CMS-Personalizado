@@ -91,3 +91,79 @@ export const QuestionRowLabel: React.FC<RowLabelProps> = () => {
   const label = text ? `Pregunta ${index}: ${text}` : `Pregunta ${index || ''}`.trim()
   return <div>{label}</div>
 }
+
+function lexicalContentRowLabel(
+  prefix: string,
+  field: 'content' | 'title' | 'product' | 'highlight',
+): React.FC<RowLabelProps> {
+  const Component: React.FC<RowLabelProps> = () => {
+    const data = useRowLabel<Record<string, { root?: unknown } | undefined>>()
+    const index = data.rowNumber !== undefined ? data.rowNumber + 1 : ''
+    const text = preview(extractLexicalText(data?.data?.[field]?.root))
+    const label = text ? `${prefix} ${index}: ${text}` : `${prefix} ${index || ''}`.trim()
+    return <div>{label}</div>
+  }
+  Component.displayName = `${prefix}RowLabel`
+  return Component
+}
+
+export const TagRowLabel = lexicalContentRowLabel('Tag', 'content')
+export const NumberedItemRowLabel = lexicalContentRowLabel('Elemento', 'content')
+export const ColumnRowLabel = lexicalContentRowLabel('Columna', 'title')
+export const CompareItemRowLabel = lexicalContentRowLabel('Producto', 'product')
+export const FooterItemRowLabel = lexicalContentRowLabel('Elemento', 'content')
+export const HeroFeatureRowLabel = lexicalContentRowLabel('Item', 'content')
+export const HeroCategoryRowLabel: React.FC<RowLabelProps> = () => {
+  const data = useRowLabel<{ catLbl?: string | null }>()
+  const index = data.rowNumber !== undefined ? data.rowNumber + 1 : ''
+  const name = data?.data?.catLbl?.trim()
+  const label = name ? `Categoría ${index}: ${name}` : `Categoría ${index || ''}`.trim()
+  return <div>{label}</div>
+}
+function titleRowLabel(prefix: string): React.FC<RowLabelProps> {
+  const Component: React.FC<RowLabelProps> = () => {
+    const data = useRowLabel<{ title?: string | null }>()
+    const index = data.rowNumber !== undefined ? data.rowNumber + 1 : ''
+    const name = data?.data?.title?.trim()
+    const label = name ? `${prefix} ${index}: ${name}` : `${prefix} ${index || ''}`.trim()
+    return <div>{label}</div>
+  }
+  Component.displayName = `${prefix}TitleRowLabel`
+  return Component
+}
+
+export const NavLinkRowLabel = titleRowLabel('Enlace')
+export const SubMenuRowLabel = titleRowLabel('Submenú')
+export const NamedButtonRowLabel = titleRowLabel('Botón')
+export const SocialRowLabel: React.FC<RowLabelProps> = () => {
+  const data = useRowLabel<{
+    title?: string | null
+    icon?: 'none' | 'instagram' | 'facebook' | 'youtube' | null
+  }>()
+  const index = data.rowNumber !== undefined ? data.rowNumber + 1 : ''
+  const name =
+    data?.data?.title?.trim() ||
+    (data?.data?.icon && data.data.icon !== 'none' ? data.data.icon : '')
+  const label = name ? `Social ${index}: ${name}` : `Social ${index || ''}`.trim()
+  return <div>{label}</div>
+}
+export const PolicyRowLabel: React.FC<RowLabelProps> = () => {
+  const data = useRowLabel<{ title?: { root?: unknown } }>()
+  const index = data.rowNumber !== undefined ? data.rowNumber + 1 : ''
+  const text = preview(extractLexicalText(data?.data?.title?.root))
+  const label = text ? `Política ${index}: ${text}` : `Política ${index || ''}`.trim()
+  return <div>{label}</div>
+}
+
+export const StatRowLabel: React.FC<RowLabelProps> = () => {
+  const data = useRowLabel<{
+    highlight?: { root?: unknown }
+    content?: { root?: unknown }
+  }>()
+  const index = data.rowNumber !== undefined ? data.rowNumber + 1 : ''
+  const text =
+    preview(extractLexicalText(data?.data?.highlight?.root)) ||
+    preview(extractLexicalText(data?.data?.content?.root))
+  const label = text ? `Dato ${index}: ${text}` : `Dato ${index || ''}`.trim()
+  return <div>{label}</div>
+}

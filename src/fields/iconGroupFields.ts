@@ -6,6 +6,10 @@ type IconGroupFieldsOptions = {
   defaultUseMedia?: boolean
   description?: string
   svgDescription?: string
+  /** Nombre del upload (Hero Drop usa `img`). */
+  mediaName?: string
+  /** Nombre del textarea SVG (Hero Drop usa `svg`). */
+  svgName?: string
 }
 
 /** Icono: media/GIF subido o código SVG con preview en el admin. */
@@ -23,7 +27,7 @@ export function iconGroupFields(opts?: IconGroupFieldsOptions): Field[] {
       },
     },
     {
-      name: 'mediaImage',
+      name: opts?.mediaName ?? 'mediaImage',
       type: 'upload',
       relationTo: 'media',
       label: 'Icono / GIF (media)',
@@ -33,7 +37,7 @@ export function iconGroupFields(opts?: IconGroupFieldsOptions): Field[] {
       },
     },
     svgCodeField({
-      name: 'iconSVG',
+      name: opts?.svgName ?? 'iconSVG',
       label: 'Código SVG del icono',
       admin: {
         condition: (_: unknown, siblingData: { useMedia?: boolean }) => siblingData?.useMedia !== true,

@@ -346,40 +346,6 @@ export interface Page {
         };
         [k: string]: unknown;
       };
-      hsty?: {
-        /**
-         * Hex, rgb, rgba o nombre CSS.
-         */
-        color?: string | null;
-        /**
-         * Color para strong/b dentro del RichText.
-         */
-        bold?: string | null;
-        useFG?: boolean | null;
-        fg?: (number | null) | FontGroup;
-        ff?:
-          | (
-              | 'default'
-              | 'Arial, sans-serif'
-              | '"Times New Roman", serif'
-              | 'Georgia, serif'
-              | 'Verdana, sans-serif'
-              | 'Helvetica, Arial, sans-serif'
-              | '"Courier New", monospace'
-              | '"Roboto", sans-serif'
-              | '"Open Sans", sans-serif'
-              | '"Lato", sans-serif'
-              | '"Montserrat", sans-serif'
-              | '"Playfair Display", serif'
-              | '"Inter", sans-serif'
-              | '"Poppins", sans-serif'
-              | '"Raleway", sans-serif'
-            )
-          | null;
-        useCF?: boolean | null;
-        cFont?: (number | null) | Font;
-        cFontNm?: string | null;
-      };
       /**
        * Máximo 2. El primero es primario; el segundo, secundario.
        */
@@ -442,6 +408,83 @@ export interface Page {
             id?: string | null;
           }[]
         | null;
+      /**
+       * Foto del hero (lado derecho en desktop).
+       */
+      media?: (number | null) | Media;
+      imgAlt?: string | null;
+      /**
+       * Máximo 3. Barra inferior con icono + texto.
+       */
+      footerItems?:
+        | {
+            icon?: {
+              /**
+               * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+               */
+              useMedia?: boolean | null;
+              /**
+               * Imagen o GIF del icono.
+               */
+              img?: (number | null) | Media;
+              /**
+               * Pega aquí el código SVG como alternativa a subir media.
+               */
+              svg?: string | null;
+              alt?: string | null;
+            };
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+          }[]
+        | null;
+      hsty?: {
+        /**
+         * Hex, rgb, rgba o nombre CSS.
+         */
+        color?: string | null;
+        /**
+         * Color para strong/b dentro del RichText.
+         */
+        bold?: string | null;
+        useFG?: boolean | null;
+        fg?: (number | null) | FontGroup;
+        ff?:
+          | (
+              | 'default'
+              | 'Arial, sans-serif'
+              | '"Times New Roman", serif'
+              | 'Georgia, serif'
+              | 'Verdana, sans-serif'
+              | 'Helvetica, Arial, sans-serif'
+              | '"Courier New", monospace'
+              | '"Roboto", sans-serif'
+              | '"Open Sans", sans-serif'
+              | '"Lato", sans-serif'
+              | '"Montserrat", sans-serif'
+              | '"Playfair Display", serif'
+              | '"Inter", sans-serif'
+              | '"Poppins", sans-serif'
+              | '"Raleway", sans-serif'
+            )
+          | null;
+        useCF?: boolean | null;
+        cFont?: (number | null) | Font;
+        cFontNm?: string | null;
+      };
       fsty?: {
         /**
          * Hex, rgb, rgba o nombre CSS.
@@ -476,11 +519,57 @@ export interface Page {
         cFont?: (number | null) | Font;
         cFontNm?: string | null;
       };
+      osty?: {
+        /**
+         * Hex, rgb, rgba o nombre CSS.
+         */
+        color?: string | null;
+        /**
+         * Color para strong/b dentro del RichText.
+         */
+        bold?: string | null;
+        useFG?: boolean | null;
+        fg?: (number | null) | FontGroup;
+        ff?:
+          | (
+              | 'default'
+              | 'Arial, sans-serif'
+              | '"Times New Roman", serif'
+              | 'Georgia, serif'
+              | 'Verdana, sans-serif'
+              | 'Helvetica, Arial, sans-serif'
+              | '"Courier New", monospace'
+              | '"Roboto", sans-serif'
+              | '"Open Sans", sans-serif'
+              | '"Lato", sans-serif'
+              | '"Montserrat", sans-serif'
+              | '"Playfair Display", serif'
+              | '"Inter", sans-serif'
+              | '"Poppins", sans-serif'
+              | '"Raleway", sans-serif'
+            )
+          | null;
+        useCF?: boolean | null;
+        cFont?: (number | null) | Font;
+        cFontNm?: string | null;
+      };
       /**
-       * Foto del hero (lado derecho en desktop).
+       * Activa o desactiva las curvas SVG animadas del fondo (desktop y mobile).
        */
-      media?: (number | null) | Media;
-      imgAlt?: string | null;
+      curves?: boolean | null;
+      accent?: string | null;
+      bg?: string | null;
+      /**
+       * Ej: linear-gradient(...). Si está vacío, usa solo el color base.
+       */
+      bgGrad?: string | null;
+      pBtnBg?: string | null;
+      /**
+       * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+       */
+      pBtnBg2?: string | null;
+      pBtnFg?: string | null;
+      sBtnFg?: string | null;
       calc?: {
         icon?: {
           /**
@@ -552,8 +641,8 @@ export interface Page {
         btnBg2?: string | null;
         btnFg?: string | null;
         cardBg?: string | null;
-        modalTitle?: string | null;
         modalBg?: string | null;
+        modalTitle?: string | null;
         recalcTxt?: string | null;
         /**
          * Rangos imcMin/imcMax y “Es apto” definen el resultado del popup (como CalculadoraIMC_Drop).
@@ -803,95 +892,6 @@ export interface Page {
         tagBg?: string | null;
         tagFg?: string | null;
       };
-      /**
-       * Máximo 3. Barra inferior con icono + texto.
-       */
-      footerItems?:
-        | {
-            icon?: {
-              /**
-               * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
-               */
-              useMedia?: boolean | null;
-              /**
-               * Imagen o GIF del icono.
-               */
-              img?: (number | null) | Media;
-              /**
-               * Pega aquí el código SVG como alternativa a subir media.
-               */
-              svg?: string | null;
-              alt?: string | null;
-            };
-            content: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            };
-            id?: string | null;
-          }[]
-        | null;
-      osty?: {
-        /**
-         * Hex, rgb, rgba o nombre CSS.
-         */
-        color?: string | null;
-        /**
-         * Color para strong/b dentro del RichText.
-         */
-        bold?: string | null;
-        useFG?: boolean | null;
-        fg?: (number | null) | FontGroup;
-        ff?:
-          | (
-              | 'default'
-              | 'Arial, sans-serif'
-              | '"Times New Roman", serif'
-              | 'Georgia, serif'
-              | 'Verdana, sans-serif'
-              | 'Helvetica, Arial, sans-serif'
-              | '"Courier New", monospace'
-              | '"Roboto", sans-serif'
-              | '"Open Sans", sans-serif'
-              | '"Lato", sans-serif'
-              | '"Montserrat", sans-serif'
-              | '"Playfair Display", serif'
-              | '"Inter", sans-serif'
-              | '"Poppins", sans-serif'
-              | '"Raleway", sans-serif'
-            )
-          | null;
-        useCF?: boolean | null;
-        cFont?: (number | null) | Font;
-        cFontNm?: string | null;
-      };
-      /**
-       * Activa o desactiva las curvas SVG animadas del fondo (desktop y mobile).
-       */
-      curves?: boolean | null;
-      accent?: string | null;
-      bg?: string | null;
-      /**
-       * Ej: linear-gradient(...). Si está vacío, usa solo el color base.
-       */
-      bgGrad?: string | null;
-      pBtnBg?: string | null;
-      /**
-       * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
-       */
-      pBtnBg2?: string | null;
-      pBtnFg?: string | null;
-      sBtnFg?: string | null;
       /**
        * Si está activo, el contenido del hero usa el ancho en % del viewport indicado; el fondo y la decoración siguen a ancho completo. Los popups (calculadora IMC) no cambian de ancho ni de estilo. Si no lo marcas, el diseño no cambia.
        */
@@ -3343,40 +3343,6 @@ export interface PricingDropBlock {
     };
     [k: string]: unknown;
   };
-  mainStyle?: {
-    /**
-     * Hex, rgb, rgba o nombre CSS.
-     */
-    textColor?: string | null;
-    /**
-     * Color para strong/b dentro del RichText.
-     */
-    boldTextColor?: string | null;
-  };
-  /**
-   * Desktop: cubre todo el bloque. Móvil: por defecto solo a la altura del tag + texto principal, hacia la derecha. Activa «Cambiar posición imagen mobile» para centrarla en todo el fondo.
-   */
-  backgroundImage?: (number | null) | Media;
-  /**
-   * Si no hay imagen, o en móvil para la zona bajo la imagen. Hex, rgb, rgba o nombre CSS.
-   */
-  backgroundColor?: string | null;
-  /**
-   * En móvil, centra la imagen y el SVG decorativo ocupando todo el fondo del bloque, con transparencia para no tapar el contenido. Si no lo marcas, el diseño móvil no cambia.
-   */
-  centerMobileImage?: boolean | null;
-  /**
-   * Círculo discontinuo giratorio detrás de la imagen y sparkles con parallax al hacer scroll.
-   */
-  enableAnimatedBg?: boolean | null;
-  /**
-   * Color de la línea discontinua y de las estrellas / sparkles.
-   */
-  animatedAccentColor?: string | null;
-  /**
-   * Si está activo, las filas numeradas se muestran solo con icono y texto, sin el círculo 1 / 2 / 3. Si no lo marcas, el diseño no cambia.
-   */
-  hideNumbering?: boolean | null;
   /**
    * Máximo 3. Columna a la izquierda, debajo del texto principal.
    */
@@ -3702,7 +3668,6 @@ export interface PricingDropBlock {
     };
     [k: string]: unknown;
   } | null;
-  finePrintColor?: string | null;
   /**
    * Máximo 3. Al final del bloque: en fila (desktop) / apilados (móvil), centrados.
    */
@@ -3769,6 +3734,21 @@ export interface PricingDropBlock {
         id?: string | null;
       }[]
     | null;
+  mainStyle?: {
+    /**
+     * Hex, rgb, rgba o nombre CSS.
+     */
+    textColor?: string | null;
+    /**
+     * Color para strong/b dentro del RichText.
+     */
+    boldTextColor?: string | null;
+  };
+  /**
+   * Si está activo, las filas numeradas se muestran solo con icono y texto, sin el círculo 1 / 2 / 3. Si no lo marcas, el diseño no cambia.
+   */
+  hideNumbering?: boolean | null;
+  finePrintColor?: string | null;
   /**
    * Activa para elegir un grupo de fuentes (font-groups). Sus tamaños e interlineados tienen prioridad sobre la tipografía por defecto del bloque.
    */
@@ -3799,6 +3779,26 @@ export interface PricingDropBlock {
   useCustomFont?: boolean | null;
   customFontFile?: (number | null) | Font;
   customFontName?: string | null;
+  /**
+   * Desktop: cubre todo el bloque. Móvil: por defecto solo a la altura del tag + texto principal, hacia la derecha. Activa «Cambiar posición imagen mobile» para centrarla en todo el fondo.
+   */
+  backgroundImage?: (number | null) | Media;
+  /**
+   * Si no hay imagen, o en móvil para la zona bajo la imagen. Hex, rgb, rgba o nombre CSS.
+   */
+  backgroundColor?: string | null;
+  /**
+   * En móvil, centra la imagen y el SVG decorativo ocupando todo el fondo del bloque, con transparencia para no tapar el contenido. Si no lo marcas, el diseño móvil no cambia.
+   */
+  centerMobileImage?: boolean | null;
+  /**
+   * Círculo discontinuo giratorio detrás de la imagen y sparkles con parallax al hacer scroll.
+   */
+  enableAnimatedBg?: boolean | null;
+  /**
+   * Color de la línea discontinua y de las estrellas / sparkles.
+   */
+  animatedAccentColor?: string | null;
   /**
    * Si está activo, el contenido del bloque usa el ancho en % del viewport indicado; el fondo y la decoración siguen a ancho completo. Si no lo marcas, el diseño no cambia.
    */
@@ -4657,18 +4657,6 @@ export interface PagesSelect<T extends boolean = true> {
                     textColor?: T;
                   };
               hdr?: T;
-              hsty?:
-                | T
-                | {
-                    color?: T;
-                    bold?: T;
-                    useFG?: T;
-                    fg?: T;
-                    ff?: T;
-                    useCF?: T;
-                    cFont?: T;
-                    cFontNm?: T;
-                  };
               buttons?:
                 | T
                 | {
@@ -4698,6 +4686,34 @@ export interface PagesSelect<T extends boolean = true> {
                     content?: T;
                     id?: T;
                   };
+              media?: T;
+              imgAlt?: T;
+              footerItems?:
+                | T
+                | {
+                    icon?:
+                      | T
+                      | {
+                          useMedia?: T;
+                          img?: T;
+                          svg?: T;
+                          alt?: T;
+                        };
+                    content?: T;
+                    id?: T;
+                  };
+              hsty?:
+                | T
+                | {
+                    color?: T;
+                    bold?: T;
+                    useFG?: T;
+                    fg?: T;
+                    ff?: T;
+                    useCF?: T;
+                    cFont?: T;
+                    cFontNm?: T;
+                  };
               fsty?:
                 | T
                 | {
@@ -4710,8 +4726,26 @@ export interface PagesSelect<T extends boolean = true> {
                     cFont?: T;
                     cFontNm?: T;
                   };
-              media?: T;
-              imgAlt?: T;
+              osty?:
+                | T
+                | {
+                    color?: T;
+                    bold?: T;
+                    useFG?: T;
+                    fg?: T;
+                    ff?: T;
+                    useCF?: T;
+                    cFont?: T;
+                    cFontNm?: T;
+                  };
+              curves?: T;
+              accent?: T;
+              bg?: T;
+              bgGrad?: T;
+              pBtnBg?: T;
+              pBtnBg2?: T;
+              pBtnFg?: T;
+              sBtnFg?: T;
               calc?:
                 | T
                 | {
@@ -4750,8 +4784,8 @@ export interface PagesSelect<T extends boolean = true> {
                     btnBg2?: T;
                     btnFg?: T;
                     cardBg?: T;
-                    modalTitle?: T;
                     modalBg?: T;
+                    modalTitle?: T;
                     recalcTxt?: T;
                     cats?:
                       | T
@@ -4852,40 +4886,6 @@ export interface PagesSelect<T extends boolean = true> {
                     tagBg?: T;
                     tagFg?: T;
                   };
-              footerItems?:
-                | T
-                | {
-                    icon?:
-                      | T
-                      | {
-                          useMedia?: T;
-                          img?: T;
-                          svg?: T;
-                          alt?: T;
-                        };
-                    content?: T;
-                    id?: T;
-                  };
-              osty?:
-                | T
-                | {
-                    color?: T;
-                    bold?: T;
-                    useFG?: T;
-                    fg?: T;
-                    ff?: T;
-                    useCF?: T;
-                    cFont?: T;
-                    cFontNm?: T;
-                  };
-              curves?: T;
-              accent?: T;
-              bg?: T;
-              bgGrad?: T;
-              pBtnBg?: T;
-              pBtnBg2?: T;
-              pBtnFg?: T;
-              sBtnFg?: T;
               applyCustomWidth?: T;
               customWidthPercent?: T;
               customWidthPercentMobile?: T;
@@ -5604,18 +5604,6 @@ export interface PricingDropBlockSelect<T extends boolean = true> {
         id?: T;
       };
   mainContent?: T;
-  mainStyle?:
-    | T
-    | {
-        textColor?: T;
-        boldTextColor?: T;
-      };
-  backgroundImage?: T;
-  backgroundColor?: T;
-  centerMobileImage?: T;
-  enableAnimatedBg?: T;
-  animatedAccentColor?: T;
-  hideNumbering?: T;
   numberedItems?:
     | T
     | {
@@ -5707,7 +5695,6 @@ export interface PricingDropBlockSelect<T extends boolean = true> {
             };
       };
   finePrint?: T;
-  finePrintColor?: T;
   stats?:
     | T
     | {
@@ -5727,12 +5714,25 @@ export interface PricingDropBlockSelect<T extends boolean = true> {
         boldTextColor?: T;
         id?: T;
       };
+  mainStyle?:
+    | T
+    | {
+        textColor?: T;
+        boldTextColor?: T;
+      };
+  hideNumbering?: T;
+  finePrintColor?: T;
   useFontGroup?: T;
   fontGroup?: T;
   fontFamily?: T;
   useCustomFont?: T;
   customFontFile?: T;
   customFontName?: T;
+  backgroundImage?: T;
+  backgroundColor?: T;
+  centerMobileImage?: T;
+  enableAnimatedBg?: T;
+  animatedAccentColor?: T;
   applyCustomWidth?: T;
   customWidthPercent?: T;
   customWidthPercentMobile?: T;
@@ -6899,52 +6899,6 @@ export interface Header {
       src?: string | null;
       alt?: string | null;
     };
-    /**
-     * Ej: #ffffff o transparent
-     */
-    backgroundColor?: string | null;
-    /**
-     * Fondo del panel cuando el menú hamburguesa está abierto. Ej: #F5F3EF. Si se deja vacío, se usa #F5F3EF.
-     */
-    mobileMenuBackgroundColor?: string | null;
-    textColor?: string | null;
-    boldTextColor?: string | null;
-    buttonBackgroundColor?: string | null;
-    /**
-     * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
-     */
-    buttonBackgroundColorSecondary?: string | null;
-    buttonTextColor?: string | null;
-    /**
-     * Sube regular + bold (u otras variantes) en Font Groups: mismo nombre de familia y pesos distintos. El enlace activo (ancla en pantalla) usa negrita real. Tamaño del texto normal (body) para enlaces y botones.
-     */
-    useFontGroup?: boolean | null;
-    /**
-     * En el grupo, añade al menos las variantes regular y bold vinculadas a archivos .woff2/.ttf, etc.
-     */
-    fontGroup?: (number | null) | FontGroup;
-    fontFamily?:
-      | (
-          | 'default'
-          | 'Arial, sans-serif'
-          | '"Times New Roman", serif'
-          | 'Georgia, serif'
-          | 'Verdana, sans-serif'
-          | 'Helvetica, Arial, sans-serif'
-          | '"Courier New", monospace'
-          | '"Roboto", sans-serif'
-          | '"Open Sans", sans-serif'
-          | '"Lato", sans-serif'
-          | '"Montserrat", sans-serif'
-          | '"Playfair Display", serif'
-          | '"Inter", sans-serif'
-          | '"Poppins", sans-serif'
-          | '"Raleway", sans-serif'
-        )
-      | null;
-    useCustomFont?: boolean | null;
-    customFontFile?: (number | null) | Font;
-    customFontName?: string | null;
     navLinks?:
       | {
           title: string;
@@ -7032,6 +6986,52 @@ export interface Header {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Ej: #ffffff o transparent
+     */
+    backgroundColor?: string | null;
+    /**
+     * Fondo del panel cuando el menú hamburguesa está abierto. Ej: #F5F3EF. Si se deja vacío, se usa #F5F3EF.
+     */
+    mobileMenuBackgroundColor?: string | null;
+    textColor?: string | null;
+    boldTextColor?: string | null;
+    buttonBackgroundColor?: string | null;
+    /**
+     * Opcional. Si se rellena, el fondo del botón será un degradado entre el color de fondo y este.
+     */
+    buttonBackgroundColorSecondary?: string | null;
+    buttonTextColor?: string | null;
+    /**
+     * Sube regular + bold (u otras variantes) en Font Groups: mismo nombre de familia y pesos distintos. El enlace activo (ancla en pantalla) usa negrita real. Tamaño del texto normal (body) para enlaces y botones.
+     */
+    useFontGroup?: boolean | null;
+    /**
+     * En el grupo, añade al menos las variantes regular y bold vinculadas a archivos .woff2/.ttf, etc.
+     */
+    fontGroup?: (number | null) | FontGroup;
+    fontFamily?:
+      | (
+          | 'default'
+          | 'Arial, sans-serif'
+          | '"Times New Roman", serif'
+          | 'Georgia, serif'
+          | 'Verdana, sans-serif'
+          | 'Helvetica, Arial, sans-serif'
+          | '"Courier New", monospace'
+          | '"Roboto", sans-serif'
+          | '"Open Sans", sans-serif'
+          | '"Lato", sans-serif'
+          | '"Montserrat", sans-serif'
+          | '"Playfair Display", serif'
+          | '"Inter", sans-serif'
+          | '"Poppins", sans-serif'
+          | '"Raleway", sans-serif'
+        )
+      | null;
+    useCustomFont?: boolean | null;
+    customFontFile?: (number | null) | Font;
+    customFontName?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -7648,11 +7648,11 @@ export interface Footer {
           };
           icon?: {
             /**
-             * Si está desactivado, puedes pegar código SVG en el campo "Código SVG".
+             * Si está desactivado, puedes pegar código SVG. El icono solo se muestra en móvil.
              */
             useMedia?: boolean | null;
             /**
-             * Imagen o GIF del icono. Solo se muestra en móvil.
+             * Imagen o GIF del icono.
              */
             mediaImage?: (number | null) | Media;
             /**
@@ -8138,19 +8138,6 @@ export interface HeaderSelect<T extends boolean = true> {
               src?: T;
               alt?: T;
             };
-        backgroundColor?: T;
-        mobileMenuBackgroundColor?: T;
-        textColor?: T;
-        boldTextColor?: T;
-        buttonBackgroundColor?: T;
-        buttonBackgroundColorSecondary?: T;
-        buttonTextColor?: T;
-        useFontGroup?: T;
-        fontGroup?: T;
-        fontFamily?: T;
-        useCustomFont?: T;
-        customFontFile?: T;
-        customFontName?: T;
         navLinks?:
           | T
           | {
@@ -8199,6 +8186,19 @@ export interface HeaderSelect<T extends boolean = true> {
               iconSVG?: T;
               id?: T;
             };
+        backgroundColor?: T;
+        mobileMenuBackgroundColor?: T;
+        textColor?: T;
+        boldTextColor?: T;
+        buttonBackgroundColor?: T;
+        buttonBackgroundColorSecondary?: T;
+        buttonTextColor?: T;
+        useFontGroup?: T;
+        fontGroup?: T;
+        fontFamily?: T;
+        useCustomFont?: T;
+        customFontFile?: T;
+        customFontName?: T;
       };
   updatedAt?: T;
   createdAt?: T;
